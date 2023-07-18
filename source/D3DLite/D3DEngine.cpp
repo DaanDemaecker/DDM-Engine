@@ -6,6 +6,8 @@
 #include "Material.h"
 #include <chrono>
 
+#include "Scene.h"
+
 D3D::Window g_pWindow{};
 
 D3D::D3DEngine::D3DEngine(int width, int height)
@@ -50,6 +52,7 @@ void D3D::D3DEngine::Run(const std::function<void()>& load)
 
 	bool doContinue = true;
 	auto lastTime = std::chrono::high_resolution_clock::now();
+
 	float lag = 0.0f;
 	constexpr float fixedTimeStep = 0.02f;
 
@@ -58,33 +61,41 @@ void D3D::D3DEngine::Run(const std::function<void()>& load)
 	constexpr float desiredFrameRate = 144;
 	constexpr float desiredFrameDuration = 1000.f / desiredFrameRate;
 
+
+	std::shared_ptr<Scene> pScene{ std::make_shared<Scene>("Test") };
+
+
 	while (doContinue)
 	{
 		const auto currentTime = std::chrono::high_resolution_clock::now();
-		const std::chrono::duration<float> deltaTime = currentTime - lastTime;
-		const float deltaTimeSeconds = deltaTime.count();
+		const float deltaTime = std::chrono::duration<float>(currentTime - lastTime).count();
 
-		time.SetDeltaTime(deltaTimeSeconds);
+		time.SetDeltaTime(deltaTime);
 
-		//std::cout << time.GetFps() << std::endl;
+		std::cout << time.GetFps() << std::endl;
 
 		lastTime = currentTime;
-		lag += deltaTimeSeconds;
+		lag += deltaTime;
 
 		doContinue = !glfwWindowShouldClose(g_pWindow.pWindow);
 
 		glfwPollEvents();
 
+		pScene->StartFrame();
+
 		while (lag >= fixedTimeStep)
 		{
-			// Perform fixed time-step updates here
-
+			pScene->FixedUpdate();
 			lag -= fixedTimeStep;
 		}
 
-		renderer.Render(pModels);
+		pScene->Update();
 
-		vkDeviceWaitIdle(renderer.GetDevice());
+		pScene->LateUpdate();
+
+		pScene->PostUpdate();
+
+		renderer.Render(pModels);
 
 		const auto frameDuration = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - currentTime);
 		const auto sleepTime = std::chrono::milliseconds(static_cast<int>(desiredFrameDuration)) - frameDuration;

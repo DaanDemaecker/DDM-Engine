@@ -20,11 +20,6 @@ namespace D3D
 		int m_Fps = 0;
 		float m_DeltaTime = 0;
 		float m_FixedTime = 0;
-
-		int m_FrameCount{};
-		float m_ElapsedTime{};
-
-		void UpdateFPS(float deltaTime);
 	};
 }
 
