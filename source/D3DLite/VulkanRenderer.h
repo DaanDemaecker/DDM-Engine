@@ -22,17 +22,19 @@ namespace D3D
         void Render(std::vector<std::unique_ptr<Model>>& pModels);
 
         void Render(Model* pModel, VkCommandBuffer& commandBuffer, const VkDescriptorSet* descriptorSet, const PipelinePair& pipeline);
-        
+
         void AddGraphicsPipeline(const std::string& pipelineName, const std::string& vertShaderName, const std::string& fragShaderName);
 
         //Public getters
-        VkDevice& GetDevice() {return m_Device; }
+        VkDevice& GetDevice() { return m_Device; }
         VkCommandPool& GetCommandPool() { return m_CommandPool; }
         VkDescriptorSetLayout& GetDescriptorSetLayout() { return m_DescriptorSetLayout; }
         VkDescriptorPool& GetDescriptorPool() { return m_DescriptorPool; }
         VkImageView& GetDefaultImageView() { return m_DefaultTextureImageView; }
         VkSampler& GetSampler() { return m_TextureSampler; }
         PipelinePair& GetPipeline(const std::string& name = "Default");
+        VkCommandBuffer& GetCurrentCommandBuffer() { return m_CommandBuffers[m_CurrentFrame]; }
+        uint32_t GetCurrentFrame() const { return  m_CurrentFrame; }
 
         //Public Helpers
         void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
@@ -49,9 +51,9 @@ namespace D3D
     private:
         //----Member variables----
         //---Validation layers---
-        bool m_EnableValidationLayers{true};
+        bool m_EnableValidationLayers{ true };
         const std::vector<const char*> m_ValidationLayers =
-        { 
+        {
             "VK_LAYER_KHRONOS_validation"
         };
         VkDebugUtilsMessengerEXT m_DebugMessenger = VK_NULL_HANDLE;
@@ -108,7 +110,7 @@ namespace D3D
         //VkPipeline m_GraphicsPipeline{};
         std::map<std::string, PipelinePair> m_GraphicPipelines{};
 
-        const std::string m_DefaultPipelineName{"Default"};
+        const std::string m_DefaultPipelineName{ "Default" };
         const std::string m_DefaultVertName{ "../resources/DefaultResources/Default.Vert.spv" };
         const std::string m_DefaultFragName{ "../resources/DefaultResources/Default.Frag.spv" };
 
@@ -117,7 +119,7 @@ namespace D3D
 
         //CommandBuffer
         std::vector<VkCommandBuffer> m_CommandBuffers{};
-       
+
 
         //--MultiSampling--
         VkSampleCountFlagBits m_MsaaSamples = VK_SAMPLE_COUNT_1_BIT;
@@ -135,7 +137,7 @@ namespace D3D
 
         //--Descriptorpool--
         VkDescriptorPool m_DescriptorPool{};
-        uint32_t m_MaxDescriptorSets{8};
+        uint32_t m_MaxDescriptorSets{ 8 };
 
         //--Sync objects--
         std::vector<VkSemaphore> m_ImageAvailableSemaphores{};
@@ -154,17 +156,16 @@ namespace D3D
         uint32_t m_MipLevels{};
 
         const std::string m_DefaultTextureName{ "../resources/DefaultResources/DefaultTexture.png" };
-        
-
 
         VkSampler m_TextureSampler{};
+
 
 
         //----Member Functions----
         //--- Cleanup ---
         void Cleanup();
-         
-        
+
+
         //---Vulkan Initialization---
         void InitVulkan();
 
@@ -252,11 +253,11 @@ namespace D3D
 
         //--Sync Objects--
         void CreateSyncObjects();
-        
+
 
         //--General helpers--
         VkFormat FindSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
-        
+
         bool HasStencilComponent(VkFormat format);
 
 
@@ -269,7 +270,7 @@ namespace D3D
         uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
         VkCommandBuffer BeginSingleTimeCommands();
         void EndSingleTimeCommands(VkCommandBuffer comandBuffer);
-        
+
     };
 }
 

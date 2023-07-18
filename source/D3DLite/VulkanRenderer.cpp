@@ -291,7 +291,7 @@ void D3D::VulkanRenderer::Render(std::vector<std::unique_ptr<Model>>& pModels)
 		throw std::runtime_error("failed to acquire swap chain image!");
 	}
 
-	
+
 
 	vkResetFences(m_Device, 1, &m_InFlightFences[m_CurrentFrame]);
 
@@ -302,12 +302,12 @@ void D3D::VulkanRenderer::Render(std::vector<std::unique_ptr<Model>>& pModels)
 	VkSubmitInfo submitInfo{};
 	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
-	VkSemaphore waitSemaphores[] = { m_ImageAvailableSemaphores[m_CurrentFrame]};
+	VkSemaphore waitSemaphores[] = { m_ImageAvailableSemaphores[m_CurrentFrame] };
 	VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
 	submitInfo.waitSemaphoreCount = 1;
 	submitInfo.pWaitSemaphores = waitSemaphores;
 	submitInfo.pWaitDstStageMask = waitStages;
-	
+
 	submitInfo.commandBufferCount = 1;
 	submitInfo.pCommandBuffers = &m_CommandBuffers[m_CurrentFrame];
 
@@ -393,7 +393,7 @@ void D3D::VulkanRenderer::RecordCommandBuffer(VkCommandBuffer& commandBuffer, ui
 
 	for (size_t i = 0; i < pModels.size(); ++i)
 	{
-		pModels[i]->Render(commandBuffer, m_CurrentFrame);
+		pModels[i]->Render();
 	}
 
 	vkCmdEndRenderPass(commandBuffer);

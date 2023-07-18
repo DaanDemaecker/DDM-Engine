@@ -47,20 +47,28 @@ void D3D::Model::SetMaterial(std::shared_ptr<Material> pMaterial)
 
 void D3D::Model::Update()
 {
-	
+	constexpr float rotSpeed{ glm::radians(90.f) };
+
+	float rotAmount{ rotSpeed * TimeManager::GetInstance().GetDeltaTime() };
+
+	SetRotation(m_Rotation.x, m_Rotation.y + rotAmount, m_Rotation.z);
 }
 
-void D3D::Model::Render(VkCommandBuffer& commandBuffer, uint32_t frame)
+void D3D::Model::Render()
 {
 	if (!m_Initialized)
 		return;
+
+	auto& renderer{ VulkanRenderer::GetInstance() };
+
+	auto frame{ renderer.GetCurrentFrame() };
 
 	if (m_UboChanged[frame])
 	{
 		UpdateUniformBuffer(frame);
 	}
 
-	VulkanRenderer::GetInstance().Render(this, commandBuffer, &m_DescriptorSets[frame], GetPipeline());
+	renderer.Render(this, renderer.GetCurrentCommandBuffer(), &m_DescriptorSets[frame], GetPipeline());
 }
 
 void D3D::Model::SetPosition(float x, float y, float z)
