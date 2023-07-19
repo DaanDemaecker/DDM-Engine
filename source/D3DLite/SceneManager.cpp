@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "SceneManager.h"
 #include "Scene.h"
+#include "GameObject.h"
+
 #include "Model.h"
 
 void D3D::SceneManager::EndProgram()
