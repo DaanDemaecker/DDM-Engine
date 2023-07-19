@@ -2,6 +2,7 @@
 #include "D3DEngine.h"
 #include "VulkanRenderer.h"
 #include "TimeManager.h"
+#include "SceneManager.h"
 #include "Model.h"
 #include "Material.h"
 #include <chrono>
@@ -28,25 +29,7 @@ void D3D::D3DEngine::Run(const std::function<void()>& load)
 	load();
 
 	auto& renderer{ VulkanRenderer::GetInstance() };
-
-	std::shared_ptr<D3D::Material> pVikingMaterial{ std::make_shared<D3D::Material>("../resources/images/viking_room.png") };
-	std::shared_ptr<D3D::Material> pVehicleMaterial{std::make_shared<D3D::Material>("../resources/images/vehicle_diffuse.png")};
-
-	std::vector<std::unique_ptr<Model>> pModels{};
-	pModels.push_back(std::make_unique<Model>());
-	pModels[0]->LoadModel("../Resources/Models/viking_room.obj");
-	pModels[0]->SetMaterial(pVikingMaterial);
-	pModels[0]->SetPosition(1.f, -0.2f, 5.f);
-	pModels[0]->SetRotation(glm::radians(-90.0f), glm::radians(45.0f), 0.f);
-	pModels[0]->SetScale(0.75f, 0.75f, 0.75f);
-
-	pModels.push_back(std::make_unique<Model>());
-	pModels[1]->LoadModel("../Resources/Models/vehicle.obj");
-	pModels[1]->SetMaterial(pVehicleMaterial);
-	pModels[1]->SetPosition(-1.f, 0, 5.f);
-	pModels[1]->SetRotation(0.f, glm::radians(75.0f), 0.f);
-	pModels[1]->SetScale(0.05f, 0.05f, 0.05f);
-
+	auto& sceneManager{ SceneManager::GetInstance() };
 	auto& time{ TimeManager::GetInstance() };
 
 
@@ -62,8 +45,7 @@ void D3D::D3DEngine::Run(const std::function<void()>& load)
 	constexpr float desiredFrameDuration = 1000.f / desiredFrameRate;
 
 
-	std::shared_ptr<Scene> pScene{ std::make_shared<Scene>("Test") };
-
+	
 
 	while (doContinue)
 	{
@@ -72,7 +54,7 @@ void D3D::D3DEngine::Run(const std::function<void()>& load)
 
 		time.SetDeltaTime(deltaTime);
 
-		std::cout << time.GetFps() << std::endl;
+		//std::cout << time.GetFps() << std::endl;
 
 		lastTime = currentTime;
 		lag += deltaTime;
@@ -81,21 +63,23 @@ void D3D::D3DEngine::Run(const std::function<void()>& load)
 
 		glfwPollEvents();
 
-		pScene->StartFrame();
+		sceneManager.StartFrame();
 
 		while (lag >= fixedTimeStep)
 		{
-			pScene->FixedUpdate();
+			sceneManager.FixedUpdate();
 			lag -= fixedTimeStep;
 		}
 
-		pScene->Update();
+		sceneManager.Update();
 
-		pScene->LateUpdate();
+		sceneManager.LateUpdate();
 
-		pScene->PostUpdate();
+		sceneManager.Cleanup();
 
-		renderer.Render(pModels);
+		renderer.Render();
+
+		sceneManager.Cleanup();
 
 		const auto frameDuration = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - currentTime);
 		const auto sleepTime = std::chrono::milliseconds(static_cast<int>(desiredFrameDuration)) - frameDuration;
@@ -105,6 +89,8 @@ void D3D::D3DEngine::Run(const std::function<void()>& load)
 			std::this_thread::sleep_for(sleepTime);
 		}
 	}
+
+	sceneManager.EndProgram();
 }
 
 void D3D::D3DEngine::InitWindow()

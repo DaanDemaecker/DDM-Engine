@@ -5,6 +5,8 @@
 
 namespace D3D
 {
+	class Model;
+
 	class Scene final
 	{
 	public:
@@ -16,6 +18,7 @@ namespace D3D
 		Scene& operator=(const Scene& other) = delete;
 		Scene& operator=(Scene&& other) = delete;
 
+		const std::string& GetName() const { return m_Name; }
 
 		void OnSceneLoad();
 
@@ -33,12 +36,12 @@ namespace D3D
 
 		void OngGUI() const;
 
-		void PostUpdate();
+		void Cleanup();
 
 	private:
-
-
 		std::string m_Name;
+
+		std::vector<std::unique_ptr<Model>> m_pModels{};
 
 		static unsigned int m_IdCounter;
 	};

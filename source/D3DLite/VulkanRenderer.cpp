@@ -4,6 +4,7 @@
 #include "Utils.h"
 #include <set>
 #include "Model.h"
+#include "SceneManager.h"
 
 #ifndef STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_IMPLEMENTATION
@@ -274,7 +275,7 @@ void D3D::VulkanRenderer::AddGraphicsPipeline(const std::string& pipelineName, c
 	vkDestroyShaderModule(m_Device, vertShaderModule, nullptr);
 }
 
-void D3D::VulkanRenderer::Render(std::vector<std::unique_ptr<Model>>& pModels)
+void D3D::VulkanRenderer::Render()
 {
 	vkWaitForFences(m_Device, 1, &m_InFlightFences[m_CurrentFrame], VK_TRUE, UINT64_MAX);
 
@@ -296,7 +297,7 @@ void D3D::VulkanRenderer::Render(std::vector<std::unique_ptr<Model>>& pModels)
 	vkResetFences(m_Device, 1, &m_InFlightFences[m_CurrentFrame]);
 
 	vkResetCommandBuffer(m_CommandBuffers[m_CurrentFrame], 0);
-	RecordCommandBuffer(m_CommandBuffers[m_CurrentFrame], imageIndex, pModels);
+	RecordCommandBuffer(m_CommandBuffers[m_CurrentFrame], imageIndex);
 
 
 	VkSubmitInfo submitInfo{};
@@ -348,7 +349,7 @@ void D3D::VulkanRenderer::Render(std::vector<std::unique_ptr<Model>>& pModels)
 	++m_CurrentFrame %= MAX_FRAMES_IN_FLIGHT;
 }
 
-void D3D::VulkanRenderer::RecordCommandBuffer(VkCommandBuffer& commandBuffer, uint32_t imageIndex, std::vector<std::unique_ptr<Model>>& pModels)
+void D3D::VulkanRenderer::RecordCommandBuffer(VkCommandBuffer& commandBuffer, uint32_t imageIndex)
 {
 	VkCommandBufferBeginInfo beginInfo{};
 	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -391,10 +392,7 @@ void D3D::VulkanRenderer::RecordCommandBuffer(VkCommandBuffer& commandBuffer, ui
 	scissor.extent = m_SwapChainExtent;
 	vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
-	for (size_t i = 0; i < pModels.size(); ++i)
-	{
-		pModels[i]->Render();
-	}
+	SceneManager::GetInstance().Render();
 
 	vkCmdEndRenderPass(commandBuffer);
 

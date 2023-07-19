@@ -19,7 +19,7 @@ namespace D3D
         VulkanRenderer& operator=(VulkanRenderer& other) = delete;
         VulkanRenderer& operator=(VulkanRenderer&& other) = delete;
 
-        void Render(std::vector<std::unique_ptr<Model>>& pModels);
+        void Render();
 
         void Render(Model* pModel, VkCommandBuffer& commandBuffer, const VkDescriptorSet* descriptorSet, const PipelinePair& pipeline);
 
@@ -249,7 +249,7 @@ namespace D3D
 
         //--CommandBuffers--
         void CreateCommandBuffers();
-        void RecordCommandBuffer(VkCommandBuffer& commandBuffer, uint32_t imageIndex, std::vector<std::unique_ptr<Model>>& pModels);
+        void RecordCommandBuffer(VkCommandBuffer& commandBuffer, uint32_t imageIndex);
 
         //--Sync Objects--
         void CreateSyncObjects();
