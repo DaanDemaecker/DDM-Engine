@@ -1,8 +1,11 @@
-#pragma once
-
+#ifndef GameObjectIncluded
+#define GameObjectIncluded
+#include <string>
 
 namespace D3D
 {
+	class Component;
+
 	class GameObject final
 	{
 	public:
@@ -18,6 +21,7 @@ namespace D3D
 
 		GameObject* CreateNewObject(const std::string& name = "UnNamed", const std::string& tag = "Default");
 		void RemoveAllChildren();
+		void SetParent(GameObject* pParent, bool worldPositionStays);
 
 		void Init();
 
@@ -43,6 +47,27 @@ namespace D3D
 
 		bool ShouldDestroy() const { return m_ShouldDestroy; }
 
+		template <class T>
+		std::shared_ptr<T> GetComponent() const;
+		
+		template <class T>
+		std::shared_ptr<T> AddComponent();
+
+		template <class T>
+		bool RemoveComponent();
+
+		template <class T>
+		bool HasComponent() const;
+		
+		GameObject* GetParent() const { return m_pParent; }
+
+		const std::vector<std::unique_ptr<GameObject>>& GetChildren() const { return m_pChildren; }
+
+
+		bool IsActive() const { return m_IsActive; }
+
+		void SetActive(bool isActive) { m_IsActive = isActive; }
+
 	private:
 		const std::string m_Name;
 		const std::string m_Tag;
@@ -54,5 +79,82 @@ namespace D3D
 		std::vector<std::unique_ptr<GameObject>> m_pChildren{};
 		std::vector<std::unique_ptr<GameObject>> m_pChildrenToAdd{};
 
+		std::vector<std::shared_ptr<Component>> m_pComponents{};
+
 	};
+
+	template<class T>
+	inline std::shared_ptr<T> GameObject::GetComponent() const
+	{
+		if (!std::is_base_of<Component, T>())
+		{
+			return nullptr;
+		}
+
+		for (const auto& pComponent : m_pComponents)
+		{
+			if (auto pCastedComponent{ std::dynamic_pointer_cast<T>(pComponent) })
+			{
+				return pCastedComponent;
+			}
+		}
+
+		return nullptr;
+	}
+
+	template<class T>
+	inline std::shared_ptr<T> GameObject::AddComponent()
+	{
+		if (!std::is_base_of<Component, T>())
+			return nullptr;
+	
+		if (HasComponent<T>())
+		{
+			return GetComponent<T>();
+		}
+
+		auto pComponent = std::make_shared<T>();
+
+		pComponent->SetOwner(this);
+
+		m_pComponents.push_back(pComponent);
+
+		return pComponent;
+	}
+
+	template <class T>
+	inline bool GameObject::RemoveComponent()
+	{
+		if (!std::is_base_of<Component, T>())
+			return false;
+
+		auto pComponent{ GetComponent<T>() };
+		if (pComponent)
+		{
+			pComponent->Destroy();
+			return true;
+		}
+
+		return false;
+	}
+
+
+	template<class T>
+	inline bool GameObject::HasComponent() const
+	{
+		if (!std::is_base_of<Component, T>())
+			return false;
+
+		for (const auto& pComponent : m_pComponents)
+		{
+			if (std::dynamic_pointer_cast<T>(pComponent))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
 }
+
+#endif // !GameObjectIncluded

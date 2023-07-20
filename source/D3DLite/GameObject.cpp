@@ -23,6 +23,50 @@ void D3D::GameObject::RemoveAllChildren()
 	m_pChildrenToAdd.clear();
 }
 
+void D3D::GameObject::SetParent(GameObject* pParent, bool /*worldPositionStays*/)
+{
+	/*if (pParent == nullptr || m_pParent == nullptr)
+	{
+		GetTransform()->SetLocalPosition(GetTransform()->GetWorldPosition());
+	}
+	else
+	{
+		if (worldPositionStays)
+		{
+			GetTransform()->SetLocalPosition(GetTransform()->GetWorldPosition() -
+				GetParent()->GetTransform()->GetWorldPosition());
+		}
+		GetTransform()->SetDirtyFlag();
+	}*/
+
+	std::unique_ptr<GameObject> child;
+
+	if (m_pParent != nullptr)
+	{
+		for (auto it = m_pParent->m_pChildren.begin(); it != m_pParent->m_pChildren.end(); it++)
+		{
+			if (it->get() == this)
+			{
+				child = std::move(*it);
+				m_pParent->m_pChildren.erase(it);
+				break;
+			}
+		}
+	}
+
+	m_pParent = pParent;
+
+	if (m_pParent != nullptr)
+	{
+		if (child == nullptr)
+		{
+			child = std::unique_ptr<GameObject>(this);
+		}
+
+		m_pParent->m_pChildren.emplace_back(std::move(child));
+	}
+}
+
 void D3D::GameObject::Init()
 {
 }
