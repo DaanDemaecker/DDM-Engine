@@ -5,6 +5,7 @@
 namespace D3D
 {
 	class Component;
+	class TransformComponent;
 
 	class GameObject final
 	{
@@ -63,10 +64,11 @@ namespace D3D
 
 		const std::vector<std::unique_ptr<GameObject>>& GetChildren() const { return m_pChildren; }
 
-
 		bool IsActive() const { return m_IsActive; }
 
 		void SetActive(bool isActive) { m_IsActive = isActive; }
+
+		std::shared_ptr<TransformComponent> GetTransform() { return m_pTransform; }
 
 	private:
 		const std::string m_Name;
@@ -79,8 +81,9 @@ namespace D3D
 		std::vector<std::unique_ptr<GameObject>> m_pChildren{};
 		std::vector<std::unique_ptr<GameObject>> m_pChildrenToAdd{};
 
-		std::vector<std::shared_ptr<Component>> m_pComponents{};
+		std::shared_ptr<TransformComponent> m_pTransform{};
 
+		std::vector<std::shared_ptr<Component>> m_pComponents{};
 	};
 
 	template<class T>

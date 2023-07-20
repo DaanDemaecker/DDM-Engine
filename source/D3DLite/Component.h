@@ -6,6 +6,8 @@
 
 namespace D3D
 {
+	class TransformComponent;
+
 	class Component
 	{
 	public:
@@ -45,8 +47,10 @@ namespace D3D
 
 		GameObject* GetOwner() const { return m_pOwner; }
 
+		std::shared_ptr<TransformComponent> GetTransform() { return m_pOwner->GetTransform(); }
+
 		bool IsActive() const { return m_IsActive; }
-		void SetActive(bool isActive) { m_IsActive = IsActive; }
+		void SetActive(bool isActive) { m_IsActive = isActive; }
 
 	private:
 		bool m_IsActive{ true };
@@ -64,7 +68,7 @@ namespace D3D
 		if (!std::is_base_of<Component, T>())
 			return false;
 
-		if (m_pOwner == nullpre)
+		if (m_pOwner == nullptr)
 			return false;
 
 		return m_pOwner->GetComponent<T>();
@@ -76,7 +80,7 @@ namespace D3D
 		if (!std::is_base_of<Component, T>())
 			return false;
 
-		if (m_pOwner == nullpre)
+		if (m_pOwner == nullptr)
 			return false;
 
 		return m_pOwner->HasComponent<T>();
