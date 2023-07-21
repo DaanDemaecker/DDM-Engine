@@ -5,7 +5,7 @@
 
 namespace D3D
 {
-    class Model;
+    class ModelComponent;
 
     class VulkanRenderer final : public Singleton<VulkanRenderer>
     {
@@ -21,7 +21,7 @@ namespace D3D
 
         void Render();
 
-        void Render(Model* pModel, VkCommandBuffer& commandBuffer, const VkDescriptorSet* descriptorSet, const PipelinePair& pipeline);
+        void Render(ModelComponent* pModel, VkCommandBuffer& commandBuffer, const VkDescriptorSet* descriptorSet, const PipelinePair& pipeline);
 
         void AddGraphicsPipeline(const std::string& pipelineName, const std::string& vertShaderName, const std::string& fragShaderName);
 

@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "GameObject.h"
-
+#include "TransformComponent.h"
 
 D3D::GameObject::~GameObject()
 {
@@ -23,9 +23,9 @@ void D3D::GameObject::RemoveAllChildren()
 	m_pChildrenToAdd.clear();
 }
 
-void D3D::GameObject::SetParent(GameObject* pParent, bool /*worldPositionStays*/)
+void D3D::GameObject::SetParent(GameObject* pParent, bool worldPositionStays)
 {
-	/*if (pParent == nullptr || m_pParent == nullptr)
+	if (pParent == nullptr || m_pParent == nullptr)
 	{
 		GetTransform()->SetLocalPosition(GetTransform()->GetWorldPosition());
 	}
@@ -36,8 +36,8 @@ void D3D::GameObject::SetParent(GameObject* pParent, bool /*worldPositionStays*/
 			GetTransform()->SetLocalPosition(GetTransform()->GetWorldPosition() -
 				GetParent()->GetTransform()->GetWorldPosition());
 		}
-		GetTransform()->SetDirtyFlag();
-	}*/
+		GetTransform()->SetPositionDirtyFlag();
+	}
 
 	std::unique_ptr<GameObject> child;
 
@@ -69,10 +69,16 @@ void D3D::GameObject::SetParent(GameObject* pParent, bool /*worldPositionStays*/
 
 void D3D::GameObject::Init()
 {
+	m_pTransform = AddComponent<TransformComponent>();
 }
 
 void D3D::GameObject::OnSceneLoad()
 {
+	for (auto& component : m_pComponents)
+	{
+		component->OnSceneLoad();
+	}
+
 	for (auto& child : m_pChildren)
 	{
 		child->OnSceneLoad();
@@ -82,6 +88,11 @@ void D3D::GameObject::OnSceneLoad()
 void D3D::GameObject::OnSceneUnload()
 {
 	m_ShouldDestroy = true;
+
+	for (auto& component : m_pComponents)
+	{
+		component->OnSceneUnload();
+	}
 
 	for (auto& child : m_pChildren)
 	{
@@ -105,11 +116,15 @@ void D3D::GameObject::StartFrame()
 			pChild->StartFrame();
 		}
 	}
-
 }
 
 void D3D::GameObject::Update()
 {
+	for (auto& component : m_pComponents)
+	{
+		component->Update();
+	}
+
 	for (auto& pChild : m_pChildren)
 	{
 		if (pChild->m_IsActive)
@@ -121,6 +136,11 @@ void D3D::GameObject::Update()
 
 void D3D::GameObject::FixedUpdate()
 {
+	for (auto& component : m_pComponents)
+	{
+		component->FixedUpdate();
+	}
+
 	for (auto& pChild : m_pChildren)
 	{
 		if (pChild->m_IsActive)
@@ -132,6 +152,11 @@ void D3D::GameObject::FixedUpdate()
 
 void D3D::GameObject::LateUpdate()
 {
+	for (auto& component : m_pComponents)
+	{
+		component->LateUpdate();
+	}
+
 	for (auto& pChild : m_pChildren)
 	{
 		if (pChild->m_IsActive)
@@ -143,6 +168,11 @@ void D3D::GameObject::LateUpdate()
 
 void D3D::GameObject::Render() const
 {
+	for (auto& component : m_pComponents)
+	{
+		component->Render();
+	}
+
 	for (auto& pChild : m_pChildren)
 	{
 		if (pChild->m_IsActive)
@@ -154,6 +184,11 @@ void D3D::GameObject::Render() const
 
 void D3D::GameObject::OnGUI()
 {
+	for (auto& component : m_pComponents)
+	{
+		component->OnGUI();
+	}
+
 	for (auto& pChild : m_pChildren)
 	{
 		if (pChild->m_IsActive)
@@ -177,9 +212,4 @@ void D3D::GameObject::Cleanup()
 void D3D::GameObject::Destroy()
 {
 	m_ShouldDestroy = true;
-
-	for (auto& child : m_pChildren)
-	{
-		child->Destroy();
-	}
 }

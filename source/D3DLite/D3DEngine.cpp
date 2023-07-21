@@ -3,7 +3,6 @@
 #include "VulkanRenderer.h"
 #include "TimeManager.h"
 #include "SceneManager.h"
-#include "Model.h"
 #include "Material.h"
 #include <chrono>
 

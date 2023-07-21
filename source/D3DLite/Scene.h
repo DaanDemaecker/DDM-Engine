@@ -5,7 +5,6 @@
 
 namespace D3D
 {
-	class Model;
 	class GameObject;
 
 	class Scene final
@@ -45,8 +44,6 @@ namespace D3D
 		explicit Scene(const std::string& name);
 
 		std::string m_Name;
-
-		std::vector<std::unique_ptr<Model>> m_pModels{};
 
 		static unsigned int m_IdCounter;
 

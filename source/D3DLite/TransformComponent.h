@@ -55,7 +55,7 @@ namespace D3D
 		glm::vec3 m_ParentWorldRotation{};
 		bool m_RotationDF{ true };
 
-		glm::vec3 m_LocalScale{};
+		glm::vec3 m_LocalScale{1, 1, 1};
 		glm::vec3 m_ParentWorldScale{};
 		bool m_ScaleDF{ true };
 

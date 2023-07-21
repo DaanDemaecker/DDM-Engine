@@ -3,8 +3,6 @@
 #include "Scene.h"
 #include "GameObject.h"
 
-#include "Model.h"
-
 void D3D::SceneManager::EndProgram()
 {
     m_pScenes.clear();

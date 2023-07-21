@@ -29,7 +29,7 @@ namespace D3D
 
 		virtual void LateUpdate() {}
 
-		virtual void Render() const {}
+		virtual void Render() {}
 
 		virtual void OnGUI() {}
 

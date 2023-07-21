@@ -3,7 +3,7 @@
 #include "D3DEngine.h"
 #include "Utils.h"
 #include <set>
-#include "Model.h"
+#include "ModelComponent.h"
 #include "SceneManager.h"
 
 #ifndef STB_IMAGE_IMPLEMENTATION
@@ -402,7 +402,7 @@ void D3D::VulkanRenderer::RecordCommandBuffer(VkCommandBuffer& commandBuffer, ui
 	}
 }
 
-void D3D::VulkanRenderer::Render(Model* pModel, VkCommandBuffer& commandBuffer, const VkDescriptorSet* descriptorSet, const PipelinePair& pipeline)
+void D3D::VulkanRenderer::Render(D3D::ModelComponent* pModel, VkCommandBuffer& commandBuffer, const VkDescriptorSet* descriptorSet, const PipelinePair& pipeline)
 {
 	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.pipeline);
 

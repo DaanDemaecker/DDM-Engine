@@ -137,7 +137,7 @@ glm::vec3 D3D::TransformComponent::GetWorldScale()
 {
 	if (GetOwner() == nullptr || GetOwner()->GetParent() == nullptr)
 	{
-		m_ParentWorldScale = glm::vec3{};
+		m_ParentWorldScale = glm::vec3{1, 1, 1};
 		m_ScaleDF = false;
 	}
 	else if (m_ScaleDF)

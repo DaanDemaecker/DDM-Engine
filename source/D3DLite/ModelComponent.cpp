@@ -1,17 +1,15 @@
 #include "stdafx.h"
-#include "Model.h"
+#include "ModelComponent.h"
 #include "VulkanRenderer.h"
-#include "Utils.h"
 #include "Material.h"
-#include "TimeManager.h"
+#include "TransformComponent.h"
+#include "Utils.h"
 
-#include <memory>
-
-D3D::Model::Model()
+D3D::ModelComponent::ModelComponent()
 {
 }
 
-D3D::Model::~Model()
+D3D::ModelComponent::~ModelComponent()
 {
 	if (m_Initialized)
 	{
@@ -19,7 +17,7 @@ D3D::Model::~Model()
 	}
 }
 
-void D3D::Model::LoadModel(const std::string& textPath)
+void D3D::ModelComponent::LoadModel(const std::string& textPath)
 {
 	if (m_Initialized)
 	{
@@ -36,7 +34,7 @@ void D3D::Model::LoadModel(const std::string& textPath)
 	m_Initialized = true;
 }
 
-void D3D::Model::SetMaterial(std::shared_ptr<Material> pMaterial)
+void D3D::ModelComponent::SetMaterial(std::shared_ptr<Material> pMaterial)
 {
 	m_pMaterial = pMaterial;
 	if (m_Initialized)
@@ -45,16 +43,7 @@ void D3D::Model::SetMaterial(std::shared_ptr<Material> pMaterial)
 	}
 }
 
-void D3D::Model::Update()
-{
-	constexpr float rotSpeed{ glm::radians(90.f) };
-
-	float rotAmount{ rotSpeed * TimeManager::GetInstance().GetDeltaTime() };
-
-	SetRotation(m_Rotation.x, m_Rotation.y + rotAmount, m_Rotation.z);
-}
-
-void D3D::Model::Render()
+void D3D::ModelComponent::Render()
 {
 	if (!m_Initialized)
 		return;
@@ -63,33 +52,12 @@ void D3D::Model::Render()
 
 	auto frame{ renderer.GetCurrentFrame() };
 
-	if (m_UboChanged[frame])
-	{
-		UpdateUniformBuffer(frame);
-	}
+	UpdateUniformBuffer(frame);
 
 	renderer.Render(this, renderer.GetCurrentCommandBuffer(), &m_DescriptorSets[frame], GetPipeline());
 }
 
-void D3D::Model::SetPosition(float x, float y, float z)
-{
-	m_Position = { x, y, z };
-	SetDirtyFlags();
-}
-
-void D3D::Model::SetRotation(float x, float y, float z)
-{
-	m_Rotation = { x, y, z };
-	SetDirtyFlags();
-}
-
-void D3D::Model::SetScale(float x, float y, float z)
-{
-	m_Scale = { x, y, z };
-	SetDirtyFlags();
-}
-
-void D3D::Model::CreateVertexBuffer()
+void D3D::ModelComponent::CreateVertexBuffer()
 {
 	auto& renderer{ VulkanRenderer::GetInstance() };
 	auto device = renderer.GetDevice();
@@ -115,7 +83,7 @@ void D3D::Model::CreateVertexBuffer()
 	vkFreeMemory(device, stagingBufferMemory, nullptr);
 }
 
-void D3D::Model::CreateIndexBuffer()
+void D3D::ModelComponent::CreateIndexBuffer()
 {
 	auto& renderer{ VulkanRenderer::GetInstance() };
 	auto device = renderer.GetDevice();
@@ -138,7 +106,7 @@ void D3D::Model::CreateIndexBuffer()
 	vkFreeMemory(device, stagingBufferMemory, nullptr);
 }
 
-void D3D::Model::CreateUniformBuffers()
+void D3D::ModelComponent::CreateUniformBuffers()
 {
 	auto& renderer = VulkanRenderer::GetInstance();
 
@@ -149,9 +117,6 @@ void D3D::Model::CreateUniformBuffers()
 	m_UbosMapped.resize(MAX_FRAMES_IN_FLIGHT);
 
 	m_Ubos.resize(MAX_FRAMES_IN_FLIGHT);
-	m_UboChanged.resize(MAX_FRAMES_IN_FLIGHT);
-
-	SetDirtyFlags();
 
 
 	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; ++i)
@@ -163,7 +128,7 @@ void D3D::Model::CreateUniformBuffers()
 	}
 }
 
-void D3D::Model::CreateDescriptorSets()
+void D3D::ModelComponent::CreateDescriptorSets()
 {
 	auto& renderer{ VulkanRenderer::GetInstance() };
 
@@ -183,7 +148,7 @@ void D3D::Model::CreateDescriptorSets()
 	UpdateDescriptorSets();
 }
 
-void D3D::Model::UpdateDescriptorSets()
+void D3D::ModelComponent::UpdateDescriptorSets()
 {
 	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
 		VkDescriptorBufferInfo bufferInfo{};
@@ -218,26 +183,25 @@ void D3D::Model::UpdateDescriptorSets()
 	}
 }
 
-void D3D::Model::UpdateUniformBuffer(uint32_t frame)
+void D3D::ModelComponent::UpdateUniformBuffer(uint32_t frame)
 {
-	glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), m_Position);
-	glm::vec3 rotationAngles(m_Rotation.x, m_Rotation.y, m_Rotation.z);
+	auto transform{ GetTransform() };
 
-	glm::quat quaternion = glm::quat(m_Rotation);
+	glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), transform->GetWorldPosition());
+
+	glm::quat quaternion = glm::quat(transform->GetWorldRotation());
 	glm::mat4 rotationMatrix = glm::mat4_cast(quaternion);
 
-	glm::mat4 scalingMatrix = glm::scale(glm::mat4(1.0f), m_Scale);
+	glm::mat4 scalingMatrix = glm::scale(glm::mat4(1.0f), transform->GetWorldScale());
 
 	m_Ubos[frame].model = translationMatrix * rotationMatrix * scalingMatrix;
 
 	VulkanRenderer::GetInstance().UpdateUniformBuffer(m_Ubos[frame]);
 
-	m_UboChanged[frame] = false;
-
 	memcpy(m_UbosMapped[frame], &m_Ubos[frame], sizeof(m_Ubos[frame]));
 }
 
-VkImageView& D3D::Model::GetImageView()
+VkImageView& D3D::ModelComponent::GetImageView()
 {
 	if (m_pMaterial != nullptr)
 	{
@@ -247,12 +211,12 @@ VkImageView& D3D::Model::GetImageView()
 	return VulkanRenderer::GetInstance().GetDefaultImageView();
 }
 
-VkSampler& D3D::Model::GetSampler()
+VkSampler& D3D::ModelComponent::GetSampler()
 {
 	return VulkanRenderer::GetInstance().GetSampler();
 }
 
-PipelinePair& D3D::Model::GetPipeline()
+PipelinePair& D3D::ModelComponent::GetPipeline()
 {
 	if (m_pMaterial != nullptr)
 	{
@@ -262,7 +226,7 @@ PipelinePair& D3D::Model::GetPipeline()
 	return VulkanRenderer::GetInstance().GetPipeline();
 }
 
-void D3D::Model::Cleanup()
+void D3D::ModelComponent::Cleanup()
 {
 	auto device = D3D::VulkanRenderer::GetInstance().GetDevice();
 
@@ -279,9 +243,4 @@ void D3D::Model::Cleanup()
 		vkDestroyBuffer(device, m_UboBuffers[i], nullptr);
 		vkFreeMemory(device, m_UbosMemory[i], nullptr);
 	}
-}
-
-void D3D::Model::SetDirtyFlags()
-{
-	std::fill(m_UboChanged.begin(), m_UboChanged.end(), true);
 }
