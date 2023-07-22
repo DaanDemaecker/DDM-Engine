@@ -7,6 +7,9 @@ namespace D3D
 	class TransformComponent final : public Component
 	{
 	public:
+		TransformComponent() = default;
+		~TransformComponent() = default;
+
 		//Location
 		const glm::vec3& GetLocalPosition() const { return m_LocalPosition; }
 		void SetLocalPosition(float x, float y, float z);
@@ -60,6 +63,10 @@ namespace D3D
 		bool m_ScaleDF{ true };
 
 		void NormalizeRotation();
+
+		glm::vec3& GetParentPosition();
+		glm::vec3& GetParentRotation();
+		glm::vec3& GetParentScale();
 	};
 }
 #endif // !TransformComponenetIncluded

@@ -27,18 +27,27 @@ void D3D::TransformComponent::Translate(const glm::vec3& dir)
 
 glm::vec3 D3D::TransformComponent::GetWorldPosition()
 {
-	if (GetOwner() == nullptr || GetOwner()->GetParent() == nullptr)
-	{
-		m_ParentWorldPosition = glm::vec3{};
-		m_PositionDF = false;
-	}
-	else if (m_PositionDF)
-	{
-		m_ParentWorldPosition = GetOwner()->GetParent()->GetTransform()->GetWorldPosition();
-		m_PositionDF = false;
-	}
+	glm::vec3 parentRotationRadians = GetParentRotation();
 
-	return m_ParentWorldPosition + m_LocalPosition;
+	// Create the quaternion from the Euler angles in radians
+	glm::quat quaternion = glm::quat(parentRotationRadians);
+
+	// Create the rotation matrix from the quaternion
+	glm::mat4 rotationMatrix = glm::mat4_cast(quaternion);
+
+	// Apply the rotation to the vector using the rotation matrix
+	glm::vec4 rotatedVector = rotationMatrix * glm::vec4(m_LocalPosition, 1.0f);
+
+	// Extract the rotated glm::vec3 from the glm::vec4
+	glm::vec3 finalRotatedVector = glm::vec3(rotatedVector);
+
+	// Get the parent's position
+	glm::vec3 parentPosition = GetParentPosition();
+
+	// Calculate the final position after rotation
+	glm::vec3 finalPosition = parentPosition + finalRotatedVector;
+
+	return finalPosition;
 }
 
 void D3D::TransformComponent::SetWorldPosition(float x, float y, float z)
@@ -87,18 +96,7 @@ void D3D::TransformComponent::Rotate(const glm::vec3& dir)
 
 glm::vec3 D3D::TransformComponent::GetWorldRotation()
 {
-	if (GetOwner() == nullptr || GetOwner()->GetParent() == nullptr)
-	{
-		m_ParentWorldRotation = glm::vec3{};
-		m_RotationDF = false;
-	}
-	else if (m_RotationDF)
-	{
-		m_ParentWorldRotation = GetOwner()->GetParent()->GetTransform()->GetWorldRotation();
-		m_RotationDF = false;
-	}
-
-	return m_ParentWorldRotation + m_LocalRotation;
+	return GetParentRotation() + m_LocalRotation;
 }
 
 void D3D::TransformComponent::SetWorldRotation(float x, float y, float z)
@@ -135,18 +133,7 @@ void D3D::TransformComponent::SetLocalScale(const glm::vec3& scale)
 
 glm::vec3 D3D::TransformComponent::GetWorldScale()
 {
-	if (GetOwner() == nullptr || GetOwner()->GetParent() == nullptr)
-	{
-		m_ParentWorldScale = glm::vec3{1, 1, 1};
-		m_ScaleDF = false;
-	}
-	else if (m_ScaleDF)
-	{
-		m_ParentWorldScale = GetOwner()->GetParent()->GetTransform()->GetWorldScale();
-		m_ScaleDF = false;
-	}
-
-	return m_ParentWorldScale * m_LocalScale;
+	return GetParentScale() * m_LocalScale;
 }
 
 void D3D::TransformComponent::SetWorldScale(float x, float y, float z)
@@ -200,4 +187,52 @@ void D3D::TransformComponent::NormalizeRotation()
 	{
 		m_LocalRotation.z -= 2 * glm::pi<float>();
 	}
+}
+
+glm::vec3& D3D::TransformComponent::GetParentPosition()
+{
+	if (GetOwner() == nullptr || GetOwner()->GetParent() == nullptr)
+	{
+		m_ParentWorldPosition = glm::vec3{};
+		m_PositionDF = false;
+	}
+	else if (m_PositionDF)
+	{
+		m_ParentWorldPosition = GetOwner()->GetParent()->GetTransform()->GetWorldPosition();
+		m_PositionDF = false;
+	}
+
+	return m_ParentWorldPosition;
+}
+
+glm::vec3& D3D::TransformComponent::GetParentRotation()
+{
+	if (GetOwner() == nullptr || GetOwner()->GetParent() == nullptr)
+	{
+		m_ParentWorldRotation = glm::vec3{};
+		m_RotationDF = false;
+	}
+	else if (m_RotationDF)
+	{
+		m_ParentWorldRotation = GetOwner()->GetParent()->GetTransform()->GetWorldRotation();
+		m_RotationDF = false;
+	}
+
+	return m_ParentWorldRotation;
+}
+
+glm::vec3& D3D::TransformComponent::GetParentScale()
+{
+	if (GetOwner() == nullptr || GetOwner()->GetParent() == nullptr)
+	{
+		m_ParentWorldScale = glm::vec3{ 1, 1, 1 };
+		m_ScaleDF = false;
+	}
+	else if (m_ScaleDF)
+	{
+		m_ParentWorldScale = GetOwner()->GetParent()->GetTransform()->GetWorldScale();
+		m_ScaleDF = false;
+	}
+
+	return m_ParentWorldScale;
 }
