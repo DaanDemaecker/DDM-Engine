@@ -70,6 +70,9 @@ namespace D3D
 
 		std::shared_ptr<TransformComponent> GetTransform() { return m_pTransform; }
 
+		const std::string& GetName() const { return m_Name; }
+		const std::string& GetTag() const { return m_Tag; }
+
 	private:
 		const std::string m_Name;
 		const std::string m_Tag;

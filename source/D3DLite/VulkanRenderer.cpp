@@ -1656,10 +1656,12 @@ void D3D::VulkanRenderer::RenderImGui(VkCommandBuffer commandBuffer)
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
 
-	ImGui::ShowDemoWindow();
+	//ImGui::ShowDemoWindow();
+	SceneManager::GetInstance().OnGui();
 
 	// End ImGui frame
 	ImGui::Render();
+
 
 	// Record ImGui draw data
 	ImDrawData* draw_data = ImGui::GetDrawData();
