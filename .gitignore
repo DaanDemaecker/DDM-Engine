@@ -269,6 +269,8 @@ data/models/cerberus/*.*
 
 # Ignore macOS .DS_Store
 .DS_Store
+*.ini
+
 
 # Assets that are part of the asset pack and should not be stored in the repo
 data/models/**
