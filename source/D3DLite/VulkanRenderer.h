@@ -79,11 +79,17 @@ namespace D3D
         //-Graphics queue-
         VkQueue m_GraphicsQueue{};
 
+        //-Graphics queue index-
+        uint32_t m_GraphicsQueueIndex{};
+
         //-Present queue-
         VkQueue m_PresentQueue{};
 
         //--Swapchain--
         VkSwapchainKHR m_SwapChain = VK_NULL_HANDLE;
+
+        //-Swapchain MinImageCount-
+        uint32_t m_MinImageCount{};
 
         //-Swapchain Images-
         std::vector<VkImage> m_SwapChainImages{};
@@ -163,11 +169,12 @@ namespace D3D
 
         //----Member Functions----
         //--- Cleanup ---
-        void Cleanup();
+        void CleanupVulkan();
+        void CleanupImGui();
 
-
-        //---Vulkan Initialization---
+        //---Initialization---
         void InitVulkan();
+        void InitImGui();
 
         //--Vulkan instance--
         void CreateInstance();
@@ -257,7 +264,9 @@ namespace D3D
 
         //--General helpers--
         VkFormat FindSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
-
+        uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
+        VkCommandBuffer BeginSingleTimeCommands();
+        void EndSingleTimeCommands(VkCommandBuffer comandBuffer);
         bool HasStencilComponent(VkFormat format);
 
 
@@ -267,9 +276,8 @@ namespace D3D
         void CreateTextureSampler();
 
 
-        uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
-        VkCommandBuffer BeginSingleTimeCommands();
-        void EndSingleTimeCommands(VkCommandBuffer comandBuffer);
+        //ImGUI Render
+        void RenderImGui(VkCommandBuffer commandBuffer);
 
     };
 }
