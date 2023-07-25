@@ -3,8 +3,12 @@
 #include "D3DEngine.h"
 #include "Utils.h"
 #include <set>
-#include "ModelComponent.h"
+
 #include "SceneManager.h"
+
+#include "ModelComponent.h"
+#include "CameraComponent.h"
+#include "TransformComponent.h"
 
 #ifndef STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_IMPLEMENTATION
@@ -1541,23 +1545,23 @@ void D3D::VulkanRenderer::CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkD
 
 void D3D::VulkanRenderer::UpdateUniformBuffer(UniformBufferObject& buffer)
 {
-	glm::vec3 cameraPosition(0.0f, 0.0f, 0.0f);
-	glm::vec3 cameraScale(1.0f, 1.0f, 1.0f);
-	glm::vec3 cameraRotation(0.0f, 0.0f, 0.0f);
+	auto pCamera{SceneManager::GetInstance().GetCamera()};
 
-	buffer.view = glm::mat4{ 1.0f }; // Identity matrix
+	if (pCamera == nullptr)
+		return;
+	
+	auto pCameraTransform{ pCamera->GetTransform()};
 
-	// Apply translation
-	buffer.view = glm::translate(buffer.view, cameraPosition);
+	glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), pCameraTransform->GetWorldPosition());
 
-	// Apply scaling
-	buffer.view = glm::scale(buffer.view, cameraScale);
+	glm::quat quaternion = glm::quat(pCameraTransform->GetWorldRotation());
+	glm::mat4 rotationMatrix = glm::mat4_cast(quaternion);
 
-	// Apply rotation
-	buffer.view = glm::rotate(buffer.view, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::mat4 scalingMatrix = glm::scale(glm::mat4(1.0f), pCameraTransform->GetWorldScale());
 
+	buffer.view = translationMatrix * rotationMatrix * scalingMatrix;
 
-	buffer.proj = glm::perspective(glm::radians(45.0f), m_SwapChainExtent.width / static_cast<float>(m_SwapChainExtent.height), 0.1f, 10.0f);
+	buffer.proj = glm::perspective(pCamera->GetFovAngle(), m_SwapChainExtent.width / static_cast<float>(m_SwapChainExtent.height), 0.1f, 10.0f);
 	buffer.proj[1][1] *= -1;
 }
 

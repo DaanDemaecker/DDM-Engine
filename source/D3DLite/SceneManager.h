@@ -5,6 +5,7 @@
 namespace D3D
 {
 	class Scene;
+	class CameraComponent;
 
 	class SceneManager : public Singleton<SceneManager>
 	{
@@ -36,6 +37,8 @@ namespace D3D
 		void Render() const;
 
 		void Cleanup();
+
+		const std::shared_ptr<CameraComponent> GetCamera() const;
 
 	private:
 		friend class Singleton<SceneManager>;

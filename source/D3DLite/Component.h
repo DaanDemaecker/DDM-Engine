@@ -55,7 +55,7 @@ namespace D3D
 	private:
 		bool m_IsActive{ true };
 
-		GameObject* m_pOwner{};
+		GameObject* m_pOwner{nullptr};
 
 		void SetOwner(GameObject* pOwner) { m_pOwner = pOwner; }
 

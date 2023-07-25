@@ -3,6 +3,8 @@
 #include "Scene.h"
 #include "GameObject.h"
 
+#include "CameraComponent.h"
+
 void D3D::SceneManager::EndProgram()
 {
     m_pScenes.clear();
@@ -164,4 +166,14 @@ void D3D::SceneManager::Cleanup()
     {
         m_ActiveScene->Cleanup();
     }
+}
+
+const std::shared_ptr<D3D::CameraComponent> D3D::SceneManager::GetCamera() const
+{
+    if (m_ActiveScene != nullptr)
+    {
+        return m_ActiveScene->GetCamera();
+    }
+
+    return std::shared_ptr<CameraComponent>();
 }

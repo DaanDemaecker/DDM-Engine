@@ -9,6 +9,8 @@
 #include "TransformComponent.h"
 #include "Scene.h"
 
+#include "CameraComponent.h"
+
 void load()
 {
 	auto scene = D3D::SceneManager::GetInstance().CreateScene("Test");
@@ -42,6 +44,16 @@ void load()
 	pVehicleTransform->SetLocalPosition(-1.f, 0, 5.f);
 	pVehicleTransform->SetLocalRotation(0.f, glm::radians(75.0f), 0.f);
 	pVehicleTransform->SetLocalScale(0.05f, 0.05f, 0.05f);
+
+
+	auto pCamera{ scene->CreateGameObject("Camera") };
+
+	auto pCameraComponent{ pCamera->AddComponent<D3D::CameraComponent>() };
+
+	auto pCameraTransform{ pCamera->GetTransform() };
+	pCameraTransform->SetLocalRotation(glm::vec3(0.0f, glm::radians(180.f), 0.0f));
+
+	scene->SetCamera(pCameraComponent);
 }
 
 int main()

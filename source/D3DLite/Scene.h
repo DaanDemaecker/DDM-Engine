@@ -6,6 +6,7 @@
 namespace D3D
 {
 	class GameObject;
+	class CameraComponent;
 
 	class Scene final
 	{
@@ -39,6 +40,10 @@ namespace D3D
 
 		void Cleanup();
 
+		void SetCamera(std::shared_ptr<CameraComponent> pCamera);
+
+		const std::shared_ptr<CameraComponent> GetCamera() const;
+
 	private:
 
 		explicit Scene(const std::string& name);
@@ -48,6 +53,11 @@ namespace D3D
 		static unsigned int m_IdCounter;
 
 		std::unique_ptr<GameObject> m_pSceneRoot{};
+
+		std::shared_ptr<CameraComponent> m_pActiveCamera{};
+
+		std::unique_ptr<GameObject> m_pDefaultCamera{};
+		std::shared_ptr<CameraComponent> m_pDefaultCameraComponent{};
 	};
 }
 
