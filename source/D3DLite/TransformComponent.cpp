@@ -27,13 +27,8 @@ void D3D::TransformComponent::Translate(const glm::vec3& dir)
 
 glm::vec3 D3D::TransformComponent::GetWorldPosition()
 {
-	glm::vec3 parentRotationRadians = GetParentRotation();
-
-	// Create the quaternion from the Euler angles in radians
-	glm::quat quaternion = glm::quat(parentRotationRadians);
-
 	// Create the rotation matrix from the quaternion
-	glm::mat4 rotationMatrix = glm::mat4_cast(quaternion);
+	glm::mat4 rotationMatrix = glm::mat4_cast(GetParentRotation());
 
 	// Apply the rotation to the vector using the rotation matrix
 	glm::vec4 rotatedVector = rotationMatrix * glm::vec4(m_LocalPosition, 1.0f);
@@ -77,26 +72,21 @@ void D3D::TransformComponent::SetLocalRotation(float x, float y, float z)
 
 void D3D::TransformComponent::SetLocalRotation(const glm::vec3& rot)
 {
-	m_LocalRotation = rot;
-
-	NormalizeRotation();
+	m_LocalRotation = glm::quat(rot);
 
 	SetRotationDirtyFlag();
 }
 
-void D3D::TransformComponent::Rotate(float x, float y, float z)
+void D3D::TransformComponent::Rotate(glm::vec3& axis, float angle)
 {
-	Rotate(glm::vec3{ x, y, z });
+	m_LocalRotation = glm::rotate(m_LocalRotation, angle, axis);
+
+	SetRotationDirtyFlag();
 }
 
-void D3D::TransformComponent::Rotate(const glm::vec3& dir)
+glm::quat D3D::TransformComponent::GetWorldRotation()
 {
-	SetLocalRotation(m_LocalRotation + dir);
-}
-
-glm::vec3 D3D::TransformComponent::GetWorldRotation()
-{
-	return GetParentRotation() + m_LocalRotation;
+	return m_LocalRotation * GetParentRotation();
 }
 
 void D3D::TransformComponent::SetWorldRotation(float x, float y, float z)
@@ -106,7 +96,7 @@ void D3D::TransformComponent::SetWorldRotation(float x, float y, float z)
 
 void D3D::TransformComponent::SetWorldRotation(const glm::vec3& rot)
 {
-	SetLocalRotation(rot - (GetWorldRotation() - m_LocalRotation));
+	SetLocalRotation(rot - (glm::eulerAngles(GetWorldRotation()) - glm::eulerAngles(m_LocalRotation)));
 }
 
 void D3D::TransformComponent::SetRotationDirtyFlag()
@@ -156,39 +146,6 @@ void D3D::TransformComponent::SetScaleDirtyFlag()
 	}
 }
 
-void D3D::TransformComponent::NormalizeRotation()
-{
-	while (m_LocalRotation.x < -glm::pi<float>())
-	{
-		m_LocalRotation.x += 2 * glm::pi<float>();
-	}
-
-	while (m_LocalRotation.x > glm::pi<float>())
-	{
-		m_LocalRotation.x -= 2 * glm::pi<float>();
-	}
-
-	while (m_LocalRotation.y < -glm::pi<float>())
-	{
-		m_LocalRotation.y += 2 * glm::pi<float>();
-	}
-
-	while (m_LocalRotation.y > glm::pi<float>())
-	{
-		m_LocalRotation.y -= 2 * glm::pi<float>();
-	}
-
-	while (m_LocalRotation.z < -glm::pi<float>())
-	{
-		m_LocalRotation.z += 2 * glm::pi<float>();
-	}
-
-	while (m_LocalRotation.z > glm::pi<float>())
-	{
-		m_LocalRotation.z -= 2 * glm::pi<float>();
-	}
-}
-
 glm::vec3& D3D::TransformComponent::GetParentPosition()
 {
 	if (GetOwner() == nullptr || GetOwner()->GetParent() == nullptr)
@@ -205,11 +162,11 @@ glm::vec3& D3D::TransformComponent::GetParentPosition()
 	return m_ParentWorldPosition;
 }
 
-glm::vec3& D3D::TransformComponent::GetParentRotation()
+glm::quat& D3D::TransformComponent::GetParentRotation()
 {
 	if (GetOwner() == nullptr || GetOwner()->GetParent() == nullptr)
 	{
-		m_ParentWorldRotation = glm::vec3{};
+		m_ParentWorldRotation = glm::identity<glm::quat>();;
 		m_RotationDF = false;
 	}
 	else if (m_RotationDF)

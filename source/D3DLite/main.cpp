@@ -11,6 +11,8 @@
 
 #include "CameraComponent.h"
 
+#include "RotatorComponent.h"
+
 void load()
 {
 	auto scene = D3D::SceneManager::GetInstance().CreateScene("Test");
@@ -31,7 +33,6 @@ void load()
 	pVikingTransform->SetLocalPosition(1.f, -0.2f, 5.f);
 	pVikingTransform->SetLocalRotation(glm::radians(-90.0f), glm::radians(45.0f), 0.f);
 	pVikingTransform->SetLocalScale(0.75f, 0.75f, 0.75f);
-
 
 	auto pVehicle{ scene->CreateGameObject("Vehicle") };
 

@@ -11,5 +11,7 @@ void D3D::RotatorComponent::Update()
 
 	float rotAmount{ rotSpeed * TimeManager::GetInstance().GetDeltaTime() };
 
-	GetTransform()->Rotate(0, rotAmount, 0);
+	glm::vec3 up{ glm::vec3( 0, 1, 0 ) };
+
+	GetTransform()->Rotate(up, rotAmount);
 }
