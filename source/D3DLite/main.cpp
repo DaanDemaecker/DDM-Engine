@@ -5,6 +5,8 @@
 #include "SceneManager.h"
 
 #include "Material.h"
+#include "DiffuseMaterial.h"
+
 #include "ModelComponent.h"
 #include "TransformComponent.h"
 #include "Scene.h"
@@ -13,13 +15,19 @@
 
 #include "RotatorComponent.h"
 
+#include "VulkanRenderer.h"
+
 void load()
 {
 	auto scene = D3D::SceneManager::GetInstance().CreateScene("Test");
 	D3D::SceneManager::GetInstance().SetActiveScene(scene);
 
-	std::shared_ptr<D3D::Material> pVikingMaterial{ std::make_shared<D3D::Material>("../resources/images/viking_room.png") };
-	std::shared_ptr<D3D::Material> pVehicleMaterial{ std::make_shared<D3D::Material>("../resources/images/vehicle_diffuse.png") };
+	auto& renderer{ D3D::VulkanRenderer::GetInstance() };
+
+	renderer.AddGraphicsPipeline("Diffuse", "../Resources/Shaders/Diffuse.Vert.spv", "../Resources/Shaders/Diffuse.Frag.spv");
+
+	std::shared_ptr<D3D::DiffuseMaterial> pVikingMaterial{ std::make_shared<D3D::DiffuseMaterial>("../resources/images/viking_room.png", "Diffuse") };
+	std::shared_ptr<D3D::DiffuseMaterial> pVehicleMaterial{ std::make_shared<D3D::DiffuseMaterial>("../resources/images/vehicle_diffuse.png", "Diffuse")};
 
 	auto pvikingRoom{ scene->CreateGameObject("Viking Room") };
 
