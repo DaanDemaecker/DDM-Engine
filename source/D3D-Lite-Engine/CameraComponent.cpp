@@ -1,5 +1,5 @@
-#include "stdafx.h"
 #include "CameraComponent.h"
+#include "GLMIncludes.h"
 
 D3D::CameraComponent::CameraComponent()
 {

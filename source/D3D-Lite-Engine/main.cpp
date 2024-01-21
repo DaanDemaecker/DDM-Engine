@@ -1,11 +1,9 @@
-#include "stdafx.h"
-
 #include "D3DEngine.h"
 #include "VulkanRenderer.h"
 #include "SceneManager.h"
 
 #include "Material.h"
-#include "DiffuseMaterial.h"
+#include "TexturedMaterial.h"
 
 #include "ModelComponent.h"
 #include "TransformComponent.h"
@@ -24,10 +22,10 @@ void load()
 
 	auto& renderer{ D3D::VulkanRenderer::GetInstance() };
 
-	renderer.AddGraphicsPipeline("Diffuse", "../Resources/Shaders/Diffuse.Vert.spv", "../Resources/Shaders/Diffuse.Frag.spv");
+	renderer.AddGraphicsPipeline("Diffuse", "../Resources/Shaders/Diffuse.Vert.spv", "../Resources/Shaders/Diffuse.Frag.spv", 1, 1, 1);
 
-	std::shared_ptr<D3D::DiffuseMaterial> pVikingMaterial{ std::make_shared<D3D::DiffuseMaterial>("../resources/images/viking_room.png", "Diffuse") };
-	std::shared_ptr<D3D::DiffuseMaterial> pVehicleMaterial{ std::make_shared<D3D::DiffuseMaterial>("../resources/images/vehicle_diffuse.png", "Diffuse")};
+	std::shared_ptr<D3D::TexturedMaterial> pVikingMaterial{ std::make_shared<D3D::TexturedMaterial>(std::initializer_list<const std::string>{"../resources/images/viking_room.png"}, "Diffuse") };
+	std::shared_ptr<D3D::TexturedMaterial> pVehicleMaterial{ std::make_shared<D3D::TexturedMaterial>(std::initializer_list<const std::string>{"../resources/images/vehicle_diffuse.png"}, "Diffuse") };
 
 	auto pvikingRoom{ scene->CreateGameObject("Viking Room") };
 

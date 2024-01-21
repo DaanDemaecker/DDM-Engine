@@ -1,9 +1,14 @@
 #ifndef MaterialIncluded
 #define MaterialIncluded
 
+#include "Structs.h"
+#include <iostream>
 
 namespace D3D
 {
+	class DescriptorPoolWrapper;
+	class ModelComponent;
+
 	class Material
 	{
 	public:
@@ -18,7 +23,13 @@ namespace D3D
 
 		PipelinePair& GetPipeline() { return m_PipelinePair; }
 
+		virtual void CreateDescriptorSets(ModelComponent* pModel, std::vector<VkDescriptorSet>& descriptorSets);
+
 		virtual void UpdateDescriptorSets(std::vector<VkBuffer>& uboBuffers, std::vector<VkDescriptorSet>& descriptorSets);
+
+		virtual VkDescriptorSetLayout* GetDescriptorLayout();
+
+		virtual DescriptorPoolWrapper* GetDescriptorPool();
 
 	protected:
 		PipelinePair m_PipelinePair{};

@@ -1,6 +1,7 @@
 #ifndef TransformComponenetIncluded
 #define TransformComponenetIncluded
 #include "Component.h"
+#include "GLMIncludes.h"
 
 namespace D3D
 {

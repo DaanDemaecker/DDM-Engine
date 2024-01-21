@@ -1,6 +1,8 @@
 #ifndef GameObjectIncluded
 #define GameObjectIncluded
 #include <string>
+#include <memory>
+#include <vector>
 
 namespace D3D
 {

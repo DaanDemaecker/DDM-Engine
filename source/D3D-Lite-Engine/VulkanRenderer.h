@@ -2,10 +2,16 @@
 #define VulkanRendererIncluded
 
 #include "Singleton.h"
+#include "Structs.h"
+
+#include <iostream>
+#include <tuple>
+#include <map>
 
 namespace D3D
 {
     class ModelComponent;
+    class DescriptorPoolManager;
 
     class VulkanRenderer final : public Singleton<VulkanRenderer>
     {
@@ -23,18 +29,20 @@ namespace D3D
 
         void Render(ModelComponent* pModel, VkCommandBuffer& commandBuffer, const VkDescriptorSet* descriptorSet, const PipelinePair& pipeline);
 
-        void AddGraphicsPipeline(const std::string& pipelineName, const std::string& vertShaderName, const std::string& fragShaderName);
-
+        void AddGraphicsPipeline(const std::string& pipelineName, const std::string& vertShaderName, const std::string& fragShaderName, int vertexUbos, int fragmentUbos, int textureAmount);
+       
         //Public getters
+        size_t GetMaxFrames() const { return m_MaxFramesInFlight; }
         VkDevice& GetDevice() { return m_Device; }
         VkCommandPool& GetCommandPool() { return m_CommandPool; }
-        VkDescriptorSetLayout& GetDescriptorSetLayout() { return m_DescriptorSetLayout; }
-        VkDescriptorPool& GetDescriptorPool() { return m_DescriptorPool; }
         VkImageView& GetDefaultImageView() { return m_DefaultTextureImageView; }
         VkSampler& GetSampler() { return m_TextureSampler; }
         PipelinePair& GetPipeline(const std::string& name = "Default");
         VkCommandBuffer& GetCurrentCommandBuffer() { return m_CommandBuffers[m_CurrentFrame]; }
         uint32_t GetCurrentFrame() const { return  m_CurrentFrame; }
+        DescriptorPoolManager* GetDescriptorPoolManager() const;
+        const LightObject& GetGlobalLight() const { return m_GlobalLight; }
+        std::vector<VkBuffer>& GetLightBuffers() { return m_LightBuffers; }
 
         //Public Helpers
         void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
@@ -48,7 +56,17 @@ namespace D3D
 
         void UpdateUniformBuffer(UniformBufferObject& buffer);
 
+        VkDescriptorSetLayout* GetDescriptorSetLayout(int vertexUbos, int fragmentUbos, int textureAmount);
+
     private:
+        const size_t m_MaxFramesInFlight{ 2 };
+
+        LightObject m_GlobalLight{};
+        std::vector<bool> m_LightChanged{};
+
+        std::vector<VkBuffer> m_LightBuffers{};
+        std::vector<VkDeviceMemory> m_LightMemory{};
+        std::vector<void*> m_LightMapped{};
         //----Member variables----
         //---Validation layers---
         bool m_EnableValidationLayers{ true };
@@ -109,8 +127,8 @@ namespace D3D
         //-RenderpassInfo-
         VkRenderPassBeginInfo m_RenderpassInfo{};
 
-        //--Descriptorlayout--
-        VkDescriptorSetLayout m_DescriptorSetLayout{};
+        //--Descriptorlayouts--
+        std::map<std::tuple<int, int, int>, VkDescriptorSetLayout> m_DescriptorSetLayouts{};
 
         //--GraphicsPipeline--
         //VkPipeline m_GraphicsPipeline{};
@@ -142,8 +160,9 @@ namespace D3D
         std::vector<VkFramebuffer> m_SwapChainFramebuffers{};
 
         //--Descriptorpool--
-        VkDescriptorPool m_DescriptorPool{};
-        uint32_t m_MaxDescriptorSets{ 8 };
+        std::unique_ptr<DescriptorPoolManager> m_pDescriptorPoolManager{};
+
+        VkDescriptorPool m_IMguiDescriptorPool{};
 
         //--Sync objects--
         std::vector<VkSemaphore> m_ImageAvailableSemaphores{};
@@ -228,7 +247,7 @@ namespace D3D
         void CreateRenderPass();
 
         //--Descriptor Layout
-        void CreateDescriptorLayout();
+        void CreateDescriptorLayout(int vertexUbos, int fragmentUbos, int textureAmount);
 
         //-Shader Module-
         VkShaderModule CreateShaderModule(const std::vector<char>& code);
@@ -252,7 +271,7 @@ namespace D3D
         void CreateFramebuffers();
 
         //--DescriptorPool--
-        void CreateDescriptorPool();
+        void CreateImGUIDescriptorPool();
 
         //--CommandBuffers--
         void CreateCommandBuffers();
@@ -260,6 +279,10 @@ namespace D3D
 
         //--Sync Objects--
         void CreateSyncObjects();
+
+        //--LightBuffers--
+        void CreateLightBuffer();
+        void UpdateLightBuffer(int frame);
 
 
         //--General helpers--
@@ -278,6 +301,8 @@ namespace D3D
 
         //ImGUI Render
         void RenderImGui(VkCommandBuffer commandBuffer);
+
+        
 
     };
 }

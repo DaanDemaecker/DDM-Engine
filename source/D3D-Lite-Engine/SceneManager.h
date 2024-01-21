@@ -2,6 +2,10 @@
 #define SceneManagerIncluded
 #include "Singleton.h"
 
+#include <memory>
+#include <iostream>
+#include <vector>
+
 namespace D3D
 {
 	class Scene;

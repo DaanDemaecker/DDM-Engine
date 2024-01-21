@@ -1,6 +1,7 @@
 #ifndef ModelComponentIncluded
 #define ModelComponentIncluded
 #include "Component.h"
+#include "Structs.h"
 
 
 namespace D3D
@@ -22,6 +23,8 @@ namespace D3D
 		const VkBuffer& GetVertexBuffer() const { return m_VertexBuffer; }
 		const VkBuffer& GetIndexBuffer() const { return m_IndexBuffer; }
 		size_t GetIndexAmount() const { return m_Indices.size(); }
+
+		void CreateDescriptorSets();
 
 	private:
 		//Member variables
@@ -54,7 +57,6 @@ namespace D3D
 		void CreateVertexBuffer();
 		void CreateIndexBuffer();
 		void CreateUniformBuffers();
-		void CreateDescriptorSets();
 
 		void UpdateDescriptorSets();
 

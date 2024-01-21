@@ -1,9 +1,9 @@
-#include "stdafx.h"
 #include "ModelComponent.h"
 #include "VulkanRenderer.h"
 #include "Material.h"
 #include "TransformComponent.h"
 #include "Utils.h"
+#include "DescriptorPoolWrapper.h"
 
 D3D::ModelComponent::ModelComponent()
 {
@@ -37,11 +37,9 @@ void D3D::ModelComponent::LoadModel(const std::string& textPath)
 
 void D3D::ModelComponent::SetMaterial(std::shared_ptr<Material> pMaterial)
 {
+	m_pMaterial->GetDescriptorPool()->RemoveModel(this);
 	m_pMaterial = pMaterial;
-	if (m_Initialized)
-	{
-		UpdateDescriptorSets();
-	}
+	CreateDescriptorSets();
 }
 
 void D3D::ModelComponent::Render()
@@ -113,14 +111,16 @@ void D3D::ModelComponent::CreateUniformBuffers()
 
 	VkDeviceSize bufferSize = sizeof(UniformBufferObject);
 
-	m_UboBuffers.resize(MAX_FRAMES_IN_FLIGHT);
-	m_UbosMemory.resize(MAX_FRAMES_IN_FLIGHT);
-	m_UbosMapped.resize(MAX_FRAMES_IN_FLIGHT);
+	auto maxFrames{renderer.GetMaxFrames()};
 
-	m_Ubos.resize(MAX_FRAMES_IN_FLIGHT);
+	m_UboBuffers.resize(maxFrames);
+	m_UbosMemory.resize(maxFrames);
+	m_UbosMapped.resize(maxFrames);
+
+	m_Ubos.resize(maxFrames);
 
 
-	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; ++i)
+	for (size_t i = 0; i < maxFrames; ++i)
 	{
 		renderer.CreateBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
 			m_UboBuffers[i], m_UbosMemory[i]);
@@ -131,21 +131,7 @@ void D3D::ModelComponent::CreateUniformBuffers()
 
 void D3D::ModelComponent::CreateDescriptorSets()
 {
-	auto& renderer{ VulkanRenderer::GetInstance() };
-
-	std::vector<VkDescriptorSetLayout> layouts(MAX_FRAMES_IN_FLIGHT, renderer.GetDescriptorSetLayout());
-	VkDescriptorSetAllocateInfo allocInfo{};
-	allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-	allocInfo.descriptorPool = renderer.GetDescriptorPool();
-	allocInfo.descriptorSetCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
-	allocInfo.pSetLayouts = layouts.data();
-
-	m_DescriptorSets.resize(MAX_FRAMES_IN_FLIGHT);
-	if (vkAllocateDescriptorSets(renderer.GetDevice(), &allocInfo, m_DescriptorSets.data()) != VK_SUCCESS)
-	{
-		throw std::runtime_error("failed to allocate descriptor sets!");
-	}
-
+	m_pMaterial->CreateDescriptorSets(this, m_DescriptorSets);
 	UpdateDescriptorSets();
 }
 
@@ -183,7 +169,8 @@ PipelinePair& D3D::ModelComponent::GetPipeline()
 
 void D3D::ModelComponent::Cleanup()
 {
-	auto device = D3D::VulkanRenderer::GetInstance().GetDevice();
+	auto& renderer{ D3D::VulkanRenderer::GetInstance() };
+	auto device = renderer.GetDevice();
 
 	vkDeviceWaitIdle(device);
 
@@ -193,7 +180,7 @@ void D3D::ModelComponent::Cleanup()
 	vkDestroyBuffer(device, m_VertexBuffer, nullptr);
 	vkFreeMemory(device, m_VertexBufferMemory, nullptr);
 
-	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; ++i)
+	for (size_t i = 0; i < renderer.GetMaxFrames(); ++i)
 	{
 		vkDestroyBuffer(device, m_UboBuffers[i], nullptr);
 		vkFreeMemory(device, m_UbosMemory[i], nullptr);

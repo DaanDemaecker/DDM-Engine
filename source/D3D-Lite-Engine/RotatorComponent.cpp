@@ -1,5 +1,4 @@
-#include "stdafx.h"
-
+#include "GLMIncludes.h"
 #include "RotatorComponent.h"
 #include "TimeManager.h"
 

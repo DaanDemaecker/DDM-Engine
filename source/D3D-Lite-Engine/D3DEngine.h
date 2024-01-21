@@ -1,6 +1,6 @@
 #ifndef D3DEngineIncluded
 #define D3DEngineIncluded
-
+#include "GLFWIncludes.h"
 
 #include <string>
 #include <functional>

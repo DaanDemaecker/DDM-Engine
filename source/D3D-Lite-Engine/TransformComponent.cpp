@@ -1,5 +1,5 @@
-#include "stdafx.h"
 #include "TransformComponent.h"
+#include "GLMIncludes.h"
 
 #include <math.h>
 
