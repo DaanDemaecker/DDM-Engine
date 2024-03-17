@@ -4,6 +4,7 @@
 #include "SceneManager.h"
 #include "Material.h"
 #include <chrono>
+#include <thread>
 
 #include "Scene.h"
 
@@ -50,7 +51,7 @@ void D3D::D3DEngine::Run(const std::function<void()>& load)
 
 		time.SetDeltaTime(deltaTime);
 
-		//std::cout << time.GetFps() << std::endl;
+		std::cout << time.GetFps() << std::endl;
 
 		lastTime = currentTime;
 		lag += deltaTime;
