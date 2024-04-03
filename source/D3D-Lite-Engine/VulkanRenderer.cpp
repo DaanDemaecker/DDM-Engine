@@ -13,8 +13,7 @@
 
 #include "STBIncludes.h"
 #include "ImGuiIncludes.h"
-
-extern D3D::Window g_pWindow;
+#include "Window.h"
 
 D3D::VulkanRenderer::VulkanRenderer()
 {
@@ -138,7 +137,7 @@ void D3D::VulkanRenderer::InitImGui()
 	ImGui::CreateContext();
 
 	// Initialize ImGui Vulkan backend
-	ImGui_ImplGlfw_InitForVulkan(g_pWindow.pWindow, true);
+	ImGui_ImplGlfw_InitForVulkan(D3D::Window::GetInstance().GetWindowStruct().pWindow, true);
 	ImGui_ImplVulkan_InitInfo init_info = {};
 	init_info.Instance = m_Instance; // Your Vulkan instance
 	init_info.PhysicalDevice = m_PhysicalDevice; // Your Vulkan physical device
@@ -412,10 +411,13 @@ void D3D::VulkanRenderer::Render()
 
 	result = vkQueuePresentKHR(m_PresentQueue, &presentInfo);
 
-	if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || g_pWindow.FrameBufferResized)
+
+	auto& window{ Window::GetInstance().GetWindowStruct()};
+
+	if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || window.FrameBufferResized)
 	{
 		RecreateSwapChain();
-		g_pWindow.FrameBufferResized = false;
+		window.FrameBufferResized = false;
 	}
 	else if (result != VK_SUCCESS)
 	{
@@ -670,7 +672,7 @@ std::vector<const char*> D3D::VulkanRenderer::GetRequiredExtensions()
 
 void D3D::VulkanRenderer::CreateSurface()
 {
-	if (glfwCreateWindowSurface(m_Instance, g_pWindow.pWindow, nullptr, &m_Surface) != VK_SUCCESS)
+	if (glfwCreateWindowSurface(m_Instance, D3D::Window::GetInstance().GetWindowStruct().pWindow, nullptr, &m_Surface) != VK_SUCCESS)
 	{
 		throw std::runtime_error("failed to create window surface!");
 	}
@@ -972,7 +974,7 @@ VkExtent2D D3D::VulkanRenderer::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR&
 	else
 	{
 		int width, height;
-		glfwGetFramebufferSize(g_pWindow.pWindow, &width, &height);
+		glfwGetFramebufferSize(D3D::Window::GetInstance().GetWindowStruct().pWindow, &width, &height);
 		VkExtent2D actualExtent =
 		{
 			static_cast<uint32_t>(width),
@@ -1011,16 +1013,6 @@ void D3D::VulkanRenderer::CleanupSwapChain()
 
 void D3D::VulkanRenderer::RecreateSwapChain()
 {
-	g_pWindow.Width = 0;
-	g_pWindow.Height = 0;
-	glfwGetFramebufferSize(g_pWindow.pWindow, &g_pWindow.Width, &g_pWindow.Height);
-	while (g_pWindow.Width == 0 || g_pWindow.Height == 0)
-	{
-		glfwGetFramebufferSize(g_pWindow.pWindow, &g_pWindow.Width, &g_pWindow.Height);
-		glfwWaitEvents();
-	}
-
-
 	vkDeviceWaitIdle(m_Device);
 
 	CleanupSwapChain();

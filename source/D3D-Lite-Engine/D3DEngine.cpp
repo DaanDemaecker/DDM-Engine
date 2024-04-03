@@ -4,24 +4,21 @@
 #include "SceneManager.h"
 #include "Material.h"
 #include "ConfigManager.h"
+#include "Window.h"
 #include <chrono>
 #include <thread>
 
 #include "Scene.h"
 
-D3D::Window g_pWindow{};
-
-D3D::D3DEngine::D3DEngine(int width, int height)
+D3D::D3DEngine::D3DEngine()
 {
-	g_pWindow.Width = width;
-	g_pWindow.Height = height;
-	InitWindow();
+	// Create the window with the given width and height
+	D3D::Window::GetInstance();
 }
 
 D3D::D3DEngine::~D3DEngine()
 {
-	glfwDestroyWindow(g_pWindow.pWindow);
-	glfwTerminate();
+
 }
 
 void D3D::D3DEngine::Run(const std::function<void()>& load)
@@ -33,6 +30,7 @@ void D3D::D3DEngine::Run(const std::function<void()>& load)
 	auto& renderer{ VulkanRenderer::GetInstance() };
 	auto& sceneManager{ SceneManager::GetInstance() };
 	auto& time{ TimeManager::GetInstance() };
+	auto& window{ Window::GetInstance() };
 
 
 	bool doContinue = true;
@@ -59,7 +57,7 @@ void D3D::D3DEngine::Run(const std::function<void()>& load)
 		lastTime = currentTime;
 		lag += deltaTime;
 
-		doContinue = !glfwWindowShouldClose(g_pWindow.pWindow);
+		doContinue = !glfwWindowShouldClose(window.GetWindowStruct().pWindow);
 
 		glfwPollEvents();
 
@@ -91,23 +89,4 @@ void D3D::D3DEngine::Run(const std::function<void()>& load)
 	}
 
 	sceneManager.EndProgram();
-}
-
-void D3D::D3DEngine::InitWindow()
-{
-	//Initialize glfw
-	glfwInit();
-
-	//Tell GLFW not to create an OpenGL context
-	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-
-	//Initialize the window
-	g_pWindow.pWindow = glfwCreateWindow(g_pWindow.Width, g_pWindow.Height, "D3D Lite Engine", nullptr, nullptr);
-	glfwSetWindowUserPointer(g_pWindow.pWindow, this);
-	glfwSetFramebufferSizeCallback(g_pWindow.pWindow, FramebufferResizeCallback);
-}
-
-void D3D::D3DEngine::FramebufferResizeCallback(GLFWwindow* /*pWindow*/, int /*width*/, int /*height*/)
-{
-	g_pWindow.FrameBufferResized = true;
 }
