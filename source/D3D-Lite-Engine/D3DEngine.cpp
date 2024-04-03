@@ -3,6 +3,7 @@
 #include "TimeManager.h"
 #include "SceneManager.h"
 #include "Material.h"
+#include "ConfigManager.h"
 #include <chrono>
 #include <thread>
 
@@ -26,6 +27,8 @@ D3D::D3DEngine::~D3DEngine()
 void D3D::D3DEngine::Run(const std::function<void()>& load)
 {
 	load();
+
+	std::cout << ConfigManager::GetInstance().GetString("ApplicationName") << std::endl;
 
 	auto& renderer{ VulkanRenderer::GetInstance() };
 	auto& sceneManager{ SceneManager::GetInstance() };

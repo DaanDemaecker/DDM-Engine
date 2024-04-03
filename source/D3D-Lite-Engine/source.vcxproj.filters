@@ -22,19 +22,22 @@
     <Filter Include="Utils">
       <UniqueIdentifier>{3a27e938-8684-4cce-9d9b-0ff2ee97ab3a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ImGui">
-      <UniqueIdentifier>{3276e79c-6824-40a7-b205-38cd5d4a5051}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ImGui\Backends">
-      <UniqueIdentifier>{8a35fcdf-eb2d-4a79-9dca-1e06da4fce5e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Materials">
       <UniqueIdentifier>{d81c4d1d-a64e-405f-a363-0d5f9b09b0e4}</UniqueIdentifier>
     </Filter>
     <Filter Include="Includes">
       <UniqueIdentifier>{31738de7-b55d-46d5-a4af-b6c1bb6e19ec}</UniqueIdentifier>
     </Filter>
-    <Filter Include="spirV-reflect">
+    <Filter Include="3rd party">
+      <UniqueIdentifier>{409106dc-a3bb-4ce5-be8e-b39cf5a085ad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="3rd party\ImGui">
+      <UniqueIdentifier>{3276e79c-6824-40a7-b205-38cd5d4a5051}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="3rd party\ImGui\Backends">
+      <UniqueIdentifier>{8a35fcdf-eb2d-4a79-9dca-1e06da4fce5e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="3rd party\spirV-reflect">
       <UniqueIdentifier>{c0fc4b6f-bad2-437d-a741-ffca980a31c2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -67,25 +70,25 @@
       <Filter>Components</Filter>
     </ClCompile>
     <ClCompile Include="..\3rdParty\Imgui\imgui.cpp">
-      <Filter>ImGui</Filter>
+      <Filter>3rd party\ImGui</Filter>
     </ClCompile>
     <ClCompile Include="..\3rdParty\Imgui\imgui_demo.cpp">
-      <Filter>ImGui</Filter>
+      <Filter>3rd party\ImGui</Filter>
     </ClCompile>
     <ClCompile Include="..\3rdParty\Imgui\imgui_draw.cpp">
-      <Filter>ImGui</Filter>
+      <Filter>3rd party\ImGui</Filter>
     </ClCompile>
     <ClCompile Include="..\3rdParty\Imgui\imgui_tables.cpp">
-      <Filter>ImGui</Filter>
+      <Filter>3rd party\ImGui</Filter>
     </ClCompile>
     <ClCompile Include="..\3rdParty\Imgui\imgui_widgets.cpp">
-      <Filter>ImGui</Filter>
+      <Filter>3rd party\ImGui</Filter>
     </ClCompile>
     <ClCompile Include="..\3rdParty\Imgui\backends\imgui_impl_glfw.cpp">
-      <Filter>ImGui\Backends</Filter>
+      <Filter>3rd party\ImGui\Backends</Filter>
     </ClCompile>
     <ClCompile Include="..\3rdParty\Imgui\backends\imgui_impl_vulkan.cpp">
-      <Filter>ImGui\Backends</Filter>
+      <Filter>3rd party\ImGui\Backends</Filter>
     </ClCompile>
     <ClCompile Include="CameraComponent.cpp">
       <Filter>Components</Filter>
@@ -110,13 +113,16 @@
       <Filter>Includes</Filter>
     </ClCompile>
     <ClCompile Include="spirv_reflect.cpp">
-      <Filter>spirV-reflect</Filter>
+      <Filter>3rd party\spirV-reflect</Filter>
     </ClCompile>
     <ClCompile Include="spirv_reflect.c">
-      <Filter>spirV-reflect</Filter>
+      <Filter>3rd party\spirV-reflect</Filter>
     </ClCompile>
     <ClCompile Include="TinyObjLoaderIncludes.cpp">
       <Filter>Includes</Filter>
+    </ClCompile>
+    <ClCompile Include="ConfigManager.cpp">
+      <Filter>Engine</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -157,28 +163,28 @@
       <Filter>Components</Filter>
     </ClInclude>
     <ClInclude Include="..\3rdParty\Imgui\imconfig.h">
-      <Filter>ImGui</Filter>
+      <Filter>3rd party\ImGui</Filter>
     </ClInclude>
     <ClInclude Include="..\3rdParty\Imgui\imgui.h">
-      <Filter>ImGui</Filter>
+      <Filter>3rd party\ImGui</Filter>
     </ClInclude>
     <ClInclude Include="..\3rdParty\Imgui\imgui_internal.h">
-      <Filter>ImGui</Filter>
+      <Filter>3rd party\ImGui</Filter>
     </ClInclude>
     <ClInclude Include="..\3rdParty\Imgui\imstb_rectpack.h">
-      <Filter>ImGui</Filter>
+      <Filter>3rd party\ImGui</Filter>
     </ClInclude>
     <ClInclude Include="..\3rdParty\Imgui\imstb_textedit.h">
-      <Filter>ImGui</Filter>
+      <Filter>3rd party\ImGui</Filter>
     </ClInclude>
     <ClInclude Include="..\3rdParty\Imgui\imstb_truetype.h">
-      <Filter>ImGui</Filter>
+      <Filter>3rd party\ImGui</Filter>
     </ClInclude>
     <ClInclude Include="..\3rdParty\Imgui\backends\imgui_impl_glfw.h">
-      <Filter>ImGui\Backends</Filter>
+      <Filter>3rd party\ImGui\Backends</Filter>
     </ClInclude>
     <ClInclude Include="..\3rdParty\Imgui\backends\imgui_impl_vulkan.h">
-      <Filter>ImGui\Backends</Filter>
+      <Filter>3rd party\ImGui\Backends</Filter>
     </ClInclude>
     <ClInclude Include="CameraComponent.h">
       <Filter>Components</Filter>
@@ -214,13 +220,16 @@
       <Filter>Includes</Filter>
     </ClInclude>
     <ClInclude Include="spirv_reflect.h">
-      <Filter>spirV-reflect</Filter>
+      <Filter>3rd party\spirV-reflect</Filter>
     </ClInclude>
     <ClInclude Include="TinyObjLoaderIncludes.h">
       <Filter>Includes</Filter>
     </ClInclude>
     <ClInclude Include="VulkanIncludes.h">
       <Filter>Includes</Filter>
+    </ClInclude>
+    <ClInclude Include="ConfigManager.h">
+      <Filter>Engine</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
