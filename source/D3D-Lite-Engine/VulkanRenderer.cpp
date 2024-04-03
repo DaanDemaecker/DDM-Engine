@@ -11,19 +11,8 @@
 #include "CameraComponent.h"
 #include "TransformComponent.h"
 
-
-#ifndef STB_IMAGE_IMPLEMENTATION
-#define STB_IMAGE_IMPLEMENTATION
-#pragma warning(push)
-#pragma warning(disable : 26451)
-#pragma warning(disable : 6262)
-#include <stb_image.h>
-#pragma warning(pop)
-#endif
-
-#include <imgui.h>
-#include <backends/imgui_impl_glfw.h>
-#include <backends/imgui_impl_vulkan.h>
+#include "STBIncludes.h"
+#include "ImGuiIncludes.h"
 
 extern D3D::Window g_pWindow;
 

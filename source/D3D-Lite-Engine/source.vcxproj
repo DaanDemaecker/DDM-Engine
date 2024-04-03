@@ -90,7 +90,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>$(SolutionDir)3rdParty\Vulkan\Include;$(SolutionDir)3rdParty\glm;$(SolutionDir)3rdParty\GLFW\$(Platform)\include;$(SolutionDir)3rdParty\stb;$(SolutionDir)3rdParty\TinyObjLoader;$(SolutionDir)3rdParty\imgui</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)3rdParty\Vulkan\Include;$(SolutionDir)3rdParty\glm;$(SolutionDir)3rdParty\GLFW\$(Platform)\include;$(SolutionDir)3rdParty\stb;$(SolutionDir)3rdParty\TinyObjLoader;$(SolutionDir)3rdParty\imgui;$(SolutionDir)3rdParty\RapidJson\include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -110,7 +110,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>$(SolutionDir)3rdParty\Vulkan\Include;$(SolutionDir)3rdParty\glm;$(SolutionDir)3rdParty\GLFW\$(Platform)\include;$(SolutionDir)3rdParty\stb;$(SolutionDir)3rdParty\TinyObjLoader;$(SolutionDir)3rdParty\imgui</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)3rdParty\Vulkan\Include;$(SolutionDir)3rdParty\glm;$(SolutionDir)3rdParty\GLFW\$(Platform)\include;$(SolutionDir)3rdParty\stb;$(SolutionDir)3rdParty\TinyObjLoader;$(SolutionDir)3rdParty\imgui;$(SolutionDir)3rdParty\RapidJson\include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -129,7 +129,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)3rdParty\Vulkan\Include;$(SolutionDir)3rdParty\glm;$(SolutionDir)3rdParty\GLFW\$(Platform)\include;$(SolutionDir)3rdParty\stb;$(SolutionDir)3rdParty\TinyObjLoader;$(SolutionDir)3rdParty\imgui</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)3rdParty\Vulkan\Include;$(SolutionDir)3rdParty\glm;$(SolutionDir)3rdParty\GLFW\$(Platform)\include;$(SolutionDir)3rdParty\stb;$(SolutionDir)3rdParty\TinyObjLoader;$(SolutionDir)3rdParty\imgui;$(SolutionDir)3rdParty\RapidJson\include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <TreatWarningAsError>true</TreatWarningAsError>
@@ -150,7 +150,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)3rdParty\Vulkan\Include;$(SolutionDir)3rdParty\glm;$(SolutionDir)3rdParty\GLFW\$(Platform)\include;$(SolutionDir)3rdParty\stb;$(SolutionDir)3rdParty\TinyObjLoader;$(SolutionDir)3rdParty\imgui</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)3rdParty\Vulkan\Include;$(SolutionDir)3rdParty\glm;$(SolutionDir)3rdParty\GLFW\$(Platform)\include;$(SolutionDir)3rdParty\stb;$(SolutionDir)3rdParty\TinyObjLoader;$(SolutionDir)3rdParty\imgui;$(SolutionDir)3rdParty\RapidJson\include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <TreatWarningAsError>true</TreatWarningAsError>
@@ -177,6 +177,9 @@
     <ClCompile Include="D3DEngine.cpp" />
     <ClCompile Include="DescriptorPoolManager.cpp" />
     <ClCompile Include="DescriptorPoolWrapper.cpp" />
+    <ClCompile Include="spirv_reflect.c" />
+    <ClCompile Include="spirv_reflect.cpp" />
+    <ClCompile Include="STBIncludes.cpp" />
     <ClCompile Include="TexturedMaterial.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="main.cpp" />
@@ -186,6 +189,7 @@
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="TimeManager.cpp" />
+    <ClCompile Include="TinyObjLoaderIncludes.cpp" />
     <ClCompile Include="TransformComponent.cpp" />
     <ClCompile Include="Utils.cpp" />
     <ClCompile Include="VulkanRenderer.cpp" />
@@ -204,6 +208,9 @@
     <ClInclude Include="D3DEngine.h" />
     <ClInclude Include="DescriptorPoolManager.h" />
     <ClInclude Include="DescriptorPoolWrapper.h" />
+    <ClInclude Include="ImGuiIncludes.h" />
+    <ClInclude Include="RapidJSONIncludes.h" />
+    <ClInclude Include="spirv_reflect.h" />
     <ClInclude Include="TexturedMaterial.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GLFWIncludes.h" />
@@ -217,8 +224,10 @@
     <ClInclude Include="STBIncludes.h" />
     <ClInclude Include="Structs.h" />
     <ClInclude Include="TimeManager.h" />
+    <ClInclude Include="TinyObjLoaderIncludes.h" />
     <ClInclude Include="TransformComponent.h" />
     <ClInclude Include="Utils.h" />
+    <ClInclude Include="VulkanIncludes.h" />
     <ClInclude Include="VulkanRenderer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

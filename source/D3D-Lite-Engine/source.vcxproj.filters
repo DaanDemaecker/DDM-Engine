@@ -1,18 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
     <Filter Include="DataTypes">
       <UniqueIdentifier>{c997c762-336a-4031-a74c-253a3f1eaf8e}</UniqueIdentifier>
     </Filter>
@@ -46,11 +34,11 @@
     <Filter Include="Includes">
       <UniqueIdentifier>{31738de7-b55d-46d5-a4af-b6c1bb6e19ec}</UniqueIdentifier>
     </Filter>
+    <Filter Include="spirV-reflect">
+      <UniqueIdentifier>{c0fc4b6f-bad2-437d-a741-ffca980a31c2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Utils.cpp">
       <Filter>Utils</Filter>
     </ClCompile>
@@ -116,6 +104,19 @@
     </ClCompile>
     <ClCompile Include="DescriptorPoolManager.cpp">
       <Filter>Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="STBIncludes.cpp">
+      <Filter>Includes</Filter>
+    </ClCompile>
+    <ClCompile Include="spirv_reflect.cpp">
+      <Filter>spirV-reflect</Filter>
+    </ClCompile>
+    <ClCompile Include="spirv_reflect.c">
+      <Filter>spirV-reflect</Filter>
+    </ClCompile>
+    <ClCompile Include="TinyObjLoaderIncludes.cpp">
+      <Filter>Includes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -204,6 +205,21 @@
       <Filter>Includes</Filter>
     </ClInclude>
     <ClInclude Include="GLFWIncludes.h">
+      <Filter>Includes</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGuiIncludes.h">
+      <Filter>Includes</Filter>
+    </ClInclude>
+    <ClInclude Include="RapidJSONIncludes.h">
+      <Filter>Includes</Filter>
+    </ClInclude>
+    <ClInclude Include="spirv_reflect.h">
+      <Filter>spirV-reflect</Filter>
+    </ClInclude>
+    <ClInclude Include="TinyObjLoaderIncludes.h">
+      <Filter>Includes</Filter>
+    </ClInclude>
+    <ClInclude Include="VulkanIncludes.h">
       <Filter>Includes</Filter>
     </ClInclude>
   </ItemGroup>

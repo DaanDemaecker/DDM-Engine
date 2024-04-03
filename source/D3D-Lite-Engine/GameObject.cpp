@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "GameObject.h"
 #include "TransformComponent.h"
 
