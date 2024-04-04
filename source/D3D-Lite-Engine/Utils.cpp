@@ -26,7 +26,7 @@ std::vector<char> Utils::readFile(const std::string& filename)
 	return buffer;
 }
 
-void Utils::LoadModel(const std::string& filename, std::vector<Vertex>& vertices, std::vector<uint32_t>& indices)
+void Utils::LoadModel(const std::string& filename, std::vector<D3D::Vertex>& vertices, std::vector<uint32_t>& indices)
 {
 	vertices.clear();
 	indices.clear();
@@ -42,13 +42,13 @@ void Utils::LoadModel(const std::string& filename, std::vector<Vertex>& vertices
 		throw std::runtime_error(warn + err);
 	}
 
-	std::unordered_map<Vertex, uint32_t> uniqueVertices{};
+	std::unordered_map<D3D::Vertex, uint32_t> uniqueVertices{};
 
 	for (const auto& shape : shapes)
 	{
 		for (const auto& index : shape.mesh.indices)
 		{
-			Vertex vertex{};
+			D3D::Vertex vertex{};
 
 			vertex.pos = {
 				attrib.vertices[static_cast<uint64_t>(3) * index.vertex_index],

@@ -178,6 +178,7 @@
     <ClCompile Include="D3DEngine.cpp" />
     <ClCompile Include="DescriptorPoolManager.cpp" />
     <ClCompile Include="DescriptorPoolWrapper.cpp" />
+    <ClCompile Include="InstanceWrapper.cpp" />
     <ClCompile Include="spirv_reflect.c" />
     <ClCompile Include="spirv_reflect.cpp" />
     <ClCompile Include="STBIncludes.cpp" />
@@ -194,6 +195,7 @@
     <ClCompile Include="TransformComponent.cpp" />
     <ClCompile Include="Utils.cpp" />
     <ClCompile Include="VulkanRenderer.cpp" />
+    <ClCompile Include="VulkanUtils.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -212,6 +214,7 @@
     <ClInclude Include="DescriptorPoolManager.h" />
     <ClInclude Include="DescriptorPoolWrapper.h" />
     <ClInclude Include="ImGuiIncludes.h" />
+    <ClInclude Include="InstanceWrapper.h" />
     <ClInclude Include="RapidJSONIncludes.h" />
     <ClInclude Include="spirv_reflect.h" />
     <ClInclude Include="TexturedMaterial.h" />
@@ -232,6 +235,7 @@
     <ClInclude Include="Utils.h" />
     <ClInclude Include="VulkanIncludes.h" />
     <ClInclude Include="VulkanRenderer.h" />
+    <ClInclude Include="VulkanUtils.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

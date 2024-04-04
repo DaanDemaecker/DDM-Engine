@@ -157,7 +157,7 @@ void D3D::ModelComponent::UpdateUniformBuffer(uint32_t frame)
 	memcpy(m_UbosMapped[frame], &m_Ubos[frame], sizeof(m_Ubos[frame]));
 }
 
-PipelinePair& D3D::ModelComponent::GetPipeline()
+D3D::PipelinePair& D3D::ModelComponent::GetPipeline()
 {
 	if (m_pMaterial != nullptr)
 	{

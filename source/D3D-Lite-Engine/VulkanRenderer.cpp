@@ -499,7 +499,7 @@ void D3D::VulkanRenderer::Render(D3D::ModelComponent* pModel, VkCommandBuffer& c
 	vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(pModel->GetIndexAmount()), 1, 0, 0, 0);
 }
 
-PipelinePair& D3D::VulkanRenderer::GetPipeline(const std::string& name)
+D3D::PipelinePair& D3D::VulkanRenderer::GetPipeline(const std::string& name)
 {
 	if (m_GraphicPipelines.contains(name))
 	{
@@ -733,7 +733,7 @@ bool D3D::VulkanRenderer::IsDeviceSuitable(VkPhysicalDevice device)
 	return indices.isComplete() && extensionsSupported && swapChainAdequate && supportedFeatures.samplerAnisotropy;
 }
 
-QueueFamilyIndices D3D::VulkanRenderer::FindQueueFamilies(VkPhysicalDevice device)
+D3D::QueueFamilyIndices D3D::VulkanRenderer::FindQueueFamilies(VkPhysicalDevice device)
 {
 	QueueFamilyIndices indices;
 
@@ -794,7 +794,7 @@ bool D3D::VulkanRenderer::CheckDeviceExtensionSupport(VkPhysicalDevice device)
 	return false;
 }
 
-SwapChainSupportDetails D3D::VulkanRenderer::QuerySwapChainSupport(VkPhysicalDevice device)
+D3D::SwapChainSupportDetails D3D::VulkanRenderer::QuerySwapChainSupport(VkPhysicalDevice device)
 {
 	SwapChainSupportDetails details;
 

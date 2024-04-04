@@ -63,7 +63,7 @@ namespace D3D
 		void UpdateUniformBuffer(uint32_t frame);
 
 		//Texture functions
-		PipelinePair& GetPipeline();
+		D3D::PipelinePair& GetPipeline();
 
 		void Cleanup();
 	};

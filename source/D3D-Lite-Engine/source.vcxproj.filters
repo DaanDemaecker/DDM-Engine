@@ -40,6 +40,12 @@
     <Filter Include="3rd party\spirV-reflect">
       <UniqueIdentifier>{c0fc4b6f-bad2-437d-a741-ffca980a31c2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Vulkan\Wrappers">
+      <UniqueIdentifier>{32e5ccdf-0273-42b9-8a06-8c43f24915da}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Vulkan\Managers">
+      <UniqueIdentifier>{43142d4a-fc5b-4a38-b4ab-1268a35edd92}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Utils.cpp">
@@ -126,6 +132,12 @@
     </ClCompile>
     <ClCompile Include="Window.cpp">
       <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="InstanceWrapper.cpp">
+      <Filter>Vulkan\Wrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="VulkanUtils.cpp">
+      <Filter>Vulkan</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -236,6 +248,12 @@
     </ClInclude>
     <ClInclude Include="Window.h">
       <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="InstanceWrapper.h">
+      <Filter>Vulkan\Wrappers</Filter>
+    </ClInclude>
+    <ClInclude Include="VulkanUtils.h">
+      <Filter>Vulkan</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

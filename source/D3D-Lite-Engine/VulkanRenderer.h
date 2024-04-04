@@ -37,7 +37,7 @@ namespace D3D
         VkCommandPool& GetCommandPool() { return m_CommandPool; }
         VkImageView& GetDefaultImageView() { return m_DefaultTextureImageView; }
         VkSampler& GetSampler() { return m_TextureSampler; }
-        PipelinePair& GetPipeline(const std::string& name = "Default");
+        D3D::PipelinePair& GetPipeline(const std::string& name = "Default");
         VkCommandBuffer& GetCurrentCommandBuffer() { return m_CommandBuffers[m_CurrentFrame]; }
         uint32_t GetCurrentFrame() const { return  m_CurrentFrame; }
         DescriptorPoolManager* GetDescriptorPoolManager() const;
@@ -223,9 +223,9 @@ namespace D3D
 
         //-Physical device helper functions-
         bool IsDeviceSuitable(VkPhysicalDevice device);
-        QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device);
+        D3D::QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device);
         bool CheckDeviceExtensionSupport(VkPhysicalDevice device);
-        SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device);
+        D3D::SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device);
 
         //--Logical Device--
         void CreateLogicalDevice();
