@@ -7,11 +7,14 @@
 #include <iostream>
 #include <tuple>
 #include <map>
+#include <memory>
 
 namespace D3D
 {
+    // Class forward declarations
     class ModelComponent;
     class DescriptorPoolManager;
+    class InstanceWrapper;
 
     class VulkanRenderer final : public Singleton<VulkanRenderer>
     {
@@ -68,17 +71,9 @@ namespace D3D
         std::vector<VkDeviceMemory> m_LightMemory{};
         std::vector<void*> m_LightMapped{};
         //----Member variables----
-        //---Validation layers---
-        bool m_EnableValidationLayers{ true };
-        const std::vector<const char*> m_ValidationLayers =
-        {
-            "VK_LAYER_KHRONOS_validation"
-        };
-        VkDebugUtilsMessengerEXT m_DebugMessenger = VK_NULL_HANDLE;
 
-
-        //---Vulkan Instance---
-        VkInstance m_Instance = VK_NULL_HANDLE;
+        // Instance wrapper
+        std::unique_ptr<InstanceWrapper> m_pInstanceWrapper{};
 
 
         //--Window Surface--
@@ -194,26 +189,6 @@ namespace D3D
         //---Initialization---
         void InitVulkan();
         void InitImGui();
-
-        //--Vulkan instance--
-        void CreateInstance();
-
-        //-Validation layers--
-        bool CheckValidationLayerSupport();
-        void PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);
-        static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
-            VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
-            VkDebugUtilsMessageTypeFlagsEXT messageType,
-            const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
-            void* pUserData
-        );
-        void SetupDebugMessenger();
-        VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo,
-            const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger);
-        void DestroyDebugUtilsMessegerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator);
-
-        //-Extensions-
-        std::vector<const char*> GetRequiredExtensions();
 
         //--Surface creation--
         void CreateSurface();
