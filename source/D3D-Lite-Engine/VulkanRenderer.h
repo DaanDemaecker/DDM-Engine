@@ -15,6 +15,7 @@ namespace D3D
     class ModelComponent;
     class DescriptorPoolManager;
     class InstanceWrapper;
+    class SurfaceWrapper;
 
     class VulkanRenderer final : public Singleton<VulkanRenderer>
     {
@@ -75,9 +76,8 @@ namespace D3D
         // Instance wrapper
         std::unique_ptr<InstanceWrapper> m_pInstanceWrapper{};
 
-
-        //--Window Surface--
-        VkSurfaceKHR m_Surface{};
+        // Surface wrapper
+        std::unique_ptr<SurfaceWrapper> m_pSurfaceWrapper{};
 
 
         //--Physical Device--
@@ -189,9 +189,6 @@ namespace D3D
         //---Initialization---
         void InitVulkan();
         void InitImGui();
-
-        //--Surface creation--
-        void CreateSurface();
 
         //--Physical device--
         void PickPhysicalDevice();

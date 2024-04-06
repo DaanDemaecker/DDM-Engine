@@ -10,6 +10,7 @@
 #include "ModelComponent.h"
 #include "CameraComponent.h"
 #include "TransformComponent.h"
+#include "SurfaceWrapper.h"
 
 #include "STBIncludes.h"
 #include "ImGuiIncludes.h"
@@ -80,7 +81,7 @@ void D3D::VulkanRenderer::CleanupVulkan()
 
 	vkDestroyDevice(m_Device, nullptr);
 
-	vkDestroySurfaceKHR(m_pInstanceWrapper->GetInstance(), m_Surface, nullptr);
+	m_pSurfaceWrapper->Cleanup(m_pInstanceWrapper->GetInstance());
 }
 
 void D3D::VulkanRenderer::CleanupImGui()
@@ -95,7 +96,8 @@ void D3D::VulkanRenderer::InitVulkan()
 {
 	m_pInstanceWrapper = std::make_unique<InstanceWrapper>();
 
-	CreateSurface();
+	m_pSurfaceWrapper = std::make_unique<SurfaceWrapper>(m_pInstanceWrapper->GetInstance());
+
 	PickPhysicalDevice();
 	CreateLogicalDevice();
 	CreateSwapChain();
@@ -508,14 +510,6 @@ D3D::DescriptorPoolManager* D3D::VulkanRenderer::GetDescriptorPoolManager() cons
 	return m_pDescriptorPoolManager.get();
 }
 
-void D3D::VulkanRenderer::CreateSurface()
-{
-	if (glfwCreateWindowSurface(m_pInstanceWrapper->GetInstance(), D3D::Window::GetInstance().GetWindowStruct().pWindow, nullptr, &m_Surface) != VK_SUCCESS)
-	{
-		throw std::runtime_error("failed to create window surface!");
-	}
-}
-
 void D3D::VulkanRenderer::PickPhysicalDevice()
 {
 	//Get number of physical devices that support Vulkan
@@ -591,7 +585,7 @@ D3D::QueueFamilyIndices D3D::VulkanRenderer::FindQueueFamilies(VkPhysicalDevice 
 		}
 
 		VkBool32 presentSupport = false;
-		vkGetPhysicalDeviceSurfaceSupportKHR(device, i, m_Surface, &presentSupport);
+		vkGetPhysicalDeviceSurfaceSupportKHR(device, i, m_pSurfaceWrapper->GetSurface(), &presentSupport);
 
 		if (presentSupport)
 		{
@@ -636,24 +630,26 @@ D3D::SwapChainSupportDetails D3D::VulkanRenderer::QuerySwapChainSupport(VkPhysic
 {
 	SwapChainSupportDetails details;
 
-	vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, m_Surface, &details.capabilities);
+	auto surface = m_pSurfaceWrapper->GetSurface();
+
+	vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface, &details.capabilities);
 
 	uint32_t formatCount;
-	vkGetPhysicalDeviceSurfaceFormatsKHR(device, m_Surface, &formatCount, nullptr);
+	vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, nullptr);
 
 	if (formatCount != 0)
 	{
 		details.formats.resize(formatCount);
-		vkGetPhysicalDeviceSurfaceFormatsKHR(device, m_Surface, &formatCount, details.formats.data());
+		vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, details.formats.data());
 	}
 
 	uint32_t presentModeCount;
-	vkGetPhysicalDeviceSurfacePresentModesKHR(device, m_Surface, &presentModeCount, nullptr);
+	vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentModeCount, nullptr);
 
 	if (presentModeCount != 0)
 	{
 		details.presentModes.resize(presentModeCount);
-		vkGetPhysicalDeviceSurfacePresentModesKHR(device, m_Surface, &presentModeCount, details.presentModes.data());
+		vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentModeCount, details.presentModes.data());
 	}
 
 	return details;
@@ -732,7 +728,7 @@ void D3D::VulkanRenderer::CreateSwapChain()
 
 	VkSwapchainCreateInfoKHR createInfo{};
 	createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
-	createInfo.surface = m_Surface;
+	createInfo.surface = m_pSurfaceWrapper->GetSurface();
 
 	createInfo.minImageCount = imageCount;
 	createInfo.imageFormat = surfaceFormat.format;

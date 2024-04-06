@@ -139,6 +139,9 @@
     <ClCompile Include="VulkanUtils.cpp">
       <Filter>Vulkan</Filter>
     </ClCompile>
+    <ClCompile Include="SurfaceWrapper.cpp">
+      <Filter>Vulkan\Wrappers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Utils.h">
@@ -254,6 +257,9 @@
     </ClInclude>
     <ClInclude Include="VulkanUtils.h">
       <Filter>Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="SurfaceWrapper.h">
+      <Filter>Vulkan\Wrappers</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
