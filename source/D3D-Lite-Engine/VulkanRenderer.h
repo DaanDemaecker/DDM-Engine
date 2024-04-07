@@ -195,15 +195,14 @@ namespace D3D
 
         //-Physical device helper functions-
         bool IsDeviceSuitable(VkPhysicalDevice device);
-        D3D::QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device);
-        bool CheckDeviceExtensionSupport(VkPhysicalDevice device);
-        D3D::SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device);
 
         //--Logical Device--
         void CreateLogicalDevice();
 
         //--Swapchain--
         void CreateSwapChain();
+
+        bool CheckDeviceExtensionSupport(VkPhysicalDevice device);
 
         //-Swapchain Helper Functions-
         VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
@@ -230,14 +229,8 @@ namespace D3D
         //--MultiSampling--
         void CreateColorResources();
 
-        //-MultiSampling Helpers-
-        VkSampleCountFlagBits GetMaxUsableSampleCount();
-
         //--Depth Image--
         void CreateDepthResources();
-
-        //-Depth Image Helper-
-        VkFormat FindDepthFormat();
 
         //--Framebuffers--
         void CreateFramebuffers();
@@ -258,8 +251,6 @@ namespace D3D
 
 
         //--General helpers--
-        VkFormat FindSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
-        uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
         VkCommandBuffer BeginSingleTimeCommands();
         void EndSingleTimeCommands(VkCommandBuffer comandBuffer);
         bool HasStencilComponent(VkFormat format);

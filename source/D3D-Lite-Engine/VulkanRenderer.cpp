@@ -18,6 +18,8 @@
 
 #include "InstanceWrapper.h"
 
+#include "VulkanUtils.h"
+
 D3D::VulkanRenderer::VulkanRenderer()
 {
 	m_GlobalLight.direction = glm::normalize(glm::vec3{ -.577, -.577f, 0 });
@@ -534,7 +536,7 @@ void D3D::VulkanRenderer::PickPhysicalDevice()
 		if (IsDeviceSuitable(device))
 		{
 			m_PhysicalDevice = device;
-			m_MsaaSamples = GetMaxUsableSampleCount();
+			m_MsaaSamples = VulkanUtils::GetMaxUsableSampleCount(m_PhysicalDevice);
 			break;
 		}
 	}
@@ -547,7 +549,7 @@ void D3D::VulkanRenderer::PickPhysicalDevice()
 
 bool D3D::VulkanRenderer::IsDeviceSuitable(VkPhysicalDevice device)
 {
-	QueueFamilyIndices indices = FindQueueFamilies(device);
+	QueueFamilyIndices indices = VulkanUtils::FindQueueFamilies(device, m_pSurfaceWrapper->GetSurface());
 
 	bool extensionsSupported = CheckDeviceExtensionSupport(device);
 
@@ -555,7 +557,7 @@ bool D3D::VulkanRenderer::IsDeviceSuitable(VkPhysicalDevice device)
 
 	if (extensionsSupported)
 	{
-		SwapChainSupportDetails swapChainSupport = QuerySwapChainSupport(device);
+		SwapChainSupportDetails swapChainSupport = VulkanUtils::QuerySwapChainSupport(device, m_pSurfaceWrapper->GetSurface());
 		swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
 	}
 
@@ -565,99 +567,9 @@ bool D3D::VulkanRenderer::IsDeviceSuitable(VkPhysicalDevice device)
 	return indices.isComplete() && extensionsSupported && swapChainAdequate && supportedFeatures.samplerAnisotropy;
 }
 
-D3D::QueueFamilyIndices D3D::VulkanRenderer::FindQueueFamilies(VkPhysicalDevice device)
-{
-	QueueFamilyIndices indices;
-
-	uint32_t queueFamilyCount = 0;
-	vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, nullptr);
-
-	std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
-	vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, queueFamilies.data());
-
-	//find at least one queue family that supports VK_QUEUE_GRAPHICS_BIT
-	int i = 0;
-	for (const auto& queueFamily : queueFamilies)
-	{
-		if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT)
-		{
-			indices.graphicsFamily = i;
-		}
-
-		VkBool32 presentSupport = false;
-		vkGetPhysicalDeviceSurfaceSupportKHR(device, i, m_pSurfaceWrapper->GetSurface(), &presentSupport);
-
-		if (presentSupport)
-		{
-			indices.presentFamily = i;
-		}
-
-		if (indices.isComplete())
-			break;
-
-		i++;
-	}
-
-	return indices;
-}
-
-bool D3D::VulkanRenderer::CheckDeviceExtensionSupport(VkPhysicalDevice device)
-{
-	//Check how many extensions this device supports
-	uint32_t extensionCount;
-	vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
-
-	//Get a list of all available extensions
-	std::vector<VkExtensionProperties> availableExtensions(extensionCount);
-	vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, availableExtensions.data());
-
-	//Create a set of required extensions to avoid duplicates
-	std::set<std::string> requiredExtensions(m_DeviceExtensions.begin(), m_DeviceExtensions.end());
-
-	//Clear all available extensions from the required ones
-	for (const auto& extension : availableExtensions)
-	{
-		requiredExtensions.erase(extension.extensionName);
-	}
-
-	//If the required extensions are empty, they are all available
-	return requiredExtensions.empty();
-
-	return false;
-}
-
-D3D::SwapChainSupportDetails D3D::VulkanRenderer::QuerySwapChainSupport(VkPhysicalDevice device)
-{
-	SwapChainSupportDetails details;
-
-	auto surface = m_pSurfaceWrapper->GetSurface();
-
-	vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface, &details.capabilities);
-
-	uint32_t formatCount;
-	vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, nullptr);
-
-	if (formatCount != 0)
-	{
-		details.formats.resize(formatCount);
-		vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, details.formats.data());
-	}
-
-	uint32_t presentModeCount;
-	vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentModeCount, nullptr);
-
-	if (presentModeCount != 0)
-	{
-		details.presentModes.resize(presentModeCount);
-		vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentModeCount, details.presentModes.data());
-	}
-
-	return details;
-}
-
 void D3D::VulkanRenderer::CreateLogicalDevice()
 {
-	QueueFamilyIndices indices = FindQueueFamilies(m_PhysicalDevice);
+	QueueFamilyIndices indices = VulkanUtils::FindQueueFamilies(m_PhysicalDevice, m_pSurfaceWrapper->GetSurface());
 
 	std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
 	std::set<uint32_t> uniqueQueueFamilies = { indices.graphicsFamily.value(), indices.presentFamily.value() };
@@ -712,7 +624,7 @@ void D3D::VulkanRenderer::CreateLogicalDevice()
 
 void D3D::VulkanRenderer::CreateSwapChain()
 {
-	SwapChainSupportDetails swapChainSupport = QuerySwapChainSupport(m_PhysicalDevice);
+	SwapChainSupportDetails swapChainSupport = VulkanUtils::QuerySwapChainSupport(m_PhysicalDevice, m_pSurfaceWrapper->GetSurface());
 
 	VkSurfaceFormatKHR surfaceFormat = ChooseSwapSurfaceFormat(swapChainSupport.formats);
 	VkPresentModeKHR presentMode = ChooseSwapPresentMode(swapChainSupport.presentModes);
@@ -737,7 +649,7 @@ void D3D::VulkanRenderer::CreateSwapChain()
 	createInfo.imageArrayLayers = 1;
 	createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
-	QueueFamilyIndices indices = FindQueueFamilies(m_PhysicalDevice);
+	QueueFamilyIndices indices = VulkanUtils::FindQueueFamilies(m_PhysicalDevice, m_pSurfaceWrapper->GetSurface());
 	uint32_t queueFamilyIndices[] = { indices.graphicsFamily.value(), indices.presentFamily.value() };
 
 	if (indices.graphicsFamily != indices.presentFamily)
@@ -772,6 +684,29 @@ void D3D::VulkanRenderer::CreateSwapChain()
 
 	m_SwapChainImageFormat = surfaceFormat.format;
 	m_SwapChainExtent = extent;
+}
+
+bool D3D::VulkanRenderer::CheckDeviceExtensionSupport(VkPhysicalDevice device)
+{
+	//Check how many extensions this device supports
+	uint32_t extensionCount;
+	vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
+
+	//Get a list of all available extensions
+	std::vector<VkExtensionProperties> availableExtensions(extensionCount);
+	vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, availableExtensions.data());
+
+	//Create a set of required extensions to avoid duplicates
+	std::set<std::string> requiredExtensions(m_DeviceExtensions.begin(), m_DeviceExtensions.end());
+
+	//Clear all available extensions from the required ones
+	for (const auto& extension : availableExtensions)
+	{
+		requiredExtensions.erase(extension.extensionName);
+	}
+
+	//If the required extensions are empty, they are all available
+	return requiredExtensions.empty();
 }
 
 VkSurfaceFormatKHR D3D::VulkanRenderer::ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats)
@@ -884,7 +819,7 @@ void D3D::VulkanRenderer::CreateRenderPass()
 
 
 	VkAttachmentDescription depthAttachment{};
-	depthAttachment.format = FindDepthFormat();
+	depthAttachment.format = VulkanUtils::FindDepthFormat(m_PhysicalDevice);
 	depthAttachment.samples = m_MsaaSamples;
 	depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
 	depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
@@ -1021,7 +956,7 @@ VkShaderModule D3D::VulkanRenderer::CreateShaderModule(const std::vector<char>& 
 
 void D3D::VulkanRenderer::CreateCommandPool()
 {
-	QueueFamilyIndices queueFamilyIndices = FindQueueFamilies(m_PhysicalDevice);
+	QueueFamilyIndices queueFamilyIndices = VulkanUtils::FindQueueFamilies(m_PhysicalDevice, m_pSurfaceWrapper->GetSurface());
 
 	VkCommandPoolCreateInfo poolInfo{};
 	poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
@@ -1043,15 +978,6 @@ void D3D::VulkanRenderer::CreateColorResources()
 		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_ColorImage, m_ColorImageMemory);
 
 	m_ColorImageView = CreateImageView(m_ColorImage, colorFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
-}
-
-VkFormat D3D::VulkanRenderer::FindDepthFormat()
-{
-	return FindSupportedFormat(
-		{ VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT },
-		VK_IMAGE_TILING_OPTIMAL,
-		VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT
-	);
 }
 
 void D3D::VulkanRenderer::CreateFramebuffers()
@@ -1178,34 +1104,9 @@ void D3D::VulkanRenderer::CreateSyncObjects()
 	}
 }
 
-VkSampleCountFlagBits D3D::VulkanRenderer::GetMaxUsableSampleCount()
-{
-
-	VkPhysicalDeviceProperties physicalDeviceProperties{};
-	vkGetPhysicalDeviceProperties(m_PhysicalDevice, &physicalDeviceProperties);
-
-	VkSampleCountFlags counts = physicalDeviceProperties.limits.framebufferColorSampleCounts &
-		physicalDeviceProperties.limits.framebufferDepthSampleCounts;
-
-	if (counts & VK_SAMPLE_COUNT_64_BIT)
-		return VK_SAMPLE_COUNT_64_BIT;
-	if (counts & VK_SAMPLE_COUNT_32_BIT)
-		return VK_SAMPLE_COUNT_32_BIT;
-	if (counts & VK_SAMPLE_COUNT_16_BIT)
-		return VK_SAMPLE_COUNT_16_BIT;
-	if (counts & VK_SAMPLE_COUNT_8_BIT)
-		return VK_SAMPLE_COUNT_8_BIT;
-	if (counts & VK_SAMPLE_COUNT_4_BIT)
-		return VK_SAMPLE_COUNT_4_BIT;
-	if (counts & VK_SAMPLE_COUNT_2_BIT)
-		return VK_SAMPLE_COUNT_2_BIT;
-
-	return VK_SAMPLE_COUNT_1_BIT;
-}
-
 void D3D::VulkanRenderer::CreateDepthResources()
 {
-	VkFormat depthFormat = FindDepthFormat();
+	VkFormat depthFormat = VulkanUtils::FindDepthFormat(m_PhysicalDevice);
 
 	CreateImage(m_SwapChainExtent.width, m_SwapChainExtent.height, 1, m_MsaaSamples, depthFormat,
 		VK_IMAGE_TILING_OPTIMAL,
@@ -1247,7 +1148,7 @@ void D3D::VulkanRenderer::CreateImage(uint32_t width, uint32_t height, uint32_t 
 	VkMemoryAllocateInfo allocInfo{};
 	allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
 	allocInfo.allocationSize = memRequirements.size;
-	allocInfo.memoryTypeIndex = FindMemoryType(memRequirements.memoryTypeBits, properties);
+	allocInfo.memoryTypeIndex = VulkanUtils::FindMemoryType(m_PhysicalDevice, memRequirements.memoryTypeBits, properties);
 
 	if (vkAllocateMemory(m_Device, &allocInfo, nullptr, &imageMemory) != VK_SUCCESS)
 	{
@@ -1278,42 +1179,6 @@ VkImageView D3D::VulkanRenderer::CreateImageView(VkImage image, VkFormat format,
 	}
 
 	return imageView;
-}
-
-VkFormat D3D::VulkanRenderer::FindSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features)
-{
-	for (const VkFormat& format : candidates)
-	{
-		VkFormatProperties props;
-		vkGetPhysicalDeviceFormatProperties(m_PhysicalDevice, format, &props);
-
-		if (tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features)
-		{
-			return format;
-		}
-		else if (tiling == VK_IMAGE_TILING_OPTIMAL && (props.optimalTilingFeatures & features) == features)
-		{
-			return format;
-		}
-	}
-
-	throw std::runtime_error("failed to find supported format!");
-}
-
-uint32_t D3D::VulkanRenderer::FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties)
-{
-	VkPhysicalDeviceMemoryProperties memProperties;
-	vkGetPhysicalDeviceMemoryProperties(m_PhysicalDevice, &memProperties);
-
-	for (uint32_t i = 0; i < memProperties.memoryTypeCount; ++i)
-	{
-		if (typeFilter & (1 << i) && (memProperties.memoryTypes[i].propertyFlags & properties) == properties)
-		{
-			return i;
-		}
-	}
-
-	throw std::runtime_error("failed to find suitable memory type!");
 }
 
 void D3D::VulkanRenderer::TransitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t mipLevels)
@@ -1444,7 +1309,7 @@ void D3D::VulkanRenderer::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usa
 	VkMemoryAllocateInfo allocInfo{};
 	allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
 	allocInfo.allocationSize = memRequirements.size;
-	allocInfo.memoryTypeIndex = FindMemoryType(memRequirements.memoryTypeBits, properties);
+	allocInfo.memoryTypeIndex = VulkanUtils::FindMemoryType(m_PhysicalDevice, memRequirements.memoryTypeBits, properties);
 
 	if (vkAllocateMemory(m_Device, &allocInfo, nullptr, &bufferMemory) != VK_SUCCESS) {
 		throw std::runtime_error("failed to allocate buffer memory!");
