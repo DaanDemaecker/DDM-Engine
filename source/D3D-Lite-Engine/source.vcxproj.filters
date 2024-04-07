@@ -145,6 +145,9 @@
     <ClCompile Include="GPUObject.cpp">
       <Filter>Vulkan\Wrappers</Filter>
     </ClCompile>
+    <ClCompile Include="ImGuiWrapper.cpp">
+      <Filter>Vulkan\Managers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Utils.h">
@@ -266,6 +269,9 @@
     </ClInclude>
     <ClInclude Include="GPUObject.h">
       <Filter>Vulkan\Wrappers</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGuiWrapper.h">
+      <Filter>Vulkan\Managers</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

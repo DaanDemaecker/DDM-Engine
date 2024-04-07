@@ -179,6 +179,7 @@
     <ClCompile Include="DescriptorPoolManager.cpp" />
     <ClCompile Include="DescriptorPoolWrapper.cpp" />
     <ClCompile Include="GPUObject.cpp" />
+    <ClCompile Include="ImGuiWrapper.cpp" />
     <ClCompile Include="InstanceWrapper.cpp" />
     <ClCompile Include="spirv_reflect.c" />
     <ClCompile Include="spirv_reflect.cpp" />
@@ -217,6 +218,7 @@
     <ClInclude Include="DescriptorPoolWrapper.h" />
     <ClInclude Include="GPUObject.h" />
     <ClInclude Include="ImGuiIncludes.h" />
+    <ClInclude Include="ImGuiWrapper.h" />
     <ClInclude Include="InstanceWrapper.h" />
     <ClInclude Include="RapidJSONIncludes.h" />
     <ClInclude Include="spirv_reflect.h" />

@@ -13,6 +13,7 @@ namespace D3D
 {
     // Class forward declarations
     class ModelComponent;
+    class ImGuiWrapper;
     class DescriptorPoolManager;
     class InstanceWrapper;
     class SurfaceWrapper;
@@ -73,6 +74,9 @@ namespace D3D
         std::vector<VkDeviceMemory> m_LightMemory{};
         std::vector<void*> m_LightMapped{};
         //----Member variables----
+
+        // ImGui Wrapper
+        std::unique_ptr<ImGuiWrapper> m_pImGuiWrapper{};
 
         // Instance wrapper
         std::unique_ptr<InstanceWrapper> m_pInstanceWrapper{};
@@ -142,8 +146,6 @@ namespace D3D
         //--Descriptorpool--
         std::unique_ptr<DescriptorPoolManager> m_pDescriptorPoolManager{};
 
-        VkDescriptorPool m_IMguiDescriptorPool{};
-
         //--Sync objects--
         std::vector<VkSemaphore> m_ImageAvailableSemaphores{};
         std::vector<VkSemaphore> m_RenderFinishedSemaphores{};
@@ -209,9 +211,6 @@ namespace D3D
         //--Framebuffers--
         void CreateFramebuffers();
 
-        //--DescriptorPool--
-        void CreateImGUIDescriptorPool();
-
         //--CommandBuffers--
         void CreateCommandBuffers();
         void RecordCommandBuffer(VkCommandBuffer& commandBuffer, uint32_t imageIndex);
@@ -234,13 +233,6 @@ namespace D3D
         void CreateTextureImage();
         void CreateTextureImageView();
         void CreateTextureSampler();
-
-
-        //ImGUI Render
-        void RenderImGui(VkCommandBuffer commandBuffer);
-
-        
-
     };
 }
 

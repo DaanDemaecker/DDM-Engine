@@ -46,6 +46,32 @@ namespace D3D
 		VkPipelineLayout pipelineLayout{};
 	};
 
+	// Struct for compacting vulkan textures
+	struct Texture
+	{
+		// VkImage object
+		VkImage image{};
+		// VkDeviceMemory object
+		VkDeviceMemory imageMemory{};
+		// VkImageView object
+		VkImageView imageView{};
+		// The amount of levels the mipmap will have
+		uint32_t mipLevels{};
+
+		// Cleanup function
+		// Parameters: 
+		//     device: handle to VkDevice
+		virtual void Cleanup(VkDevice device)
+		{
+			// Destroy the image view
+			vkDestroyImageView(device, imageView, nullptr);
+			// Destroy the image
+			vkDestroyImage(device, image, nullptr);
+			// Free the memory
+			vkFreeMemory(device, imageMemory, nullptr);
+		}
+	};
+
 	struct Vertex
 	{
 		glm::vec3 pos;

@@ -10,6 +10,8 @@ namespace D3D
 	public:
 		TransformComponent() = default;
 		~TransformComponent() = default;
+		
+		virtual void OnGUI() override;
 
 		//Location
 		const glm::vec3& GetLocalPosition() const { return m_LocalPosition; }
