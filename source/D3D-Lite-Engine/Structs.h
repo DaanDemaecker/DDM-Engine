@@ -21,6 +21,18 @@ namespace D3D
 		}
 	};
 
+	struct QueueObject
+	{
+		//-Graphics queue-
+		VkQueue graphicsQueue{};
+
+		//-Graphics queue index-
+		uint32_t graphicsQueueIndex{};
+
+		//-Present queue-
+		VkQueue presentQueue{};
+	};
+
 	struct SwapChainSupportDetails
 	{
 		VkSurfaceCapabilitiesKHR capabilities{};

@@ -142,6 +142,9 @@
     <ClCompile Include="SurfaceWrapper.cpp">
       <Filter>Vulkan\Wrappers</Filter>
     </ClCompile>
+    <ClCompile Include="GPUObject.cpp">
+      <Filter>Vulkan\Wrappers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Utils.h">
@@ -259,6 +262,9 @@
       <Filter>Vulkan</Filter>
     </ClInclude>
     <ClInclude Include="SurfaceWrapper.h">
+      <Filter>Vulkan\Wrappers</Filter>
+    </ClInclude>
+    <ClInclude Include="GPUObject.h">
       <Filter>Vulkan\Wrappers</Filter>
     </ClInclude>
   </ItemGroup>
