@@ -18,6 +18,7 @@ namespace D3D
     class InstanceWrapper;
     class SurfaceWrapper;
     class GPUObject;
+    class SyncObjectManager;
 
     class VulkanRenderer final : public Singleton<VulkanRenderer>
     {
@@ -87,6 +88,9 @@ namespace D3D
         // GPU object
         std::unique_ptr<GPUObject> m_pGPUObject{};
 
+        // Sync object manager
+        std::unique_ptr<SyncObjectManager> m_pSyncObjectManager{};
+
         //--Swapchain--
         VkSwapchainKHR m_SwapChain = VK_NULL_HANDLE;
 
@@ -145,11 +149,6 @@ namespace D3D
 
         //--Descriptorpool--
         std::unique_ptr<DescriptorPoolManager> m_pDescriptorPoolManager{};
-
-        //--Sync objects--
-        std::vector<VkSemaphore> m_ImageAvailableSemaphores{};
-        std::vector<VkSemaphore> m_RenderFinishedSemaphores{};
-        std::vector<VkFence> m_InFlightFences{};
 
 
         //--Current frame--
@@ -214,9 +213,6 @@ namespace D3D
         //--CommandBuffers--
         void CreateCommandBuffers();
         void RecordCommandBuffer(VkCommandBuffer& commandBuffer, uint32_t imageIndex);
-
-        //--Sync Objects--
-        void CreateSyncObjects();
 
         //--LightBuffers--
         void CreateLightBuffer();

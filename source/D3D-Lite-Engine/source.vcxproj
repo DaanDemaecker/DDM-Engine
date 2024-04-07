@@ -185,6 +185,7 @@
     <ClCompile Include="spirv_reflect.cpp" />
     <ClCompile Include="STBIncludes.cpp" />
     <ClCompile Include="SurfaceWrapper.cpp" />
+    <ClCompile Include="SyncObjectManager.cpp" />
     <ClCompile Include="TexturedMaterial.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="main.cpp" />
@@ -223,6 +224,7 @@
     <ClInclude Include="RapidJSONIncludes.h" />
     <ClInclude Include="spirv_reflect.h" />
     <ClInclude Include="SurfaceWrapper.h" />
+    <ClInclude Include="SyncObjectManager.h" />
     <ClInclude Include="TexturedMaterial.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GLFWIncludes.h" />
