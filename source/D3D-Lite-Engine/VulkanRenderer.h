@@ -16,6 +16,7 @@ namespace D3D
     class DescriptorPoolManager;
     class InstanceWrapper;
     class SurfaceWrapper;
+    class GPUObject;
 
     class VulkanRenderer final : public Singleton<VulkanRenderer>
     {
@@ -37,7 +38,7 @@ namespace D3D
        
         //Public getters
         size_t GetMaxFrames() const { return m_MaxFramesInFlight; }
-        VkDevice& GetDevice() { return m_Device; }
+        VkDevice GetDevice();
         VkCommandPool& GetCommandPool() { return m_CommandPool; }
         VkImageView& GetDefaultImageView() { return m_DefaultTextureImageView; }
         VkSampler& GetSampler() { return m_TextureSampler; }
@@ -79,24 +80,8 @@ namespace D3D
         // Surface wrapper
         std::unique_ptr<SurfaceWrapper> m_pSurfaceWrapper{};
 
-
-        //--Physical Device--
-        VkPhysicalDevice m_PhysicalDevice = VK_NULL_HANDLE;
-
-        //-Physical Device Extensions-
-        const std::vector<const char*> m_DeviceExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
-
-        //--Logical device--
-        VkDevice m_Device = VK_NULL_HANDLE;
-
-        //-Graphics queue-
-        VkQueue m_GraphicsQueue{};
-
-        //-Graphics queue index-
-        uint32_t m_GraphicsQueueIndex{};
-
-        //-Present queue-
-        VkQueue m_PresentQueue{};
+        // GPU object
+        std::unique_ptr<GPUObject> m_pGPUObject{};
 
         //--Swapchain--
         VkSwapchainKHR m_SwapChain = VK_NULL_HANDLE;
@@ -190,19 +175,8 @@ namespace D3D
         void InitVulkan();
         void InitImGui();
 
-        //--Physical device--
-        void PickPhysicalDevice();
-
-        //-Physical device helper functions-
-        bool IsDeviceSuitable(VkPhysicalDevice device);
-
-        //--Logical Device--
-        void CreateLogicalDevice();
-
         //--Swapchain--
         void CreateSwapChain();
-
-        bool CheckDeviceExtensionSupport(VkPhysicalDevice device);
 
         //-Swapchain Helper Functions-
         VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);

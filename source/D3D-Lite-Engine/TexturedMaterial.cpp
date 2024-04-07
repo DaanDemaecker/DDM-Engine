@@ -29,7 +29,7 @@ D3D::TexturedMaterial::TexturedMaterial(std::initializer_list<const std::string>
 
 D3D::TexturedMaterial::~TexturedMaterial()
 {
-	auto& device{ VulkanRenderer::GetInstance().GetDevice() };
+	auto device{ VulkanRenderer::GetInstance().GetDevice() };
 
 	for (auto& imageView : m_TextureImageViews)
 	{
@@ -79,7 +79,7 @@ D3D::DescriptorPoolWrapper* D3D::TexturedMaterial::GetDescriptorPool()
 void D3D::TexturedMaterial::CreateTextureImage(const std::string& filePath, int index)
 {
 	auto& renderer{ VulkanRenderer::GetInstance() };
-	auto& device{ renderer.GetDevice() };
+	auto device{ renderer.GetDevice() };
 
 	int texWidth, texHeight, texChannels;
 

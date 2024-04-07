@@ -17,6 +17,7 @@
 #include "Window.h"
 
 #include "InstanceWrapper.h"
+#include "GPUObject.h"
 
 #include "VulkanUtils.h"
 
@@ -33,7 +34,7 @@ D3D::VulkanRenderer::VulkanRenderer()
 
 D3D::VulkanRenderer::~VulkanRenderer()
 {
-	vkDeviceWaitIdle(m_Device);
+	m_pGPUObject->WaitIdle();
 
 	CleanupImGui();
 
@@ -44,44 +45,46 @@ void D3D::VulkanRenderer::CleanupVulkan()
 {
 	CleanupSwapChain();
 
-	vkDestroySampler(m_Device, m_TextureSampler, nullptr);
-	vkDestroyImageView(m_Device, m_DefaultTextureImageView, nullptr);
-	vkDestroyImage(m_Device, m_DefaultTextureImage, nullptr);
-	vkFreeMemory(m_Device, m_DefaultTextureImageMemory, nullptr);
+	auto device{ m_pGPUObject->GetDevice() };
+
+	vkDestroySampler(device, m_TextureSampler, nullptr);
+	vkDestroyImageView(device, m_DefaultTextureImageView, nullptr);
+	vkDestroyImage(device, m_DefaultTextureImage, nullptr);
+	vkFreeMemory(device, m_DefaultTextureImageMemory, nullptr);
 
 	for (size_t i{}; i < m_MaxFramesInFlight; i++)
 	{
-		vkDestroyBuffer(m_Device, m_LightBuffers[i], nullptr);
-		vkFreeMemory(m_Device, m_LightMemory[i], nullptr);
+		vkDestroyBuffer(device, m_LightBuffers[i], nullptr);
+		vkFreeMemory(device, m_LightMemory[i], nullptr);
 	}
 
-	m_pDescriptorPoolManager->Cleanup(m_Device);
+	m_pDescriptorPoolManager->Cleanup(device);
 
-	vkDestroyDescriptorPool(m_Device, m_IMguiDescriptorPool, nullptr);
+	vkDestroyDescriptorPool(device, m_IMguiDescriptorPool, nullptr);
 
 	for (auto& pair : m_DescriptorSetLayouts)
 	{
-		vkDestroyDescriptorSetLayout(m_Device, pair.second, nullptr);
+		vkDestroyDescriptorSetLayout(device, pair.second, nullptr);
 	}
 
 	for (auto& pipeline : m_GraphicPipelines)
 	{
-		vkDestroyPipeline(m_Device, pipeline.second.pipeline, nullptr);
-		vkDestroyPipelineLayout(m_Device, pipeline.second.pipelineLayout, nullptr);
+		vkDestroyPipeline(device, pipeline.second.pipeline, nullptr);
+		vkDestroyPipelineLayout(device, pipeline.second.pipelineLayout, nullptr);
 	}
 
-	vkDestroyRenderPass(m_Device, m_RenderPass, nullptr);
+	vkDestroyRenderPass(device, m_RenderPass, nullptr);
 
 	for (size_t i = 0; i < m_MaxFramesInFlight; ++i)
 	{
-		vkDestroySemaphore(m_Device, m_ImageAvailableSemaphores[i], nullptr);
-		vkDestroySemaphore(m_Device, m_RenderFinishedSemaphores[i], nullptr);
-		vkDestroyFence(m_Device, m_InFlightFences[i], nullptr);
+		vkDestroySemaphore(device, m_ImageAvailableSemaphores[i], nullptr);
+		vkDestroySemaphore(device, m_RenderFinishedSemaphores[i], nullptr);
+		vkDestroyFence(device, m_InFlightFences[i], nullptr);
 	}
 
-	vkDestroyCommandPool(m_Device, m_CommandPool, nullptr);
+	vkDestroyCommandPool(device, m_CommandPool, nullptr);
 
-	vkDestroyDevice(m_Device, nullptr);
+	m_pGPUObject->CleanUp();
 
 	m_pSurfaceWrapper->Cleanup(m_pInstanceWrapper->GetInstance());
 }
@@ -100,8 +103,12 @@ void D3D::VulkanRenderer::InitVulkan()
 
 	m_pSurfaceWrapper = std::make_unique<SurfaceWrapper>(m_pInstanceWrapper->GetInstance());
 
-	PickPhysicalDevice();
-	CreateLogicalDevice();
+	m_pGPUObject = std::make_unique<GPUObject>(m_pInstanceWrapper.get(), m_pSurfaceWrapper->GetSurface());
+
+	// Get the max amount of samples per pixel
+	m_MsaaSamples = VulkanUtils::GetMaxUsableSampleCount(m_pGPUObject->GetPhysicalDevice());
+
+
 	CreateSwapChain();
 	CreateImageViews();
 	CreateRenderPass();
@@ -136,10 +143,10 @@ void D3D::VulkanRenderer::InitImGui()
 	ImGui_ImplGlfw_InitForVulkan(D3D::Window::GetInstance().GetWindowStruct().pWindow, true);
 	ImGui_ImplVulkan_InitInfo init_info = {};
 	init_info.Instance = m_pInstanceWrapper->GetInstance(); // Your Vulkan instance
-	init_info.PhysicalDevice = m_PhysicalDevice; // Your Vulkan physical device
-	init_info.Device = m_Device; // Your Vulkan logical device
-	init_info.QueueFamily = m_GraphicsQueueIndex; // The index of your Vulkan queue family that supports graphics operations
-	init_info.Queue = m_GraphicsQueue; // Your Vulkan graphics queue
+	init_info.PhysicalDevice = m_pGPUObject->GetPhysicalDevice(); // Your Vulkan physical device
+	init_info.Device = m_pGPUObject->GetDevice(); // Your Vulkan logical device
+	init_info.QueueFamily = m_pGPUObject->GetQueueObject().graphicsQueueIndex; // The index of your Vulkan queue family that supports graphics operations
+	init_info.Queue = m_pGPUObject->GetQueueObject().graphicsQueue; // Your Vulkan graphics queue
 	init_info.PipelineCache = VK_NULL_HANDLE;
 	init_info.DescriptorPool = m_IMguiDescriptorPool; // Your Vulkan descriptor pool
 	init_info.Allocator = VK_NULL_HANDLE;
@@ -157,10 +164,12 @@ void D3D::VulkanRenderer::InitImGui()
 
 void D3D::VulkanRenderer::AddGraphicsPipeline(const std::string& pipelineName, const std::string& vertShaderName, const std::string& fragShaderName, int vertexUbos, int fragmentUbos, int textureAmount)
 {
+	auto device{ m_pGPUObject->GetDevice() };
+
 	if (m_GraphicPipelines.contains(pipelineName))
 	{
-		vkDestroyPipeline(m_Device, m_GraphicPipelines[pipelineName].pipeline, nullptr);
-		vkDestroyPipelineLayout(m_Device, m_GraphicPipelines[pipelineName].pipelineLayout, nullptr);
+		vkDestroyPipeline(device, m_GraphicPipelines[pipelineName].pipeline, nullptr);
+		vkDestroyPipelineLayout(device, m_GraphicPipelines[pipelineName].pipelineLayout, nullptr);
 	}
 
 	auto vertShaderCode = Utils::readFile(vertShaderName);
@@ -306,7 +315,7 @@ void D3D::VulkanRenderer::AddGraphicsPipeline(const std::string& pipelineName, c
 	//pipelineLayoutInfo.pushConstantRangeCount = 1; // Number of push constant ranges used by the pipeline
 	//pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange; // Array of push constant ranges used by the pipeline
 
-	if (vkCreatePipelineLayout(m_Device, &pipelineLayoutInfo, nullptr, &m_GraphicPipelines[pipelineName].pipelineLayout) != VK_SUCCESS) {
+	if (vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &m_GraphicPipelines[pipelineName].pipelineLayout) != VK_SUCCESS) {
 		throw std::runtime_error("failed to create pipeline layout!");
 	}
 
@@ -328,12 +337,17 @@ void D3D::VulkanRenderer::AddGraphicsPipeline(const std::string& pipelineName, c
 	pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
 
 
-	if (vkCreateGraphicsPipelines(m_Device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &m_GraphicPipelines[pipelineName].pipeline) != VK_SUCCESS) {
+	if (vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &m_GraphicPipelines[pipelineName].pipeline) != VK_SUCCESS) {
 		throw std::runtime_error("failed to create graphics pipeline!");
 	}
 
-	vkDestroyShaderModule(m_Device, fragShaderModule, nullptr);
-	vkDestroyShaderModule(m_Device, vertShaderModule, nullptr);
+	vkDestroyShaderModule(device, fragShaderModule, nullptr);
+	vkDestroyShaderModule(device, vertShaderModule, nullptr);
+}
+
+VkDevice D3D::VulkanRenderer::GetDevice()
+{
+	return m_pGPUObject->GetDevice();
 }
 
 VkDescriptorSetLayout* D3D::VulkanRenderer::GetDescriptorSetLayout(int vertexUbos, int fragmentUbos, int textureAmount)
@@ -348,10 +362,13 @@ VkDescriptorSetLayout* D3D::VulkanRenderer::GetDescriptorSetLayout(int vertexUbo
 
 void D3D::VulkanRenderer::Render()
 {
-	vkWaitForFences(m_Device, 1, &m_InFlightFences[m_CurrentFrame], VK_TRUE, UINT64_MAX);
+	auto device{ m_pGPUObject->GetDevice() };
+	auto queueObject{ m_pGPUObject->GetQueueObject() };
+
+	vkWaitForFences(device, 1, &m_InFlightFences[m_CurrentFrame], VK_TRUE, UINT64_MAX);
 
 	uint32_t imageIndex{};
-	VkResult result = vkAcquireNextImageKHR(m_Device, m_SwapChain, UINT64_MAX, m_ImageAvailableSemaphores[m_CurrentFrame], VK_NULL_HANDLE, &imageIndex);
+	VkResult result = vkAcquireNextImageKHR(device, m_SwapChain, UINT64_MAX, m_ImageAvailableSemaphores[m_CurrentFrame], VK_NULL_HANDLE, &imageIndex);
 
 	if (result == VK_ERROR_OUT_OF_DATE_KHR)
 	{
@@ -365,7 +382,7 @@ void D3D::VulkanRenderer::Render()
 
 
 
-	vkResetFences(m_Device, 1, &m_InFlightFences[m_CurrentFrame]);
+	vkResetFences(device, 1, &m_InFlightFences[m_CurrentFrame]);
 
 	vkResetCommandBuffer(m_CommandBuffers[m_CurrentFrame], 0);
 	RecordCommandBuffer(m_CommandBuffers[m_CurrentFrame], imageIndex);
@@ -387,7 +404,7 @@ void D3D::VulkanRenderer::Render()
 	submitInfo.signalSemaphoreCount = 1;
 	submitInfo.pSignalSemaphores = signalSemaphores;
 
-	if (vkQueueSubmit(m_GraphicsQueue, 1, &submitInfo, m_InFlightFences[m_CurrentFrame]) != VK_SUCCESS)
+	if (vkQueueSubmit(queueObject.graphicsQueue, 1, &submitInfo, m_InFlightFences[m_CurrentFrame]) != VK_SUCCESS)
 	{
 		throw std::runtime_error("failed to submit draw command buffer!");
 	}
@@ -405,7 +422,7 @@ void D3D::VulkanRenderer::Render()
 
 	presentInfo.pResults = nullptr;
 
-	result = vkQueuePresentKHR(m_PresentQueue, &presentInfo);
+	result = vkQueuePresentKHR(queueObject.presentQueue, &presentInfo);
 
 
 	auto& window{ Window::GetInstance().GetWindowStruct()};
@@ -512,119 +529,13 @@ D3D::DescriptorPoolManager* D3D::VulkanRenderer::GetDescriptorPoolManager() cons
 	return m_pDescriptorPoolManager.get();
 }
 
-void D3D::VulkanRenderer::PickPhysicalDevice()
-{
-	//Get number of physical devices that support Vulkan
-	uint32_t deviceCount = 0;
-	vkEnumeratePhysicalDevices(m_pInstanceWrapper->GetInstance(), &deviceCount, nullptr);
-
-	//If no physical devices found, throw runtime error
-	if (deviceCount == 0)
-	{
-		throw std::runtime_error("failed to find GPUs with Vulkan support!");
-	}
-
-	//Allocate array to hold physical devices handles
-	std::vector<VkPhysicalDevice> devices(deviceCount);
-	vkEnumeratePhysicalDevices(m_pInstanceWrapper->GetInstance(), &deviceCount, devices.data());
-
-	//use an ordered map to automatically sort candidates by increasing score
-	std::multimap<int, VkPhysicalDevice> candidates;
-
-	for (const auto& device : devices)
-	{
-		if (IsDeviceSuitable(device))
-		{
-			m_PhysicalDevice = device;
-			m_MsaaSamples = VulkanUtils::GetMaxUsableSampleCount(m_PhysicalDevice);
-			break;
-		}
-	}
-
-	if (m_PhysicalDevice == VK_NULL_HANDLE)
-	{
-		throw std::runtime_error("failed to find a suitable GPU!");
-	}
-}
-
-bool D3D::VulkanRenderer::IsDeviceSuitable(VkPhysicalDevice device)
-{
-	QueueFamilyIndices indices = VulkanUtils::FindQueueFamilies(device, m_pSurfaceWrapper->GetSurface());
-
-	bool extensionsSupported = CheckDeviceExtensionSupport(device);
-
-	bool swapChainAdequate = false;
-
-	if (extensionsSupported)
-	{
-		SwapChainSupportDetails swapChainSupport = VulkanUtils::QuerySwapChainSupport(device, m_pSurfaceWrapper->GetSurface());
-		swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
-	}
-
-	VkPhysicalDeviceFeatures supportedFeatures{};
-	vkGetPhysicalDeviceFeatures(device, &supportedFeatures);
-
-	return indices.isComplete() && extensionsSupported && swapChainAdequate && supportedFeatures.samplerAnisotropy;
-}
-
-void D3D::VulkanRenderer::CreateLogicalDevice()
-{
-	QueueFamilyIndices indices = VulkanUtils::FindQueueFamilies(m_PhysicalDevice, m_pSurfaceWrapper->GetSurface());
-
-	std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
-	std::set<uint32_t> uniqueQueueFamilies = { indices.graphicsFamily.value(), indices.presentFamily.value() };
-	m_GraphicsQueueIndex = indices.graphicsFamily.value();
-
-	float queuePriority = 1.0f;
-	for (uint32_t queueFamily : uniqueQueueFamilies)
-	{
-		VkDeviceQueueCreateInfo queueCreateInfo{};
-		queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-		queueCreateInfo.queueFamilyIndex = queueFamily;
-		queueCreateInfo.queueCount = 1;
-		queueCreateInfo.pQueuePriorities = &queuePriority;
-		queueCreateInfos.push_back(queueCreateInfo);
-	}
-
-	VkPhysicalDeviceFeatures deviceFeatures{};
-	deviceFeatures.samplerAnisotropy = VK_TRUE;
-	deviceFeatures.sampleRateShading = VK_TRUE;
-
-	VkDeviceCreateInfo createInfo{};
-	createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-
-	createInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());
-	createInfo.pQueueCreateInfos = queueCreateInfos.data();
-
-
-	createInfo.pEnabledFeatures = &deviceFeatures;
-
-	createInfo.enabledExtensionCount = static_cast<uint32_t>(m_DeviceExtensions.size());
-	createInfo.ppEnabledExtensionNames = m_DeviceExtensions.data();
-
-	if (m_pInstanceWrapper->ValidationLayersEnabled())
-	{
-		createInfo.enabledLayerCount = static_cast<uint32_t>(m_pInstanceWrapper->GetValidationLayers().size());
-		createInfo.ppEnabledLayerNames = m_pInstanceWrapper->GetValidationLayers().data();
-	}
-	else
-	{
-		createInfo.enabledLayerCount = 0;
-	}
-
-	if (vkCreateDevice(m_PhysicalDevice, &createInfo, nullptr, &m_Device) != VK_SUCCESS)
-	{
-		throw std::runtime_error("failed to create logical device!");
-	}
-
-	vkGetDeviceQueue(m_Device, indices.graphicsFamily.value(), 0, &m_GraphicsQueue);
-	vkGetDeviceQueue(m_Device, indices.presentFamily.value(), 0, &m_PresentQueue);
-}
-
 
 void D3D::VulkanRenderer::CreateSwapChain()
 {
-	SwapChainSupportDetails swapChainSupport = VulkanUtils::QuerySwapChainSupport(m_PhysicalDevice, m_pSurfaceWrapper->GetSurface());
+	auto device{ m_pGPUObject->GetDevice() };
+	auto physicalDevice{ m_pGPUObject->GetPhysicalDevice() };
+
+	SwapChainSupportDetails swapChainSupport = VulkanUtils::QuerySwapChainSupport(m_pGPUObject->GetPhysicalDevice(), m_pSurfaceWrapper->GetSurface());
 
 	VkSurfaceFormatKHR surfaceFormat = ChooseSwapSurfaceFormat(swapChainSupport.formats);
 	VkPresentModeKHR presentMode = ChooseSwapPresentMode(swapChainSupport.presentModes);
@@ -649,7 +560,7 @@ void D3D::VulkanRenderer::CreateSwapChain()
 	createInfo.imageArrayLayers = 1;
 	createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
-	QueueFamilyIndices indices = VulkanUtils::FindQueueFamilies(m_PhysicalDevice, m_pSurfaceWrapper->GetSurface());
+	QueueFamilyIndices indices = VulkanUtils::FindQueueFamilies(physicalDevice, m_pSurfaceWrapper->GetSurface());
 	uint32_t queueFamilyIndices[] = { indices.graphicsFamily.value(), indices.presentFamily.value() };
 
 	if (indices.graphicsFamily != indices.presentFamily)
@@ -673,40 +584,17 @@ void D3D::VulkanRenderer::CreateSwapChain()
 	createInfo.clipped = VK_TRUE;
 	createInfo.oldSwapchain = VK_NULL_HANDLE;
 
-	if (vkCreateSwapchainKHR(m_Device, &createInfo, nullptr, &m_SwapChain) != VK_SUCCESS)
+	if (vkCreateSwapchainKHR(device, &createInfo, nullptr, &m_SwapChain) != VK_SUCCESS)
 	{
 		throw std::runtime_error("failed to create swap chain!");
 	}
 
-	vkGetSwapchainImagesKHR(m_Device, m_SwapChain, &imageCount, nullptr);
+	vkGetSwapchainImagesKHR(device, m_SwapChain, &imageCount, nullptr);
 	m_SwapChainImages.resize(imageCount);
-	vkGetSwapchainImagesKHR(m_Device, m_SwapChain, &imageCount, m_SwapChainImages.data());
+	vkGetSwapchainImagesKHR(device, m_SwapChain, &imageCount, m_SwapChainImages.data());
 
 	m_SwapChainImageFormat = surfaceFormat.format;
 	m_SwapChainExtent = extent;
-}
-
-bool D3D::VulkanRenderer::CheckDeviceExtensionSupport(VkPhysicalDevice device)
-{
-	//Check how many extensions this device supports
-	uint32_t extensionCount;
-	vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
-
-	//Get a list of all available extensions
-	std::vector<VkExtensionProperties> availableExtensions(extensionCount);
-	vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, availableExtensions.data());
-
-	//Create a set of required extensions to avoid duplicates
-	std::set<std::string> requiredExtensions(m_DeviceExtensions.begin(), m_DeviceExtensions.end());
-
-	//Clear all available extensions from the required ones
-	for (const auto& extension : availableExtensions)
-	{
-		requiredExtensions.erase(extension.extensionName);
-	}
-
-	//If the required extensions are empty, they are all available
-	return requiredExtensions.empty();
 }
 
 VkSurfaceFormatKHR D3D::VulkanRenderer::ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats)
@@ -759,30 +647,32 @@ VkExtent2D D3D::VulkanRenderer::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR&
 
 void D3D::VulkanRenderer::CleanupSwapChain()
 {
+	auto device{ m_pGPUObject->GetDevice() };
+
 	for (size_t i = 0; i < m_SwapChainFramebuffers.size(); ++i)
 	{
-		vkDestroyFramebuffer(m_Device, m_SwapChainFramebuffers[i], nullptr);
+		vkDestroyFramebuffer(device, m_SwapChainFramebuffers[i], nullptr);
 	}
 
 	for (size_t i = 0; i < m_SwapChainImageViews.size(); ++i)
 	{
-		vkDestroyImageView(m_Device, m_SwapChainImageViews[i], nullptr);
+		vkDestroyImageView(device, m_SwapChainImageViews[i], nullptr);
 	}
 
-	vkDestroySwapchainKHR(m_Device, m_SwapChain, nullptr);
+	vkDestroySwapchainKHR(device, m_SwapChain, nullptr);
 
-	vkDestroyImageView(m_Device, m_DepthImageView, nullptr);
-	vkDestroyImage(m_Device, m_DepthImage, nullptr);
-	vkFreeMemory(m_Device, m_DepthImageMemory, nullptr);
+	vkDestroyImageView(device, m_DepthImageView, nullptr);
+	vkDestroyImage(device, m_DepthImage, nullptr);
+	vkFreeMemory(device, m_DepthImageMemory, nullptr);
 
-	vkDestroyImageView(m_Device, m_ColorImageView, nullptr);
-	vkDestroyImage(m_Device, m_ColorImage, nullptr);
-	vkFreeMemory(m_Device, m_ColorImageMemory, nullptr);
+	vkDestroyImageView(device, m_ColorImageView, nullptr);
+	vkDestroyImage(device, m_ColorImage, nullptr);
+	vkFreeMemory(device, m_ColorImageMemory, nullptr);
 }
 
 void D3D::VulkanRenderer::RecreateSwapChain()
 {
-	vkDeviceWaitIdle(m_Device);
+	m_pGPUObject->WaitIdle();
 
 	CleanupSwapChain();
 
@@ -819,7 +709,7 @@ void D3D::VulkanRenderer::CreateRenderPass()
 
 
 	VkAttachmentDescription depthAttachment{};
-	depthAttachment.format = VulkanUtils::FindDepthFormat(m_PhysicalDevice);
+	depthAttachment.format = VulkanUtils::FindDepthFormat(m_pGPUObject->GetPhysicalDevice());
 	depthAttachment.samples = m_MsaaSamples;
 	depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
 	depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
@@ -876,7 +766,7 @@ void D3D::VulkanRenderer::CreateRenderPass()
 	renderPassInfo.pDependencies = &dependency;
 
 
-	if (vkCreateRenderPass(m_Device, &renderPassInfo, nullptr, &m_RenderPass) != VK_SUCCESS)
+	if (vkCreateRenderPass(m_pGPUObject->GetDevice(), &renderPassInfo, nullptr, &m_RenderPass) != VK_SUCCESS)
 	{
 		throw std::runtime_error("failed to create render pass!");
 	}
@@ -932,7 +822,7 @@ void D3D::VulkanRenderer::CreateDescriptorLayout(int vertexUbos, int fragmentUbo
 
 	m_DescriptorSetLayouts[tuple] = VK_NULL_HANDLE;
 
-	if (vkCreateDescriptorSetLayout(m_Device, &layoutInfo, nullptr, &m_DescriptorSetLayouts[tuple]) != VK_SUCCESS)
+	if (vkCreateDescriptorSetLayout(m_pGPUObject->GetDevice(), &layoutInfo, nullptr, &m_DescriptorSetLayouts[tuple]) != VK_SUCCESS)
 	{
 		throw std::runtime_error("failed to create descriptor set layout!");
 	}
@@ -946,7 +836,7 @@ VkShaderModule D3D::VulkanRenderer::CreateShaderModule(const std::vector<char>& 
 	createInfo.pCode = reinterpret_cast<const uint32_t*>(code.data());
 
 	VkShaderModule shaderModule;
-	if (vkCreateShaderModule(m_Device, &createInfo, nullptr, &shaderModule) != VK_SUCCESS)
+	if (vkCreateShaderModule(m_pGPUObject->GetDevice(), &createInfo, nullptr, &shaderModule) != VK_SUCCESS)
 	{
 		throw std::runtime_error("failed to create shader module!");
 	}
@@ -956,14 +846,14 @@ VkShaderModule D3D::VulkanRenderer::CreateShaderModule(const std::vector<char>& 
 
 void D3D::VulkanRenderer::CreateCommandPool()
 {
-	QueueFamilyIndices queueFamilyIndices = VulkanUtils::FindQueueFamilies(m_PhysicalDevice, m_pSurfaceWrapper->GetSurface());
+	QueueFamilyIndices queueFamilyIndices = VulkanUtils::FindQueueFamilies(m_pGPUObject->GetPhysicalDevice(), m_pSurfaceWrapper->GetSurface());
 
 	VkCommandPoolCreateInfo poolInfo{};
 	poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
 	poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 	poolInfo.queueFamilyIndex = queueFamilyIndices.graphicsFamily.value();
 
-	if (vkCreateCommandPool(m_Device, &poolInfo, nullptr, &m_CommandPool) != VK_SUCCESS)
+	if (vkCreateCommandPool(m_pGPUObject->GetDevice(), &poolInfo, nullptr, &m_CommandPool) != VK_SUCCESS)
 	{
 		throw std::runtime_error("failed to create command pool!");
 	}
@@ -1002,7 +892,7 @@ void D3D::VulkanRenderer::CreateFramebuffers()
 		framebufferInfo.height = m_SwapChainExtent.height;
 		framebufferInfo.layers = 1;
 
-		if (vkCreateFramebuffer(m_Device, &framebufferInfo, nullptr, &m_SwapChainFramebuffers[i]) != VK_SUCCESS)
+		if (vkCreateFramebuffer(m_pGPUObject->GetDevice(), &framebufferInfo, nullptr, &m_SwapChainFramebuffers[i]) != VK_SUCCESS)
 		{
 			throw std::runtime_error("failed to create framebuffer!");
 		}
@@ -1023,7 +913,7 @@ void D3D::VulkanRenderer::CreateImGUIDescriptorPool()
 	poolInfo.pPoolSizes = poolSizes.data();
 	poolInfo.maxSets = static_cast<uint32_t>(m_MaxFramesInFlight);
 
-	if (vkCreateDescriptorPool(m_Device, &poolInfo, nullptr, &m_IMguiDescriptorPool) != VK_SUCCESS) {
+	if (vkCreateDescriptorPool(m_pGPUObject->GetDevice(), &poolInfo, nullptr, &m_IMguiDescriptorPool) != VK_SUCCESS) {
 		throw std::runtime_error("failed to create descriptor pool!");
 	}
 }
@@ -1038,7 +928,7 @@ void D3D::VulkanRenderer::CreateCommandBuffers()
 	allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
 	allocInfo.commandBufferCount = static_cast<uint32_t>(m_CommandBuffers.size());
 
-	if (vkAllocateCommandBuffers(m_Device, &allocInfo, m_CommandBuffers.data()) != VK_SUCCESS)
+	if (vkAllocateCommandBuffers(m_pGPUObject->GetDevice(), &allocInfo, m_CommandBuffers.data()) != VK_SUCCESS)
 	{
 		throw std::runtime_error("failed to allocate command buffers!");
 	}
@@ -1062,7 +952,7 @@ void D3D::VulkanRenderer::CreateLightBuffer()
 		CreateBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
 			m_LightBuffers[i], m_LightMemory[i]);
 
-		vkMapMemory(m_Device, m_LightMemory[i], 0, bufferSize, 0, &m_LightMapped[i]);
+		vkMapMemory(m_pGPUObject->GetDevice(), m_LightMemory[i], 0, bufferSize, 0, &m_LightMapped[i]);
 
 		UpdateLightBuffer(static_cast<int>(i));
 	}
@@ -1092,12 +982,13 @@ void D3D::VulkanRenderer::CreateSyncObjects()
 	fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
 	fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 
+	auto device{ m_pGPUObject->GetDevice() };
 
 	for (size_t i = 0; i < m_MaxFramesInFlight; ++i)
 	{
-		if (vkCreateSemaphore(m_Device, &semaphoreInfo, nullptr, &m_ImageAvailableSemaphores[i]) != VK_SUCCESS ||
-			vkCreateSemaphore(m_Device, &semaphoreInfo, nullptr, &m_RenderFinishedSemaphores[i]) != VK_SUCCESS ||
-			vkCreateFence(m_Device, &fenceInfo, nullptr, &m_InFlightFences[i]) != VK_SUCCESS)
+		if (vkCreateSemaphore(device, &semaphoreInfo, nullptr, &m_ImageAvailableSemaphores[i]) != VK_SUCCESS ||
+			vkCreateSemaphore(device, &semaphoreInfo, nullptr, &m_RenderFinishedSemaphores[i]) != VK_SUCCESS ||
+			vkCreateFence(device, &fenceInfo, nullptr, &m_InFlightFences[i]) != VK_SUCCESS)
 		{
 			throw std::runtime_error("failed to create sync objects!");
 		}
@@ -1106,7 +997,7 @@ void D3D::VulkanRenderer::CreateSyncObjects()
 
 void D3D::VulkanRenderer::CreateDepthResources()
 {
-	VkFormat depthFormat = VulkanUtils::FindDepthFormat(m_PhysicalDevice);
+	VkFormat depthFormat = VulkanUtils::FindDepthFormat(m_pGPUObject->GetPhysicalDevice());
 
 	CreateImage(m_SwapChainExtent.width, m_SwapChainExtent.height, 1, m_MsaaSamples, depthFormat,
 		VK_IMAGE_TILING_OPTIMAL,
@@ -1121,6 +1012,8 @@ void D3D::VulkanRenderer::CreateDepthResources()
 
 void D3D::VulkanRenderer::CreateImage(uint32_t width, uint32_t height, uint32_t mipLevels, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory)
 {
+	auto device{ m_pGPUObject->GetDevice() };
+
 	VkImageCreateInfo imageInfo{};
 	imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
 	imageInfo.imageType = VK_IMAGE_TYPE_2D;
@@ -1137,26 +1030,26 @@ void D3D::VulkanRenderer::CreateImage(uint32_t width, uint32_t height, uint32_t 
 	imageInfo.samples = numSamples;
 	imageInfo.flags = 0;
 
-	if (vkCreateImage(m_Device, &imageInfo, nullptr, &image) != VK_SUCCESS)
+	if (vkCreateImage(device, &imageInfo, nullptr, &image) != VK_SUCCESS)
 	{
 		throw std::runtime_error("failed to create image!");
 	}
 
 	VkMemoryRequirements memRequirements;
-	vkGetImageMemoryRequirements(m_Device, image, &memRequirements);
+	vkGetImageMemoryRequirements(device, image, &memRequirements);
 
 	VkMemoryAllocateInfo allocInfo{};
 	allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
 	allocInfo.allocationSize = memRequirements.size;
-	allocInfo.memoryTypeIndex = VulkanUtils::FindMemoryType(m_PhysicalDevice, memRequirements.memoryTypeBits, properties);
+	allocInfo.memoryTypeIndex = VulkanUtils::FindMemoryType(m_pGPUObject->GetPhysicalDevice(), memRequirements.memoryTypeBits, properties);
 
-	if (vkAllocateMemory(m_Device, &allocInfo, nullptr, &imageMemory) != VK_SUCCESS)
+	if (vkAllocateMemory(device, &allocInfo, nullptr, &imageMemory) != VK_SUCCESS)
 	{
 		throw std::runtime_error("failed to allocate image memory!");
 	}
 
 
-	vkBindImageMemory(m_Device, image, imageMemory, 0);
+	vkBindImageMemory(device, image, imageMemory, 0);
 }
 
 VkImageView D3D::VulkanRenderer::CreateImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels)
@@ -1173,7 +1066,7 @@ VkImageView D3D::VulkanRenderer::CreateImageView(VkImage image, VkFormat format,
 	viewInfo.subresourceRange.layerCount = 1;
 
 	VkImageView imageView;
-	if (vkCreateImageView(m_Device, &viewInfo, nullptr, &imageView) != VK_SUCCESS)
+	if (vkCreateImageView(m_pGPUObject->GetDevice(), &viewInfo, nullptr, &imageView) != VK_SUCCESS)
 	{
 		throw std::runtime_error("failed to create texture image view!");
 	}
@@ -1265,7 +1158,7 @@ VkCommandBuffer D3D::VulkanRenderer::BeginSingleTimeCommands()
 	allocInfo.commandBufferCount = 1;
 
 	VkCommandBuffer commandBuffer;
-	vkAllocateCommandBuffers(m_Device, &allocInfo, &commandBuffer);
+	vkAllocateCommandBuffers(m_pGPUObject->GetDevice(), &allocInfo, &commandBuffer);
 
 	VkCommandBufferBeginInfo beginInfo{};
 	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -1285,37 +1178,41 @@ void D3D::VulkanRenderer::EndSingleTimeCommands(VkCommandBuffer comandBuffer)
 	submitInfo.commandBufferCount = 1;
 	submitInfo.pCommandBuffers = &comandBuffer;
 
-	vkQueueSubmit(m_GraphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
-	vkQueueWaitIdle(m_GraphicsQueue);
+	auto graphicsQueue{ m_pGPUObject->GetQueueObject().graphicsQueue };
 
-	vkFreeCommandBuffers(m_Device, m_CommandPool, 1, &comandBuffer);
+	vkQueueSubmit(graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
+	vkQueueWaitIdle(graphicsQueue);
+
+	vkFreeCommandBuffers(m_pGPUObject->GetDevice(), m_CommandPool, 1, &comandBuffer);
 }
 
 void D3D::VulkanRenderer::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory)
 {
+	auto device{ m_pGPUObject->GetDevice() };
+
 	VkBufferCreateInfo bufferInfo{};
 	bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
 	bufferInfo.size = size;
 	bufferInfo.usage = usage;
 	bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
-	if (vkCreateBuffer(m_Device, &bufferInfo, nullptr, &buffer) != VK_SUCCESS) {
+	if (vkCreateBuffer(device, &bufferInfo, nullptr, &buffer) != VK_SUCCESS) {
 		throw std::runtime_error("failed to create buffer!");
 	}
 
 	VkMemoryRequirements memRequirements;
-	vkGetBufferMemoryRequirements(m_Device, buffer, &memRequirements);
+	vkGetBufferMemoryRequirements(device, buffer, &memRequirements);
 
 	VkMemoryAllocateInfo allocInfo{};
 	allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
 	allocInfo.allocationSize = memRequirements.size;
-	allocInfo.memoryTypeIndex = VulkanUtils::FindMemoryType(m_PhysicalDevice, memRequirements.memoryTypeBits, properties);
+	allocInfo.memoryTypeIndex = VulkanUtils::FindMemoryType(m_pGPUObject->GetPhysicalDevice(), memRequirements.memoryTypeBits, properties);
 
-	if (vkAllocateMemory(m_Device, &allocInfo, nullptr, &bufferMemory) != VK_SUCCESS) {
+	if (vkAllocateMemory(device, &allocInfo, nullptr, &bufferMemory) != VK_SUCCESS) {
 		throw std::runtime_error("failed to allocate buffer memory!");
 	}
 
-	vkBindBufferMemory(m_Device, buffer, bufferMemory, 0);
+	vkBindBufferMemory(device, buffer, bufferMemory, 0);
 }
 
 void D3D::VulkanRenderer::CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size)
@@ -1359,6 +1256,8 @@ bool D3D::VulkanRenderer::HasStencilComponent(VkFormat format)
 
 void D3D::VulkanRenderer::CreateTextureImage()
 {
+	auto device{ m_pGPUObject->GetDevice()};
+
 	int texWidth, texHeight, texChannels;
 
 	stbi_uc* pixels = stbi_load(m_DefaultTextureName.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
@@ -1380,9 +1279,9 @@ void D3D::VulkanRenderer::CreateTextureImage()
 
 	void* data;
 
-	vkMapMemory(m_Device, stagingBufferMemory, 0, imageSize, 0, &data);
+	vkMapMemory(device, stagingBufferMemory, 0, imageSize, 0, &data);
 	memcpy(data, pixels, static_cast<size_t>(imageSize));
-	vkUnmapMemory(m_Device, stagingBufferMemory);
+	vkUnmapMemory(device, stagingBufferMemory);
 
 	stbi_image_free(pixels);
 
@@ -1395,8 +1294,8 @@ void D3D::VulkanRenderer::CreateTextureImage()
 
 	///transitionImageLayout(m_TextureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, m_MipLevels);
 
-	vkDestroyBuffer(m_Device, stagingBuffer, nullptr);
-	vkFreeMemory(m_Device, stagingBufferMemory, nullptr);
+	vkDestroyBuffer(device, stagingBuffer, nullptr);
+	vkFreeMemory(device, stagingBufferMemory, nullptr);
 
 	GenerateMipmaps(m_DefaultTextureImage, VK_FORMAT_R8G8B8A8_SRGB, texWidth, texHeight, m_MipLevels);
 }
@@ -1418,7 +1317,7 @@ void D3D::VulkanRenderer::CreateTextureSampler()
 	samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
 
 	VkPhysicalDeviceProperties properties{};
-	vkGetPhysicalDeviceProperties(m_PhysicalDevice, &properties);
+	vkGetPhysicalDeviceProperties(m_pGPUObject->GetPhysicalDevice(), &properties);
 
 	samplerInfo.anisotropyEnable = VK_TRUE;
 	samplerInfo.maxAnisotropy = properties.limits.maxSamplerAnisotropy;
@@ -1434,7 +1333,7 @@ void D3D::VulkanRenderer::CreateTextureSampler()
 	samplerInfo.minLod = 0.0f;
 	samplerInfo.maxLod = static_cast<float>(m_MipLevels);
 
-	if (vkCreateSampler(m_Device, &samplerInfo, nullptr, &m_TextureSampler) != VK_SUCCESS)
+	if (vkCreateSampler(m_pGPUObject->GetDevice(), &samplerInfo, nullptr, &m_TextureSampler) != VK_SUCCESS)
 	{
 		throw std::runtime_error("failed to create texture sampler!");
 	}
@@ -1496,7 +1395,7 @@ void D3D::VulkanRenderer::CopyBufferToImage(VkBuffer buffer, VkImage image, uint
 void D3D::VulkanRenderer::GenerateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels)
 {
 	VkFormatProperties formatProperties{};
-	vkGetPhysicalDeviceFormatProperties(m_PhysicalDevice, imageFormat, &formatProperties);
+	vkGetPhysicalDeviceFormatProperties(m_pGPUObject->GetPhysicalDevice(), imageFormat, &formatProperties);
 
 	if (!(formatProperties.optimalTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT))
 	{
