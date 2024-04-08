@@ -151,6 +151,9 @@
     <ClCompile Include="SyncObjectManager.cpp">
       <Filter>Vulkan\Managers</Filter>
     </ClCompile>
+    <ClCompile Include="CommandpoolManager.cpp">
+      <Filter>Vulkan\Managers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Utils.h">
@@ -277,6 +280,9 @@
       <Filter>Vulkan\Managers</Filter>
     </ClInclude>
     <ClInclude Include="SyncObjectManager.h">
+      <Filter>Vulkan\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="CommandpoolManager.h">
       <Filter>Vulkan\Managers</Filter>
     </ClInclude>
   </ItemGroup>

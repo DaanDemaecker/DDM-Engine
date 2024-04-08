@@ -19,6 +19,7 @@ namespace D3D
     class SurfaceWrapper;
     class GPUObject;
     class SyncObjectManager;
+    class CommandpoolManager;
 
     class VulkanRenderer final : public Singleton<VulkanRenderer>
     {
@@ -41,11 +42,10 @@ namespace D3D
         //Public getters
         size_t GetMaxFrames() const { return m_MaxFramesInFlight; }
         VkDevice GetDevice();
-        VkCommandPool& GetCommandPool() { return m_CommandPool; }
         VkImageView& GetDefaultImageView() { return m_DefaultTextureImageView; }
         VkSampler& GetSampler() { return m_TextureSampler; }
         D3D::PipelinePair& GetPipeline(const std::string& name = "Default");
-        VkCommandBuffer& GetCurrentCommandBuffer() { return m_CommandBuffers[m_CurrentFrame]; }
+        VkCommandBuffer& GetCurrentCommandBuffer();
         uint32_t GetCurrentFrame() const { return  m_CurrentFrame; }
         DescriptorPoolManager* GetDescriptorPoolManager() const;
         const LightObject& GetGlobalLight() const { return m_GlobalLight; }
@@ -91,6 +91,9 @@ namespace D3D
         // Sync object manager
         std::unique_ptr<SyncObjectManager> m_pSyncObjectManager{};
 
+        // CommandpoolManager
+        std::unique_ptr<CommandpoolManager> m_pCommandpoolManager{};
+
         //--Swapchain--
         VkSwapchainKHR m_SwapChain = VK_NULL_HANDLE;
 
@@ -125,12 +128,6 @@ namespace D3D
         const std::string m_DefaultPipelineName{ "Default" };
         const std::string m_DefaultVertName{ "../resources/DefaultResources/Default.Vert.spv" };
         const std::string m_DefaultFragName{ "../resources/DefaultResources/Default.Frag.spv" };
-
-        //--CommandPool--
-        VkCommandPool m_CommandPool{};
-
-        //CommandBuffer
-        std::vector<VkCommandBuffer> m_CommandBuffers{};
 
 
         //--MultiSampling--
@@ -198,9 +195,6 @@ namespace D3D
         //-Shader Module-
         VkShaderModule CreateShaderModule(const std::vector<char>& code);
 
-        //--Command Pool
-        void CreateCommandPool();
-
         //--MultiSampling--
         void CreateColorResources();
 
@@ -211,7 +205,6 @@ namespace D3D
         void CreateFramebuffers();
 
         //--CommandBuffers--
-        void CreateCommandBuffers();
         void RecordCommandBuffer(VkCommandBuffer& commandBuffer, uint32_t imageIndex);
 
         //--LightBuffers--

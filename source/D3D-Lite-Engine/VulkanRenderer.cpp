@@ -11,6 +11,7 @@
 #include "CameraComponent.h"
 #include "TransformComponent.h"
 #include "SurfaceWrapper.h"
+#include "CommandpoolManager.h"
 
 #include "STBIncludes.h"
 #include "ImGuiIncludes.h"
@@ -77,7 +78,7 @@ void D3D::VulkanRenderer::CleanupVulkan()
 
 	m_pSyncObjectManager->Cleanup(device);
 
-	vkDestroyCommandPool(device, m_CommandPool, nullptr);
+	m_pCommandpoolManager->Cleanup(device);
 
 	m_pGPUObject->CleanUp();
 
@@ -109,7 +110,9 @@ void D3D::VulkanRenderer::InitVulkan()
 
 	AddGraphicsPipeline(m_DefaultPipelineName, m_DefaultVertName, m_DefaultFragName, 1, 1, 0);
 
-	CreateCommandPool();
+	m_pCommandpoolManager = std::make_unique<CommandpoolManager>(m_pGPUObject.get(), m_pSurfaceWrapper->GetSurface(),
+		static_cast<uint32_t>(m_MaxFramesInFlight));
+
 	CreateColorResources();
 	CreateDepthResources();
 	CreateFramebuffers();
@@ -119,9 +122,6 @@ void D3D::VulkanRenderer::InitVulkan()
 	CreateTextureImage();
 	CreateTextureImageView();
 	CreateTextureSampler();
-
-	CreateCommandBuffers();
-
 
 	// Initialize the sync objects
 	m_pSyncObjectManager = std::make_unique<SyncObjectManager>(m_pGPUObject->GetDevice(),
@@ -385,8 +385,9 @@ void D3D::VulkanRenderer::Render()
 
 	vkResetFences(device, 1, &m_pSyncObjectManager->GetInFlightFence(m_CurrentFrame));
 
-	vkResetCommandBuffer(m_CommandBuffers[m_CurrentFrame], 0);
-	RecordCommandBuffer(m_CommandBuffers[m_CurrentFrame], imageIndex);
+	auto commandBuffer{ GetCurrentCommandBuffer() };
+	vkResetCommandBuffer(commandBuffer, 0);
+	RecordCommandBuffer(commandBuffer, imageIndex);
 
 
 	VkSubmitInfo submitInfo{};
@@ -399,7 +400,7 @@ void D3D::VulkanRenderer::Render()
 	submitInfo.pWaitDstStageMask = waitStages;
 
 	submitInfo.commandBufferCount = 1;
-	submitInfo.pCommandBuffers = &m_CommandBuffers[m_CurrentFrame];
+	submitInfo.pCommandBuffers = &GetCurrentCommandBuffer();
 
 	VkSemaphore signalSemaphores[] = { m_pSyncObjectManager->GetRenderFinishedSemaphore(m_CurrentFrame) };
 	submitInfo.signalSemaphoreCount = 1;
@@ -524,6 +525,11 @@ D3D::PipelinePair& D3D::VulkanRenderer::GetPipeline(const std::string& name)
 	{
 		return m_GraphicPipelines[m_DefaultPipelineName];
 	}
+}
+
+VkCommandBuffer& D3D::VulkanRenderer::GetCurrentCommandBuffer()
+{
+	return m_pCommandpoolManager->GetCommandBuffer(m_CurrentFrame);
 }
 
 D3D::DescriptorPoolManager* D3D::VulkanRenderer::GetDescriptorPoolManager() const
@@ -846,21 +852,6 @@ VkShaderModule D3D::VulkanRenderer::CreateShaderModule(const std::vector<char>& 
 	return shaderModule;
 }
 
-void D3D::VulkanRenderer::CreateCommandPool()
-{
-	QueueFamilyIndices queueFamilyIndices = VulkanUtils::FindQueueFamilies(m_pGPUObject->GetPhysicalDevice(), m_pSurfaceWrapper->GetSurface());
-
-	VkCommandPoolCreateInfo poolInfo{};
-	poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-	poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
-	poolInfo.queueFamilyIndex = queueFamilyIndices.graphicsFamily.value();
-
-	if (vkCreateCommandPool(m_pGPUObject->GetDevice(), &poolInfo, nullptr, &m_CommandPool) != VK_SUCCESS)
-	{
-		throw std::runtime_error("failed to create command pool!");
-	}
-}
-
 void D3D::VulkanRenderer::CreateColorResources()
 {
 	VkFormat colorFormat = m_SwapChainImageFormat;
@@ -898,22 +889,6 @@ void D3D::VulkanRenderer::CreateFramebuffers()
 		{
 			throw std::runtime_error("failed to create framebuffer!");
 		}
-	}
-}
-
-void D3D::VulkanRenderer::CreateCommandBuffers()
-{
-	m_CommandBuffers.resize(m_MaxFramesInFlight);
-
-	VkCommandBufferAllocateInfo allocInfo{};
-	allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-	allocInfo.commandPool = m_CommandPool;
-	allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-	allocInfo.commandBufferCount = static_cast<uint32_t>(m_CommandBuffers.size());
-
-	if (vkAllocateCommandBuffers(m_pGPUObject->GetDevice(), &allocInfo, m_CommandBuffers.data()) != VK_SUCCESS)
-	{
-		throw std::runtime_error("failed to allocate command buffers!");
 	}
 }
 
@@ -1107,39 +1082,12 @@ void D3D::VulkanRenderer::TransitionImageLayout(VkImage image, VkFormat format, 
 
 VkCommandBuffer D3D::VulkanRenderer::BeginSingleTimeCommands()
 {
-	VkCommandBufferAllocateInfo allocInfo{};
-	allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-	allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-	allocInfo.commandPool = m_CommandPool;
-	allocInfo.commandBufferCount = 1;
-
-	VkCommandBuffer commandBuffer;
-	vkAllocateCommandBuffers(m_pGPUObject->GetDevice(), &allocInfo, &commandBuffer);
-
-	VkCommandBufferBeginInfo beginInfo{};
-	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-	beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
-
-	vkBeginCommandBuffer(commandBuffer, &beginInfo);
-
-	return commandBuffer;
+	return m_pCommandpoolManager->BeginSingleTimeCommands(m_pGPUObject->GetDevice());
 }
 
 void D3D::VulkanRenderer::EndSingleTimeCommands(VkCommandBuffer comandBuffer)
 {
-	vkEndCommandBuffer(comandBuffer);
-
-	VkSubmitInfo submitInfo{};
-	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-	submitInfo.commandBufferCount = 1;
-	submitInfo.pCommandBuffers = &comandBuffer;
-
-	auto graphicsQueue{ m_pGPUObject->GetQueueObject().graphicsQueue };
-
-	vkQueueSubmit(graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
-	vkQueueWaitIdle(graphicsQueue);
-
-	vkFreeCommandBuffers(m_pGPUObject->GetDevice(), m_CommandPool, 1, &comandBuffer);
+	m_pCommandpoolManager->EndSingleTimeCommands(m_pGPUObject.get(), comandBuffer);
 }
 
 void D3D::VulkanRenderer::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory)
