@@ -54,8 +54,6 @@ namespace D3D
 		std::shared_ptr<Material> m_pMaterial{};
 
 		//Initialization functions
-		void CreateVertexBuffer();
-		void CreateIndexBuffer();
 		void CreateUniformBuffers();
 
 		void UpdateDescriptorSets();

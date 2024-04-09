@@ -12,6 +12,7 @@
 #include "TransformComponent.h"
 #include "SurfaceWrapper.h"
 #include "CommandpoolManager.h"
+#include "BufferManager.h"
 
 #include "STBIncludes.h"
 #include "ImGuiIncludes.h"
@@ -92,6 +93,8 @@ void D3D::VulkanRenderer::CleanupImGui()
 
 void D3D::VulkanRenderer::InitVulkan()
 {
+	m_pBufferManager = std::make_unique<BufferManager>();
+
 	m_pInstanceWrapper = std::make_unique<InstanceWrapper>();
 
 	m_pSurfaceWrapper = std::make_unique<SurfaceWrapper>(m_pInstanceWrapper->GetInstance());
@@ -1090,47 +1093,6 @@ void D3D::VulkanRenderer::EndSingleTimeCommands(VkCommandBuffer comandBuffer)
 	m_pCommandpoolManager->EndSingleTimeCommands(m_pGPUObject.get(), comandBuffer);
 }
 
-void D3D::VulkanRenderer::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory)
-{
-	auto device{ m_pGPUObject->GetDevice() };
-
-	VkBufferCreateInfo bufferInfo{};
-	bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-	bufferInfo.size = size;
-	bufferInfo.usage = usage;
-	bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-
-	if (vkCreateBuffer(device, &bufferInfo, nullptr, &buffer) != VK_SUCCESS) {
-		throw std::runtime_error("failed to create buffer!");
-	}
-
-	VkMemoryRequirements memRequirements;
-	vkGetBufferMemoryRequirements(device, buffer, &memRequirements);
-
-	VkMemoryAllocateInfo allocInfo{};
-	allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-	allocInfo.allocationSize = memRequirements.size;
-	allocInfo.memoryTypeIndex = VulkanUtils::FindMemoryType(m_pGPUObject->GetPhysicalDevice(), memRequirements.memoryTypeBits, properties);
-
-	if (vkAllocateMemory(device, &allocInfo, nullptr, &bufferMemory) != VK_SUCCESS) {
-		throw std::runtime_error("failed to allocate buffer memory!");
-	}
-
-	vkBindBufferMemory(device, buffer, bufferMemory, 0);
-}
-
-void D3D::VulkanRenderer::CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size)
-{
-	VkCommandBuffer commandBuffer = BeginSingleTimeCommands();
-
-	VkBufferCopy copyRegion{};
-	copyRegion.size = size;
-
-	vkCmdCopyBuffer(commandBuffer, srcBuffer, dstBuffer, 1, &copyRegion);
-
-	EndSingleTimeCommands(commandBuffer);
-}
-
 void D3D::VulkanRenderer::UpdateUniformBuffer(UniformBufferObject& buffer)
 {
 	auto pCamera{SceneManager::GetInstance().GetCamera()};
@@ -1364,4 +1326,28 @@ void D3D::VulkanRenderer::GenerateMipmaps(VkImage image, VkFormat imageFormat, i
 		1, &barrier);
 
 	EndSingleTimeCommands(commandBuffer);
+}
+
+void D3D::VulkanRenderer::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory)
+{
+	// Create the buffer trough vulkan utils
+	m_pBufferManager->CreateBuffer(m_pGPUObject.get(), size, usage, properties, buffer, bufferMemory);
+}
+
+void D3D::VulkanRenderer::CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size)
+{
+	// Copy a buffer trough the bufferManager
+	m_pBufferManager->CopyBuffer(m_pGPUObject.get(), m_pCommandpoolManager.get(), srcBuffer, dstBuffer, size);
+}
+
+void D3D::VulkanRenderer::CreateVertexBuffer(std::vector<D3D::Vertex>& vertices, VkBuffer& vertexBuffer, VkDeviceMemory& vertexBufferMemory)
+{
+	// Create a vertex buffer trough the buffer manager
+	m_pBufferManager->CreateVertexBuffer(m_pGPUObject.get(), m_pCommandpoolManager.get(), vertices, vertexBuffer, vertexBufferMemory);
+}
+
+void D3D::VulkanRenderer::CreateIndexBuffer(std::vector<uint32_t>& indices, VkBuffer& indexBuffer, VkDeviceMemory& indexBufferMemory)
+{
+	// Create an index buffer trough the buffer manager
+	m_pBufferManager->CreateIndexBuffer(m_pGPUObject.get(), m_pCommandpoolManager.get(), indices, indexBuffer, indexBufferMemory);
 }

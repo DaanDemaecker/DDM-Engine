@@ -20,6 +20,7 @@ namespace D3D
     class GPUObject;
     class SyncObjectManager;
     class CommandpoolManager;
+    class BufferManager;
 
     class VulkanRenderer final : public Singleton<VulkanRenderer>
     {
@@ -51,10 +52,36 @@ namespace D3D
         const LightObject& GetGlobalLight() const { return m_GlobalLight; }
         std::vector<VkBuffer>& GetLightBuffers() { return m_LightBuffers; }
 
-        //Public Helpers
+    
+        // Create a buffer
+        // Parameters:
+        //     size: the size of the buffer
+        //     usage: the usage flags for the buffer
+        //     properties: the property flags for the buffer
+        //     buffer: reference to the buffer to be made
+        //     bufferMemory: reference to the memory of the buffer that will be made
         void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
+
+        // Copy a buffer to another buffer
+        // Parameters:
+        //     srcBuffer: the source buffer
+        //     dstBuffer: the destination buffer
+        //     size: the size of the buffers
         void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
-        void CopyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
+
+        // Create a vertex buffer
+        // Parameters:
+        //     vertices: reference to vector of vertices 
+        //     vertexBuffer: handle to the vertex buffer to be created
+        //     vertexBufferMemory: handle of the vertex buffer memory
+        void CreateVertexBuffer(std::vector<D3D::Vertex>& vertices, VkBuffer& vertexBuffer, VkDeviceMemory& vertexBufferMemory);
+
+        // Create a vertex buffer
+        // Parameters:
+        //     indices: reference to vector of indices 
+        //     indexBuffer: handle to the index buffer to be created
+        //     indexBufferMemory: handle of the index buffer memory
+        void CreateIndexBuffer(std::vector<uint32_t>& indices, VkBuffer& indexBuffer, VkDeviceMemory& indexBufferMemory); void CopyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
         void GenerateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels);
         void CreateImage(uint32_t width, uint32_t height, uint32_t mipLevels, VkSampleCountFlagBits numSamples,
             VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory);
@@ -93,6 +120,9 @@ namespace D3D
 
         // CommandpoolManager
         std::unique_ptr<CommandpoolManager> m_pCommandpoolManager{};
+
+        // BufferManager
+        std::unique_ptr<BufferManager> m_pBufferManager{};
 
         //--Swapchain--
         VkSwapchainKHR m_SwapChain = VK_NULL_HANDLE;
