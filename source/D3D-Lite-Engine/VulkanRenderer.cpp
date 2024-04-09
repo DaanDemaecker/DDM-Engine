@@ -13,6 +13,7 @@
 #include "SurfaceWrapper.h"
 #include "CommandpoolManager.h"
 #include "BufferManager.h"
+#include "ImageManager.h"
 
 #include "STBIncludes.h"
 #include "ImGuiIncludes.h"
@@ -38,7 +39,7 @@ D3D::VulkanRenderer::VulkanRenderer()
 
 D3D::VulkanRenderer::~VulkanRenderer()
 {
-	m_pGPUObject->WaitIdle();
+	m_pGpuObject->WaitIdle();
 
 	CleanupImGui();
 
@@ -49,12 +50,11 @@ void D3D::VulkanRenderer::CleanupVulkan()
 {
 	CleanupSwapChain();
 
-	auto device{ m_pGPUObject->GetDevice() };
+	auto device{ m_pGpuObject->GetDevice() };
 
 	vkDestroySampler(device, m_TextureSampler, nullptr);
-	vkDestroyImageView(device, m_DefaultTextureImageView, nullptr);
-	vkDestroyImage(device, m_DefaultTextureImage, nullptr);
-	vkFreeMemory(device, m_DefaultTextureImageMemory, nullptr);
+	
+	m_pImageManager->Cleanup(device);
 
 	for (size_t i{}; i < m_MaxFramesInFlight; i++)
 	{
@@ -79,16 +79,16 @@ void D3D::VulkanRenderer::CleanupVulkan()
 
 	m_pSyncObjectManager->Cleanup(device);
 
-	m_pCommandpoolManager->Cleanup(device);
+	m_pCommandPoolManager->Cleanup(device);
 
-	m_pGPUObject->CleanUp();
+	m_pGpuObject->CleanUp();
 
 	m_pSurfaceWrapper->Cleanup(m_pInstanceWrapper->GetInstance());
 }
 
 void D3D::VulkanRenderer::CleanupImGui()
 {
-	m_pImGuiWrapper->Cleanup(m_pGPUObject->GetDevice());
+	m_pImGuiWrapper->Cleanup(m_pGpuObject->GetDevice());
 }
 
 void D3D::VulkanRenderer::InitVulkan()
@@ -99,22 +99,27 @@ void D3D::VulkanRenderer::InitVulkan()
 
 	m_pSurfaceWrapper = std::make_unique<SurfaceWrapper>(m_pInstanceWrapper->GetInstance());
 
-	m_pGPUObject = std::make_unique<GPUObject>(m_pInstanceWrapper.get(), m_pSurfaceWrapper->GetSurface());
+	m_pGpuObject = std::make_unique<GPUObject>(m_pInstanceWrapper.get(), m_pSurfaceWrapper->GetSurface());
 
 	// Get the max amount of samples per pixel
-	m_MsaaSamples = VulkanUtils::GetMaxUsableSampleCount(m_pGPUObject->GetPhysicalDevice());
+	m_MsaaSamples = VulkanUtils::GetMaxUsableSampleCount(m_pGpuObject->GetPhysicalDevice());
+
+	m_pCommandPoolManager = std::make_unique<CommandpoolManager>(m_pGpuObject.get(), m_pSurfaceWrapper->GetSurface(),
+		static_cast<uint32_t>(m_MaxFramesInFlight));
+
+	// Initialize the image manager
+	m_pImageManager = std::make_unique<ImageManager>(m_pGpuObject.get(), m_pBufferManager.get(), m_pCommandPoolManager.get());
 
 
 	CreateSwapChain();
+
 	CreateImageViews();
+
 	CreateRenderPass();
 
 	CreateLightBuffer();
 
 	AddGraphicsPipeline(m_DefaultPipelineName, m_DefaultVertName, m_DefaultFragName, 1, 1, 0);
-
-	m_pCommandpoolManager = std::make_unique<CommandpoolManager>(m_pGPUObject.get(), m_pSurfaceWrapper->GetSurface(),
-		static_cast<uint32_t>(m_MaxFramesInFlight));
 
 	CreateColorResources();
 	CreateDepthResources();
@@ -122,12 +127,10 @@ void D3D::VulkanRenderer::InitVulkan()
 
 	m_pDescriptorPoolManager = std::make_unique<DescriptorPoolManager>();
 
-	CreateTextureImage();
-	CreateTextureImageView();
 	CreateTextureSampler();
 
 	// Initialize the sync objects
-	m_pSyncObjectManager = std::make_unique<SyncObjectManager>(m_pGPUObject->GetDevice(),
+	m_pSyncObjectManager = std::make_unique<SyncObjectManager>(m_pGpuObject->GetDevice(),
 		static_cast<uint32_t>(m_MaxFramesInFlight));
 }
 
@@ -138,13 +141,13 @@ void D3D::VulkanRenderer::InitImGui()
 	// Give the vulkan instance
 	init_info.Instance = m_pInstanceWrapper->GetInstance();
 	// Give the physical device
-	init_info.PhysicalDevice = m_pGPUObject->GetPhysicalDevice();
+	init_info.PhysicalDevice = m_pGpuObject->GetPhysicalDevice();
 	// Give the logical device
-	init_info.Device = m_pGPUObject->GetDevice();
+	init_info.Device = m_pGpuObject->GetDevice();
 	// Give the index of the graphics queue family
-	init_info.QueueFamily = m_pGPUObject->GetQueueObject().graphicsQueueIndex;
+	init_info.QueueFamily = m_pGpuObject->GetQueueObject().graphicsQueueIndex;
 	// Give the graphics queue
-	init_info.Queue = m_pGPUObject->GetQueueObject().graphicsQueue;
+	init_info.Queue = m_pGpuObject->GetQueueObject().graphicsQueue;
 	// Set pipeline cache to null handle
 	init_info.PipelineCache = VK_NULL_HANDLE;
 	// Set Allocator to null handle
@@ -161,14 +164,14 @@ void D3D::VulkanRenderer::InitImGui()
 	// Create a single time command buffer
 	auto commandBuffer{ BeginSingleTimeCommands() };
 	// Initialize ImGui
-	m_pImGuiWrapper = std::make_unique<D3D::ImGuiWrapper>(init_info, m_RenderPass, commandBuffer, m_pGPUObject->GetDevice(), static_cast<uint32_t>(m_MaxFramesInFlight));
+	m_pImGuiWrapper = std::make_unique<D3D::ImGuiWrapper>(init_info, m_RenderPass, commandBuffer, m_pGpuObject->GetDevice(), static_cast<uint32_t>(m_MaxFramesInFlight));
 	// End the single time command buffer
 	EndSingleTimeCommands(commandBuffer);
 }
 
 void D3D::VulkanRenderer::AddGraphicsPipeline(const std::string& pipelineName, const std::string& vertShaderName, const std::string& fragShaderName, int vertexUbos, int fragmentUbos, int textureAmount)
 {
-	auto device{ m_pGPUObject->GetDevice() };
+	auto device{ m_pGpuObject->GetDevice() };
 
 	if (m_GraphicPipelines.contains(pipelineName))
 	{
@@ -351,7 +354,12 @@ void D3D::VulkanRenderer::AddGraphicsPipeline(const std::string& pipelineName, c
 
 VkDevice D3D::VulkanRenderer::GetDevice()
 {
-	return m_pGPUObject->GetDevice();
+	return m_pGpuObject->GetDevice();
+}
+
+VkImageView& D3D::VulkanRenderer::GetDefaultImageView()
+{
+	return m_pImageManager->GetDefaultImageView();
 }
 
 VkDescriptorSetLayout* D3D::VulkanRenderer::GetDescriptorSetLayout(int vertexUbos, int fragmentUbos, int textureAmount)
@@ -366,8 +374,8 @@ VkDescriptorSetLayout* D3D::VulkanRenderer::GetDescriptorSetLayout(int vertexUbo
 
 void D3D::VulkanRenderer::Render()
 {
-	auto device{ m_pGPUObject->GetDevice() };
-	auto queueObject{ m_pGPUObject->GetQueueObject() };
+	auto device{ m_pGpuObject->GetDevice() };
+	auto queueObject{ m_pGpuObject->GetQueueObject() };
 
 	vkWaitForFences(device, 1, &m_pSyncObjectManager->GetInFlightFence(m_CurrentFrame), VK_TRUE, UINT64_MAX);
 
@@ -532,7 +540,7 @@ D3D::PipelinePair& D3D::VulkanRenderer::GetPipeline(const std::string& name)
 
 VkCommandBuffer& D3D::VulkanRenderer::GetCurrentCommandBuffer()
 {
-	return m_pCommandpoolManager->GetCommandBuffer(m_CurrentFrame);
+	return m_pCommandPoolManager->GetCommandBuffer(m_CurrentFrame);
 }
 
 D3D::DescriptorPoolManager* D3D::VulkanRenderer::GetDescriptorPoolManager() const
@@ -543,10 +551,10 @@ D3D::DescriptorPoolManager* D3D::VulkanRenderer::GetDescriptorPoolManager() cons
 
 void D3D::VulkanRenderer::CreateSwapChain()
 {
-	auto device{ m_pGPUObject->GetDevice() };
-	auto physicalDevice{ m_pGPUObject->GetPhysicalDevice() };
+	auto device{ m_pGpuObject->GetDevice() };
+	auto physicalDevice{ m_pGpuObject->GetPhysicalDevice() };
 
-	SwapChainSupportDetails swapChainSupport = VulkanUtils::QuerySwapChainSupport(m_pGPUObject->GetPhysicalDevice(), m_pSurfaceWrapper->GetSurface());
+	SwapChainSupportDetails swapChainSupport = VulkanUtils::QuerySwapChainSupport(m_pGpuObject->GetPhysicalDevice(), m_pSurfaceWrapper->GetSurface());
 
 	VkSurfaceFormatKHR surfaceFormat = ChooseSwapSurfaceFormat(swapChainSupport.formats);
 	VkPresentModeKHR presentMode = ChooseSwapPresentMode(swapChainSupport.presentModes);
@@ -658,7 +666,7 @@ VkExtent2D D3D::VulkanRenderer::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR&
 
 void D3D::VulkanRenderer::CleanupSwapChain()
 {
-	auto device{ m_pGPUObject->GetDevice() };
+	auto device{ m_pGpuObject->GetDevice() };
 
 	for (size_t i = 0; i < m_SwapChainFramebuffers.size(); ++i)
 	{
@@ -672,18 +680,14 @@ void D3D::VulkanRenderer::CleanupSwapChain()
 
 	vkDestroySwapchainKHR(device, m_SwapChain, nullptr);
 
-	vkDestroyImageView(device, m_DepthImageView, nullptr);
-	vkDestroyImage(device, m_DepthImage, nullptr);
-	vkFreeMemory(device, m_DepthImageMemory, nullptr);
+	m_DepthTexture.Cleanup(device);
 
-	vkDestroyImageView(device, m_ColorImageView, nullptr);
-	vkDestroyImage(device, m_ColorImage, nullptr);
-	vkFreeMemory(device, m_ColorImageMemory, nullptr);
+	m_ColorTexture.Cleanup(device);
 }
 
 void D3D::VulkanRenderer::RecreateSwapChain()
 {
-	m_pGPUObject->WaitIdle();
+	m_pGpuObject->WaitIdle();
 
 	CleanupSwapChain();
 
@@ -700,7 +704,7 @@ void D3D::VulkanRenderer::CreateImageViews()
 
 	for (size_t i = 0; i < m_SwapChainImages.size(); i++)
 	{
-		m_SwapChainImageViews[i] = CreateImageView(m_SwapChainImages[i], m_SwapChainImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
+		m_SwapChainImageViews[i] = m_pImageManager->CreateImageView(GetDevice(), m_SwapChainImages[i], m_SwapChainImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
 	}
 }
 
@@ -720,7 +724,7 @@ void D3D::VulkanRenderer::CreateRenderPass()
 
 
 	VkAttachmentDescription depthAttachment{};
-	depthAttachment.format = VulkanUtils::FindDepthFormat(m_pGPUObject->GetPhysicalDevice());
+	depthAttachment.format = VulkanUtils::FindDepthFormat(m_pGpuObject->GetPhysicalDevice());
 	depthAttachment.samples = m_MsaaSamples;
 	depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
 	depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
@@ -777,7 +781,7 @@ void D3D::VulkanRenderer::CreateRenderPass()
 	renderPassInfo.pDependencies = &dependency;
 
 
-	if (vkCreateRenderPass(m_pGPUObject->GetDevice(), &renderPassInfo, nullptr, &m_RenderPass) != VK_SUCCESS)
+	if (vkCreateRenderPass(m_pGpuObject->GetDevice(), &renderPassInfo, nullptr, &m_RenderPass) != VK_SUCCESS)
 	{
 		throw std::runtime_error("failed to create render pass!");
 	}
@@ -833,7 +837,7 @@ void D3D::VulkanRenderer::CreateDescriptorLayout(int vertexUbos, int fragmentUbo
 
 	m_DescriptorSetLayouts[tuple] = VK_NULL_HANDLE;
 
-	if (vkCreateDescriptorSetLayout(m_pGPUObject->GetDevice(), &layoutInfo, nullptr, &m_DescriptorSetLayouts[tuple]) != VK_SUCCESS)
+	if (vkCreateDescriptorSetLayout(m_pGpuObject->GetDevice(), &layoutInfo, nullptr, &m_DescriptorSetLayouts[tuple]) != VK_SUCCESS)
 	{
 		throw std::runtime_error("failed to create descriptor set layout!");
 	}
@@ -847,7 +851,7 @@ VkShaderModule D3D::VulkanRenderer::CreateShaderModule(const std::vector<char>& 
 	createInfo.pCode = reinterpret_cast<const uint32_t*>(code.data());
 
 	VkShaderModule shaderModule;
-	if (vkCreateShaderModule(m_pGPUObject->GetDevice(), &createInfo, nullptr, &shaderModule) != VK_SUCCESS)
+	if (vkCreateShaderModule(m_pGpuObject->GetDevice(), &createInfo, nullptr, &shaderModule) != VK_SUCCESS)
 	{
 		throw std::runtime_error("failed to create shader module!");
 	}
@@ -859,11 +863,11 @@ void D3D::VulkanRenderer::CreateColorResources()
 {
 	VkFormat colorFormat = m_SwapChainImageFormat;
 
-	CreateImage(m_SwapChainExtent.width, m_SwapChainExtent.height, 1, m_MsaaSamples, colorFormat,
+	m_pImageManager->CreateImage(m_pGpuObject.get(), m_SwapChainExtent.width, m_SwapChainExtent.height, 1, m_MsaaSamples, colorFormat,
 		VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
-		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_ColorImage, m_ColorImageMemory);
+		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,m_ColorTexture);
 
-	m_ColorImageView = CreateImageView(m_ColorImage, colorFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
+	m_ColorTexture.imageView = m_pImageManager->CreateImageView(GetDevice(), m_ColorTexture.image, colorFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
 }
 
 void D3D::VulkanRenderer::CreateFramebuffers()
@@ -874,8 +878,8 @@ void D3D::VulkanRenderer::CreateFramebuffers()
 	{
 		std::array<VkImageView, 3> attachments =
 		{
-			m_ColorImageView,
-			m_DepthImageView,
+			m_ColorTexture.imageView,
+			m_DepthTexture.imageView,
 			m_SwapChainImageViews[i]
 		};
 
@@ -888,7 +892,7 @@ void D3D::VulkanRenderer::CreateFramebuffers()
 		framebufferInfo.height = m_SwapChainExtent.height;
 		framebufferInfo.layers = 1;
 
-		if (vkCreateFramebuffer(m_pGPUObject->GetDevice(), &framebufferInfo, nullptr, &m_SwapChainFramebuffers[i]) != VK_SUCCESS)
+		if (vkCreateFramebuffer(m_pGpuObject->GetDevice(), &framebufferInfo, nullptr, &m_SwapChainFramebuffers[i]) != VK_SUCCESS)
 		{
 			throw std::runtime_error("failed to create framebuffer!");
 		}
@@ -913,7 +917,7 @@ void D3D::VulkanRenderer::CreateLightBuffer()
 		CreateBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
 			m_LightBuffers[i], m_LightMemory[i]);
 
-		vkMapMemory(m_pGPUObject->GetDevice(), m_LightMemory[i], 0, bufferSize, 0, &m_LightMapped[i]);
+		vkMapMemory(m_pGpuObject->GetDevice(), m_LightMemory[i], 0, bufferSize, 0, &m_LightMapped[i]);
 
 		UpdateLightBuffer(static_cast<int>(i));
 	}
@@ -931,166 +935,41 @@ void D3D::VulkanRenderer::UpdateLightBuffer(int frame)
 
 void D3D::VulkanRenderer::CreateDepthResources()
 {
-	VkFormat depthFormat = VulkanUtils::FindDepthFormat(m_pGPUObject->GetPhysicalDevice());
+	VkFormat depthFormat = VulkanUtils::FindDepthFormat(m_pGpuObject->GetPhysicalDevice());
 
-	CreateImage(m_SwapChainExtent.width, m_SwapChainExtent.height, 1, m_MsaaSamples, depthFormat,
+	m_pImageManager->CreateImage(m_pGpuObject.get(), m_SwapChainExtent.width, m_SwapChainExtent.height, 1, m_MsaaSamples, depthFormat,
 		VK_IMAGE_TILING_OPTIMAL,
 		VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
-		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-		m_DepthImage, m_DepthImageMemory);
+		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_DepthTexture);
 
-	m_DepthImageView = CreateImageView(m_DepthImage, depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT, 1);
+	m_DepthTexture.imageView = m_pImageManager->CreateImageView(GetDevice(), m_DepthTexture.image, depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT, 1);
 
-	TransitionImageLayout(m_DepthImage, depthFormat, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, 1);
-}
-
-void D3D::VulkanRenderer::CreateImage(uint32_t width, uint32_t height, uint32_t mipLevels, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory)
-{
-	auto device{ m_pGPUObject->GetDevice() };
-
-	VkImageCreateInfo imageInfo{};
-	imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
-	imageInfo.imageType = VK_IMAGE_TYPE_2D;
-	imageInfo.extent.width = width;
-	imageInfo.extent.height = height;
-	imageInfo.extent.depth = 1;
-	imageInfo.mipLevels = mipLevels;
-	imageInfo.arrayLayers = 1;
-	imageInfo.format = format;
-	imageInfo.tiling = tiling;
-	imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	imageInfo.usage = usage;
-	imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-	imageInfo.samples = numSamples;
-	imageInfo.flags = 0;
-
-	if (vkCreateImage(device, &imageInfo, nullptr, &image) != VK_SUCCESS)
-	{
-		throw std::runtime_error("failed to create image!");
-	}
-
-	VkMemoryRequirements memRequirements;
-	vkGetImageMemoryRequirements(device, image, &memRequirements);
-
-	VkMemoryAllocateInfo allocInfo{};
-	allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-	allocInfo.allocationSize = memRequirements.size;
-	allocInfo.memoryTypeIndex = VulkanUtils::FindMemoryType(m_pGPUObject->GetPhysicalDevice(), memRequirements.memoryTypeBits, properties);
-
-	if (vkAllocateMemory(device, &allocInfo, nullptr, &imageMemory) != VK_SUCCESS)
-	{
-		throw std::runtime_error("failed to allocate image memory!");
-	}
-
-
-	vkBindImageMemory(device, image, imageMemory, 0);
-}
-
-VkImageView D3D::VulkanRenderer::CreateImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels)
-{
-	VkImageViewCreateInfo viewInfo{};
-	viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-	viewInfo.image = image;
-	viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
-	viewInfo.format = format;
-	viewInfo.subresourceRange.aspectMask = aspectFlags;
-	viewInfo.subresourceRange.baseMipLevel = 0;
-	viewInfo.subresourceRange.levelCount = mipLevels;
-	viewInfo.subresourceRange.baseArrayLayer = 0;
-	viewInfo.subresourceRange.layerCount = 1;
-
-	VkImageView imageView;
-	if (vkCreateImageView(m_pGPUObject->GetDevice(), &viewInfo, nullptr, &imageView) != VK_SUCCESS)
-	{
-		throw std::runtime_error("failed to create texture image view!");
-	}
-
-	return imageView;
-}
-
-void D3D::VulkanRenderer::TransitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t mipLevels)
-{
-	VkCommandBuffer commandBuffer = BeginSingleTimeCommands();
-
-	VkImageMemoryBarrier barrier{};
-	barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-	barrier.oldLayout = oldLayout;
-	barrier.newLayout = newLayout;
-
-	barrier.image = image;
-	barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-	barrier.subresourceRange.baseMipLevel = 0;
-	barrier.subresourceRange.levelCount = mipLevels;
-	barrier.subresourceRange.baseArrayLayer = 0;
-	barrier.subresourceRange.layerCount = 1;
-
-	VkPipelineStageFlags sourceStage{};
-	VkPipelineStageFlags destinationStage{};
-
-	if (newLayout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL)
-	{
-		barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
-
-		if (HasStencilComponent(format))
-		{
-			barrier.subresourceRange.aspectMask |= VK_IMAGE_ASPECT_STENCIL_BIT;
-		}
-	}
-	else
-	{
-		barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-	}
-
-	if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)
-	{
-		barrier.srcAccessMask = 0;
-		barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-
-		sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
-		destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
-	}
-	else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
-	{
-		barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-		barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-
-		sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
-		destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-	}
-	else if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL)
-	{
-		barrier.srcAccessMask = 0;
-		barrier.dstAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
-
-		sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
-		destinationStage = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-	}
-	else
-	{
-		throw std::invalid_argument("unsupported layout transition!");
-	}
-
-
-	vkCmdPipelineBarrier(
-		commandBuffer,
-		sourceStage, destinationStage,
-		0,
-		0, nullptr,
-		0, nullptr,
-		1, &barrier
-	);
-
+	auto commandBuffer{ BeginSingleTimeCommands() };
+	m_pImageManager->TransitionImageLayout(m_DepthTexture.image, commandBuffer, depthFormat, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, 1);
 	EndSingleTimeCommands(commandBuffer);
 }
 
+void D3D::VulkanRenderer::CreateTexture(Texture& texture, const std::string& textureName)
+{
+	// Create the image trough the image manager
+	m_pImageManager->CreateTextureImage(m_pGpuObject.get(), m_pBufferManager.get(), texture, textureName, m_pCommandPoolManager.get());
+	// Create the image view
+	texture.imageView = m_pImageManager->CreateImageView(m_pGpuObject->GetDevice(), texture.image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, texture.mipLevels);
+}
+
+void D3D::VulkanRenderer::CreateCubeTexture(Texture& cubeTexture, const std::initializer_list<const std::string>& textureNames)
+{
+	// Create a cube texture trough image manager
+	m_pImageManager->CreateCubeTexture(m_pGpuObject.get(), m_pBufferManager.get(), cubeTexture, textureNames, m_pCommandPoolManager.get());
+}
 VkCommandBuffer D3D::VulkanRenderer::BeginSingleTimeCommands()
 {
-	return m_pCommandpoolManager->BeginSingleTimeCommands(m_pGPUObject->GetDevice());
+	return m_pCommandPoolManager->BeginSingleTimeCommands(m_pGpuObject->GetDevice());
 }
 
 void D3D::VulkanRenderer::EndSingleTimeCommands(VkCommandBuffer comandBuffer)
 {
-	m_pCommandpoolManager->EndSingleTimeCommands(m_pGPUObject.get(), comandBuffer);
+	m_pCommandPoolManager->EndSingleTimeCommands(m_pGpuObject.get(), comandBuffer);
 }
 
 void D3D::VulkanRenderer::UpdateUniformBuffer(UniformBufferObject& buffer)
@@ -1120,57 +999,6 @@ bool D3D::VulkanRenderer::HasStencilComponent(VkFormat format)
 	return format == VK_FORMAT_D32_SFLOAT_S8_UINT || format == VK_FORMAT_D24_UNORM_S8_UINT;
 }
 
-void D3D::VulkanRenderer::CreateTextureImage()
-{
-	auto device{ m_pGPUObject->GetDevice()};
-
-	int texWidth, texHeight, texChannels;
-
-	stbi_uc* pixels = stbi_load(m_DefaultTextureName.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
-
-	m_MipLevels = static_cast<uint32_t>(std::floor(std::log2(std::max(texWidth, texHeight)))) + 1;
-
-	VkDeviceSize imageSize = static_cast<uint64_t>(texWidth) * static_cast<uint64_t>(texHeight) * static_cast<uint64_t>(4);
-
-	if (!pixels)
-	{
-		throw std::runtime_error("failed to load texture image!");
-	}
-
-	VkBuffer stagingBuffer{};
-	VkDeviceMemory stagingBufferMemory{};
-
-	CreateBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-		stagingBuffer, stagingBufferMemory);
-
-	void* data;
-
-	vkMapMemory(device, stagingBufferMemory, 0, imageSize, 0, &data);
-	memcpy(data, pixels, static_cast<size_t>(imageSize));
-	vkUnmapMemory(device, stagingBufferMemory);
-
-	stbi_image_free(pixels);
-
-	CreateImage(texWidth, texHeight, m_MipLevels, VK_SAMPLE_COUNT_1_BIT, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL,
-		VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-		m_DefaultTextureImage, m_DefaultTextureImageMemory);
-
-	TransitionImageLayout(m_DefaultTextureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, m_MipLevels);
-	CopyBufferToImage(stagingBuffer, m_DefaultTextureImage, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
-
-	///transitionImageLayout(m_TextureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, m_MipLevels);
-
-	vkDestroyBuffer(device, stagingBuffer, nullptr);
-	vkFreeMemory(device, stagingBufferMemory, nullptr);
-
-	GenerateMipmaps(m_DefaultTextureImage, VK_FORMAT_R8G8B8A8_SRGB, texWidth, texHeight, m_MipLevels);
-}
-
-void D3D::VulkanRenderer::CreateTextureImageView()
-{
-	m_DefaultTextureImageView = CreateImageView(m_DefaultTextureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, m_MipLevels);
-}
-
 void D3D::VulkanRenderer::CreateTextureSampler()
 {
 	VkSamplerCreateInfo samplerInfo{};
@@ -1183,7 +1011,7 @@ void D3D::VulkanRenderer::CreateTextureSampler()
 	samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
 
 	VkPhysicalDeviceProperties properties{};
-	vkGetPhysicalDeviceProperties(m_pGPUObject->GetPhysicalDevice(), &properties);
+	vkGetPhysicalDeviceProperties(m_pGpuObject->GetPhysicalDevice(), &properties);
 
 	samplerInfo.anisotropyEnable = VK_TRUE;
 	samplerInfo.maxAnisotropy = properties.limits.maxSamplerAnisotropy;
@@ -1199,7 +1027,7 @@ void D3D::VulkanRenderer::CreateTextureSampler()
 	samplerInfo.minLod = 0.0f;
 	samplerInfo.maxLod = static_cast<float>(m_MipLevels);
 
-	if (vkCreateSampler(m_pGPUObject->GetDevice(), &samplerInfo, nullptr, &m_TextureSampler) != VK_SUCCESS)
+	if (vkCreateSampler(m_pGpuObject->GetDevice(), &samplerInfo, nullptr, &m_TextureSampler) != VK_SUCCESS)
 	{
 		throw std::runtime_error("failed to create texture sampler!");
 	}
@@ -1242,7 +1070,7 @@ void D3D::VulkanRenderer::CopyBufferToImage(VkBuffer buffer, VkImage image, uint
 void D3D::VulkanRenderer::GenerateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels)
 {
 	VkFormatProperties formatProperties{};
-	vkGetPhysicalDeviceFormatProperties(m_pGPUObject->GetPhysicalDevice(), imageFormat, &formatProperties);
+	vkGetPhysicalDeviceFormatProperties(m_pGpuObject->GetPhysicalDevice(), imageFormat, &formatProperties);
 
 	if (!(formatProperties.optimalTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT))
 	{
@@ -1331,23 +1159,23 @@ void D3D::VulkanRenderer::GenerateMipmaps(VkImage image, VkFormat imageFormat, i
 void D3D::VulkanRenderer::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory)
 {
 	// Create the buffer trough vulkan utils
-	m_pBufferManager->CreateBuffer(m_pGPUObject.get(), size, usage, properties, buffer, bufferMemory);
+	m_pBufferManager->CreateBuffer(m_pGpuObject.get(), size, usage, properties, buffer, bufferMemory);
 }
 
 void D3D::VulkanRenderer::CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size)
 {
 	// Copy a buffer trough the bufferManager
-	m_pBufferManager->CopyBuffer(m_pGPUObject.get(), m_pCommandpoolManager.get(), srcBuffer, dstBuffer, size);
+	m_pBufferManager->CopyBuffer(m_pGpuObject.get(), m_pCommandPoolManager.get(), srcBuffer, dstBuffer, size);
 }
 
 void D3D::VulkanRenderer::CreateVertexBuffer(std::vector<D3D::Vertex>& vertices, VkBuffer& vertexBuffer, VkDeviceMemory& vertexBufferMemory)
 {
 	// Create a vertex buffer trough the buffer manager
-	m_pBufferManager->CreateVertexBuffer(m_pGPUObject.get(), m_pCommandpoolManager.get(), vertices, vertexBuffer, vertexBufferMemory);
+	m_pBufferManager->CreateVertexBuffer(m_pGpuObject.get(), m_pCommandPoolManager.get(), vertices, vertexBuffer, vertexBufferMemory);
 }
 
 void D3D::VulkanRenderer::CreateIndexBuffer(std::vector<uint32_t>& indices, VkBuffer& indexBuffer, VkDeviceMemory& indexBufferMemory)
 {
 	// Create an index buffer trough the buffer manager
-	m_pBufferManager->CreateIndexBuffer(m_pGPUObject.get(), m_pCommandpoolManager.get(), indices, indexBuffer, indexBufferMemory);
+	m_pBufferManager->CreateIndexBuffer(m_pGpuObject.get(), m_pCommandPoolManager.get(), indices, indexBuffer, indexBufferMemory);
 }

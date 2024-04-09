@@ -21,6 +21,7 @@ namespace D3D
     class SyncObjectManager;
     class CommandpoolManager;
     class BufferManager;
+    class ImageManager;
 
     class VulkanRenderer final : public Singleton<VulkanRenderer>
     {
@@ -43,7 +44,7 @@ namespace D3D
         //Public getters
         size_t GetMaxFrames() const { return m_MaxFramesInFlight; }
         VkDevice GetDevice();
-        VkImageView& GetDefaultImageView() { return m_DefaultTextureImageView; }
+        VkImageView& GetDefaultImageView();
         VkSampler& GetSampler() { return m_TextureSampler; }
         D3D::PipelinePair& GetPipeline(const std::string& name = "Default");
         VkCommandBuffer& GetCurrentCommandBuffer();
@@ -83,10 +84,18 @@ namespace D3D
         //     indexBufferMemory: handle of the index buffer memory
         void CreateIndexBuffer(std::vector<uint32_t>& indices, VkBuffer& indexBuffer, VkDeviceMemory& indexBufferMemory); void CopyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
         void GenerateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels);
-        void CreateImage(uint32_t width, uint32_t height, uint32_t mipLevels, VkSampleCountFlagBits numSamples,
-            VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory);
-        void TransitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t mipLevels);
-        VkImageView CreateImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels);
+     
+        // Create a texture
+        // Parameters:
+        //     texture: reference to the texture object that will hold the texture
+        //     textureName: textpath to the image
+        void CreateTexture(Texture& texture, const std::string& textureName);
+
+        // Create a cube texture
+        // Parameters:
+        //     cubeTexture: reference to the texture object
+        //     textureNames: a list of the file paths for the cube faces in order: right,left,up,down,front,back
+        void CreateCubeTexture(Texture& cubeTexture, const std::initializer_list<std::string const>& textureNames);
 
         void UpdateUniformBuffer(UniformBufferObject& buffer);
 
@@ -113,16 +122,21 @@ namespace D3D
         std::unique_ptr<SurfaceWrapper> m_pSurfaceWrapper{};
 
         // GPU object
-        std::unique_ptr<GPUObject> m_pGPUObject{};
+        std::unique_ptr<GPUObject> m_pGpuObject{};
 
         // Sync object manager
         std::unique_ptr<SyncObjectManager> m_pSyncObjectManager{};
 
         // CommandpoolManager
-        std::unique_ptr<CommandpoolManager> m_pCommandpoolManager{};
+        std::unique_ptr<CommandpoolManager> m_pCommandPoolManager{};
 
         // BufferManager
         std::unique_ptr<BufferManager> m_pBufferManager{};
+
+
+        // ImageManager
+        std::unique_ptr<ImageManager> m_pImageManager{};
+
 
         //--Swapchain--
         VkSwapchainKHR m_SwapChain = VK_NULL_HANDLE;
@@ -162,14 +176,10 @@ namespace D3D
 
         //--MultiSampling--
         VkSampleCountFlagBits m_MsaaSamples = VK_SAMPLE_COUNT_1_BIT;
-        VkImage m_ColorImage{};
-        VkDeviceMemory m_ColorImageMemory{};
-        VkImageView m_ColorImageView{};
 
-        //--Depth Image--
-        VkImage m_DepthImage{};
-        VkDeviceMemory m_DepthImageMemory{};
-        VkImageView m_DepthImageView{};
+        Texture m_ColorTexture{};
+
+        Texture m_DepthTexture{};
 
         //--Framebuffers--
         std::vector<VkFramebuffer> m_SwapChainFramebuffers{};
@@ -183,9 +193,6 @@ namespace D3D
 
 
         //DefaultTexture
-        VkImage m_DefaultTextureImage{};
-        VkDeviceMemory m_DefaultTextureImageMemory{};
-        VkImageView m_DefaultTextureImageView{};
         uint32_t m_MipLevels{};
 
         const std::string m_DefaultTextureName{ "../resources/DefaultResources/DefaultTexture.png" };
@@ -249,8 +256,6 @@ namespace D3D
 
 
         //Texture functions
-        void CreateTextureImage();
-        void CreateTextureImageView();
         void CreateTextureSampler();
     };
 }

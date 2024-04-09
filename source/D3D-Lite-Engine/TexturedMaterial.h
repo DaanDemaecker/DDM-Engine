@@ -27,17 +27,13 @@ namespace D3D
 	private:
 		int m_TextureAmount{};
 
-		std::vector<VkImage> m_TextureImages{};
-		std::vector<VkDeviceMemory> m_TextureImageMemories{};
+		std::vector<Texture> m_Textures{};
 
-		std::vector<VkImageView> m_TextureImageViews{};
 		VkSampler m_TextureSampler{};
 
 		uint32_t m_MipLevels{};
 
 		//Initialization functions
-		void CreateTextureImage(const std::string& filePath, int index);
-		void CreateTextureImageView(int index);
 		void CreateTextureSampler();
 	};
 }
