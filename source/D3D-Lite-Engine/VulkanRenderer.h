@@ -45,7 +45,7 @@ namespace D3D
         size_t GetMaxFrames() const { return m_MaxFramesInFlight; }
         VkDevice GetDevice();
         VkImageView& GetDefaultImageView();
-        VkSampler& GetSampler() { return m_TextureSampler; }
+        VkSampler& GetSampler();
         D3D::PipelinePair& GetPipeline(const std::string& name = "Default");
         VkCommandBuffer& GetCurrentCommandBuffer();
         uint32_t GetCurrentFrame() const { return  m_CurrentFrame; }
@@ -82,8 +82,7 @@ namespace D3D
         //     indices: reference to vector of indices 
         //     indexBuffer: handle to the index buffer to be created
         //     indexBufferMemory: handle of the index buffer memory
-        void CreateIndexBuffer(std::vector<uint32_t>& indices, VkBuffer& indexBuffer, VkDeviceMemory& indexBufferMemory); void CopyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
-        void GenerateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels);
+        void CreateIndexBuffer(std::vector<uint32_t>& indices, VkBuffer& indexBuffer, VkDeviceMemory& indexBufferMemory);
      
         // Create a texture
         // Parameters:
@@ -197,9 +196,6 @@ namespace D3D
 
         const std::string m_DefaultTextureName{ "../resources/DefaultResources/DefaultTexture.png" };
 
-        VkSampler m_TextureSampler{};
-
-
 
         //----Member Functions----
         //--- Cleanup ---
@@ -253,10 +249,6 @@ namespace D3D
         VkCommandBuffer BeginSingleTimeCommands();
         void EndSingleTimeCommands(VkCommandBuffer comandBuffer);
         bool HasStencilComponent(VkFormat format);
-
-
-        //Texture functions
-        void CreateTextureSampler();
     };
 }
 
