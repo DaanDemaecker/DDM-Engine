@@ -22,6 +22,7 @@ namespace D3D
     class CommandpoolManager;
     class BufferManager;
     class ImageManager;
+    class SwapchainWrapper;
 
     class VulkanRenderer final : public Singleton<VulkanRenderer>
     {
@@ -136,24 +137,9 @@ namespace D3D
         // ImageManager
         std::unique_ptr<ImageManager> m_pImageManager{};
 
-
-        //--Swapchain--
-        VkSwapchainKHR m_SwapChain = VK_NULL_HANDLE;
-
-        //-Swapchain MinImageCount-
-        uint32_t m_MinImageCount{};
-
-        //-Swapchain Images-
-        std::vector<VkImage> m_SwapChainImages{};
-
-        //-Swapchain Image Format-
-        VkFormat m_SwapChainImageFormat{};
-
-        //-Swapchain Extent-
-        VkExtent2D m_SwapChainExtent{};
-
-        //--Image Views--
-        std::vector<VkImageView> m_SwapChainImageViews{};
+        // SwapchainWrapper
+        std::unique_ptr<SwapchainWrapper> m_pSwapchainWrapper{};
+        
 
         //--Renderpass--
         VkRenderPass m_RenderPass{};
@@ -175,13 +161,6 @@ namespace D3D
 
         //--MultiSampling--
         VkSampleCountFlagBits m_MsaaSamples = VK_SAMPLE_COUNT_1_BIT;
-
-        Texture m_ColorTexture{};
-
-        Texture m_DepthTexture{};
-
-        //--Framebuffers--
-        std::vector<VkFramebuffer> m_SwapChainFramebuffers{};
 
         //--Descriptorpool--
         std::unique_ptr<DescriptorPoolManager> m_pDescriptorPoolManager{};
@@ -207,17 +186,7 @@ namespace D3D
         void InitImGui();
 
         //--Swapchain--
-        void CreateSwapChain();
-
-        //-Swapchain Helper Functions-
-        VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
-        VkPresentModeKHR ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
-        VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
-        void CleanupSwapChain();
         void RecreateSwapChain();
-
-        //--Swapchain Image Views--
-        void CreateImageViews();
 
         //--RenderPass--
         void CreateRenderPass();
@@ -227,15 +196,6 @@ namespace D3D
 
         //-Shader Module-
         VkShaderModule CreateShaderModule(const std::vector<char>& code);
-
-        //--MultiSampling--
-        void CreateColorResources();
-
-        //--Depth Image--
-        void CreateDepthResources();
-
-        //--Framebuffers--
-        void CreateFramebuffers();
 
         //--CommandBuffers--
         void RecordCommandBuffer(VkCommandBuffer& commandBuffer, uint32_t imageIndex);

@@ -14,6 +14,7 @@
 #include "CommandpoolManager.h"
 #include "BufferManager.h"
 #include "ImageManager.h"
+#include "SwapchainWrapper.h"
 
 #include "STBIncludes.h"
 #include "ImGuiIncludes.h"
@@ -48,9 +49,9 @@ D3D::VulkanRenderer::~VulkanRenderer()
 
 void D3D::VulkanRenderer::CleanupVulkan()
 {
-	CleanupSwapChain();
-
 	auto device{ m_pGpuObject->GetDevice() };
+
+	m_pSwapchainWrapper->Cleanup(device);
 	
 	m_pImageManager->Cleanup(device);
 
@@ -108,20 +109,23 @@ void D3D::VulkanRenderer::InitVulkan()
 	// Initialize the image manager
 	m_pImageManager = std::make_unique<ImageManager>(m_pGpuObject.get(), m_pBufferManager.get(), m_pCommandPoolManager.get());
 
-
-	CreateSwapChain();
-
-	CreateImageViews();
+	m_pSwapchainWrapper = std::make_unique<SwapchainWrapper>(m_pGpuObject.get(), m_pSurfaceWrapper->GetSurface(),
+		m_pImageManager.get(), m_MsaaSamples);
 
 	CreateRenderPass();
+
+	// Create a single time command buffer
+	auto commandBuffer{ BeginSingleTimeCommands() };
+	// Initialize swapchain
+	m_pSwapchainWrapper->SetupImageViews(m_pGpuObject.get(), m_pImageManager.get(), commandBuffer, m_RenderPass);
+	// End the single time command buffer
+	EndSingleTimeCommands(commandBuffer);
+
 
 	CreateLightBuffer();
 
 	AddGraphicsPipeline(m_DefaultPipelineName, m_DefaultVertName, m_DefaultFragName, 1, 1, 0);
 
-	CreateColorResources();
-	CreateDepthResources();
-	CreateFramebuffers();
 
 	m_pDescriptorPoolManager = std::make_unique<DescriptorPoolManager>();
 
@@ -149,7 +153,7 @@ void D3D::VulkanRenderer::InitImGui()
 	// Set Allocator to null handle
 	init_info.Allocator = VK_NULL_HANDLE;
 	// Set min image count to the minimum image count of the swapchain
-	init_info.MinImageCount = m_MinImageCount;
+	init_info.MinImageCount = m_pSwapchainWrapper->GetMinImageCount();
 	// Set the image count to the max amount of frames in flight
 	init_info.ImageCount = static_cast<uint32_t>(m_MaxFramesInFlight);
 	// Give functoin for error handling
@@ -381,7 +385,8 @@ void D3D::VulkanRenderer::Render()
 	vkWaitForFences(device, 1, &m_pSyncObjectManager->GetInFlightFence(m_CurrentFrame), VK_TRUE, UINT64_MAX);
 
 	uint32_t imageIndex{};
-	VkResult result = vkAcquireNextImageKHR(device, m_SwapChain, UINT64_MAX, m_pSyncObjectManager->GetImageAvailableSemaphore(m_CurrentFrame), VK_NULL_HANDLE, &imageIndex);
+	VkResult result = vkAcquireNextImageKHR(device, m_pSwapchainWrapper->GetSwapchain(),
+		UINT64_MAX, m_pSyncObjectManager->GetImageAvailableSemaphore(m_CurrentFrame), VK_NULL_HANDLE, &imageIndex);
 
 	if (result == VK_ERROR_OUT_OF_DATE_KHR)
 	{
@@ -429,7 +434,7 @@ void D3D::VulkanRenderer::Render()
 	presentInfo.waitSemaphoreCount = 1;
 	presentInfo.pWaitSemaphores = signalSemaphores;
 
-	VkSwapchainKHR swapChains[] = { m_SwapChain };
+	VkSwapchainKHR swapChains[] = { m_pSwapchainWrapper->GetSwapchain()};
 	presentInfo.swapchainCount = 1;
 	presentInfo.pSwapchains = swapChains;
 	presentInfo.pImageIndices = &imageIndex;
@@ -469,10 +474,10 @@ void D3D::VulkanRenderer::RecordCommandBuffer(VkCommandBuffer& commandBuffer, ui
 	VkRenderPassBeginInfo renderPassInfo{};
 	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
 	renderPassInfo.renderPass = m_RenderPass;
-	renderPassInfo.framebuffer = m_SwapChainFramebuffers[imageIndex];
+	renderPassInfo.framebuffer = m_pSwapchainWrapper->GetFrameBuffer(imageIndex);
 
 	renderPassInfo.renderArea.offset = { 0, 0 };
-	renderPassInfo.renderArea.extent = m_SwapChainExtent;
+	renderPassInfo.renderArea.extent = m_pSwapchainWrapper->GetExtent();
 
 	std::array<VkClearValue, 2> clearValues{};
 	clearValues[0].color = { {0.0f, 0.0f, 0.0f, 1.0f} };
@@ -483,18 +488,20 @@ void D3D::VulkanRenderer::RecordCommandBuffer(VkCommandBuffer& commandBuffer, ui
 
 	vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
+	auto extent{ m_pSwapchainWrapper->GetExtent() };
+
 	VkViewport viewport{};
 	viewport.x = 0.0f;
 	viewport.y = 0.0f;
-	viewport.width = static_cast<float>(m_SwapChainExtent.width);
-	viewport.height = static_cast<float>(m_SwapChainExtent.height);
+	viewport.width = static_cast<float>(extent.width);
+	viewport.height = static_cast<float>(extent.height);
 	viewport.minDepth = 0.0f;
 	viewport.maxDepth = 1.0f;
 	vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
 
 	VkRect2D scissor{};
 	scissor.offset = { 0, 0 };
-	scissor.extent = m_SwapChainExtent;
+	scissor.extent = extent;
 	vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
 	UpdateLightBuffer(m_CurrentFrame);
@@ -549,170 +556,39 @@ D3D::DescriptorPoolManager* D3D::VulkanRenderer::GetDescriptorPoolManager() cons
 	return m_pDescriptorPoolManager.get();
 }
 
-
-void D3D::VulkanRenderer::CreateSwapChain()
-{
-	auto device{ m_pGpuObject->GetDevice() };
-	auto physicalDevice{ m_pGpuObject->GetPhysicalDevice() };
-
-	SwapChainSupportDetails swapChainSupport = VulkanUtils::QuerySwapChainSupport(m_pGpuObject->GetPhysicalDevice(), m_pSurfaceWrapper->GetSurface());
-
-	VkSurfaceFormatKHR surfaceFormat = ChooseSwapSurfaceFormat(swapChainSupport.formats);
-	VkPresentModeKHR presentMode = ChooseSwapPresentMode(swapChainSupport.presentModes);
-	VkExtent2D extent = ChooseSwapExtent(swapChainSupport.capabilities);
-
-	uint32_t imageCount = swapChainSupport.capabilities.minImageCount + 1;
-	m_MinImageCount = swapChainSupport.capabilities.minImageCount;
-
-	if (swapChainSupport.capabilities.maxImageCount > 0 && imageCount > swapChainSupport.capabilities.maxImageCount)
-	{
-		imageCount = swapChainSupport.capabilities.maxImageCount;
-	}
-
-	VkSwapchainCreateInfoKHR createInfo{};
-	createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
-	createInfo.surface = m_pSurfaceWrapper->GetSurface();
-
-	createInfo.minImageCount = imageCount;
-	createInfo.imageFormat = surfaceFormat.format;
-	createInfo.imageColorSpace = surfaceFormat.colorSpace;
-	createInfo.imageExtent = extent;
-	createInfo.imageArrayLayers = 1;
-	createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
-
-	QueueFamilyIndices indices = VulkanUtils::FindQueueFamilies(physicalDevice, m_pSurfaceWrapper->GetSurface());
-	uint32_t queueFamilyIndices[] = { indices.graphicsFamily.value(), indices.presentFamily.value() };
-
-	if (indices.graphicsFamily != indices.presentFamily)
-	{
-		//Image is owned by queue family and ownership must be transfered
-		createInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
-		createInfo.queueFamilyIndexCount = 2;
-		createInfo.pQueueFamilyIndices = queueFamilyIndices;
-	}
-	else
-	{
-		///Images can be used across multiple queue families without transfer of ownership
-		createInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
-		createInfo.queueFamilyIndexCount = 0; //Optional
-		createInfo.pQueueFamilyIndices = nullptr; //Optional
-	}
-
-	createInfo.preTransform = swapChainSupport.capabilities.currentTransform;
-	createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
-	createInfo.presentMode = presentMode;
-	createInfo.clipped = VK_TRUE;
-	createInfo.oldSwapchain = VK_NULL_HANDLE;
-
-	if (vkCreateSwapchainKHR(device, &createInfo, nullptr, &m_SwapChain) != VK_SUCCESS)
-	{
-		throw std::runtime_error("failed to create swap chain!");
-	}
-
-	vkGetSwapchainImagesKHR(device, m_SwapChain, &imageCount, nullptr);
-	m_SwapChainImages.resize(imageCount);
-	vkGetSwapchainImagesKHR(device, m_SwapChain, &imageCount, m_SwapChainImages.data());
-
-	m_SwapChainImageFormat = surfaceFormat.format;
-	m_SwapChainExtent = extent;
-}
-
-VkSurfaceFormatKHR D3D::VulkanRenderer::ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats)
-{
-	for (const auto& availableFormat : availableFormats)
-	{
-		if (availableFormat.format == VK_FORMAT_B8G8R8A8_SRGB && availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR)
-		{
-			return availableFormat;
-		}
-	}
-
-	return availableFormats[0];
-}
-
-VkPresentModeKHR D3D::VulkanRenderer::ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes)
-{
-	for (const auto& availablePresentMode : availablePresentModes)
-	{
-		if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR)
-		{
-			return availablePresentMode;
-		}
-	}
-	return VK_PRESENT_MODE_FIFO_KHR;
-}
-
-VkExtent2D D3D::VulkanRenderer::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities)
-{
-	if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max())
-	{
-		return capabilities.currentExtent;
-	}
-	else
-	{
-		int width, height;
-		glfwGetFramebufferSize(D3D::Window::GetInstance().GetWindowStruct().pWindow, &width, &height);
-		VkExtent2D actualExtent =
-		{
-			static_cast<uint32_t>(width),
-			static_cast<uint32_t>(height)
-		};
-
-		actualExtent.width = std::clamp(actualExtent.width, capabilities.minImageExtent.width, capabilities.maxImageExtent.width);
-		actualExtent.height = std::clamp(actualExtent.height, capabilities.minImageExtent.height, capabilities.maxImageExtent.height);
-
-		return actualExtent;
-	}
-}
-
-void D3D::VulkanRenderer::CleanupSwapChain()
-{
-	auto device{ m_pGpuObject->GetDevice() };
-
-	for (size_t i = 0; i < m_SwapChainFramebuffers.size(); ++i)
-	{
-		vkDestroyFramebuffer(device, m_SwapChainFramebuffers[i], nullptr);
-	}
-
-	for (size_t i = 0; i < m_SwapChainImageViews.size(); ++i)
-	{
-		vkDestroyImageView(device, m_SwapChainImageViews[i], nullptr);
-	}
-
-	vkDestroySwapchainKHR(device, m_SwapChain, nullptr);
-
-	m_DepthTexture.Cleanup(device);
-
-	m_ColorTexture.Cleanup(device);
-}
-
 void D3D::VulkanRenderer::RecreateSwapChain()
 {
+	// Get a reference to the window struct
+	auto& windowStruct{ Window::GetInstance().GetWindowStruct() };
+
+	//Get the width and the height of the window
+	glfwGetFramebufferSize(windowStruct.pWindow, &windowStruct.Width, &windowStruct.Height);
+
+	// While width and height are 0, wait before continuing
+	while (windowStruct.Width == 0 || windowStruct.Height == 0)
+	{
+		glfwGetFramebufferSize(windowStruct.pWindow, &windowStruct.Width, &windowStruct.Height);
+		glfwWaitEvents();
+	}
+
+	// Wait until the device is idle
 	m_pGpuObject->WaitIdle();
 
-	CleanupSwapChain();
+	// Create a single time command
+	auto commandBuffer{ BeginSingleTimeCommands() };
 
-	CreateSwapChain();
-	CreateImageViews();
-	CreateColorResources();
-	CreateDepthResources();
-	CreateFramebuffers();
-}
+	// Recreate the swapchain
+	m_pSwapchainWrapper->RecreateSwapChain(m_pGpuObject.get(), m_pSurfaceWrapper->GetSurface(), m_pImageManager.get(),
+		commandBuffer, m_RenderPass);
 
-void D3D::VulkanRenderer::CreateImageViews()
-{
-	m_SwapChainImageViews.resize(m_SwapChainImages.size());
-
-	for (size_t i = 0; i < m_SwapChainImages.size(); i++)
-	{
-		m_SwapChainImageViews[i] = m_pImageManager->CreateImageView(GetDevice(), m_SwapChainImages[i], m_SwapChainImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
-	}
+	// End single time command
+	EndSingleTimeCommands(commandBuffer);
 }
 
 void D3D::VulkanRenderer::CreateRenderPass()
 {
 	VkAttachmentDescription colorAttachment{};
-	colorAttachment.format = m_SwapChainImageFormat;
+	colorAttachment.format = m_pSwapchainWrapper->GetFormat();
 	colorAttachment.samples = m_MsaaSamples;
 	colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
 	colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
@@ -740,7 +616,7 @@ void D3D::VulkanRenderer::CreateRenderPass()
 
 
 	VkAttachmentDescription colorAttachmentResolve{};
-	colorAttachmentResolve.format = m_SwapChainImageFormat;
+	colorAttachmentResolve.format = m_pSwapchainWrapper->GetFormat();
 	colorAttachmentResolve.samples = VK_SAMPLE_COUNT_1_BIT;
 	colorAttachmentResolve.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
 	colorAttachmentResolve.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
@@ -860,46 +736,6 @@ VkShaderModule D3D::VulkanRenderer::CreateShaderModule(const std::vector<char>& 
 	return shaderModule;
 }
 
-void D3D::VulkanRenderer::CreateColorResources()
-{
-	VkFormat colorFormat = m_SwapChainImageFormat;
-
-	m_pImageManager->CreateImage(m_pGpuObject.get(), m_SwapChainExtent.width, m_SwapChainExtent.height, 1, m_MsaaSamples, colorFormat,
-		VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
-		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,m_ColorTexture);
-
-	m_ColorTexture.imageView = m_pImageManager->CreateImageView(GetDevice(), m_ColorTexture.image, colorFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
-}
-
-void D3D::VulkanRenderer::CreateFramebuffers()
-{
-	m_SwapChainFramebuffers.resize(m_SwapChainImageViews.size());
-
-	for (size_t i = 0; i < m_SwapChainImageViews.size(); ++i)
-	{
-		std::array<VkImageView, 3> attachments =
-		{
-			m_ColorTexture.imageView,
-			m_DepthTexture.imageView,
-			m_SwapChainImageViews[i]
-		};
-
-		VkFramebufferCreateInfo framebufferInfo{};
-		framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-		framebufferInfo.renderPass = m_RenderPass;
-		framebufferInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
-		framebufferInfo.pAttachments = attachments.data();
-		framebufferInfo.width = m_SwapChainExtent.width;
-		framebufferInfo.height = m_SwapChainExtent.height;
-		framebufferInfo.layers = 1;
-
-		if (vkCreateFramebuffer(m_pGpuObject->GetDevice(), &framebufferInfo, nullptr, &m_SwapChainFramebuffers[i]) != VK_SUCCESS)
-		{
-			throw std::runtime_error("failed to create framebuffer!");
-		}
-	}
-}
-
 void D3D::VulkanRenderer::CreateLightBuffer()
 {
 	VkDeviceSize bufferSize = sizeof(LightObject);
@@ -932,22 +768,6 @@ void D3D::VulkanRenderer::UpdateLightBuffer(int frame)
 	m_LightChanged[frame] = false;
 
 	memcpy(m_LightMapped[frame], &m_GlobalLight, sizeof(m_GlobalLight));
-}
-
-void D3D::VulkanRenderer::CreateDepthResources()
-{
-	VkFormat depthFormat = VulkanUtils::FindDepthFormat(m_pGpuObject->GetPhysicalDevice());
-
-	m_pImageManager->CreateImage(m_pGpuObject.get(), m_SwapChainExtent.width, m_SwapChainExtent.height, 1, m_MsaaSamples, depthFormat,
-		VK_IMAGE_TILING_OPTIMAL,
-		VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
-		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_DepthTexture);
-
-	m_DepthTexture.imageView = m_pImageManager->CreateImageView(GetDevice(), m_DepthTexture.image, depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT, 1);
-
-	auto commandBuffer{ BeginSingleTimeCommands() };
-	m_pImageManager->TransitionImageLayout(m_DepthTexture.image, commandBuffer, depthFormat, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, 1);
-	EndSingleTimeCommands(commandBuffer);
 }
 
 void D3D::VulkanRenderer::CreateTexture(Texture& texture, const std::string& textureName)
@@ -991,7 +811,9 @@ void D3D::VulkanRenderer::UpdateUniformBuffer(UniformBufferObject& buffer)
 
 	buffer.view = translationMatrix * rotationMatrix * scalingMatrix;
 
-	buffer.proj = glm::perspective(pCamera->GetFovAngle(), m_SwapChainExtent.width / static_cast<float>(m_SwapChainExtent.height), 0.1f, 10.0f);
+	auto extent{ m_pSwapchainWrapper->GetExtent() };
+
+	buffer.proj = glm::perspective(pCamera->GetFovAngle(), extent.width / static_cast<float>(extent.height), 0.1f, 10.0f);
 	buffer.proj[1][1] *= -1;
 }
 
