@@ -160,6 +160,9 @@
     <ClCompile Include="ImageManager.cpp">
       <Filter>Vulkan\Managers</Filter>
     </ClCompile>
+    <ClCompile Include="ImageViewManager.cpp">
+      <Filter>Vulkan\Managers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Utils.h">
@@ -295,6 +298,9 @@
       <Filter>Vulkan\Managers</Filter>
     </ClInclude>
     <ClInclude Include="ImageManager.h">
+      <Filter>Vulkan\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageViewManager.h">
       <Filter>Vulkan\Managers</Filter>
     </ClInclude>
   </ItemGroup>
