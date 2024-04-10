@@ -23,6 +23,7 @@ namespace D3D
     class BufferManager;
     class ImageManager;
     class SwapchainWrapper;
+    class RenderpassWrapper;
 
     class VulkanRenderer final : public Singleton<VulkanRenderer>
     {
@@ -44,14 +45,23 @@ namespace D3D
        
         //Public getters
         size_t GetMaxFrames() const { return m_MaxFramesInFlight; }
+
         VkDevice GetDevice();
+
         VkImageView& GetDefaultImageView();
+
         VkSampler& GetSampler();
+
         D3D::PipelinePair& GetPipeline(const std::string& name = "Default");
+
         VkCommandBuffer& GetCurrentCommandBuffer();
+
         uint32_t GetCurrentFrame() const { return  m_CurrentFrame; }
+
         DescriptorPoolManager* GetDescriptorPoolManager() const;
+
         const LightObject& GetGlobalLight() const { return m_GlobalLight; }
+
         std::vector<VkBuffer>& GetLightBuffers() { return m_LightBuffers; }
 
     
@@ -140,12 +150,8 @@ namespace D3D
         // SwapchainWrapper
         std::unique_ptr<SwapchainWrapper> m_pSwapchainWrapper{};
         
-
-        //--Renderpass--
-        VkRenderPass m_RenderPass{};
-
-        //-RenderpassInfo-
-        VkRenderPassBeginInfo m_RenderpassInfo{};
+        // RenderpassWrapper
+        std::unique_ptr<RenderpassWrapper> m_pRenderpassWrapper{};
 
         //--Descriptorlayouts--
         std::map<std::tuple<int, int, int>, VkDescriptorSetLayout> m_DescriptorSetLayouts{};
@@ -173,8 +179,6 @@ namespace D3D
         //DefaultTexture
         uint32_t m_MipLevels{};
 
-        const std::string m_DefaultTextureName{ "../resources/DefaultResources/DefaultTexture.png" };
-
 
         //----Member Functions----
         //--- Cleanup ---
@@ -187,9 +191,6 @@ namespace D3D
 
         //--Swapchain--
         void RecreateSwapChain();
-
-        //--RenderPass--
-        void CreateRenderPass();
 
         //--Descriptor Layout
         void CreateDescriptorLayout(int vertexUbos, int fragmentUbos, int textureAmount);

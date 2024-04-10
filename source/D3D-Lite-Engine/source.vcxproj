@@ -185,6 +185,7 @@
     <ClCompile Include="ImageViewManager.cpp" />
     <ClCompile Include="ImGuiWrapper.cpp" />
     <ClCompile Include="InstanceWrapper.cpp" />
+    <ClCompile Include="RenderpassWrapper.cpp" />
     <ClCompile Include="spirv_reflect.c" />
     <ClCompile Include="spirv_reflect.cpp" />
     <ClCompile Include="STBIncludes.cpp" />
@@ -231,6 +232,7 @@
     <ClInclude Include="ImGuiWrapper.h" />
     <ClInclude Include="InstanceWrapper.h" />
     <ClInclude Include="RapidJSONIncludes.h" />
+    <ClInclude Include="RenderpassWrapper.h" />
     <ClInclude Include="spirv_reflect.h" />
     <ClInclude Include="SurfaceWrapper.h" />
     <ClInclude Include="SwapchainWrapper.h" />

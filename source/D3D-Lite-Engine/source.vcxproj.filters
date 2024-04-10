@@ -166,6 +166,9 @@
     <ClCompile Include="SwapchainWrapper.cpp">
       <Filter>Vulkan\Wrappers</Filter>
     </ClCompile>
+    <ClCompile Include="RenderpassWrapper.cpp">
+      <Filter>Vulkan\Wrappers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Utils.h">
@@ -307,6 +310,9 @@
       <Filter>Vulkan\Managers</Filter>
     </ClInclude>
     <ClInclude Include="SwapchainWrapper.h">
+      <Filter>Vulkan\Wrappers</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderpassWrapper.h">
       <Filter>Vulkan\Wrappers</Filter>
     </ClInclude>
   </ItemGroup>

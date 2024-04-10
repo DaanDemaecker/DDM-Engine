@@ -15,6 +15,7 @@
 #include "BufferManager.h"
 #include "ImageManager.h"
 #include "SwapchainWrapper.h"
+#include "RenderpassWrapper.h"
 
 #include "STBIncludes.h"
 #include "ImGuiIncludes.h"
@@ -74,7 +75,7 @@ void D3D::VulkanRenderer::CleanupVulkan()
 		vkDestroyPipelineLayout(device, pipeline.second.pipelineLayout, nullptr);
 	}
 
-	vkDestroyRenderPass(device, m_RenderPass, nullptr);
+	m_pRenderpassWrapper->cleanup(device);
 
 	m_pSyncObjectManager->Cleanup(device);
 
@@ -112,12 +113,14 @@ void D3D::VulkanRenderer::InitVulkan()
 	m_pSwapchainWrapper = std::make_unique<SwapchainWrapper>(m_pGpuObject.get(), m_pSurfaceWrapper->GetSurface(),
 		m_pImageManager.get(), m_MsaaSamples);
 
-	CreateRenderPass();
+	m_pRenderpassWrapper = std::make_unique<RenderpassWrapper>(GetDevice(), m_pSwapchainWrapper->GetFormat(),
+		VulkanUtils::FindDepthFormat(m_pGpuObject->GetPhysicalDevice()), m_MsaaSamples);
 
 	// Create a single time command buffer
 	auto commandBuffer{ BeginSingleTimeCommands() };
 	// Initialize swapchain
-	m_pSwapchainWrapper->SetupImageViews(m_pGpuObject.get(), m_pImageManager.get(), commandBuffer, m_RenderPass);
+	m_pSwapchainWrapper->SetupImageViews(m_pGpuObject.get(), m_pImageManager.get(), commandBuffer,
+		m_pRenderpassWrapper->GetRenderpass());
 	// End the single time command buffer
 	EndSingleTimeCommands(commandBuffer);
 
@@ -164,7 +167,8 @@ void D3D::VulkanRenderer::InitImGui()
 	// Create a single time command buffer
 	auto commandBuffer{ BeginSingleTimeCommands() };
 	// Initialize ImGui
-	m_pImGuiWrapper = std::make_unique<D3D::ImGuiWrapper>(init_info, m_RenderPass, commandBuffer, m_pGpuObject->GetDevice(), static_cast<uint32_t>(m_MaxFramesInFlight));
+	m_pImGuiWrapper = std::make_unique<D3D::ImGuiWrapper>(init_info, m_pRenderpassWrapper->GetRenderpass(),
+		commandBuffer, m_pGpuObject->GetDevice(), static_cast<uint32_t>(m_MaxFramesInFlight));
 	// End the single time command buffer
 	EndSingleTimeCommands(commandBuffer);
 }
@@ -339,7 +343,7 @@ void D3D::VulkanRenderer::AddGraphicsPipeline(const std::string& pipelineName, c
 	pipelineInfo.pDynamicState = &dynamicState;
 	pipelineInfo.pDepthStencilState = &depthStencil;
 	pipelineInfo.layout = m_GraphicPipelines[pipelineName].pipelineLayout;
-	pipelineInfo.renderPass = m_RenderPass;
+	pipelineInfo.renderPass = m_pRenderpassWrapper->GetRenderpass();
 	pipelineInfo.subpass = 0;
 	pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
 
@@ -473,7 +477,7 @@ void D3D::VulkanRenderer::RecordCommandBuffer(VkCommandBuffer& commandBuffer, ui
 
 	VkRenderPassBeginInfo renderPassInfo{};
 	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-	renderPassInfo.renderPass = m_RenderPass;
+	renderPassInfo.renderPass = m_pRenderpassWrapper->GetRenderpass();
 	renderPassInfo.framebuffer = m_pSwapchainWrapper->GetFrameBuffer(imageIndex);
 
 	renderPassInfo.renderArea.offset = { 0, 0 };
@@ -579,89 +583,10 @@ void D3D::VulkanRenderer::RecreateSwapChain()
 
 	// Recreate the swapchain
 	m_pSwapchainWrapper->RecreateSwapChain(m_pGpuObject.get(), m_pSurfaceWrapper->GetSurface(), m_pImageManager.get(),
-		commandBuffer, m_RenderPass);
+		commandBuffer, m_pRenderpassWrapper->GetRenderpass());
 
 	// End single time command
 	EndSingleTimeCommands(commandBuffer);
-}
-
-void D3D::VulkanRenderer::CreateRenderPass()
-{
-	VkAttachmentDescription colorAttachment{};
-	colorAttachment.format = m_pSwapchainWrapper->GetFormat();
-	colorAttachment.samples = m_MsaaSamples;
-	colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-	colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-	colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	colorAttachment.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;;
-
-	VkAttachmentReference colorAttachmentRef{};
-	colorAttachmentRef.attachment = 0;
-	colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-
-
-	VkAttachmentDescription depthAttachment{};
-	depthAttachment.format = VulkanUtils::FindDepthFormat(m_pGpuObject->GetPhysicalDevice());
-	depthAttachment.samples = m_MsaaSamples;
-	depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-	depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-	depthAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	depthAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	depthAttachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-
-	VkAttachmentReference depthAttachmentRef{};
-	depthAttachmentRef.attachment = 1;
-	depthAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-
-
-	VkAttachmentDescription colorAttachmentResolve{};
-	colorAttachmentResolve.format = m_pSwapchainWrapper->GetFormat();
-	colorAttachmentResolve.samples = VK_SAMPLE_COUNT_1_BIT;
-	colorAttachmentResolve.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-	colorAttachmentResolve.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-	colorAttachmentResolve.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-	colorAttachmentResolve.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	colorAttachmentResolve.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	colorAttachmentResolve.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-
-	VkAttachmentReference colorAttachmentResolveRef{};
-	colorAttachmentResolveRef.attachment = 2;
-	colorAttachmentResolveRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-
-
-	VkSubpassDescription subpass{};
-	subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-	subpass.colorAttachmentCount = 1;
-	subpass.pColorAttachments = &colorAttachmentRef;
-	subpass.pDepthStencilAttachment = &depthAttachmentRef;
-	subpass.pResolveAttachments = &colorAttachmentResolveRef;
-
-
-	VkSubpassDependency dependency{};
-	dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
-	dependency.dstSubpass = 0;
-	dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-	dependency.srcAccessMask = 0;
-	dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-	dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
-
-
-	std::array<VkAttachmentDescription, 3> attachments = { colorAttachment, depthAttachment, colorAttachmentResolve };
-	VkRenderPassCreateInfo renderPassInfo{};
-	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-	renderPassInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
-	renderPassInfo.pAttachments = attachments.data();
-	renderPassInfo.subpassCount = 1;
-	renderPassInfo.pSubpasses = &subpass;
-	renderPassInfo.dependencyCount = 1;
-	renderPassInfo.pDependencies = &dependency;
-
-
-	if (vkCreateRenderPass(m_pGpuObject->GetDevice(), &renderPassInfo, nullptr, &m_RenderPass) != VK_SUCCESS)
-	{
-		throw std::runtime_error("failed to create render pass!");
-	}
 }
 
 void D3D::VulkanRenderer::CreateDescriptorLayout(int vertexUbos, int fragmentUbos, int textureAmount)
