@@ -46,6 +46,9 @@
     <Filter Include="Vulkan\Managers">
       <UniqueIdentifier>{43142d4a-fc5b-4a38-b4ab-1268a35edd92}</UniqueIdentifier>
     </Filter>
+    <Filter Include="DataTypes\DescriptorObjects">
+      <UniqueIdentifier>{44015c14-dbb4-4c84-886f-f503ba33a719}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Utils.cpp">
@@ -168,6 +171,9 @@
     </ClCompile>
     <ClCompile Include="RenderpassWrapper.cpp">
       <Filter>Vulkan\Wrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureDescriptorObject.cpp">
+      <Filter>DataTypes\DescriptorObjects</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -314,6 +320,15 @@
     </ClInclude>
     <ClInclude Include="RenderpassWrapper.h">
       <Filter>Vulkan\Wrappers</Filter>
+    </ClInclude>
+    <ClInclude Include="UboDescriptorObject.h">
+      <Filter>DataTypes\DescriptorObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="DescriptorObject.h">
+      <Filter>DataTypes\DescriptorObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureDescriptorObject.h">
+      <Filter>DataTypes\DescriptorObjects</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
