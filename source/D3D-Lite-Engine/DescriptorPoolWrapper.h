@@ -8,7 +8,7 @@
 namespace D3D
 {
 	class ModelComponent;
-
+	 
 	class DescriptorPoolWrapper
 	{
 	public:
