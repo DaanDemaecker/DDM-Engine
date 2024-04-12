@@ -178,6 +178,12 @@
     <ClCompile Include="ShaderModuleWrapper.cpp">
       <Filter>Vulkan\Wrappers</Filter>
     </ClCompile>
+    <ClCompile Include="PipelineManager.cpp">
+      <Filter>Vulkan\Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="PipelineWrapper.cpp">
+      <Filter>Vulkan\Wrappers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Utils.h">
@@ -334,6 +340,12 @@
       <Filter>DataTypes\DescriptorObjects</Filter>
     </ClInclude>
     <ClInclude Include="ShaderModuleWrapper.h">
+      <Filter>Vulkan\Wrappers</Filter>
+    </ClInclude>
+    <ClInclude Include="PipelineManager.h">
+      <Filter>Vulkan\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="PipelineWrapper.h">
       <Filter>Vulkan\Wrappers</Filter>
     </ClInclude>
   </ItemGroup>

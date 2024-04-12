@@ -72,60 +72,98 @@ namespace D3D
 		}
 	};
 
+	// Vertex struct for rendering
 	struct Vertex
 	{
+		// Position
 		glm::vec3 pos;
+		// Color
 		glm::vec3 color;
+		// UV coordinates
 		glm::vec2 texCoord;
+		// Vertex normal
 		glm::vec3 normal;
+		// Vertex tangent
 		glm::vec3 tangent;
 
+		// Get vulkan binding description
 		static VkVertexInputBindingDescription getBindingDescription()
 		{
+			// Create binding description
 			VkVertexInputBindingDescription bindingDescription{};
+			// Set binding to 0
 			bindingDescription.binding = 0;
+			// Set stride to the size of vertex object
 			bindingDescription.stride = sizeof(Vertex);
+			// Put inputrate as input rate vertex
 			bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
 
+			// Return binding description
 			return bindingDescription;
 		}
 
-		static std::array<VkVertexInputAttributeDescription, 5> getAttributeDescription()
+		// Get attribute description of vertex
+		static std::vector<VkVertexInputAttributeDescription> getAttributeDescription()
 		{
-			std::array<VkVertexInputAttributeDescription, 5> attributeDescriptions{};
+			// Create attribute description
+			std::vector<VkVertexInputAttributeDescription> attributeDescriptions(5);
 
+			// Set binding to 0
 			attributeDescriptions[0].binding = 0;
+			// Set location to 0
 			attributeDescriptions[0].location = 0;
+			// Set format to vector 3
 			attributeDescriptions[0].format = VK_FORMAT_R32G32B32_SFLOAT;
+			// Set offset
 			attributeDescriptions[0].offset = offsetof(Vertex, pos);
 
+			// Set binding to 0
 			attributeDescriptions[1].binding = 0;
+			// Set location to 0
 			attributeDescriptions[1].location = 1;
+			// Set format to vector 3
 			attributeDescriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;
+			// Set offset
 			attributeDescriptions[1].offset = offsetof(Vertex, color);
 
+			// Set binding to 0
 			attributeDescriptions[2].binding = 0;
+			// Set location to 2
 			attributeDescriptions[2].location = 2;
+			// Set format to vector 2
 			attributeDescriptions[2].format = VK_FORMAT_R32G32_SFLOAT;
+			// Set offset
 			attributeDescriptions[2].offset = offsetof(Vertex, texCoord);
 
+			// Set binding to 0
 			attributeDescriptions[3].binding = 0;
+			// Set location to 3
 			attributeDescriptions[3].location = 3;
+			// Set format to vector 3
 			attributeDescriptions[3].format = VK_FORMAT_R32G32B32_SFLOAT;
+			// Set offset
 			attributeDescriptions[3].offset = offsetof(Vertex, normal);
 
+			// Set binding to 0
 			attributeDescriptions[4].binding = 0;
+			// Set location to 4
 			attributeDescriptions[4].location = 4;
+			// Set format to vector 3
 			attributeDescriptions[4].format = VK_FORMAT_R32G32B32_SFLOAT;
+			// Set offset
 			attributeDescriptions[4].offset = offsetof(Vertex, tangent);
 
-
+			// Return attribute descriptions
 			return attributeDescriptions;
 		}
 
+		// Function for == operator
+		// Parameter:
+		//     other: Vertex to be compared to
 		bool operator==(const Vertex& other) const
 		{
-			return pos == other.pos && color == other.color && texCoord == other.texCoord;
+			// Compare every attribute seperately
+			return pos == other.pos && color == other.color && texCoord == other.texCoord && tangent == other.tangent && normal == other.normal;
 		}
 	};
 
