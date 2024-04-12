@@ -25,7 +25,7 @@ void D3D::Material::UpdateDescriptorSets(std::vector<VkBuffer>& uboBuffers, std:
 
 	std::vector<VkDeviceSize> uboSizes(2);
 	uboSizes[0] = sizeof(UniformBufferObject);
-	uboSizes[1] = sizeof(LightObject);
+	uboSizes[1] = sizeof(DirectionalLightStruct);
 
 	descriptorPool->UpdateDescriptorSets(uboList, uboSizes, descriptorSets);
 }

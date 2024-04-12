@@ -51,7 +51,7 @@ void D3D::TexturedMaterial::UpdateDescriptorSets(std::vector<VkBuffer>& uboBuffe
 
 	std::vector<VkDeviceSize> uboSizes(2);
 	uboSizes[0] = sizeof(UniformBufferObject);
-	uboSizes[1] = sizeof(LightObject);
+	uboSizes[1] = sizeof(DirectionalLightStruct);
 
 	std::vector<VkImageView> imageViews{};
 	for (auto& texture : m_Textures)

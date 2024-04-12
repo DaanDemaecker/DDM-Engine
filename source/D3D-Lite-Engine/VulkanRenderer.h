@@ -60,7 +60,7 @@ namespace D3D
 
         DescriptorPoolManager* GetDescriptorPoolManager() const;
 
-        const LightObject& GetGlobalLight() const { return m_GlobalLight; }
+        const DirectionalLightStruct& GetGlobalLight() const { return m_GlobalLight; }
 
         std::vector<VkBuffer>& GetLightBuffers() { return m_LightBuffers; }
 
@@ -114,7 +114,7 @@ namespace D3D
     private:
         const size_t m_MaxFramesInFlight{ 2 };
 
-        LightObject m_GlobalLight{};
+        DirectionalLightStruct m_GlobalLight{};
         std::vector<bool> m_LightChanged{};
 
         std::vector<VkBuffer> m_LightBuffers{};

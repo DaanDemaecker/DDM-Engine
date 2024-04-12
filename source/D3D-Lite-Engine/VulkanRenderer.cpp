@@ -663,7 +663,7 @@ VkShaderModule D3D::VulkanRenderer::CreateShaderModule(const std::vector<char>& 
 
 void D3D::VulkanRenderer::CreateLightBuffer()
 {
-	VkDeviceSize bufferSize = sizeof(LightObject);
+	VkDeviceSize bufferSize = sizeof(DirectionalLightStruct);
 
 	m_LightBuffers.resize(m_MaxFramesInFlight);
 	m_LightMemory.resize(m_MaxFramesInFlight);

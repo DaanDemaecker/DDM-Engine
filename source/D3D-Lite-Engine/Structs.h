@@ -129,18 +129,29 @@ namespace D3D
 		}
 	};
 
-	struct UniformBufferObject {
-		glm::mat4 model;
-		glm::mat4 view;
-		glm::mat4 proj;
+	// Uniform buffer object
+		// Needed for transformations in shaders
+	struct UniformBufferObject
+	{
+		// Transformation of model
+		glm::mat4 model{};
+		// Transformation of camera
+		glm::mat4 view{};
+		// Transformation needed to put modle in projection space
+		glm::mat4 proj{};
 	};
 
 #pragma warning(push)
+	// Disable warning C4324
 #pragma warning(disable : 4324)
-	struct LightObject
+	// Directional light object
+	struct DirectionalLightStruct
 	{
+		// Direction of light
 		alignas(16) glm::vec3 direction;
+		// Color of light
 		alignas(16) glm::vec3 color;
+		// Intensity of light
 		alignas(4) float intensity;
 	};
 #pragma warning(pop)
