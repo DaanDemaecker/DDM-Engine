@@ -398,22 +398,8 @@ void D3D::VulkanRenderer::UpdateUniformBuffer(UniformBufferObject& buffer)
 
 	if (pCamera == nullptr)
 		return;
-	
-	auto pCameraTransform{ pCamera->GetTransform()};
 
-	glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), pCameraTransform->GetWorldPosition());
-
-	glm::quat quaternion = glm::quat(pCameraTransform->GetWorldRotation());
-	glm::mat4 rotationMatrix = glm::mat4_cast(quaternion);
-
-	glm::mat4 scalingMatrix = glm::scale(glm::mat4(1.0f), pCameraTransform->GetWorldScale());
-
-	buffer.view = translationMatrix * rotationMatrix * scalingMatrix;
-
-	auto extent{ m_pSwapchainWrapper->GetExtent() };
-
-	buffer.proj = glm::perspective(pCamera->GetFovAngle(), extent.width / static_cast<float>(extent.height), 0.1f, 10.0f);
-	buffer.proj[1][1] *= -1;
+	pCamera->UpdateUniformBuffer(buffer, m_pSwapchainWrapper->GetExtent());
 }
 
 void D3D::VulkanRenderer::SetupLight()
