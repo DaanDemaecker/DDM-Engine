@@ -111,12 +111,6 @@
     <ClCompile Include="TexturedMaterial.cpp">
       <Filter>Materials</Filter>
     </ClCompile>
-    <ClCompile Include="DescriptorPoolWrapper.cpp">
-      <Filter>Vulkan</Filter>
-    </ClCompile>
-    <ClCompile Include="DescriptorPoolManager.cpp">
-      <Filter>Vulkan</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="STBIncludes.cpp">
       <Filter>Includes</Filter>
@@ -183,6 +177,12 @@
     </ClCompile>
     <ClCompile Include="PipelineWrapper.cpp">
       <Filter>Vulkan\Wrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="DescriptorPoolWrapper.cpp">
+      <Filter>Vulkan\Wrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectionalLightObject.cpp">
+      <Filter>BaseClasses</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -257,12 +257,6 @@
     </ClInclude>
     <ClInclude Include="TexturedMaterial.h">
       <Filter>Materials</Filter>
-    </ClInclude>
-    <ClInclude Include="DescriptorPoolWrapper.h">
-      <Filter>Vulkan</Filter>
-    </ClInclude>
-    <ClInclude Include="DescriptorPoolManager.h">
-      <Filter>Vulkan</Filter>
     </ClInclude>
     <ClInclude Include="STBIncludes.h">
       <Filter>Includes</Filter>
@@ -347,6 +341,12 @@
     </ClInclude>
     <ClInclude Include="PipelineWrapper.h">
       <Filter>Vulkan\Wrappers</Filter>
+    </ClInclude>
+    <ClInclude Include="DescriptorPoolWrapper.h">
+      <Filter>Vulkan\Wrappers</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectionalLightObject.h">
+      <Filter>BaseClasses</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

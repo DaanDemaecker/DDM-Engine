@@ -2,7 +2,7 @@
     "WindowName" : "Vulkan",
     "WindowWidth" : 800,
     "WindowHeight" : 600,
-    "FullScreen" : false,
+    "FullScreen" : true,
     "Monitor" : 1,
     "ApplicationName": "D3D-Lite-Engine",
     "ApplicationVersionMajor" : 1,

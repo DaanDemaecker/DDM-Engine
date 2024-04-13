@@ -91,7 +91,7 @@ namespace D3D
 	inline void UboDescriptorObject<T>::SetupBuffers()
 	{
 		// Get reference to renderer
-		auto& renderer = VulkanRenderer3D::GetInstance();
+		auto& renderer = VulkanRenderer::GetInstance();
 		// Get amount of frames
 		auto frames = renderer.GetMaxFrames();
 

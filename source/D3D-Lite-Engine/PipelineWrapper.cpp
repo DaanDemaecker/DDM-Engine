@@ -57,7 +57,7 @@ void D3D::PipelineWrapper::CreatePipeline(VkDevice device, VkRenderPass renderPa
 
 	// Create the descriptor pool
 	
-	//m_pDescriptorPool = std::make_unique<DescriptorPoolWrapper>(shaderModuleWrappers);
+	m_pDescriptorPool = std::make_unique<DescriptorPoolWrapper>(shaderModuleWrappers);
 
 	// Create a vector of shader stages the size of shader module wrappers
 	std::vector<VkPipelineShaderStageCreateInfo> shaderStages(shaderModuleWrappers.size());

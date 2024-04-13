@@ -40,12 +40,6 @@ namespace D3D
 		std::vector<VkPresentModeKHR> presentModes{};
 	};
 
-	struct PipelinePair
-	{
-		VkPipeline pipeline{};
-		VkPipelineLayout pipelineLayout{};
-	};
-
 	// Struct for compacting vulkan textures
 	struct Texture
 	{

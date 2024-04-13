@@ -178,8 +178,8 @@
     <ClCompile Include="CommandpoolManager.cpp" />
     <ClCompile Include="ConfigManager.cpp" />
     <ClCompile Include="D3DEngine.cpp" />
-    <ClCompile Include="DescriptorPoolManager.cpp" />
     <ClCompile Include="DescriptorPoolWrapper.cpp" />
+    <ClCompile Include="DirectionalLightObject.cpp" />
     <ClCompile Include="GPUObject.cpp" />
     <ClCompile Include="ImageManager.cpp" />
     <ClCompile Include="ImageViewManager.cpp" />
@@ -228,8 +228,8 @@
     <ClInclude Include="ConfigManager.h" />
     <ClInclude Include="D3DEngine.h" />
     <ClInclude Include="DescriptorObject.h" />
-    <ClInclude Include="DescriptorPoolManager.h" />
     <ClInclude Include="DescriptorPoolWrapper.h" />
+    <ClInclude Include="DirectionalLightObject.h" />
     <ClInclude Include="GPUObject.h" />
     <ClInclude Include="ImageManager.h" />
     <ClInclude Include="ImageViewManager.h" />

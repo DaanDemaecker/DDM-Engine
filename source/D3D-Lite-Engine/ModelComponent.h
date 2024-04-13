@@ -2,6 +2,7 @@
 #define ModelComponentIncluded
 #include "Component.h"
 #include "Structs.h"
+#include "UboDescriptorObject.h"
 
 
 namespace D3D
@@ -30,13 +31,12 @@ namespace D3D
 		//Member variables
 		bool m_Initialized{ false };
 
+		// Vector for Uniform Buffer Objects
 		std::vector<UniformBufferObject> m_Ubos{};
+		// Vector of dirty flags for UBOs
+		std::vector<bool> m_UboChanged{};
 
-		std::vector<VkBuffer> m_UboBuffers{};
-		std::vector<VkDeviceMemory> m_UbosMemory{};
-		std::vector<void*> m_UbosMapped{};
-
-		std::vector<VkDescriptorSet> m_DescriptorSets{};
+		std::unique_ptr<D3D::UboDescriptorObject<UniformBufferObject>> m_pUboDescriptorObject{};
 
 
 		std::vector<Vertex> m_Vertices{};
@@ -53,6 +53,10 @@ namespace D3D
 		//Material
 		std::shared_ptr<Material> m_pMaterial{};
 
+
+		// Vector of descriptorsets
+		std::vector<VkDescriptorSet> m_DescriptorSets{};
+
 		//Initialization functions
 		void CreateUniformBuffers();
 
@@ -61,7 +65,7 @@ namespace D3D
 		void UpdateUniformBuffer(uint32_t frame);
 
 		//Texture functions
-		D3D::PipelinePair& GetPipeline();
+		D3D::PipelineWrapper* GetPipeline();
 
 		void Cleanup();
 	};

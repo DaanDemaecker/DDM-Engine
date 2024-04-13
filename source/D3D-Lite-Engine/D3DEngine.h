@@ -18,8 +18,6 @@ namespace D3D
 		D3DEngine(D3DEngine&& other) = delete;
 		D3DEngine& operator=(const D3DEngine& other) = delete;
 		D3DEngine& operator=(D3DEngine&& other) = delete;
-
-	private:
 	};
 }
 

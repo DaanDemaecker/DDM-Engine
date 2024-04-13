@@ -8,6 +8,8 @@
 D3D::ModelComponent::ModelComponent()
 {
 	m_pMaterial = std::make_shared<D3D::Material>();
+
+	m_pUboDescriptorObject = std::make_unique<D3D::UboDescriptorObject<UniformBufferObject>>();
 }
 
 D3D::ModelComponent::~ModelComponent()
@@ -62,37 +64,31 @@ void D3D::ModelComponent::Render()
 
 void D3D::ModelComponent::CreateUniformBuffers()
 {
+	// Get reference to renderer
 	auto& renderer = VulkanRenderer::GetInstance();
+	// Get amount of frames
+	auto frames = renderer.GetMaxFrames();
 
-	VkDeviceSize bufferSize = sizeof(UniformBufferObject);
-
-	auto maxFrames{renderer.GetMaxFrames()};
-
-	m_UboBuffers.resize(maxFrames);
-	m_UbosMemory.resize(maxFrames);
-	m_UbosMapped.resize(maxFrames);
-
-	m_Ubos.resize(maxFrames);
-
-
-	for (size_t i = 0; i < maxFrames; ++i)
-	{
-		renderer.CreateBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-			m_UboBuffers[i], m_UbosMemory[i]);
-
-		vkMapMemory(renderer.GetDevice(), m_UbosMemory[i], 0, bufferSize, 0, &m_UbosMapped[i]);
-	}
+	// Resize ubos to amount of frames
+	m_Ubos.resize(frames);
+	// Resize dirty flages to amount of frames
+	m_UboChanged.resize(frames);
 }
 
 void D3D::ModelComponent::CreateDescriptorSets()
 {
+	// Create descriptorsets
 	m_pMaterial->CreateDescriptorSets(this, m_DescriptorSets);
+	// Update descriptors
 	UpdateDescriptorSets();
 }
 
 void D3D::ModelComponent::UpdateDescriptorSets()
 {
-	m_pMaterial->UpdateDescriptorSets(m_UboBuffers, m_DescriptorSets);
+	std::vector<DescriptorObject*> descriptors{ m_pUboDescriptorObject.get() };
+
+	// Update descriptorsets
+	m_pMaterial->UpdateDescriptorSets(m_DescriptorSets, descriptors);
 }
 
 void D3D::ModelComponent::UpdateUniformBuffer(uint32_t frame)
@@ -109,10 +105,10 @@ void D3D::ModelComponent::UpdateUniformBuffer(uint32_t frame)
 
 	VulkanRenderer::GetInstance().UpdateUniformBuffer(m_Ubos[frame]);
 
-	memcpy(m_UbosMapped[frame], &m_Ubos[frame], sizeof(m_Ubos[frame]));
+	m_pUboDescriptorObject->UpdateUboBuffer(m_Ubos[frame], frame);
 }
 
-D3D::PipelinePair& D3D::ModelComponent::GetPipeline()
+D3D::PipelineWrapper* D3D::ModelComponent::GetPipeline()
 {
 	if (m_pMaterial != nullptr)
 	{
@@ -124,20 +120,21 @@ D3D::PipelinePair& D3D::ModelComponent::GetPipeline()
 
 void D3D::ModelComponent::Cleanup()
 {
-	auto& renderer{ D3D::VulkanRenderer::GetInstance() };
+	// Get reference to renderer
+	auto& renderer = D3D::VulkanRenderer::GetInstance();
+	// Get reference to device
 	auto device = renderer.GetDevice();
 
+	// Wait until device is idle
 	vkDeviceWaitIdle(device);
 
+	// Destroy index buffer
 	vkDestroyBuffer(device, m_IndexBuffer, nullptr);
+	// Free index buffer memory
 	vkFreeMemory(device, m_IndexBufferMemory, nullptr);
 
+	// Destroy vertex buffer
 	vkDestroyBuffer(device, m_VertexBuffer, nullptr);
+	// Free vertex buffer
 	vkFreeMemory(device, m_VertexBufferMemory, nullptr);
-
-	for (size_t i = 0; i < renderer.GetMaxFrames(); ++i)
-	{
-		vkDestroyBuffer(device, m_UboBuffers[i], nullptr);
-		vkFreeMemory(device, m_UbosMemory[i], nullptr);
-	}
 }

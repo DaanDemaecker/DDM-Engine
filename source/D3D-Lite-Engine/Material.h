@@ -8,6 +8,8 @@ namespace D3D
 {
 	class DescriptorPoolWrapper;
 	class ModelComponent;
+	class PipelineWrapper;
+	class DescriptorObject;
 
 	class Material
 	{
@@ -21,18 +23,29 @@ namespace D3D
 		Material& operator=(Material& other) = delete;
 		Material& operator=(Material&& other) = delete;
 
-		PipelinePair& GetPipeline() { return m_PipelinePair; }
+		// Get the pipeline that is used by this material
+		PipelineWrapper* GetPipeline();
 
+		// Create the descriptorsets
+		// Parameters:
+		//     pModel: the model that the descriptorsets belong to
+		//     descriptorSets: vector of descriptorsets that have to be created
 		virtual void CreateDescriptorSets(ModelComponent* pModel, std::vector<VkDescriptorSet>& descriptorSets);
 
-		virtual void UpdateDescriptorSets(std::vector<VkBuffer>& uboBuffers, std::vector<VkDescriptorSet>& descriptorSets);
+		// Update the descriptorsets
+		// Parameters:
+		//     descriptorsets: the descriptorsets that should be updated
+		//     descriptorObjects: a vector of pointers to descriptorobjects in the same order as the shader code
+		virtual void UpdateDescriptorSets(std::vector<VkDescriptorSet>& descriptorSets, std::vector<DescriptorObject*>& descriptorObjects);
 
-		virtual VkDescriptorSetLayout* GetDescriptorLayout();
+
+		virtual VkDescriptorSetLayout GetDescriptorLayout();
 
 		virtual DescriptorPoolWrapper* GetDescriptorPool();
 
 	protected:
-		PipelinePair m_PipelinePair{};
+		// The pipeline pair that is used for this material
+		PipelineWrapper* m_pPipeline{};
 	};
 }
 #endif // !MaterialIncluded

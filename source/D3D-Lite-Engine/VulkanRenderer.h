@@ -14,7 +14,6 @@ namespace D3D
     // Class forward declarations
     class ModelComponent;
     class ImGuiWrapper;
-    class DescriptorPoolManager;
     class InstanceWrapper;
     class SurfaceWrapper;
     class GPUObject;
@@ -24,6 +23,12 @@ namespace D3D
     class ImageManager;
     class SwapchainWrapper;
     class RenderpassWrapper;
+    class PipelineManager;
+    class PipelineWrapper;
+
+    class DirectionalLightObject;
+    class DescriptorObject;
+
 
     class VulkanRenderer final : public Singleton<VulkanRenderer>
     {
@@ -39,10 +44,16 @@ namespace D3D
 
         void Render();
 
-        void Render(ModelComponent* pModel, VkCommandBuffer& commandBuffer, const VkDescriptorSet* descriptorSet, const PipelinePair& pipeline);
+        void Render(ModelComponent* pModel, VkCommandBuffer& commandBuffer, const VkDescriptorSet* descriptorSet, const PipelineWrapper* pipeline);
 
-        void AddGraphicsPipeline(const std::string& pipelineName, const std::string& vertShaderName, const std::string& fragShaderName, int vertexUbos, int fragmentUbos, int textureAmount);
-       
+        // Add a new graphics pipeline
+         // Parameters:
+         //     pipelineName: the name of the new pipeline
+         //     filePaths: a list of shader file names for this pipeline
+         //     hasDepthStencil: boolean that indicates if this pipeline needs a depth stencil, true by default
+        void AddGraphicsPipeline(const std::string& pipelineName, std::initializer_list<const std::string>&& filePaths,
+            bool hasDepthStencil = true);
+
         //Public getters
         size_t GetMaxFrames() const { return m_MaxFramesInFlight; }
 
@@ -52,18 +63,11 @@ namespace D3D
 
         VkSampler& GetSampler();
 
-        D3D::PipelinePair& GetPipeline(const std::string& name = "Default");
+        D3D::PipelineWrapper* GetPipeline(const std::string& name = "Default");
 
         VkCommandBuffer& GetCurrentCommandBuffer();
 
         uint32_t GetCurrentFrame() const { return  m_CurrentFrame; }
-
-        DescriptorPoolManager* GetDescriptorPoolManager() const;
-
-        const DirectionalLightStruct& GetGlobalLight() const { return m_GlobalLight; }
-
-        std::vector<VkBuffer>& GetLightBuffers() { return m_LightBuffers; }
-
     
         // Create a buffer
         // Parameters:
@@ -109,17 +113,28 @@ namespace D3D
 
         void UpdateUniformBuffer(UniformBufferObject& buffer);
 
-        VkDescriptorSetLayout* GetDescriptorSetLayout(int vertexUbos, int fragmentUbos, int textureAmount);
 
+        // Set up the global light
+        void SetupLight();
+
+        // Clean up the global light
+        void CleanupLight();
+
+        // Get the global light object
+        const DirectionalLightStruct& GetGlobalLight() const;
+
+        // Get a pointer to the DescriptorObject of the global light
+        DescriptorObject* GetLightDescriptor();
+
+
+        void AddDefaultPipeline();
     private:
         const size_t m_MaxFramesInFlight{ 2 };
 
-        DirectionalLightStruct m_GlobalLight{};
-        std::vector<bool> m_LightChanged{};
 
-        std::vector<VkBuffer> m_LightBuffers{};
-        std::vector<VkDeviceMemory> m_LightMemory{};
-        std::vector<void*> m_LightMapped{};
+        // Pointer to the global light object
+        std::unique_ptr<DirectionalLightObject> m_pGlobalLight{};
+
         //----Member variables----
 
         // ImGui Wrapper
@@ -153,23 +168,12 @@ namespace D3D
         // RenderpassWrapper
         std::unique_ptr<RenderpassWrapper> m_pRenderpassWrapper{};
 
-        //--Descriptorlayouts--
-        std::map<std::tuple<int, int, int>, VkDescriptorSetLayout> m_DescriptorSetLayouts{};
-
-        //--GraphicsPipeline--
-        //VkPipeline m_GraphicsPipeline{};
-        std::map<std::string, PipelinePair> m_GraphicPipelines{};
-
-        const std::string m_DefaultPipelineName{ "Default" };
-        const std::string m_DefaultVertName{ "../resources/DefaultResources/Default.Vert.spv" };
-        const std::string m_DefaultFragName{ "../resources/DefaultResources/Default.Frag.spv" };
+        // Pipeline managar
+        std::unique_ptr<PipelineManager> m_pPipelineManager{};
 
 
         //--MultiSampling--
         VkSampleCountFlagBits m_MsaaSamples = VK_SAMPLE_COUNT_1_BIT;
-
-        //--Descriptorpool--
-        std::unique_ptr<DescriptorPoolManager> m_pDescriptorPoolManager{};
 
 
         //--Current frame--
@@ -192,18 +196,8 @@ namespace D3D
         //--Swapchain--
         void RecreateSwapChain();
 
-        //--Descriptor Layout
-        void CreateDescriptorLayout(int vertexUbos, int fragmentUbos, int textureAmount);
-
-        //-Shader Module-
-        VkShaderModule CreateShaderModule(const std::vector<char>& code);
-
         //--CommandBuffers--
         void RecordCommandBuffer(VkCommandBuffer& commandBuffer, uint32_t imageIndex);
-
-        //--LightBuffers--
-        void CreateLightBuffer();
-        void UpdateLightBuffer(int frame);
 
 
         //--General helpers--

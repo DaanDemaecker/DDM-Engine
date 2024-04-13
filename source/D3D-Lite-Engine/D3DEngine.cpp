@@ -14,11 +14,18 @@ D3D::D3DEngine::D3DEngine()
 {
 	// Create the window with the given width and height
 	D3D::Window::GetInstance();
+
+	auto& renderer{ D3D::VulkanRenderer::GetInstance() };
+
+	renderer.SetupLight();
+	renderer.AddDefaultPipeline();
 }
 
 D3D::D3DEngine::~D3DEngine()
 {
+	auto& renderer{ D3D::VulkanRenderer::GetInstance() };
 
+	renderer.CleanupLight();
 }
 
 void D3D::D3DEngine::Run(const std::function<void()>& load)

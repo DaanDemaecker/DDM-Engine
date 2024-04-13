@@ -2,40 +2,57 @@
 #include "VulkanRenderer.h"
 #include "Utils.h"
 #include "DescriptorPoolWrapper.h"
-#include "DescriptorPoolManager.h"
 #include "STBIncludes.h"
 #include "ModelComponent.h"
+#include "PipelineWrapper.h"
 
 D3D::Material::Material(const std::string& pipelineName)
 {
-	m_PipelinePair = VulkanRenderer::GetInstance().GetPipeline(pipelineName);
+	// Get the requested pipeline from the renderer
+	m_pPipeline = VulkanRenderer::GetInstance().GetPipeline(pipelineName); 
+}
+
+D3D::PipelineWrapper* D3D::Material::GetPipeline()
+{
+	return m_pPipeline;
 }
 
 void D3D::Material::CreateDescriptorSets(ModelComponent* pModel, std::vector<VkDescriptorSet>& descriptorSets)
 {
+	// Get pointer to the descriptorpool wrapper
 	auto descriptorPool = GetDescriptorPool();
+	// Add model to descriptorpool wrapper
 	descriptorPool->AddModel(pModel);
-	descriptorPool->CreateDescriptorSets(*GetDescriptorLayout(), descriptorSets);
+	// Create descriptorpools
+	descriptorPool->CreateDescriptorSets(GetDescriptorLayout(), descriptorSets);
 }
 
-void D3D::Material::UpdateDescriptorSets(std::vector<VkBuffer>& uboBuffers, std::vector<VkDescriptorSet>& descriptorSets)
+void D3D::Material::UpdateDescriptorSets(std::vector<VkDescriptorSet>& descriptorSets, std::vector<DescriptorObject*>& descriptorObjects)
 {
+	// Get pointer to the descriptorpool wrapper
 	auto descriptorPool = GetDescriptorPool();
-	std::vector<std::vector<VkBuffer>> uboList{ uboBuffers, D3D::VulkanRenderer::GetInstance().GetLightBuffers() };
 
-	std::vector<VkDeviceSize> uboSizes(2);
-	uboSizes[0] = sizeof(UniformBufferObject);
-	uboSizes[1] = sizeof(DirectionalLightStruct);
+	// Create list of descriptor objects and add the objects of the model to it
+	std::vector<DescriptorObject*> descriptorObjectList{};
 
-	descriptorPool->UpdateDescriptorSets(uboList, uboSizes, descriptorSets);
+	for (auto& descriptorObject : descriptorObjects)
+	{
+		descriptorObjectList.push_back(descriptorObject);
+	}
+
+	// Add the descriptor of the global light object
+	descriptorObjectList.push_back(VulkanRenderer::GetInstance().GetLightDescriptor());
+
+	// Update descriptorsets
+	descriptorPool->UpdateDescriptorSets(descriptorSets, descriptorObjectList);
 }
 
-VkDescriptorSetLayout* D3D::Material::GetDescriptorLayout()
+VkDescriptorSetLayout D3D::Material::GetDescriptorLayout()
 {
-	return VulkanRenderer::GetInstance().GetDescriptorSetLayout(1, 1, 0);
+	return m_pPipeline->GetDescriptorSetLayout();
 }
 
 D3D::DescriptorPoolWrapper* D3D::Material::GetDescriptorPool()
 {
-	return D3D::VulkanRenderer::GetInstance().GetDescriptorPoolManager()->GetDescriptorPool(2, 0);
+	return m_pPipeline->GetDescriptorPool();
 }
