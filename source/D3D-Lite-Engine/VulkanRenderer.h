@@ -203,7 +203,6 @@ namespace D3D
         //--General helpers--
         VkCommandBuffer BeginSingleTimeCommands();
         void EndSingleTimeCommands(VkCommandBuffer comandBuffer);
-        bool HasStencilComponent(VkFormat format);
     };
 }
 

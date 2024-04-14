@@ -439,11 +439,6 @@ void D3D::VulkanRenderer::AddDefaultPipeline()
 
 }
 
-bool D3D::VulkanRenderer::HasStencilComponent(VkFormat format)
-{
-	return format == VK_FORMAT_D32_SFLOAT_S8_UINT || format == VK_FORMAT_D24_UNORM_S8_UINT;
-}
-
 void D3D::VulkanRenderer::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory)
 {
 	// Create the buffer trough vulkan utils
