@@ -170,6 +170,24 @@ void D3D::TransformComponent::SetScaleDirtyFlag()
 	}
 }
 
+glm::vec3 D3D::TransformComponent::GetForward()
+{
+	auto forwardVector = glm::vec3{ 0, 0, 1 };
+	return GetWorldRotation() * forwardVector;
+}
+
+glm::vec3 D3D::TransformComponent::GetUp()
+{
+	auto upVector = glm::vec3{ 0, 1, 0 };
+	return GetWorldRotation() * upVector;
+}
+
+glm::vec3 D3D::TransformComponent::GetRight()
+{
+	auto rightVector = glm::vec3{ -1, 0, 0 };
+	return GetWorldRotation() * rightVector;
+}
+
 glm::vec3& D3D::TransformComponent::GetParentPosition()
 {
 	if (GetOwner() == nullptr || GetOwner()->GetParent() == nullptr)

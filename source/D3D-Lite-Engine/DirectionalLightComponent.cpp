@@ -69,8 +69,6 @@ void D3D::DirectionalLightComponent::CreateLightBuffer()
 
 void D3D::DirectionalLightComponent::UpdateBuffer(int frame)
 {
-	auto rotation = GetTransform()->GetWorldRotation();
-	auto forwardVector = glm::vec3{ 0, 0, 1 };
-	m_BufferObject.direction = rotation * forwardVector;
+	m_BufferObject.direction = GetTransform()->GetForward();
 	m_DescriptorObject->UpdateUboBuffer(m_BufferObject, frame);
 }

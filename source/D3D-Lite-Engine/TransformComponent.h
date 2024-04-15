@@ -50,6 +50,11 @@ namespace D3D
 
 		void SetScaleDirtyFlag();
 
+		glm::vec3 GetForward();
+		glm::vec3 GetUp();
+		glm::vec3 GetRight();
+
+
 	private:
 		glm::vec3 m_LocalPosition{};
 		glm::vec3 m_ParentWorldPosition{};
