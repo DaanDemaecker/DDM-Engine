@@ -13,6 +13,7 @@
 #include "DirectionalLightComponent.h"
 
 #include "RotatorComponent.h"
+#include "SpectatorMovementComponent.h"
 
 #include "VulkanRenderer.h"
 
@@ -64,6 +65,8 @@ void load()
 
 
 	auto pCamera{ scene->CreateGameObject("Camera") };
+
+	pCamera->AddComponent<D3D::SpectatorMovementComponent>();
 
 	auto pCameraComponent{ pCamera->AddComponent<D3D::CameraComponent>() };
 

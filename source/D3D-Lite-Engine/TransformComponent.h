@@ -32,6 +32,7 @@ namespace D3D
 		void SetLocalRotation(const glm::vec3& rot);
 
 		void Rotate(glm::vec3& axis, float angle);
+		void Rotate(glm::vec3&& axis, float angle);
 
 		glm::quat GetWorldRotation();
 		void SetWorldRotation(float x, float y, float z);

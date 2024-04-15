@@ -56,7 +56,7 @@ void D3D::D3DEngine::Run(const std::function<void()>& load)
 
 		time.SetDeltaTime(deltaTime);
 
-		std::cout << time.GetFps() << std::endl;
+		//std::cout << time.GetFps() << std::endl;
 
 		lastTime = currentTime;
 		lag += deltaTime;
@@ -82,8 +82,6 @@ void D3D::D3DEngine::Run(const std::function<void()>& load)
 		sceneManager.Cleanup();
 
 		renderer.Render();
-
-		sceneManager.Cleanup();
 
 		const auto frameDuration = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - currentTime);
 		const auto sleepTime = std::chrono::milliseconds(static_cast<int>(desiredFrameDuration)) - frameDuration;

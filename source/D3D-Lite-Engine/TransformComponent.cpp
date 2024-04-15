@@ -108,6 +108,11 @@ void D3D::TransformComponent::Rotate(glm::vec3& axis, float angle)
 	SetRotationDirtyFlag();
 }
 
+void D3D::TransformComponent::Rotate(glm::vec3&& axis, float angle)
+{
+	Rotate(axis, angle);
+}
+
 glm::quat D3D::TransformComponent::GetWorldRotation()
 {
 	return m_LocalRotation * GetParentRotation();

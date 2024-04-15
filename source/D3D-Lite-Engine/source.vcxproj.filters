@@ -184,6 +184,9 @@
     <ClCompile Include="ConfigManager.cpp">
       <Filter>Managers</Filter>
     </ClCompile>
+    <ClCompile Include="SpectatorMovementComponent.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Utils.h">
@@ -348,8 +351,8 @@
     <ClInclude Include="ConfigManager.h">
       <Filter>Managers</Filter>
     </ClInclude>
-    <ClInclude Include="SDLIncludes.h">
-      <Filter>Includes</Filter>
+    <ClInclude Include="SpectatorMovementComponent.h">
+      <Filter>Components</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
