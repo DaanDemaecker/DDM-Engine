@@ -32,7 +32,10 @@ namespace D3D
 
 		void StartFrame();
 
+		void EarlyUpdate();
+
 		void Update();
+		
 		void FixedUpdate();
 
 		void LateUpdate();

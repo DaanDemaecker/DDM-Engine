@@ -120,6 +120,14 @@ void D3D::SceneManager::StartFrame()
     }
 }
 
+void D3D::SceneManager::EarlyUpdate()
+{
+    if (m_ActiveScene != nullptr)
+    {
+        m_ActiveScene->EarlyUpdate();
+    }
+}
+
 void D3D::SceneManager::Update()
 {
     if (m_ActiveScene != nullptr)

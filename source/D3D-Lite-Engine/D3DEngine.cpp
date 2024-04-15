@@ -67,6 +67,8 @@ void D3D::D3DEngine::Run(const std::function<void()>& load)
 
 		sceneManager.StartFrame();
 
+		sceneManager.EarlyUpdate();
+
 		while (lag >= fixedTimeStep)
 		{
 			sceneManager.FixedUpdate();

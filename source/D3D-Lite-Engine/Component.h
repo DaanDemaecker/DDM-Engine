@@ -23,6 +23,8 @@ namespace D3D
 
 		virtual void OnSceneUnload() {}
 
+		virtual void EarlyUpdate(){}
+
 		virtual void Update() {}
 
 		virtual void FixedUpdate() {}

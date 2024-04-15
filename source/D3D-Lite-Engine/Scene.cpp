@@ -43,6 +43,11 @@ void D3D::Scene::StartFrame()
 	m_pSceneRoot->StartFrame();
 }
 
+void D3D::Scene::EarlyUpdate()
+{
+	m_pSceneRoot->EarlyUpdate();
+}
+
 void D3D::Scene::Update()
 {
 	m_pSceneRoot->Update();

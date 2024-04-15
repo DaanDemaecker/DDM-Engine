@@ -20,6 +20,15 @@ D3D::ModelComponent::~ModelComponent()
 	}
 }
 
+void D3D::ModelComponent::EarlyUpdate()
+{
+	if (m_ShouldCreateDescriptorSets)
+	{
+		CreateDescriptorSets();
+		m_ShouldCreateDescriptorSets = false;
+	}
+}
+
 void D3D::ModelComponent::LoadModel(const std::string& textPath)
 {
 	if (m_Initialized)
@@ -36,7 +45,8 @@ void D3D::ModelComponent::LoadModel(const std::string& textPath)
 	renderer.CreateIndexBuffer(m_Indices, m_IndexBuffer, m_IndexBufferMemory);
 
 	CreateUniformBuffers();
-	CreateDescriptorSets();
+	
+	m_ShouldCreateDescriptorSets = true;
 
 	m_Initialized = true;
 }
@@ -45,7 +55,8 @@ void D3D::ModelComponent::SetMaterial(std::shared_ptr<Material> pMaterial)
 {
 	m_pMaterial->GetDescriptorPool()->RemoveModel(this);
 	m_pMaterial = pMaterial;
-	CreateDescriptorSets();
+	
+	m_ShouldCreateDescriptorSets = true;
 }
 
 void D3D::ModelComponent::Render()

@@ -23,21 +23,6 @@ void load()
 
 	auto& renderer{ D3D::VulkanRenderer::GetInstance() };
 
-
-	auto pLight{ scene->CreateGameObject("Light") };
-
-	auto pLightComponent{ pLight->AddComponent<D3D::DirectionalLightComponent>() };
-
-	auto pLightTransform{ pLight->GetTransform() };
-
-	pLightTransform->SetLocalRotation(glm::vec3(0.0f, glm::radians(180.f), 0.0f));
-
-	pLight->AddComponent<D3D::RotatorComponent>();
-
-	scene->SetLight(pLightComponent);
-
-
-
 	renderer.AddGraphicsPipeline("Diffuse", { "../Resources/Shaders/Diffuse.Vert.spv", "../Resources/Shaders/Diffuse.Frag.spv" });
 	renderer.AddGraphicsPipeline("NormalMap", { "../Resources/Shaders/NormalMap.Vert.spv", "../Resources/Shaders/NormalMap.Frag.spv" });
 	renderer.AddGraphicsPipeline("DiffNorm", { "../Resources/Shaders/DiffNorm.Vert.spv", "../Resources/Shaders/DiffNorm.Frag.spv" });
@@ -87,6 +72,18 @@ void load()
 
 	scene->SetCamera(pCameraComponent);
 
+
+	auto pLight{ scene->CreateGameObject("Light") };
+
+	auto pLightComponent{ pLight->AddComponent<D3D::DirectionalLightComponent>() };
+
+	auto pLightTransform{ pLight->GetTransform() };
+
+	pLightTransform->SetLocalRotation(glm::vec3(0.0f, glm::radians(180.f), 0.0f));
+
+	pLight->AddComponent<D3D::RotatorComponent>();
+
+	scene->SetLight(pLightComponent);
 	
 }
 

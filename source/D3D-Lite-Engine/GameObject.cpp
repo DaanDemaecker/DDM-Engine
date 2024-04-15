@@ -117,6 +117,22 @@ void D3D::GameObject::StartFrame()
 	}
 }
 
+void D3D::GameObject::EarlyUpdate()
+{
+	for (auto& component : m_pComponents)
+	{
+		component->EarlyUpdate();
+	}
+
+	for (auto& pChild : m_pChildren)
+	{
+		if (pChild->m_IsActive)
+		{
+			pChild->EarlyUpdate();
+		}
+	}
+}
+
 void D3D::GameObject::Update()
 {
 	for (auto& component : m_pComponents)

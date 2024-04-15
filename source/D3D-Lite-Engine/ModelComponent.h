@@ -15,6 +15,8 @@ namespace D3D
 		ModelComponent();
 		~ModelComponent();
 
+		virtual void EarlyUpdate() override;
+
 		void LoadModel(const std::string& textPath);
 		void SetMaterial(std::shared_ptr<Material> pMaterial);
 
@@ -39,7 +41,7 @@ namespace D3D
 
 		std::unique_ptr<D3D::UboDescriptorObject<UniformBufferObject>> m_pUboDescriptorObject{};
 
-		bool m_ShouldCreateUniformBuffers{ false };
+		bool m_ShouldCreateDescriptorSets{ false };
 
 		std::vector<Vertex> m_Vertices{};
 		std::vector<uint32_t> m_Indices{};
