@@ -348,5 +348,8 @@
     <ClInclude Include="ConfigManager.h">
       <Filter>Managers</Filter>
     </ClInclude>
+    <ClInclude Include="SDLIncludes.h">
+      <Filter>Includes</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
