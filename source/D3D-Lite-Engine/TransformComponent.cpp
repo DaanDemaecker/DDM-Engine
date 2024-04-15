@@ -8,15 +8,15 @@
 //{
 //	static bool test{ true };
 //
-//	ImGui::Begin("Info", &test);
+//	ImGui::Begin(GetOwner()->GetName().c_str(), &test);
 //
 //	ImGuiTreeNodeFlags mainFlags = ImGuiTreeNodeFlags_Framed;
 //
 //	if (ImGui::TreeNodeEx("General Info", mainFlags))
 //	{
-//		std::string text = "x: " + std::to_string(m_LocalPosition.x) +
-//			"y: " + std::to_string(m_LocalPosition.y) +
-//			"z: " + std::to_string(m_LocalPosition.z);
+//		std::string text = "x: " + std::to_string(m_LocalRotation.x) +
+//			"y: " + std::to_string(m_LocalRotation.y) +
+//			"z: " + std::to_string(m_LocalRotation.z);
 //
 //		ImGui::Text(text.c_str());
 //

@@ -17,15 +17,12 @@ D3D::D3DEngine::D3DEngine()
 
 	auto& renderer{ D3D::VulkanRenderer::GetInstance() };
 
-	renderer.SetupLight();
 	renderer.AddDefaultPipeline();
 }
 
 D3D::D3DEngine::~D3DEngine()
 {
-	auto& renderer{ D3D::VulkanRenderer::GetInstance() };
 
-	renderer.CleanupLight();
 }
 
 void D3D::D3DEngine::Run(const std::function<void()>& load)

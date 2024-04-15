@@ -124,9 +124,6 @@
     <ClCompile Include="TinyObjLoaderIncludes.cpp">
       <Filter>Includes</Filter>
     </ClCompile>
-    <ClCompile Include="ConfigManager.cpp">
-      <Filter>Engine</Filter>
-    </ClCompile>
     <ClCompile Include="Window.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
@@ -181,8 +178,11 @@
     <ClCompile Include="DescriptorPoolWrapper.cpp">
       <Filter>Vulkan\Wrappers</Filter>
     </ClCompile>
-    <ClCompile Include="DirectionalLightObject.cpp">
-      <Filter>BaseClasses</Filter>
+    <ClCompile Include="DirectionalLightComponent.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="ConfigManager.cpp">
+      <Filter>Managers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -282,9 +282,6 @@
     <ClInclude Include="VulkanIncludes.h">
       <Filter>Includes</Filter>
     </ClInclude>
-    <ClInclude Include="ConfigManager.h">
-      <Filter>Engine</Filter>
-    </ClInclude>
     <ClInclude Include="Window.h">
       <Filter>Engine</Filter>
     </ClInclude>
@@ -345,8 +342,11 @@
     <ClInclude Include="DescriptorPoolWrapper.h">
       <Filter>Vulkan\Wrappers</Filter>
     </ClInclude>
-    <ClInclude Include="DirectionalLightObject.h">
-      <Filter>BaseClasses</Filter>
+    <ClInclude Include="DirectionalLightComponent.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="ConfigManager.h">
+      <Filter>Managers</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

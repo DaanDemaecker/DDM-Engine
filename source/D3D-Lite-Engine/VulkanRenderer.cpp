@@ -27,7 +27,7 @@
 #include "ImGuiWrapper.h"
 #include "SyncObjectManager.h"
 
-#include "DirectionalLightObject.h"
+#include "DirectionalLightComponent.h"
 
 #include "VulkanUtils.h"
 
@@ -304,9 +304,6 @@ void D3D::VulkanRenderer::RecordCommandBuffer(VkCommandBuffer& commandBuffer, ui
 	scissor.extent = extent;
 	vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
-	// Update the buffer of the global light
-	m_pGlobalLight->UpdateBuffer(m_CurrentFrame);
-
 	SceneManager::GetInstance().Render();
 
 	// Render the ImGui
@@ -402,34 +399,10 @@ void D3D::VulkanRenderer::UpdateUniformBuffer(UniformBufferObject& buffer)
 	pCamera->UpdateUniformBuffer(buffer, m_pSwapchainWrapper->GetExtent());
 }
 
-void D3D::VulkanRenderer::SetupLight()
-{
-	// Create global light
-	m_pGlobalLight = std::make_unique<DirectionalLightObject>();
-	// Set direction of global light
-	m_pGlobalLight->SetDirection(glm::vec3{ -.577, -.577f, .577 });
-	// Set color of global light
-	m_pGlobalLight->SetColor(glm::vec3{ 1.f, 1.f, 1.f });
-	// Set intensity of global light
-	m_pGlobalLight->SetIntensity(1.f);
-}
-
-void D3D::VulkanRenderer::CleanupLight()
-{
-	// Set the global light to nullptr, the unique pointer will take care of the destruction
-	m_pGlobalLight = nullptr;
-}
-
-const D3D::DirectionalLightStruct& D3D::VulkanRenderer::GetGlobalLight() const
-{
-	// Get a reference to the global light struct
-	return m_pGlobalLight->GetLight();
-}
-
 D3D::DescriptorObject* D3D::VulkanRenderer::GetLightDescriptor()
 {
 	// Return buffers of the global light object
-	return m_pGlobalLight->GetDescriptorObject();
+	return SceneManager::GetInstance().GetGlobalLight()->GetDescriptorObject();
 }
 
 void D3D::VulkanRenderer::AddDefaultPipeline()

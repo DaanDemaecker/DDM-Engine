@@ -180,11 +180,11 @@ namespace D3D
 	struct DirectionalLightStruct
 	{
 		// Direction of light
-		alignas(16) glm::vec3 direction;
+		alignas(16) glm::vec3 direction{ 1, 0, 0 };
 		// Color of light
-		alignas(16) glm::vec3 color;
+		alignas(16) glm::vec3 color{ 1, 1, 1 };
 		// Intensity of light
-		alignas(4) float intensity;
+		alignas(4) float intensity{ 1 };
 	};
 #pragma warning(pop)
 }

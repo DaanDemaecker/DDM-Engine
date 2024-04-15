@@ -7,6 +7,7 @@ namespace D3D
 {
 	class GameObject;
 	class CameraComponent;
+	class DirectionalLightComponent;
 
 	class Scene final
 	{
@@ -44,6 +45,10 @@ namespace D3D
 
 		const std::shared_ptr<CameraComponent> GetCamera() const;
 
+		void SetLight(std::shared_ptr<DirectionalLightComponent> pLight);
+
+		const std::shared_ptr<DirectionalLightComponent> GetLight() const;
+
 	private:
 
 		explicit Scene(const std::string& name);
@@ -58,6 +63,12 @@ namespace D3D
 
 		std::unique_ptr<GameObject> m_pDefaultCamera{};
 		std::shared_ptr<CameraComponent> m_pDefaultCameraComponent{};
+
+
+		std::shared_ptr<DirectionalLightComponent> m_pActiveLight{};
+
+		std::unique_ptr<GameObject> m_pDefaultLight{};
+		std::shared_ptr<DirectionalLightComponent> m_pDefaultLightComponent{};
 	};
 }
 

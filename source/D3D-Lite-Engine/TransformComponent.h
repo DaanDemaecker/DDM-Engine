@@ -11,6 +11,7 @@ namespace D3D
 		TransformComponent() = default;
 		~TransformComponent() = default;
 
+
 		//Location
 		const glm::vec3& GetLocalPosition() const { return m_LocalPosition; }
 		void SetLocalPosition(float x, float y, float z);

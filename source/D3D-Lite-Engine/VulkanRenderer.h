@@ -25,8 +25,6 @@ namespace D3D
     class RenderpassWrapper;
     class PipelineManager;
     class PipelineWrapper;
-
-    class DirectionalLightObject;
     class DescriptorObject;
 
 
@@ -113,16 +111,6 @@ namespace D3D
 
         void UpdateUniformBuffer(UniformBufferObject& buffer);
 
-
-        // Set up the global light
-        void SetupLight();
-
-        // Clean up the global light
-        void CleanupLight();
-
-        // Get the global light object
-        const DirectionalLightStruct& GetGlobalLight() const;
-
         // Get a pointer to the DescriptorObject of the global light
         DescriptorObject* GetLightDescriptor();
 
@@ -130,10 +118,6 @@ namespace D3D
         void AddDefaultPipeline();
     private:
         const size_t m_MaxFramesInFlight{ 2 };
-
-
-        // Pointer to the global light object
-        std::unique_ptr<DirectionalLightObject> m_pGlobalLight{};
 
         //----Member variables----
 

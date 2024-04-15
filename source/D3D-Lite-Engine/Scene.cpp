@@ -2,6 +2,8 @@
 #include "GameObject.h"
 
 #include "CameraComponent.h"
+#include "DirectionalLightComponent.h"
+#include "TransformComponent.h"
 
 unsigned int D3D::Scene::m_IdCounter = 0;
 
@@ -15,6 +17,10 @@ D3D::Scene::Scene(const std::string& name) : m_Name(name)
 	m_pDefaultCamera = std::make_unique<GameObject>("Default Camera");
 	m_pDefaultCamera->Init();
 	m_pDefaultCameraComponent = m_pDefaultCamera->AddComponent<CameraComponent>();
+
+	m_pDefaultLight = std::make_unique<GameObject>("Default Light");
+	m_pDefaultLight->Init();
+	m_pDefaultLightComponent = m_pDefaultLight->AddComponent<DirectionalLightComponent>();
 }
 
 D3D::GameObject* D3D::Scene::CreateGameObject(const std::string& name)
@@ -78,4 +84,17 @@ const std::shared_ptr<D3D::CameraComponent> D3D::Scene::GetCamera() const
 		return m_pActiveCamera;
 
 	return m_pDefaultCameraComponent;
+}
+
+void D3D::Scene::SetLight(std::shared_ptr<DirectionalLightComponent> pLight)
+{
+	m_pActiveLight = pLight;
+}
+
+const std::shared_ptr<D3D::DirectionalLightComponent> D3D::Scene::GetLight() const
+{
+	if (m_pActiveLight != nullptr)
+		return m_pActiveLight;
+
+	return m_pDefaultLightComponent;
 }

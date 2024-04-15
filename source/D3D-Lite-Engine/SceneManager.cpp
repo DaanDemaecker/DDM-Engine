@@ -3,6 +3,7 @@
 #include "GameObject.h"
 
 #include "CameraComponent.h"
+#include "DirectionalLightComponent.h"
 
 void D3D::SceneManager::EndProgram()
 {
@@ -173,6 +174,24 @@ const std::shared_ptr<D3D::CameraComponent> D3D::SceneManager::GetCamera() const
     {
         return m_ActiveScene->GetCamera();
     }
+    else if (m_NextActiveScene != nullptr)
+    {
+        return m_NextActiveScene->GetCamera();
+    }
 
     return std::shared_ptr<CameraComponent>();
+}
+
+const std::shared_ptr<D3D::DirectionalLightComponent> D3D::SceneManager::GetGlobalLight() const
+{
+    if (m_ActiveScene != nullptr)
+    {
+        return m_ActiveScene->GetLight();
+    }
+    else if (m_NextActiveScene != nullptr)
+    {
+        return m_NextActiveScene->GetLight();
+    }
+
+    return std::shared_ptr<DirectionalLightComponent>();
 }

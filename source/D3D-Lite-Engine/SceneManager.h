@@ -10,6 +10,7 @@ namespace D3D
 {
 	class Scene;
 	class CameraComponent;
+	class DirectionalLightComponent;
 
 	class SceneManager : public Singleton<SceneManager>
 	{
@@ -43,6 +44,8 @@ namespace D3D
 		void Cleanup();
 
 		const std::shared_ptr<CameraComponent> GetCamera() const;
+
+		const std::shared_ptr<DirectionalLightComponent> GetGlobalLight() const;
 
 	private:
 		friend class Singleton<SceneManager>;

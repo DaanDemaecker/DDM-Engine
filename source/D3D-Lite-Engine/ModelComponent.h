@@ -27,6 +27,7 @@ namespace D3D
 
 		void CreateDescriptorSets();
 
+
 	private:
 		//Member variables
 		bool m_Initialized{ false };
@@ -38,6 +39,7 @@ namespace D3D
 
 		std::unique_ptr<D3D::UboDescriptorObject<UniformBufferObject>> m_pUboDescriptorObject{};
 
+		bool m_ShouldCreateUniformBuffers{ false };
 
 		std::vector<Vertex> m_Vertices{};
 		std::vector<uint32_t> m_Indices{};
