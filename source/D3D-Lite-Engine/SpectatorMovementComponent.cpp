@@ -14,31 +14,68 @@ D3D::SpectatorMovementComponent::SpectatorMovementComponent()
 
 void D3D::SpectatorMovementComponent::Update()
 {
-	glm::vec3 movement{};
+	glm::vec3 direction{};
 
 	auto window = Window::GetInstance().GetWindowStruct().pWindow;
 
-	
-	movement.z -= (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS);
-	movement.z += (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS);
-	movement.x -= (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS);
-	movement.x += (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS);
+	auto transform = GetTransform();
+	auto deltaTime = TimeManager::GetInstance().GetDeltaTime();
+
+	// Determine movement direction based on key presses
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+	{
+		//direction += transform->GetForward() * m_Speed * deltaTime;
+		direction.z += 1;
+	}
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+	{
+		//direction -= transform->GetForward() * m_Speed * deltaTime;
+		direction.z -= 1;
+	}
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
+	{
+		//direction -= transform->GetRight() * m_Speed * deltaTime;
+		direction.x += 1;
+	}
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+	{
+		//direction += transform->GetRight() * m_Speed * deltaTime;
+		direction.x -= 1;
+	}
 
 	double xpos, ypos;
 	glfwGetCursorPos(window, &xpos, &ypos);
 
-	double deltaX{ xpos - m_PrevXPos };
-	double deltaY{ ypos - m_PrevYPos };
+	double deltaX = xpos - m_PrevXPos;
+	double deltaY = ypos - m_PrevYPos;
 
 	m_PrevXPos = xpos;
 	m_PrevYPos = ypos;
 
-	auto transform{ GetTransform() };
-	auto deltaTime{ TimeManager::GetInstance().GetDeltaTime() };
 
-	transform->Rotate(glm::vec3{0, 1, 0}, static_cast<float>(deltaX * m_AngularSpeed * deltaTime));
+	glm::normalize(direction);
 
-	transform->Rotate(transform->GetRight(), static_cast<float>(-deltaY * m_AngularSpeed * deltaTime));
+	// Create the rotation matrix from the quaternion
+	glm::mat4 rotationMatrix = glm::mat4_cast(transform->GetWorldRotation());
 
-	transform->Translate((transform->GetWorldRotation() * movement) * m_Speed * TimeManager::GetInstance().GetDeltaTime());
+	// Apply the rotation to the vector using the rotation matrix
+	glm::vec4 rotatedVector = rotationMatrix * glm::vec4(direction, 0.0f);
+
+	// Extract the rotated glm::vec3 from the glm::vec4
+	direction = glm::vec3(rotatedVector);
+
+	glm::normalize(direction);
+
+	direction *= m_Speed * deltaTime;
+
+	// Translate the object based on the rotated movement direction
+	transform->Translate(direction);
+
+	m_TotalPitch += static_cast<float>(deltaY * deltaTime * m_AngularSpeed);
+	m_TotalYaw += static_cast<float>(deltaX * deltaTime * m_AngularSpeed);
+
+	// Rotate the camera based on mouse movement
+	transform->SetWorldRotation(m_TotalPitch, m_TotalYaw, 0);
+
+	std::cout << "x: " << direction.x << "y: " << direction.y << "z: " << direction.z << std::endl;
 }

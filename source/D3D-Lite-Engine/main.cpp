@@ -46,8 +46,8 @@ void load()
 
 
 	auto pVikingTransform{ pvikingRoom->GetTransform() };
-	pVikingTransform->SetLocalPosition(1.f, -0.2f, 5.f);
-	pVikingTransform->SetLocalRotation(glm::radians(-90.0f), glm::radians(45.0f), 0.f);
+	pVikingTransform->SetLocalPosition(1.f, -0.2f, 3.f);
+	pVikingTransform->SetLocalRotation(glm::radians(-90.0f), glm::radians(225.0f), 0.f);
 	pVikingTransform->SetLocalScale(0.75f, 0.75f, 0.75f);
 
 	auto pVehicle{ scene->CreateGameObject("Vehicle") };
@@ -59,7 +59,7 @@ void load()
 
 
 	auto pVehicleTransform{ pVehicle->GetTransform() };
-	pVehicleTransform->SetLocalPosition(-1.f, 0, 5.f);
+	pVehicleTransform->SetLocalPosition(-1.f, 0, 3.f);
 	pVehicleTransform->SetLocalRotation(0.f, glm::radians(75.0f), 0.f);
 	pVehicleTransform->SetLocalScale(0.05f, 0.05f, 0.05f);
 
@@ -71,7 +71,9 @@ void load()
 	auto pCameraComponent{ pCamera->AddComponent<D3D::CameraComponent>() };
 
 	auto pCameraTransform{ pCamera->GetTransform() };
-	pCameraTransform->SetLocalRotation(glm::vec3(0.0f, glm::radians(180.f), 0.0f));
+	//pCameraTransform->SetLocalRotation(glm::vec3(0.0f, glm::radians(180.f), 0.0f));
+
+	//pCamera->AddComponent<D3D::RotatorComponent>();
 
 	scene->SetCamera(pCameraComponent);
 

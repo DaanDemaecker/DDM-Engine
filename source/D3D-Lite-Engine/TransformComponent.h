@@ -11,6 +11,7 @@ namespace D3D
 		TransformComponent() = default;
 		~TransformComponent() = default;
 
+		virtual void OnGUI() override;
 
 		//Location
 		const glm::vec3& GetLocalPosition() const { return m_LocalPosition; }
@@ -30,6 +31,9 @@ namespace D3D
 		const glm::quat& GetLocalRotation() const { return m_LocalRotation; }
 		void SetLocalRotation(float x, float y, float z);
 		void SetLocalRotation(const glm::vec3& rot);
+		void SetLocalRotation(const glm::vec3&& rot);
+		void SetLocalRotation(const glm::quat& rot);
+		void SetLocalRotation(const glm::quat&& rot);
 
 		void Rotate(glm::vec3& axis, float angle);
 		void Rotate(glm::vec3&& axis, float angle);

@@ -15,7 +15,10 @@ namespace D3D
 
 	private:
 		const float m_Speed{5.f};
-		const float m_AngularSpeed{ 0.05f };
+		const float m_AngularSpeed{ 0.5f };
+
+		float m_TotalPitch{};
+		float m_TotalYaw{};
 
 		double m_PrevXPos{};
 		double m_PrevYPos{};

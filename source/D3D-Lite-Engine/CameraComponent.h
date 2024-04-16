@@ -31,7 +31,7 @@ namespace D3D
 		glm::mat4 m_Matrix{};
 
 		float m_FovAngle{};
-		const float m_DefaultAngleDegrees{ 45.f };
+		const float m_DefaultAngleDegrees{ 90.f };
 
 		void UpdateMatrix();
 	};

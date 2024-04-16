@@ -114,6 +114,8 @@ void D3D::ModelComponent::UpdateUniformBuffer(uint32_t frame)
 
 	m_Ubos[frame].model = translationMatrix * rotationMatrix * scalingMatrix;
 
+	m_Ubos[frame].model[2][2] *= 1;
+
 	VulkanRenderer::GetInstance().UpdateUniformBuffer(m_Ubos[frame]);
 
 	m_pUboDescriptorObject->UpdateUboBuffer(m_Ubos[frame], frame);

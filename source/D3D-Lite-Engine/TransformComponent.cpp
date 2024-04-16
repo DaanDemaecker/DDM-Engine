@@ -4,28 +4,24 @@
 
 #include <math.h>
 
-//void D3D::TransformComponent::OnGUI()
-//{
-//	static bool test{ true };
-//
-//	ImGui::Begin(GetOwner()->GetName().c_str(), &test);
-//
-//	ImGuiTreeNodeFlags mainFlags = ImGuiTreeNodeFlags_Framed;
-//
-//	if (ImGui::TreeNodeEx("General Info", mainFlags))
-//	{
-//		std::string text = "x: " + std::to_string(m_LocalRotation.x) +
-//			"y: " + std::to_string(m_LocalRotation.y) +
-//			"z: " + std::to_string(m_LocalRotation.z);
-//
-//		ImGui::Text(text.c_str());
-//
-//		ImGui::TreePop();
-//	}
-//
-//
-//	ImGui::End();
-//}
+void D3D::TransformComponent::OnGUI()
+{
+	static bool test{ true };
+
+	ImGui::Begin(GetOwner()->GetName().c_str(), &test);
+
+
+	auto vector{ GetWorldPosition() };
+
+		std::string text = "x: " + std::to_string(vector.x) +
+			"y: " + std::to_string(vector.y) +
+			"z: " + std::to_string(vector.z);
+
+		ImGui::Text(text.c_str());
+
+
+	ImGui::End();
+}
 
 void D3D::TransformComponent::SetLocalPosition(float x, float y, float z)
 {
@@ -51,6 +47,9 @@ void D3D::TransformComponent::Translate(const glm::vec3& dir)
 
 glm::vec3 D3D::TransformComponent::GetWorldPosition()
 {
+	// Get the parent's position
+	glm::vec3 parentPosition = GetParentPosition();
+
 	// Create the rotation matrix from the quaternion
 	glm::mat4 rotationMatrix = glm::mat4_cast(GetParentRotation());
 
@@ -59,9 +58,6 @@ glm::vec3 D3D::TransformComponent::GetWorldPosition()
 
 	// Extract the rotated glm::vec3 from the glm::vec4
 	glm::vec3 finalRotatedVector = glm::vec3(rotatedVector);
-
-	// Get the parent's position
-	glm::vec3 parentPosition = GetParentPosition();
 
 	// Calculate the final position after rotation
 	glm::vec3 finalPosition = parentPosition + finalRotatedVector;
@@ -101,6 +97,23 @@ void D3D::TransformComponent::SetLocalRotation(const glm::vec3& rot)
 	SetRotationDirtyFlag();
 }
 
+void D3D::TransformComponent::SetLocalRotation(const glm::vec3&& rot)
+{
+	SetLocalRotation(rot);
+}
+
+void D3D::TransformComponent::SetLocalRotation(const glm::quat& rot)
+{
+	m_LocalRotation = rot;
+
+	SetRotationDirtyFlag();
+}
+
+void D3D::TransformComponent::SetLocalRotation(const glm::quat&& rot)
+{
+	SetLocalRotation(rot);
+}
+
 void D3D::TransformComponent::Rotate(glm::vec3& axis, float angle)
 {
 	m_LocalRotation = glm::rotate(m_LocalRotation, angle, axis);
@@ -115,7 +128,7 @@ void D3D::TransformComponent::Rotate(glm::vec3&& axis, float angle)
 
 glm::quat D3D::TransformComponent::GetWorldRotation()
 {
-	return m_LocalRotation * GetParentRotation();
+	return GetParentRotation() * m_LocalRotation;
 }
 
 void D3D::TransformComponent::SetWorldRotation(float x, float y, float z)
@@ -125,7 +138,17 @@ void D3D::TransformComponent::SetWorldRotation(float x, float y, float z)
 
 void D3D::TransformComponent::SetWorldRotation(const glm::vec3& rot)
 {
-	SetLocalRotation(rot - (glm::eulerAngles(GetWorldRotation()) - glm::eulerAngles(m_LocalRotation)));
+	// Calculate the rotation needed to achieve the desired world rotation
+	glm::quat worldRotation = glm::quat(rot);
+
+	// Get the parent's world rotation
+	glm::quat parentWorldRotation = GetParentRotation();
+
+	// Adjust the local rotation to achieve the desired world rotation
+	glm::quat localRotation = glm::inverse(parentWorldRotation) * worldRotation;
+
+	// Set the local rotation
+	SetLocalRotation(localRotation);
 }
 
 void D3D::TransformComponent::SetRotationDirtyFlag()
@@ -177,20 +200,46 @@ void D3D::TransformComponent::SetScaleDirtyFlag()
 
 glm::vec3 D3D::TransformComponent::GetForward()
 {
-	auto forwardVector = glm::vec3{ 0, 0, 1 };
-	return GetWorldRotation() * forwardVector;
+	// Create the rotation matrix from the quaternion
+	glm::mat4 rotationMatrix = glm::mat4_cast(GetWorldRotation());
+
+	// Apply the rotation to the vector using the rotation matrix
+	glm::vec4 rotatedVector = rotationMatrix * glm::vec4(0.f, 0.f, 1.f, 0.0f);
+
+	// Extract the rotated glm::vec3 from the glm::vec4
+	glm::vec3 finalRotatedVector = glm::vec3(rotatedVector);
+
+	return finalRotatedVector;
 }
 
 glm::vec3 D3D::TransformComponent::GetUp()
 {
-	auto upVector = glm::vec3{ 0, 1, 0 };
-	return GetWorldRotation() * upVector;
+	// Create the rotation matrix from the quaternion
+	glm::mat4 rotationMatrix = glm::mat4_cast(GetWorldRotation());
+
+	// Apply the rotation to the vector using the rotation matrix
+	glm::vec4 rotatedVector = rotationMatrix * glm::vec4(0.f, 1.f, 0.f, 0.0f);  // Use (0, 1, 0) for the up vector
+
+	// Extract the rotated glm::vec3 from the glm::vec4
+	glm::vec3 finalRotatedVector = glm::vec3(rotatedVector);
+
+	return finalRotatedVector;
 }
 
 glm::vec3 D3D::TransformComponent::GetRight()
 {
-	auto rightVector = glm::vec3{ -1, 0, 0 };
-	return GetWorldRotation() * rightVector;
+	// Create the rotation matrix from the quaternion
+	glm::mat4 rotationMatrix = glm::mat4_cast(GetWorldRotation());
+
+	// Apply the rotation to the vector using the rotation matrix
+	glm::vec4 rotatedVector = rotationMatrix * glm::vec4(1.f, 0.f, 0.f, 0.0f);  // Use (1, 0, 0) for the right vector
+
+	// Extract the rotated glm::vec3 from the glm::vec4
+	glm::vec3 finalRotatedVector = glm::vec3(rotatedVector);
+
+	finalRotatedVector.y *= -1;
+
+	return finalRotatedVector;
 }
 
 glm::vec3& D3D::TransformComponent::GetParentPosition()
