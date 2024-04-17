@@ -1,18 +1,18 @@
-#include "ModelComponent.h"
+#include "MeshRenderComponent.h"
 #include "VulkanRenderer.h"
 #include "Material.h"
 #include "TransformComponent.h"
 #include "Utils.h"
 #include "DescriptorPoolWrapper.h"
 
-D3D::ModelComponent::ModelComponent()
+D3D::MeshRenderComponent::MeshRenderComponent()
 {
 	m_pMaterial = std::make_shared<D3D::Material>();
 
 	m_pUboDescriptorObject = std::make_unique<D3D::UboDescriptorObject<UniformBufferObject>>();
 }
 
-D3D::ModelComponent::~ModelComponent()
+D3D::MeshRenderComponent::~MeshRenderComponent()
 {
 	if (m_Initialized)
 	{
@@ -20,7 +20,7 @@ D3D::ModelComponent::~ModelComponent()
 	}
 }
 
-void D3D::ModelComponent::EarlyUpdate()
+void D3D::MeshRenderComponent::EarlyUpdate()
 {
 	if (m_ShouldCreateDescriptorSets)
 	{
@@ -29,7 +29,7 @@ void D3D::ModelComponent::EarlyUpdate()
 	}
 }
 
-void D3D::ModelComponent::LoadModel(const std::string& textPath)
+void D3D::MeshRenderComponent::LoadModel(const std::string& textPath)
 {
 	if (m_Initialized)
 	{
@@ -51,7 +51,7 @@ void D3D::ModelComponent::LoadModel(const std::string& textPath)
 	m_Initialized = true;
 }
 
-void D3D::ModelComponent::SetMaterial(std::shared_ptr<Material> pMaterial)
+void D3D::MeshRenderComponent::SetMaterial(std::shared_ptr<Material> pMaterial)
 {
 	m_pMaterial->GetDescriptorPool()->RemoveModel(this);
 	m_pMaterial = pMaterial;
@@ -59,7 +59,7 @@ void D3D::ModelComponent::SetMaterial(std::shared_ptr<Material> pMaterial)
 	m_ShouldCreateDescriptorSets = true;
 }
 
-void D3D::ModelComponent::Render()
+void D3D::MeshRenderComponent::Render()
 {
 	if (!m_Initialized)
 		return;
@@ -73,7 +73,7 @@ void D3D::ModelComponent::Render()
 	renderer.Render(this, renderer.GetCurrentCommandBuffer(), &m_DescriptorSets[frame], GetPipeline());
 }
 
-void D3D::ModelComponent::CreateUniformBuffers()
+void D3D::MeshRenderComponent::CreateUniformBuffers()
 {
 	// Get reference to renderer
 	auto& renderer = VulkanRenderer::GetInstance();
@@ -86,7 +86,7 @@ void D3D::ModelComponent::CreateUniformBuffers()
 	m_UboChanged.resize(frames);
 }
 
-void D3D::ModelComponent::CreateDescriptorSets()
+void D3D::MeshRenderComponent::CreateDescriptorSets()
 {
 	// Create descriptorsets
 	m_pMaterial->CreateDescriptorSets(this, m_DescriptorSets);
@@ -94,7 +94,7 @@ void D3D::ModelComponent::CreateDescriptorSets()
 	UpdateDescriptorSets();
 }
 
-void D3D::ModelComponent::UpdateDescriptorSets()
+void D3D::MeshRenderComponent::UpdateDescriptorSets()
 {
 	std::vector<DescriptorObject*> descriptors{ m_pUboDescriptorObject.get() };
 
@@ -102,7 +102,7 @@ void D3D::ModelComponent::UpdateDescriptorSets()
 	m_pMaterial->UpdateDescriptorSets(m_DescriptorSets, descriptors);
 }
 
-void D3D::ModelComponent::UpdateUniformBuffer(uint32_t frame)
+void D3D::MeshRenderComponent::UpdateUniformBuffer(uint32_t frame)
 {
 	auto transform{ GetTransform() };
 
@@ -121,7 +121,7 @@ void D3D::ModelComponent::UpdateUniformBuffer(uint32_t frame)
 	m_pUboDescriptorObject->UpdateUboBuffer(m_Ubos[frame], frame);
 }
 
-D3D::PipelineWrapper* D3D::ModelComponent::GetPipeline()
+D3D::PipelineWrapper* D3D::MeshRenderComponent::GetPipeline()
 {
 	if (m_pMaterial != nullptr)
 	{
@@ -131,7 +131,7 @@ D3D::PipelineWrapper* D3D::ModelComponent::GetPipeline()
 	return VulkanRenderer::GetInstance().GetPipeline();
 }
 
-void D3D::ModelComponent::Cleanup()
+void D3D::MeshRenderComponent::Cleanup()
 {
 	// Get reference to renderer
 	auto& renderer = D3D::VulkanRenderer::GetInstance();

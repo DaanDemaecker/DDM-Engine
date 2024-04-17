@@ -7,7 +7,7 @@
 namespace D3D
 {
 	class DescriptorPoolWrapper;
-	class ModelComponent;
+	class MeshRenderComponent;
 	class PipelineWrapper;
 	class DescriptorObject;
 
@@ -30,7 +30,7 @@ namespace D3D
 		// Parameters:
 		//     pModel: the model that the descriptorsets belong to
 		//     descriptorSets: vector of descriptorsets that have to be created
-		virtual void CreateDescriptorSets(ModelComponent* pModel, std::vector<VkDescriptorSet>& descriptorSets);
+		virtual void CreateDescriptorSets(MeshRenderComponent* pModel, std::vector<VkDescriptorSet>& descriptorSets);
 
 		// Update the descriptorsets
 		// Parameters:

@@ -75,7 +75,7 @@
     <ClCompile Include="TransformComponent.cpp">
       <Filter>Components</Filter>
     </ClCompile>
-    <ClCompile Include="ModelComponent.cpp">
+    <ClCompile Include="MeshRenderComponent.cpp">
       <Filter>Components</Filter>
     </ClCompile>
     <ClCompile Include="..\3rdParty\Imgui\imgui.cpp">
@@ -222,7 +222,7 @@
     <ClInclude Include="TransformComponent.h">
       <Filter>Components</Filter>
     </ClInclude>
-    <ClInclude Include="ModelComponent.h">
+    <ClInclude Include="MeshRenderComponent.h">
       <Filter>Components</Filter>
     </ClInclude>
     <ClInclude Include="..\3rdParty\Imgui\imconfig.h">

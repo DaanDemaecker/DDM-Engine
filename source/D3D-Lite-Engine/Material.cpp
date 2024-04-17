@@ -3,7 +3,6 @@
 #include "Utils.h"
 #include "DescriptorPoolWrapper.h"
 #include "STBIncludes.h"
-#include "ModelComponent.h"
 #include "PipelineWrapper.h"
 
 D3D::Material::Material(const std::string& pipelineName)
@@ -17,7 +16,7 @@ D3D::PipelineWrapper* D3D::Material::GetPipeline()
 	return m_pPipeline;
 }
 
-void D3D::Material::CreateDescriptorSets(ModelComponent* pModel, std::vector<VkDescriptorSet>& descriptorSets)
+void D3D::Material::CreateDescriptorSets(MeshRenderComponent* pModel, std::vector<VkDescriptorSet>& descriptorSets)
 {
 	// Get pointer to the descriptorpool wrapper
 	auto descriptorPool = GetDescriptorPool();

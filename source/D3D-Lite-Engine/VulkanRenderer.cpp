@@ -5,7 +5,7 @@
 #include <algorithm>
 
 #include "SceneManager.h"
-#include "ModelComponent.h"
+#include "MeshRenderComponent.h"
 #include "CameraComponent.h"
 #include "TransformComponent.h"
 #include "SurfaceWrapper.h"
@@ -317,7 +317,7 @@ void D3D::VulkanRenderer::RecordCommandBuffer(VkCommandBuffer& commandBuffer, ui
 	}
 }
 
-void D3D::VulkanRenderer::Render(D3D::ModelComponent* pModel, VkCommandBuffer& commandBuffer, const VkDescriptorSet* descriptorSet, const PipelineWrapper* pipeline)
+void D3D::VulkanRenderer::Render(D3D::MeshRenderComponent* pModel, VkCommandBuffer& commandBuffer, const VkDescriptorSet* descriptorSet, const PipelineWrapper* pipeline)
 {
 	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->GetPipeline());
 

@@ -2,7 +2,7 @@
 #include "VulkanRenderer.h"
 #include "Utils.h"
 #include "DescriptorPoolWrapper.h"
-#include "ModelComponent.h"
+#include "MeshRenderComponent.h"
 #include "PipelineWrapper.h"
 
 #include "STBIncludes.h"
@@ -17,7 +17,7 @@ D3D::TexturedMaterial::TexturedMaterial(std::initializer_list<const std::string>
 	CreateTextureSampler();
 }
 
-void D3D::TexturedMaterial::CreateDescriptorSets(ModelComponent* pModel, std::vector<VkDescriptorSet>& descriptorSets)
+void D3D::TexturedMaterial::CreateDescriptorSets(MeshRenderComponent* pModel, std::vector<VkDescriptorSet>& descriptorSets)
 {
 	// Get descriptorpool associated with this material
 	auto descriptorPool = GetDescriptorPool();

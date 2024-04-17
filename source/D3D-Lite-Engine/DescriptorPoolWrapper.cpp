@@ -3,7 +3,7 @@
 // File includes
 #include "DescriptorPoolWrapper.h"
 #include "VulkanRenderer.h"
-#include "ModelComponent.h" 
+#include "MeshRenderComponent.h" 
 #include "DescriptorObject.h"
 #include "ShaderModuleWrapper.h"
 
@@ -27,7 +27,7 @@ void D3D::DescriptorPoolWrapper::Cleanup(VkDevice device)
 	m_pModels.clear();
 }
 
-void D3D::DescriptorPoolWrapper::AddModel(ModelComponent* pModel)
+void D3D::DescriptorPoolWrapper::AddModel(MeshRenderComponent* pModel)
 {
 	// Check if the model is already in the vector, if not add it
 	if (std::find(m_pModels.begin(), m_pModels.end(), pModel) == m_pModels.end())
@@ -36,7 +36,7 @@ void D3D::DescriptorPoolWrapper::AddModel(ModelComponent* pModel)
 	}
 }
 
-void D3D::DescriptorPoolWrapper::RemoveModel(ModelComponent* pModel)
+void D3D::DescriptorPoolWrapper::RemoveModel(MeshRenderComponent* pModel)
 {
 	// Remove model from vector
 	m_pModels.erase(std::remove(m_pModels.begin(), m_pModels.end(), pModel), m_pModels.end());

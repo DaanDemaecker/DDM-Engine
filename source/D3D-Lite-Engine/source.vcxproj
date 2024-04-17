@@ -201,7 +201,7 @@
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Material.cpp" />
-    <ClCompile Include="ModelComponent.cpp" />
+    <ClCompile Include="MeshRenderComponent.cpp" />
     <ClCompile Include="RotatorComponent.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneManager.cpp" />
@@ -253,7 +253,7 @@
     <ClInclude Include="GLFWIncludes.h" />
     <ClInclude Include="GLMIncludes.h" />
     <ClInclude Include="Material.h" />
-    <ClInclude Include="ModelComponent.h" />
+    <ClInclude Include="MeshRenderComponent.h" />
     <ClInclude Include="RotatorComponent.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneManager.h" />

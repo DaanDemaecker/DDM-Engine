@@ -9,11 +9,11 @@ namespace D3D
 {
 	class Material;
 
-	class ModelComponent final : public Component
+	class MeshRenderComponent final : public Component
 	{
 	public:
-		ModelComponent();
-		~ModelComponent();
+		MeshRenderComponent();
+		~MeshRenderComponent();
 
 		virtual void EarlyUpdate() override;
 

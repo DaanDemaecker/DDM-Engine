@@ -5,7 +5,7 @@
 #include "Material.h"
 #include "TexturedMaterial.h"
 
-#include "ModelComponent.h"
+#include "MeshRenderComponent.h"
 #include "TransformComponent.h"
 #include "Scene.h"
 
@@ -39,7 +39,7 @@ void load()
 			"DiffNormSpec") };
 	auto pvikingRoom{ scene->CreateGameObject("Viking Room") };
 
-	auto pVikingRoomModel{ pvikingRoom->AddComponent<D3D::ModelComponent>() };
+	auto pVikingRoomModel{ pvikingRoom->AddComponent<D3D::MeshRenderComponent>() };
 	pVikingRoomModel->LoadModel("../Resources/Models/viking_room.obj");
 	pVikingRoomModel->SetMaterial(pVikingMaterial);
 
@@ -53,7 +53,7 @@ void load()
 	auto pVehicle{ scene->CreateGameObject("Vehicle") };
 	pVehicle->AddComponent<D3D::RotatorComponent>();
 
-	auto pVehicleModel{ pVehicle->AddComponent<D3D::ModelComponent>() };
+	auto pVehicleModel{ pVehicle->AddComponent<D3D::MeshRenderComponent>() };
 	pVehicleModel->LoadModel("../Resources/Models/vehicle.obj");
 	pVehicleModel->SetMaterial(pVehicleMaterial);
 

@@ -17,7 +17,7 @@
 namespace D3D
 {
 	// Class forward declarations
-	class ModelComponent;
+	class MeshRenderComponent;
 	class DescriptorObject;
 	class ShaderModuleWrapper;
 
@@ -50,12 +50,12 @@ namespace D3D
 		// This function adds a model to the vector of models
 		// Parameters:
 		//     pModel: the model to add
-		void AddModel(ModelComponent* pModel);
+		void AddModel(MeshRenderComponent* pModel);
 
 		// This function removes a model from the vector of models
 		// Parameters:
 		//     pModel: the model to remove
-		void RemoveModel(ModelComponent* pModel);
+		void RemoveModel(MeshRenderComponent* pModel);
 
 		// This function will create a descriptorset with the given layout
 		// Parameters:
@@ -83,7 +83,7 @@ namespace D3D
 		VkDescriptorPool m_DescriptorPool{};
 
 		// The models to which the allocated descriptorsets belong, needed when resizing the pool
-		std::vector<ModelComponent*> m_pModels{};
+		std::vector<MeshRenderComponent*> m_pModels{};
 
 		// Initialization of the descriptorpool
 		void InitDescriptorPool();

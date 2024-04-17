@@ -12,7 +12,7 @@
 namespace D3D
 {
     // Class forward declarations
-    class ModelComponent;
+    class MeshRenderComponent;
     class ImGuiWrapper;
     class InstanceWrapper;
     class SurfaceWrapper;
@@ -42,7 +42,7 @@ namespace D3D
 
         void Render();
 
-        void Render(ModelComponent* pModel, VkCommandBuffer& commandBuffer, const VkDescriptorSet* descriptorSet, const PipelineWrapper* pipeline);
+        void Render(MeshRenderComponent* pModel, VkCommandBuffer& commandBuffer, const VkDescriptorSet* descriptorSet, const PipelineWrapper* pipeline);
 
         // Add a new graphics pipeline
          // Parameters:
