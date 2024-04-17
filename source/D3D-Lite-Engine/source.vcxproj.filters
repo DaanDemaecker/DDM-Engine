@@ -190,6 +190,9 @@
     <ClCompile Include="Mesh.cpp">
       <Filter>DataTypes</Filter>
     </ClCompile>
+    <ClCompile Include="SkyBox.cpp">
+      <Filter>DataTypes</Filter>
+    </ClCompile>
     <ClCompile Include="CubeMapMaterial.cpp">
       <Filter>DataTypes\Materials</Filter>
     </ClCompile>
@@ -361,6 +364,9 @@
       <Filter>Components</Filter>
     </ClInclude>
     <ClInclude Include="Mesh.h">
+      <Filter>DataTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="SkyBox.h">
       <Filter>DataTypes</Filter>
     </ClInclude>
     <ClInclude Include="CubeMapMaterial.h">
