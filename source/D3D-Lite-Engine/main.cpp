@@ -6,6 +6,7 @@
 #include "TexturedMaterial.h"
 
 #include "MeshRenderComponent.h"
+#include "Mesh.h"
 #include "TransformComponent.h"
 #include "Scene.h"
 
@@ -37,13 +38,14 @@ void load()
 		(std::initializer_list<const std::string>{"../resources/images/vehicle_diffuse.png", "../resources/images/vehicle_normal.png",
 		"../resources/images/vehicle_gloss.png", "../resources/images/vehicle_specular.png"},
 			"DiffNormSpec") };
+
 	auto pvikingRoom{ scene->CreateGameObject("Viking Room") };
 
+	auto pVikingRoomMesh{ std::make_shared<D3D::Mesh>("../Resources/Models/viking_room.obj") };
+
 	auto pVikingRoomModel{ pvikingRoom->AddComponent<D3D::MeshRenderComponent>() };
-	pVikingRoomModel->LoadModel("../Resources/Models/viking_room.obj");
+	pVikingRoomModel->SetMesh(pVikingRoomMesh);
 	pVikingRoomModel->SetMaterial(pVikingMaterial);
-
-
 
 	auto pVikingTransform{ pvikingRoom->GetTransform() };
 	pVikingTransform->SetLocalPosition(1.f, -0.2f, -3.f);
@@ -53,8 +55,10 @@ void load()
 	auto pVehicle{ scene->CreateGameObject("Vehicle") };
 	pVehicle->AddComponent<D3D::RotatorComponent>();
 
+	auto pVehicleMesh{ std::make_shared<D3D::Mesh>("../Resources/Models/vehicle.obj") };
+
 	auto pVehicleModel{ pVehicle->AddComponent<D3D::MeshRenderComponent>() };
-	pVehicleModel->LoadModel("../Resources/Models/vehicle.obj");
+	pVehicleModel->SetMesh(pVehicleMesh);
 	pVehicleModel->SetMaterial(pVehicleMaterial);
 
 

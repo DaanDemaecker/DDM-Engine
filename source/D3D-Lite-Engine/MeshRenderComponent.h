@@ -1,5 +1,5 @@
-#ifndef ModelComponentIncluded
-#define ModelComponentIncluded
+#ifndef MeshRenderComponentIncluded
+#define MeshRenderComponentIncluded
 #include "Component.h"
 #include "Structs.h"
 #include "UboDescriptorObject.h"
@@ -8,6 +8,7 @@
 namespace D3D
 {
 	class Material;
+	class Mesh;
 
 	class MeshRenderComponent final : public Component
 	{
@@ -17,15 +18,10 @@ namespace D3D
 
 		virtual void EarlyUpdate() override;
 
-		void LoadModel(const std::string& textPath);
+		void SetMesh(std::shared_ptr<Mesh> pMesh);
 		void SetMaterial(std::shared_ptr<Material> pMaterial);
 
 		virtual void Render() override;
-
-		//Getters for rendering
-		const VkBuffer& GetVertexBuffer() const { return m_VertexBuffer; }
-		const VkBuffer& GetIndexBuffer() const { return m_IndexBuffer; }
-		size_t GetIndexAmount() const { return m_Indices.size(); }
 
 		void CreateDescriptorSets();
 
@@ -43,16 +39,7 @@ namespace D3D
 
 		bool m_ShouldCreateDescriptorSets{ false };
 
-		std::vector<Vertex> m_Vertices{};
-		std::vector<uint32_t> m_Indices{};
-
-		//Vertex buffer
-		VkBuffer m_VertexBuffer{};
-		VkDeviceMemory m_VertexBufferMemory{};
-
-		//Index buffer
-		VkBuffer m_IndexBuffer{};
-		VkDeviceMemory m_IndexBufferMemory{};
+		std::shared_ptr<Mesh> m_pMesh{};
 
 		//Material
 		std::shared_ptr<Material> m_pMaterial{};
@@ -70,8 +57,6 @@ namespace D3D
 
 		//Texture functions
 		D3D::PipelineWrapper* GetPipeline();
-
-		void Cleanup();
 	};
 }
-#endif // !ModelComponentIncluded
+#endif // !MeshRenderComponentIncluded

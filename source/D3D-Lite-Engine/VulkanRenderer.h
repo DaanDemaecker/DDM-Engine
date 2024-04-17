@@ -42,8 +42,6 @@ namespace D3D
 
         void Render();
 
-        void Render(MeshRenderComponent* pModel, VkCommandBuffer& commandBuffer, const VkDescriptorSet* descriptorSet, const PipelineWrapper* pipeline);
-
         // Add a new graphics pipeline
          // Parameters:
          //     pipelineName: the name of the new pipeline

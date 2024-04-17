@@ -22,9 +22,6 @@
     <Filter Include="Utils">
       <UniqueIdentifier>{3a27e938-8684-4cce-9d9b-0ff2ee97ab3a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Materials">
-      <UniqueIdentifier>{d81c4d1d-a64e-405f-a363-0d5f9b09b0e4}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Includes">
       <UniqueIdentifier>{31738de7-b55d-46d5-a4af-b6c1bb6e19ec}</UniqueIdentifier>
     </Filter>
@@ -48,6 +45,9 @@
     </Filter>
     <Filter Include="DataTypes\DescriptorObjects">
       <UniqueIdentifier>{44015c14-dbb4-4c84-886f-f503ba33a719}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DataTypes\Materials">
+      <UniqueIdentifier>{d81c4d1d-a64e-405f-a363-0d5f9b09b0e4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -106,10 +106,10 @@
       <Filter>Components</Filter>
     </ClCompile>
     <ClCompile Include="Material.cpp">
-      <Filter>Materials</Filter>
+      <Filter>DataTypes\Materials</Filter>
     </ClCompile>
     <ClCompile Include="TexturedMaterial.cpp">
-      <Filter>Materials</Filter>
+      <Filter>DataTypes\Materials</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="STBIncludes.cpp">
@@ -187,6 +187,9 @@
     <ClCompile Include="SpectatorMovementComponent.cpp">
       <Filter>Components</Filter>
     </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>DataTypes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Utils.h">
@@ -256,10 +259,10 @@
       <Filter>Components</Filter>
     </ClInclude>
     <ClInclude Include="Material.h">
-      <Filter>Materials</Filter>
+      <Filter>DataTypes\Materials</Filter>
     </ClInclude>
     <ClInclude Include="TexturedMaterial.h">
-      <Filter>Materials</Filter>
+      <Filter>DataTypes\Materials</Filter>
     </ClInclude>
     <ClInclude Include="STBIncludes.h">
       <Filter>Includes</Filter>
@@ -353,6 +356,9 @@
     </ClInclude>
     <ClInclude Include="SpectatorMovementComponent.h">
       <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>DataTypes</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

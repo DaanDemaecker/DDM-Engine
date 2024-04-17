@@ -4,6 +4,7 @@
 #include "TransformComponent.h"
 #include "Utils.h"
 #include "DescriptorPoolWrapper.h"
+#include "Mesh.h"
 
 D3D::MeshRenderComponent::MeshRenderComponent()
 {
@@ -14,10 +15,7 @@ D3D::MeshRenderComponent::MeshRenderComponent()
 
 D3D::MeshRenderComponent::~MeshRenderComponent()
 {
-	if (m_Initialized)
-	{
-		Cleanup();
-	}
+	
 }
 
 void D3D::MeshRenderComponent::EarlyUpdate()
@@ -29,24 +27,18 @@ void D3D::MeshRenderComponent::EarlyUpdate()
 	}
 }
 
-void D3D::MeshRenderComponent::LoadModel(const std::string& textPath)
+void D3D::MeshRenderComponent::SetMesh(std::shared_ptr<Mesh> pMesh)
 {
 	if (m_Initialized)
 	{
 		m_Initialized = false;
-		Cleanup();
 	}
 
-	Utils::LoadModel(textPath, m_Vertices, m_Indices);
-
-	auto& renderer{ VulkanRenderer::GetInstance() };
-
-	renderer.CreateVertexBuffer(m_Vertices, m_VertexBuffer, m_VertexBufferMemory);
-	renderer.CreateIndexBuffer(m_Indices, m_IndexBuffer, m_IndexBufferMemory);
-
-	CreateUniformBuffers();
+	m_pMesh = pMesh;
 	
 	m_ShouldCreateDescriptorSets = true;
+
+	CreateUniformBuffers();
 
 	m_Initialized = true;
 }
@@ -61,16 +53,14 @@ void D3D::MeshRenderComponent::SetMaterial(std::shared_ptr<Material> pMaterial)
 
 void D3D::MeshRenderComponent::Render()
 {
-	if (!m_Initialized)
+	if (m_pMesh == nullptr)
 		return;
 
-	auto& renderer{ VulkanRenderer::GetInstance() };
-
-	auto frame{ renderer.GetCurrentFrame() };
+	auto frame{ VulkanRenderer::GetInstance().GetCurrentFrame() };
 
 	UpdateUniformBuffer(frame);
 
-	renderer.Render(this, renderer.GetCurrentCommandBuffer(), &m_DescriptorSets[frame], GetPipeline());
+	m_pMesh->Render(GetPipeline(), &m_DescriptorSets[frame]);
 }
 
 void D3D::MeshRenderComponent::CreateUniformBuffers()
@@ -129,25 +119,4 @@ D3D::PipelineWrapper* D3D::MeshRenderComponent::GetPipeline()
 	}
 
 	return VulkanRenderer::GetInstance().GetPipeline();
-}
-
-void D3D::MeshRenderComponent::Cleanup()
-{
-	// Get reference to renderer
-	auto& renderer = D3D::VulkanRenderer::GetInstance();
-	// Get reference to device
-	auto device = renderer.GetDevice();
-
-	// Wait until device is idle
-	vkDeviceWaitIdle(device);
-
-	// Destroy index buffer
-	vkDestroyBuffer(device, m_IndexBuffer, nullptr);
-	// Free index buffer memory
-	vkFreeMemory(device, m_IndexBufferMemory, nullptr);
-
-	// Destroy vertex buffer
-	vkDestroyBuffer(device, m_VertexBuffer, nullptr);
-	// Free vertex buffer
-	vkFreeMemory(device, m_VertexBufferMemory, nullptr);
 }
