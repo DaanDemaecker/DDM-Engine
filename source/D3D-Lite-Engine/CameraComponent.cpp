@@ -25,23 +25,19 @@ void D3D::CameraComponent::UpdateUniformBuffer(UniformBufferObject& buffer, VkEx
 	// Set the projection matrix
 	buffer.proj = glm::perspective(m_FovAngle, extent.width / static_cast<float>(extent.height), 0.001f, 100.0f);
 
-
 	buffer.proj[1][1] *= -1;
-    buffer.model[3][2] *= -1;
 }
 
 void D3D::CameraComponent::UpdateMatrix()
 {
-    auto transform = GetTransform();
-
-	// Create translation matrix
-	glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), transform->GetWorldPosition());
+	auto transform = GetTransform();
 
 	// Create rotation matrix
-	glm::mat4 rotationMatrix = glm::mat4_cast(transform->GetWorldRotation());
-	// Create scaling matrix
-	glm::mat4 scalingMatrix = glm::scale(glm::mat4(1.0f), transform->GetLocalScale());
+	glm::mat4 rotationMatrix = glm::mat4_cast(glm::conjugate(transform->GetWorldRotation()));
 
-	// Multiply matrices
-	m_Matrix = scalingMatrix *  rotationMatrix * translationMatrix;
+	// Create translation matrix
+	glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), -transform->GetWorldPosition());
+
+	// Multiply matrices (apply rotation first, then translation)
+	m_Matrix = rotationMatrix * translationMatrix;
 }

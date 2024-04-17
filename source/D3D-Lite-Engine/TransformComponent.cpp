@@ -17,6 +17,32 @@ void D3D::TransformComponent::OnGUI()
 			"y: " + std::to_string(vector.y) +
 			"z: " + std::to_string(vector.z);
 
+		ImGui::Text("World position: ");
+		ImGui::Text(text.c_str());
+
+
+		vector = GetForward();
+		text = "x: " + std::to_string(vector.x) +
+			"y: " + std::to_string(vector.y) +
+			"z: " + std::to_string(vector.z);
+
+		ImGui::Text("Forward: ");
+		ImGui::Text(text.c_str());
+
+		vector = GetRight();
+		text = "x: " + std::to_string(vector.x) +
+			"y: " + std::to_string(vector.y) +
+			"z: " + std::to_string(vector.z);
+
+		ImGui::Text("Right: ");
+		ImGui::Text(text.c_str());
+
+		vector = GetUp();
+		text = "x: " + std::to_string(vector.x) +
+			"y: " + std::to_string(vector.y) +
+			"z: " + std::to_string(vector.z);
+
+		ImGui::Text("Up: ");
 		ImGui::Text(text.c_str());
 
 
@@ -145,7 +171,7 @@ void D3D::TransformComponent::SetWorldRotation(const glm::vec3& rot)
 	glm::quat parentWorldRotation = GetParentRotation();
 
 	// Adjust the local rotation to achieve the desired world rotation
-	glm::quat localRotation = glm::inverse(parentWorldRotation) * worldRotation;
+	glm::quat localRotation =  worldRotation * glm::inverse(parentWorldRotation);
 
 	// Set the local rotation
 	SetLocalRotation(localRotation);
@@ -204,7 +230,7 @@ glm::vec3 D3D::TransformComponent::GetForward()
 	glm::mat4 rotationMatrix = glm::mat4_cast(GetWorldRotation());
 
 	// Apply the rotation to the vector using the rotation matrix
-	glm::vec4 rotatedVector = rotationMatrix * glm::vec4(0.f, 0.f, 1.f, 0.0f);
+	glm::vec4 rotatedVector = rotationMatrix * glm::vec4(0.f, 0.f, -1.f, 0.0f);
 
 	// Extract the rotated glm::vec3 from the glm::vec4
 	glm::vec3 finalRotatedVector = glm::vec3(rotatedVector);
