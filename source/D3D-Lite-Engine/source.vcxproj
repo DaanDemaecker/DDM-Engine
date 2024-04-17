@@ -177,6 +177,7 @@
     <ClCompile Include="CameraComponent.cpp" />
     <ClCompile Include="CommandpoolManager.cpp" />
     <ClCompile Include="ConfigManager.cpp" />
+    <ClCompile Include="CubeMapMaterial.cpp" />
     <ClCompile Include="D3DEngine.cpp" />
     <ClCompile Include="DescriptorPoolWrapper.cpp" />
     <ClCompile Include="DirectionalLightComponent.cpp" />
@@ -190,6 +191,7 @@
     <ClCompile Include="PipelineWrapper.cpp" />
     <ClCompile Include="RenderpassWrapper.cpp" />
     <ClCompile Include="ShaderModuleWrapper.cpp" />
+    <ClCompile Include="SkyBox.cpp" />
     <ClCompile Include="SpectatorMovementComponent.cpp" />
     <ClCompile Include="spirv_reflect.c" />
     <ClCompile Include="spirv_reflect.cpp" />
@@ -228,6 +230,7 @@
     <ClInclude Include="CommandpoolManager.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="ConfigManager.h" />
+    <ClInclude Include="CubeMapMaterial.h" />
     <ClInclude Include="D3DEngine.h" />
     <ClInclude Include="DescriptorObject.h" />
     <ClInclude Include="DescriptorPoolWrapper.h" />
@@ -244,6 +247,7 @@
     <ClInclude Include="RapidJSONIncludes.h" />
     <ClInclude Include="RenderpassWrapper.h" />
     <ClInclude Include="ShaderModuleWrapper.h" />
+    <ClInclude Include="SkyBox.h" />
     <ClInclude Include="SpectatorMovementComponent.h" />
     <ClInclude Include="spirv_reflect.h" />
     <ClInclude Include="SurfaceWrapper.h" />
