@@ -9,6 +9,7 @@
 #include "Mesh.h"
 #include "TransformComponent.h"
 #include "Scene.h"
+#include "SkyBoxComponent.h"
 
 #include "CameraComponent.h"
 #include "DirectionalLightComponent.h"
@@ -17,6 +18,8 @@
 #include "SpectatorMovementComponent.h"
 
 #include "VulkanRenderer.h"
+
+void SetupCamera(D3D::Scene* scen);
 
 void load()
 {
@@ -68,18 +71,7 @@ void load()
 	pVehicleTransform->SetLocalScale(0.05f, 0.05f, 0.05f);
 
 
-	auto pCamera{ scene->CreateGameObject("Camera") };
-
-	pCamera->AddComponent<D3D::SpectatorMovementComponent>();
-
-	auto pCameraComponent{ pCamera->AddComponent<D3D::CameraComponent>() };
-
-	auto pCameraTransform{ pCamera->GetTransform() };
-	//pCameraTransform->SetLocalRotation(glm::vec3(0.0f, glm::radians(180.f), 0.0f));
-
-	//pCamera->AddComponent<D3D::RotatorComponent>();
-
-	scene->SetCamera(pCameraComponent);
+	SetupCamera(scene.get());
 
 
 	auto pLight{ scene->CreateGameObject("Light") };
@@ -94,6 +86,39 @@ void load()
 
 	scene->SetLight(pLightComponent);
 	
+}
+
+void SetupCamera(D3D::Scene* scene)
+{
+	auto pCamera{ scene->CreateGameObject("Camera") };
+
+	pCamera->AddComponent<D3D::SpectatorMovementComponent>();
+
+	auto pCameraComponent{ pCamera->AddComponent<D3D::CameraComponent>() };
+
+	auto pCameraTransform{ pCamera->GetTransform() };
+	//pCameraTransform->SetLocalRotation(glm::vec3(0.0f, glm::radians(180.f), 0.0f));
+
+	//pCamera->AddComponent<D3D::RotatorComponent>();
+
+	scene->SetCamera(pCameraComponent);
+
+	// Set the vertex shader name
+	const std::string vertShaderName{ "../Resources/Shaders/Skybox.Vert.spv" };
+	// Set the fragment shader name
+	const std::string fragShaderName{ "../Resources/Shaders/Skybox.Frag.spv" };
+
+	// Create the graphics pipeline for the skybox
+	D3D::VulkanRenderer::GetInstance().AddGraphicsPipeline("Skybox", { vertShaderName, fragShaderName }, false);
+
+	auto pSkyBox{ pCamera->AddComponent<D3D::SkyBoxComponent>() };
+
+	pSkyBox->LoadSkybox(std::initializer_list<const std::string>{"../resources/images/CubeMap/Sky_Right.png",
+		"../resources/images/CubeMap/Sky_Left.png",
+		"../resources/images/CubeMap/Sky_Up.png",
+		"../resources/images/CubeMap/Sky_Down.png",
+		"../resources/images/CubeMap/Sky_Front.png",
+		"../resources/images/CubeMap/Sky_Back.png"});
 }
 
 int main()

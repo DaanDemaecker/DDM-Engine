@@ -42,6 +42,8 @@ namespace D3D
 
 		void OnGui();
 
+		void RenderSkybox();
+
 		void Render() const;
 
 		void Cleanup();

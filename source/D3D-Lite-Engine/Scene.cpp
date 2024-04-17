@@ -63,6 +63,12 @@ void D3D::Scene::LateUpdate()
 	m_pSceneRoot->LateUpdate();
 }
 
+void D3D::Scene::RenderSkyBox()
+{
+	if (m_pActiveCamera != nullptr)
+		m_pActiveCamera->RenderSkybox();
+}
+
 void D3D::Scene::Render() const
 {
 	m_pSceneRoot->Render();
@@ -103,3 +109,4 @@ const std::shared_ptr<D3D::DirectionalLightComponent> D3D::Scene::GetLight() con
 
 	return m_pDefaultLightComponent;
 }
+

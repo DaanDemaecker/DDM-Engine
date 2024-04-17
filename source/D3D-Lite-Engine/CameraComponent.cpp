@@ -28,6 +28,19 @@ void D3D::CameraComponent::UpdateUniformBuffer(UniformBufferObject& buffer, VkEx
 	buffer.proj[1][1] *= -1;
 }
 
+void D3D::CameraComponent::RenderSkybox()
+{
+	if (m_pSkyBox == nullptr)
+	{
+		m_pSkyBox = GetComponent<D3D::SkyBoxComponent>();
+	}
+
+	if (m_pSkyBox != nullptr)
+	{
+		m_pSkyBox->RenderSkyBox();
+	}
+}
+
 void D3D::CameraComponent::UpdateMatrix()
 {
 	auto transform = GetTransform();

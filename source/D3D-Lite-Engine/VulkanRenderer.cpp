@@ -304,6 +304,8 @@ void D3D::VulkanRenderer::RecordCommandBuffer(VkCommandBuffer& commandBuffer, ui
 	scissor.extent = extent;
 	vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
+	SceneManager::GetInstance().RenderSkybox();
+
 	SceneManager::GetInstance().Render();
 
 	// Render the ImGui

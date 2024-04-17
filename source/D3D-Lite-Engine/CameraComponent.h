@@ -1,12 +1,15 @@
 #ifndef CameraComponentIncluded
 #define CameraComponentIncluded
 
+// File includes
 #include "Component.h"
 #include "Structs.h"
 #include "VulkanIncludes.h"
+#include "SkyBoxComponent.h"
 
 namespace D3D
 {
+
 	class CameraComponent final : public Component
 	{
 	public:
@@ -26,6 +29,8 @@ namespace D3D
 		//     buffer: reference to the uniform buffer object that needs updating
 		//     extent: the extent of the swapchain
 		void UpdateUniformBuffer(UniformBufferObject& buffer, VkExtent2D extent);
+		
+		void RenderSkybox();
 
 	private:
 		glm::mat4 m_Matrix{};
@@ -34,6 +39,8 @@ namespace D3D
 		const float m_DefaultAngleDegrees{ 90.f };
 
 		void UpdateMatrix();
+
+		std::shared_ptr<SkyBoxComponent> m_pSkyBox{};
 	};
 }
 #endif // !CameraComponentIncluded

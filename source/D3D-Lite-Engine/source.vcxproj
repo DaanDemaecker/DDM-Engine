@@ -191,7 +191,7 @@
     <ClCompile Include="PipelineWrapper.cpp" />
     <ClCompile Include="RenderpassWrapper.cpp" />
     <ClCompile Include="ShaderModuleWrapper.cpp" />
-    <ClCompile Include="SkyBox.cpp" />
+    <ClCompile Include="SkyBoxComponent.cpp" />
     <ClCompile Include="SpectatorMovementComponent.cpp" />
     <ClCompile Include="spirv_reflect.c" />
     <ClCompile Include="spirv_reflect.cpp" />
@@ -247,7 +247,7 @@
     <ClInclude Include="RapidJSONIncludes.h" />
     <ClInclude Include="RenderpassWrapper.h" />
     <ClInclude Include="ShaderModuleWrapper.h" />
-    <ClInclude Include="SkyBox.h" />
+    <ClInclude Include="SkyBoxComponent.h" />
     <ClInclude Include="SpectatorMovementComponent.h" />
     <ClInclude Include="spirv_reflect.h" />
     <ClInclude Include="SurfaceWrapper.h" />

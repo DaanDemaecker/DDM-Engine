@@ -68,10 +68,10 @@ namespace D3D
 	inline std::shared_ptr<T> Component::GetComponent() const
 	{
 		if (!std::is_base_of<Component, T>())
-			return false;
+			return nullptr;
 
 		if (m_pOwner == nullptr)
-			return false;
+			return nullptr;
 
 		return m_pOwner->GetComponent<T>();
 	}
