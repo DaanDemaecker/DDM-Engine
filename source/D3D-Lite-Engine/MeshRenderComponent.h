@@ -1,5 +1,6 @@
 #ifndef MeshRenderComponentIncluded
 #define MeshRenderComponentIncluded
+
 #include "Component.h"
 #include "Structs.h"
 #include "UboDescriptorObject.h"
@@ -10,11 +11,11 @@ namespace D3D
 	class Material;
 	class Mesh;
 
-	class MeshRenderComponent final : public Component
+	class MeshRenderComponent : public Component
 	{
 	public:
 		MeshRenderComponent();
-		~MeshRenderComponent();
+		virtual ~MeshRenderComponent() = default;
 
 		virtual void EarlyUpdate() override;
 
@@ -26,7 +27,7 @@ namespace D3D
 		void CreateDescriptorSets();
 
 
-	private:
+	protected:
 		//Member variables
 		bool m_Initialized{ false };
 

@@ -13,11 +13,6 @@ D3D::MeshRenderComponent::MeshRenderComponent()
 	m_pUboDescriptorObject = std::make_unique<D3D::UboDescriptorObject<UniformBufferObject>>();
 }
 
-D3D::MeshRenderComponent::~MeshRenderComponent()
-{
-	
-}
-
 void D3D::MeshRenderComponent::EarlyUpdate()
 {
 	if (m_ShouldCreateDescriptorSets)
@@ -103,8 +98,6 @@ void D3D::MeshRenderComponent::UpdateUniformBuffer(uint32_t frame)
 	glm::mat4 scalingMatrix = glm::scale(glm::mat4(1.0f), transform->GetWorldScale());
 
 	m_Ubos[frame].model = translationMatrix * rotationMatrix * scalingMatrix;
-
-	m_Ubos[frame].model[2][2] *= 1;
 
 	VulkanRenderer::GetInstance().UpdateUniformBuffer(m_Ubos[frame]);
 
