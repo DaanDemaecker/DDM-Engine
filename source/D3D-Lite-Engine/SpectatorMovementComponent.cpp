@@ -60,8 +60,8 @@ void D3D::SpectatorMovementComponent::Update()
 		double deltaY = ypos - m_PrevYPos;
 
 
-		m_TotalPitch += static_cast<float>(-deltaY * deltaTime * m_AngularSpeed);
-		m_TotalYaw += static_cast<float>(-deltaX * deltaTime * m_AngularSpeed);
+		m_TotalPitch += static_cast<float>(deltaY * deltaTime * m_AngularSpeed);
+		m_TotalYaw += static_cast<float>(deltaX * deltaTime * m_AngularSpeed);
 
 		// Rotate the camera based on mouse movement
 		transform->SetWorldRotation(m_TotalPitch, m_TotalYaw, 0);

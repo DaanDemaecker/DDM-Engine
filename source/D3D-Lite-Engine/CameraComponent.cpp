@@ -26,6 +26,9 @@ void D3D::CameraComponent::UpdateUniformBuffer(UniformBufferObject& buffer, VkEx
 	buffer.proj = glm::perspective(m_FovAngle, extent.width / static_cast<float>(extent.height), 0.001f, 100.0f);
 
 	buffer.proj[1][1] *= -1;
+
+	buffer.proj[2][2] *= -1;
+	buffer.proj[2][3] *= -1;
 }
 
 void D3D::CameraComponent::RenderSkybox()

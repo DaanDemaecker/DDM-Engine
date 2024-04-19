@@ -230,7 +230,7 @@ glm::vec3 D3D::TransformComponent::GetForward()
 	glm::mat4 rotationMatrix = glm::mat4_cast(GetWorldRotation());
 
 	// Apply the rotation to the vector using the rotation matrix
-	glm::vec4 rotatedVector = rotationMatrix * glm::vec4(0.f, 0.f, -1.f, 0.0f);
+	glm::vec4 rotatedVector = rotationMatrix * glm::vec4(0.f, 0.f, 1.f, 0.0f);
 
 	// Extract the rotated glm::vec3 from the glm::vec4
 	glm::vec3 finalRotatedVector = glm::vec3(rotatedVector);
