@@ -123,7 +123,7 @@ void SetupCamera(D3D::Scene* scene)
 
 int main()
 {
-
+	// Create the engine object and run it with the load function
 	D3D::D3DEngine engine{};
 	engine.Run(load);
 
