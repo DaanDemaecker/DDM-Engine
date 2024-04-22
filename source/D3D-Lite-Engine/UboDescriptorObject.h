@@ -10,6 +10,7 @@
 
 namespace D3D
 {
+	// Templated class so that the user can choose what the descriptor holds
 	template <typename T>
 	class UboDescriptorObject final : public DescriptorObject
 	{
@@ -18,8 +19,18 @@ namespace D3D
 
 		virtual ~UboDescriptorObject();
 
+		// Add the descriptor write objects to the list of descriptorWrites
+		// Parameters:
+		//     descriptorSet: the current descriptorset connected to this descriptor object
+		//     descriptorWrites: the list of descriptorWrites this function will add to
+		//     binding: the current binding in the shader files
+		//     index: the current frame index of the renderer
 		virtual void AddDescriptorWrite(VkDescriptorSet descriptorSet, std::vector<VkWriteDescriptorSet>& descriptorWrites, int& binding, int index) override;
 
+		// Update the buffer of the object
+		// Parameters:
+		//     uboObject: a reference of the object in question
+		//     frame: the index of the current frame
 		void UpdateUboBuffer(T& uboObject, uint32_t frame);
 
 	private:
@@ -30,13 +41,16 @@ namespace D3D
 		// Pointers to mapped UBOs
 		std::vector<void*> m_UbosMapped{};
 
-		// BufferInfo
+		// BufferInfos
 		std::vector<VkDescriptorBufferInfo> m_BufferInfos{};
 
+		// Set up the buffers
 		void SetupBuffers();
 
+		// Set up the buffer infos
 		void SetupBufferInfos();
 
+		// Clean up
 		void Cleanup();
 	};
 
@@ -45,20 +59,22 @@ namespace D3D
 	inline UboDescriptorObject<T>::UboDescriptorObject()
 		:DescriptorObject(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER)
 	{
+		// Set up the buffers and buffer infos
 		SetupBuffers();
-
 		SetupBufferInfos();
 	}
 
 	template<typename T>
 	inline UboDescriptorObject<T>::~UboDescriptorObject()
 	{
+		// Clean up
 		Cleanup();
 	}
 
 	template<typename T>
 	inline void UboDescriptorObject<T>::AddDescriptorWrite(VkDescriptorSet descriptorSet, std::vector<VkWriteDescriptorSet>& descriptorWrites, int& binding, int index)
 	{
+		// Resize the descriptor writes so that the current descriptor write fits
 		descriptorWrites.resize(binding + 1);
 
 		// DescriptorWrites
@@ -84,6 +100,7 @@ namespace D3D
 	template<typename T>
 	inline void UboDescriptorObject<T>::UpdateUboBuffer(T& uboObject, uint32_t frame)
 	{
+		// Copy the memory of the object to the buffer
 		memcpy(m_UbosMapped[frame], &uboObject, sizeof(T));
 	}
 
@@ -120,6 +137,7 @@ namespace D3D
 	template<typename T>
 	inline void UboDescriptorObject<T>::SetupBufferInfos()
 	{
+		// Resize the buffer infos
 		m_BufferInfos.resize(m_UboBuffers.size());
 
 		for (size_t i{}; i < m_BufferInfos.size(); i++)
