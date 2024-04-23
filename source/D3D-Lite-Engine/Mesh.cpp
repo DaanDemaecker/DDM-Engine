@@ -1,3 +1,6 @@
+// Mesh.cpp
+
+// File includes
 #include "Mesh.h"
 #include "VulkanRenderer.h"
 #include "Utils.h"
@@ -5,33 +8,43 @@
 
 D3D::Mesh::Mesh(const std::string& filePath)
 {
+	// Load the vertices and indices
 	Utils::LoadModel(filePath, m_Vertices, m_Indices);
 
+	// Get reference to the renderer
 	auto& renderer{ VulkanRenderer::GetInstance() };
 
+	// Create vertex and index buffer
 	renderer.CreateVertexBuffer(m_Vertices, m_VertexBuffer, m_VertexBufferMemory);
 	renderer.CreateIndexBuffer(m_Indices, m_IndexBuffer, m_IndexBufferMemory);
 }
 
 D3D::Mesh::~Mesh()
 {
+	// Call cleanup function
 	Cleanup();
 }
 
 void D3D::Mesh::Render(PipelineWrapper* pPipeline, VkDescriptorSet* descriptorSet)
 {
+	// Get current commandbuffer
 	auto commandBuffer{ VulkanRenderer::GetInstance().GetCurrentCommandBuffer() };
 
+	// Bind pipeline
 	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pPipeline->GetPipeline());
 
+	// Set and bind vertex buffer
 	VkBuffer vertexBuffers[] = { m_VertexBuffer };
 	VkDeviceSize offsets[] = { 0 };
 	vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
 
+	// Bind index buffer
 	vkCmdBindIndexBuffer(commandBuffer, m_IndexBuffer, 0, VK_INDEX_TYPE_UINT32);
 
+	// Bind descriptor sets
 	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pPipeline->GetPipelineLayout(), 0, 1, descriptorSet, 0, nullptr);
 
+	// Draw
 	vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(m_Indices.size()), 1, 0, 0, 0);
 }
 
