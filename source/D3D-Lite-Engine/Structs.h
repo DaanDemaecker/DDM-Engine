@@ -1,22 +1,31 @@
+// Structs.h
+// This file contains all major structs
+
 #ifndef StructsIncluded
 #define StructsIncluded
 
-
+// File includes
 #include "VulkanIncludes.h"
 #include "GLMIncludes.h"
 
+// Standard library includes
 #include <optional>
 #include <array>
 
 namespace D3D
 {
+	// Struct needed for vulkan setup
 	struct QueueFamilyIndices
 	{
+		// The graphics family that will be used 
 		std::optional<uint32_t> graphicsFamily;
+		// The present famly that will be used
 		std::optional<uint32_t> presentFamily;
 
+		// Function used to see if values have been initialized
 		bool isComplete()
 		{
+			// Check if both variables have value
 			return graphicsFamily.has_value() && presentFamily.has_value();
 		}
 	};
@@ -192,6 +201,9 @@ namespace D3D
 
 namespace std
 {
+
+	// Hash function needed to make an unordered map of vertices
+
 	template<> struct hash<D3D::Vertex>
 	{
 		size_t operator()(D3D::Vertex const& vertex) const
