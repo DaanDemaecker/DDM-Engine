@@ -49,6 +49,9 @@
     <Filter Include="DataTypes\Materials">
       <UniqueIdentifier>{d81c4d1d-a64e-405f-a363-0d5f9b09b0e4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine\ServiceLocator">
+      <UniqueIdentifier>{4695caa6-1cbf-410f-8ed8-ccd54f910408}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Utils.cpp">
@@ -195,6 +198,9 @@
     </ClCompile>
     <ClCompile Include="SkyBoxComponent.cpp">
       <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="ServiceLocator.cpp">
+      <Filter>Engine\ServiceLocator</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -371,6 +377,9 @@
     </ClInclude>
     <ClInclude Include="SkyBoxComponent.h">
       <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="ServiceLocator.h">
+      <Filter>Engine\ServiceLocator</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

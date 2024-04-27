@@ -190,6 +190,7 @@
     <ClCompile Include="PipelineManager.cpp" />
     <ClCompile Include="PipelineWrapper.cpp" />
     <ClCompile Include="RenderpassWrapper.cpp" />
+    <ClCompile Include="ServiceLocator.cpp" />
     <ClCompile Include="ShaderModuleWrapper.cpp" />
     <ClCompile Include="SkyBoxComponent.cpp" />
     <ClCompile Include="SpectatorMovementComponent.cpp" />
@@ -246,6 +247,7 @@
     <ClInclude Include="PipelineWrapper.h" />
     <ClInclude Include="RapidJSONIncludes.h" />
     <ClInclude Include="RenderpassWrapper.h" />
+    <ClInclude Include="ServiceLocator.h" />
     <ClInclude Include="ShaderModuleWrapper.h" />
     <ClInclude Include="SkyBoxComponent.h" />
     <ClInclude Include="SpectatorMovementComponent.h" />
