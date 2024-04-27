@@ -243,6 +243,7 @@
     <ClInclude Include="ImGuiWrapper.h" />
     <ClInclude Include="InstanceWrapper.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="ModelLoader.h" />
     <ClInclude Include="PipelineManager.h" />
     <ClInclude Include="PipelineWrapper.h" />
     <ClInclude Include="RapidJSONIncludes.h" />

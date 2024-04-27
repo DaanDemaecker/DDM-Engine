@@ -4,6 +4,12 @@
 #ifndef ServiceLocatorIncluded
 #define ServiceLocatorIncluded
 
+// File includes
+#include "ModelLoader.h"
+
+// Standard library includes
+#include <memory>
+
 namespace D3D
 {
 	class ServiceLocator final
@@ -17,7 +23,12 @@ namespace D3D
 		ServiceLocator operator=(ServiceLocator& other) = delete;
 		ServiceLocator operator=(ServiceLocator&& other) = delete;
 
+		static ModelLoader& GetModelLoader();
+		static void RegisterModelLoader(std::unique_ptr<ModelLoader> modelLoader);
+
 	private:
+		static std::unique_ptr<ModelLoader> m_pModelLoaderInstance;
+		static std::unique_ptr<DefaultModelLoader> m_DefaultSoundSystemInstance;
 
 	};
 }

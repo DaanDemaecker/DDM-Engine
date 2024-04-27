@@ -52,6 +52,9 @@
     <Filter Include="Engine\ServiceLocator">
       <UniqueIdentifier>{4695caa6-1cbf-410f-8ed8-ccd54f910408}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine\ServiceLocator\ModelLoader">
+      <UniqueIdentifier>{00c4ea48-fde8-401e-8074-a6f5110fbd76}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Utils.cpp">
@@ -380,6 +383,9 @@
     </ClInclude>
     <ClInclude Include="ServiceLocator.h">
       <Filter>Engine\ServiceLocator</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelLoader.h">
+      <Filter>Engine\ServiceLocator\ModelLoader</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
