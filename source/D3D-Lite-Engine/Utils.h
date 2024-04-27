@@ -19,13 +19,6 @@ namespace Utils
 	// Parameters:
 	//     - filename: The name of the file to be read
 	std::vector<char> readFile(const std::string& filename);
-
-	// Uses TinyObjLoader to store a .obj file in a vertex- and indexVector
-	// Parameters:
-	//     - filename: The name of the obj file
-	//     - vertices: The vector that will be used to store the vertices
-	//     - indices: The vector that will be used to store the indices
-	void LoadModel(const std::string& filename, std::vector<D3D::Vertex>& vertices, std::vector<uint32_t>& indices);
 }
 
 #endif // !UtilsIncluded

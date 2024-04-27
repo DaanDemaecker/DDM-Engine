@@ -28,7 +28,7 @@ namespace D3D
 
 	private:
 		static std::unique_ptr<ModelLoader> m_pModelLoaderInstance;
-		static std::unique_ptr<DefaultModelLoader> m_DefaultSoundSystemInstance;
+		static std::unique_ptr<DefaultModelLoader> m_pDefaultModelLoaderInstance;
 
 	};
 }

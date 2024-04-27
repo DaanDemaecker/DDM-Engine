@@ -205,6 +205,9 @@
     <ClCompile Include="ServiceLocator.cpp">
       <Filter>Engine\ServiceLocator</Filter>
     </ClCompile>
+    <ClCompile Include="D3DModelLoader.cpp">
+      <Filter>Engine\ServiceLocator\ModelLoader</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Utils.h">
@@ -385,6 +388,9 @@
       <Filter>Engine\ServiceLocator</Filter>
     </ClInclude>
     <ClInclude Include="ModelLoader.h">
+      <Filter>Engine\ServiceLocator\ModelLoader</Filter>
+    </ClInclude>
+    <ClInclude Include="D3DModelLoader.h">
       <Filter>Engine\ServiceLocator\ModelLoader</Filter>
     </ClInclude>
   </ItemGroup>

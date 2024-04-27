@@ -3,13 +3,13 @@
 // File includes
 #include "Mesh.h"
 #include "VulkanRenderer.h"
-#include "Utils.h"
 #include "PipelineWrapper.h"
+#include "ServiceLocator.h"
 
 D3D::Mesh::Mesh(const std::string& filePath)
 {
 	// Load the vertices and indices
-	Utils::LoadModel(filePath, m_Vertices, m_Indices);
+	D3D::ServiceLocator::GetModelLoader().LoadModel(filePath, m_Vertices, m_Indices);
 
 	// Get reference to the renderer
 	auto& renderer{ VulkanRenderer::GetInstance() };

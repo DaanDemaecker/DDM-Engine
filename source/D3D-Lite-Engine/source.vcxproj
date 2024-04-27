@@ -179,6 +179,7 @@
     <ClCompile Include="ConfigManager.cpp" />
     <ClCompile Include="CubeMapMaterial.cpp" />
     <ClCompile Include="D3DEngine.cpp" />
+    <ClCompile Include="D3DModelLoader.cpp" />
     <ClCompile Include="DescriptorPoolWrapper.cpp" />
     <ClCompile Include="DirectionalLightComponent.cpp" />
     <ClCompile Include="GPUObject.cpp" />
@@ -233,6 +234,7 @@
     <ClInclude Include="ConfigManager.h" />
     <ClInclude Include="CubeMapMaterial.h" />
     <ClInclude Include="D3DEngine.h" />
+    <ClInclude Include="D3DModelLoader.h" />
     <ClInclude Include="DescriptorObject.h" />
     <ClInclude Include="DescriptorPoolWrapper.h" />
     <ClInclude Include="DirectionalLightComponent.h" />

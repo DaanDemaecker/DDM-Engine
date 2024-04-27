@@ -9,11 +9,15 @@
 #include <thread>
 
 #include "Scene.h"
+#include "ServiceLocator.h"
+#include "D3DModelLoader.h"
 
 D3D::D3DEngine::D3DEngine()
 {
 	// Create the window with the given width and height
 	D3D::Window::GetInstance();
+
+	ServiceLocator::RegisterModelLoader(std::make_unique<D3DModelLoader>());
 
 	auto& renderer{ D3D::VulkanRenderer::GetInstance() };
 
