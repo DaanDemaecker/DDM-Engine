@@ -1,5 +1,5 @@
 # Create the executable
-add_executable(D3D-Lite-Engine
+add_executable(D3D-Lite-Engine_Build
 "BaseClasses/GameObject.cpp"
 "Components/CameraComponent.cpp"
 "Components/DirectionalLightComponent.cpp"
@@ -47,12 +47,12 @@ add_executable(D3D-Lite-Engine
 
 
 # Link libraries
-target_link_libraries(D3D-Lite-Engine PRIVATE tinyobjloader)
+target_link_libraries(D3D-Lite-Engine_Build PRIVATE tinyobjloader)
 
-target_link_libraries(D3D-Lite-Engine PRIVATE glfw)
+target_link_libraries(D3D-Lite-Engine_Build PRIVATE glfw)
 
-target_link_libraries(D3D-Lite-Engine PRIVATE glm::glm)
+target_link_libraries(D3D-Lite-Engine_Build PRIVATE glm::glm)
 
-target_link_libraries(D3D-Lite-Engine PRIVATE rapidjson)
+target_link_libraries(D3D-Lite-Engine_Build PRIVATE rapidjson)
 
-target_link_libraries(D3D-Lite-Engine PRIVATE stb)
+target_link_libraries(D3D-Lite-Engine_Build PRIVATE stb)

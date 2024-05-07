@@ -25,7 +25,7 @@ find_package(Vulkan REQUIRED)
 
 target_link_libraries(imgui_library PRIVATE Vulkan::Vulkan)
 
-target_include_directories(D3D-Lite-Engine PRIVATE ${imgui_SOURCE_DIR})
+target_include_directories(D3D-Lite-Engine_Build PRIVATE ${imgui_SOURCE_DIR})
 
 
-target_link_libraries(D3D-Lite-Engine PRIVATE imgui_library)
+target_link_libraries(D3D-Lite-Engine_Build PRIVATE imgui_library)

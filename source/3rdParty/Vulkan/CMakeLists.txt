@@ -5,4 +5,4 @@ find_package(Vulkan REQUIRED)
 include_directories(${Vulkan_INCLUDE_DIRS})
 
 # Link Vulkan library
-target_link_libraries(D3D-Lite-Engine PRIVATE Vulkan::Vulkan)
+target_link_libraries(D3D-Lite-Engine_Build PRIVATE Vulkan::Vulkan)

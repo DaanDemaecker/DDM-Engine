@@ -12,3 +12,11 @@ cmake_policy(SET CMP0079 NEW)
 add_subdirectory(D3D-Lite)
 add_subdirectory(3rdParty)
 
+add_custom_target(configFile ALL)
+add_custom_command(
+	TARGET configFile POST_BUILD
+	COMMAND ${CMAKE_COMMAND}
+	-E copy
+	${CMAKE_SOURCE_DIR}/Config.json
+	$<TARGET_FILE_DIR:D3D-Lite-Engine_Build>
+)
