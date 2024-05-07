@@ -18,6 +18,7 @@ source/.vs
 [Bb]in/
 [Oo]bj/
 *.exe
+source/out/
 
 source/D3D-Lite-Engine/[Dd]ebug/
 source/D3D-Lite-Engine/[Dd]ebugPublic/

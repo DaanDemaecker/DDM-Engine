@@ -1,0 +1,58 @@
+# Create the executable
+add_executable(D3D-Lite-Engine
+"BaseClasses/GameObject.cpp"
+"Components/CameraComponent.cpp"
+"Components/DirectionalLightComponent.cpp"
+"Components/MeshRenderComponent.cpp"
+"Components/RotatorComponent.cpp"
+"Components/SkyBoxComponent.cpp"
+"Components/SpectatorMovementComponent.cpp"
+"Components/TransformComponent.cpp"
+"DataTypes/DescriptorObjects/TextureDescriptorObject.cpp"
+"DataTypes/Materials/CubeMapMaterial.cpp"
+"DataTypes/Materials/Material.cpp"
+"DataTypes/Materials/TexturedMaterial.cpp"
+"DataTypes/Mesh.cpp"
+"Engine/ServiceLocator/ModelLoader/D3DModelLoader.cpp"
+"Engine/ServiceLocator/ServiceLocator.cpp"
+"Engine/D3DEngine.cpp"
+"Engine/main.cpp"
+"Engine/Scene.cpp"
+"Engine/Window.cpp"
+"Includes/STBIncludes.cpp"
+"Includes/TinyObjLoaderIncludes.cpp"
+"Managers/ConfigManager.cpp"
+"Managers/SceneManager.cpp"
+"Managers/TimeManager.cpp"
+"Utils/Utils.cpp"
+"Vulkan/SpirVReflect/spirv_reflect.cpp"
+"Vulkan/VulkanManagers/BufferManager.cpp"
+"Vulkan/VulkanManagers/CommandpoolManager.cpp"
+"Vulkan/VulkanManagers/ImageManager.cpp"
+"Vulkan/VulkanManagers/ImageViewManager.cpp"
+"Vulkan/VulkanManagers/PipelineManager.cpp"
+"Vulkan/VulkanManagers/SyncObjectManager.cpp"
+"Vulkan/VulkanWrappers/DescriptorPoolWrapper.cpp"
+"Vulkan/VulkanWrappers/GPUObject.cpp"
+"Vulkan/VulkanWrappers/ImGuiWrapper.cpp"
+"Vulkan/VulkanWrappers/InstanceWrapper.cpp"
+"Vulkan/VulkanWrappers/PipelineWrapper"
+"Vulkan/VulkanWrappers/RenderpassWrapper.cpp"
+"Vulkan/VulkanWrappers/ShaderModuleWrapper.cpp"
+"Vulkan/VulkanWrappers/SurfaceWrapper.cpp"
+"Vulkan/VulkanWrappers/SwapchainWrapper.cpp"
+"Vulkan/VulkanRenderer.cpp"
+"Vulkan/VulkanUtils.cpp"
+)
+
+
+# Link libraries
+target_link_libraries(D3D-Lite-Engine PRIVATE tinyobjloader)
+
+target_link_libraries(D3D-Lite-Engine PRIVATE glfw)
+
+target_link_libraries(D3D-Lite-Engine PRIVATE glm::glm)
+
+target_link_libraries(D3D-Lite-Engine PRIVATE rapidjson)
+
+target_link_libraries(D3D-Lite-Engine PRIVATE stb)
