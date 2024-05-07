@@ -28,23 +28,23 @@ void load()
 
 	auto& renderer{ D3D::VulkanRenderer::GetInstance() };
 
-	renderer.AddGraphicsPipeline("Diffuse", { "../Resources/Shaders/Diffuse.Vert.spv", "../Resources/Shaders/Diffuse.Frag.spv" });
-	renderer.AddGraphicsPipeline("NormalMap", { "../Resources/Shaders/NormalMap.Vert.spv", "../Resources/Shaders/NormalMap.Frag.spv" });
-	renderer.AddGraphicsPipeline("DiffNorm", { "../Resources/Shaders/DiffNorm.Vert.spv", "../Resources/Shaders/DiffNorm.Frag.spv" });
-	renderer.AddGraphicsPipeline("Test", { "../Resources/Shaders/Test.Vert.spv", "../Resources/Shaders/Test.Frag.spv" });
-	renderer.AddGraphicsPipeline("DiffuseUnshaded", { "../Resources/Shaders/DiffuseUnshaded.Vert.spv", "../Resources/Shaders/DiffuseUnshaded.Frag.spv" });
-	renderer.AddGraphicsPipeline("Specular", { "../Resources/Shaders/Specular.Vert.spv", "../Resources/Shaders/Specular.Frag.spv" });
-	renderer.AddGraphicsPipeline("DiffNormSpec", { "../Resources/Shaders/DiffNormSpec.Vert.spv", "../Resources/Shaders/DiffNormSpec.Frag.spv" });
+	renderer.AddGraphicsPipeline("Diffuse", { "Resources/Shaders/Diffuse.Vert.spv", "Resources/Shaders/Diffuse.Frag.spv" });
+	renderer.AddGraphicsPipeline("NormalMap", { "Resources/Shaders/NormalMap.Vert.spv", "Resources/Shaders/NormalMap.Frag.spv" });
+	renderer.AddGraphicsPipeline("DiffNorm", { "Resources/Shaders/DiffNorm.Vert.spv", "Resources/Shaders/DiffNorm.Frag.spv" });
+	renderer.AddGraphicsPipeline("Test", { "Resources/Shaders/Test.Vert.spv", "Resources/Shaders/Test.Frag.spv" });
+	renderer.AddGraphicsPipeline("DiffuseUnshaded", { "Resources/Shaders/DiffuseUnshaded.Vert.spv", "Resources/Shaders/DiffuseUnshaded.Frag.spv" });
+	renderer.AddGraphicsPipeline("Specular", { "Resources/Shaders/Specular.Vert.spv", "Resources/Shaders/Specular.Frag.spv" });
+	renderer.AddGraphicsPipeline("DiffNormSpec", { "Resources/Shaders/DiffNormSpec.Vert.spv", "Resources/Shaders/DiffNormSpec.Frag.spv" });
 
-	std::shared_ptr<D3D::TexturedMaterial> pVikingMaterial{ std::make_shared<D3D::TexturedMaterial>(std::initializer_list<const std::string>{"../resources/images/viking_room.png"}, "Diffuse") };
+	std::shared_ptr<D3D::TexturedMaterial> pVikingMaterial{ std::make_shared<D3D::TexturedMaterial>(std::initializer_list<const std::string>{"resources/images/viking_room.png"}, "Diffuse") };
 	std::shared_ptr<D3D::TexturedMaterial> pVehicleMaterial{ std::make_shared<D3D::TexturedMaterial>
-		(std::initializer_list<const std::string>{"../resources/images/vehicle_diffuse.png", "../resources/images/vehicle_normal.png",
-		"../resources/images/vehicle_gloss.png", "../resources/images/vehicle_specular.png"},
+		(std::initializer_list<const std::string>{"resources/images/vehicle_diffuse.png", "resources/images/vehicle_normal.png",
+		"resources/images/vehicle_gloss.png", "resources/images/vehicle_specular.png"},
 			"DiffNormSpec") };
 
 	auto pvikingRoom{ scene->CreateGameObject("Viking Room") };
 
-	auto pVikingRoomMesh{ std::make_shared<D3D::Mesh>("../Resources/Models/viking_room.obj") };
+	auto pVikingRoomMesh{ std::make_shared<D3D::Mesh>("Resources/Models/viking_room.obj") };
 
 	auto pVikingRoomModel{ pvikingRoom->AddComponent<D3D::MeshRenderComponent>() };
 	pVikingRoomModel->SetMesh(pVikingRoomMesh);
@@ -58,7 +58,7 @@ void load()
 	auto pVehicle{ scene->CreateGameObject("Vehicle") };
 	pVehicle->AddComponent<D3D::RotatorComponent>();
 
-	auto pVehicleMesh{ std::make_shared<D3D::Mesh>("../Resources/Models/vehicle.obj") };
+	auto pVehicleMesh{ std::make_shared<D3D::Mesh>("Resources/Models/vehicle.obj") };
 
 	auto pVehicleModel{ pVehicle->AddComponent<D3D::MeshRenderComponent>() };
 	pVehicleModel->SetMesh(pVehicleMesh);
@@ -104,21 +104,21 @@ void SetupCamera(D3D::Scene* scene)
 	scene->SetCamera(pCameraComponent);
 
 	// Set the vertex shader name
-	const std::string vertShaderName{ "../Resources/Shaders/Skybox.Vert.spv" };
+	const std::string vertShaderName{ "Resources/Shaders/Skybox.Vert.spv" };
 	// Set the fragment shader name
-	const std::string fragShaderName{ "../Resources/Shaders/Skybox.Frag.spv" };
+	const std::string fragShaderName{ "Resources/Shaders/Skybox.Frag.spv" };
 
 	// Create the graphics pipeline for the skybox
 	D3D::VulkanRenderer::GetInstance().AddGraphicsPipeline("Skybox", { vertShaderName, fragShaderName }, false);
 
 	auto pSkyBox{ pCamera->AddComponent<D3D::SkyBoxComponent>() };
 
-	pSkyBox->LoadSkybox(std::initializer_list<const std::string>{"../resources/images/CubeMap/Sky_Right.png",
-		"../resources/images/CubeMap/Sky_Left.png",
-		"../resources/images/CubeMap/Sky_Up.png",
-		"../resources/images/CubeMap/Sky_Down.png",
-		"../resources/images/CubeMap/Sky_Front.png",
-		"../resources/images/CubeMap/Sky_Back.png"});
+	pSkyBox->LoadSkybox(std::initializer_list<const std::string>{"resources/images/CubeMap/Sky_Right.png",
+		"resources/images/CubeMap/Sky_Left.png",
+		"resources/images/CubeMap/Sky_Up.png",
+		"resources/images/CubeMap/Sky_Down.png",
+		"resources/images/CubeMap/Sky_Front.png",
+		"resources/images/CubeMap/Sky_Back.png"});
 }
 
 int main()

@@ -20,3 +20,12 @@ add_custom_command(
 	${CMAKE_SOURCE_DIR}/Config.json
 	$<TARGET_FILE_DIR:D3D-Lite-Engine_Build>
 )
+
+add_custom_target(copy_resources ALL)
+add_custom_command(
+	TARGET copy_resources POST_BUILD
+	COMMAND ${CMAKE_COMMAND}
+	-E copy_directory
+	${CMAKE_SOURCE_DIR}/resources
+	$<TARGET_FILE_DIR:D3D-Lite-Engine_Build>/resources
+)

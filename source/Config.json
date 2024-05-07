@@ -13,8 +13,8 @@
     "EngineVersionMajor" : 1,
     "EngineVersionMinor" : 0,
     "EngineVersionPatch" : 0,
-    "DefaultTextureName" : "../resources/DefaultResources/DefaultTexture.png",
+    "DefaultTextureName" : "resources/DefaultResources/DefaultTexture.png",
     "DefaultPipelineName" : "Default",
-    "DefaultVertName" : "../resources/DefaultResources/Default.Vert.spv",
-    "DefaultFragName" : "../resources/DefaultResources/Default.Frag.spv"
+    "DefaultVertName" : "resources/DefaultResources/Default.Vert.spv",
+    "DefaultFragName" : "resources/DefaultResources/Default.Frag.spv"
 }

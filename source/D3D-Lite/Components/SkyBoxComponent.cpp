@@ -12,7 +12,7 @@
 D3D::SkyBoxComponent::SkyBoxComponent()
 {
 	// Create the model
-	auto pMesh = std::make_shared<Mesh>("../Resources/Models/cube.obj");
+	auto pMesh = std::make_shared<Mesh>("Resources/Models/cube.obj");
 
 	SetMesh(pMesh);
 }
