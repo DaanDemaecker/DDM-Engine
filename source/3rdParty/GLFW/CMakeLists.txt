@@ -14,3 +14,6 @@ option(GLFW_INSTALL "Generate installation target" OFF)
 option(GLFW_DOCUMENT_INTERNALS "Include internals in documentation" OFF)
 
 FetchContent_MakeAvailable(glfw)
+
+
+target_link_libraries(D3D-Lite-Engine_Build PRIVATE glfw)

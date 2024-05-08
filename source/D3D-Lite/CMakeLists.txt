@@ -44,15 +44,3 @@ add_executable(D3D-Lite-Engine_Build
 "Vulkan/VulkanRenderer.cpp"
 "Vulkan/VulkanUtils.cpp"
 )
-
-
-# Link libraries
-target_link_libraries(D3D-Lite-Engine_Build PRIVATE tinyobjloader)
-
-target_link_libraries(D3D-Lite-Engine_Build PRIVATE glfw)
-
-target_link_libraries(D3D-Lite-Engine_Build PRIVATE glm::glm)
-
-target_link_libraries(D3D-Lite-Engine_Build PRIVATE rapidjson)
-
-target_link_libraries(D3D-Lite-Engine_Build PRIVATE stb)
