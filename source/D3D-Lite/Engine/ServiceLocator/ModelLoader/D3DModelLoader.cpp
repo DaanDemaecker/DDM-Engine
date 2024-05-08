@@ -3,11 +3,30 @@
 // File includes
 #include "D3DModelLoader.h"
 #include "../../../Includes/TinyObjLoaderIncludes.h"
+#include "../../../Utils/Utils.h"
 
 // Standard library includes
 #include <stdexcept>
+#include <iostream>
 
 void D3D::D3DModelLoader::LoadModel(const std::string& path, std::vector<D3D::Vertex>& vertices, std::vector<uint32_t>& indices)
+{
+	// Get the extension of the file
+	auto extension{std::move(Utils::GetExtension(path))};
+
+	if (extension == "obj")
+	{
+		// If the extension is .obj, use obj loader
+		LoadObj(path, vertices, indices);
+	}
+	else
+	{
+		// If the extension can't be handled, warn user
+		std::cout << extension << " is not a supported model format \n";
+	}
+}
+
+void D3D::D3DModelLoader::LoadObj(const std::string& path, std::vector<D3D::Vertex>& vertices, std::vector<uint32_t>& indices)
 {
 	// Clear the vectors in case they aren't empty
 	vertices.clear();
