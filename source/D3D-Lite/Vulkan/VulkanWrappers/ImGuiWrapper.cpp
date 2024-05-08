@@ -10,7 +10,7 @@
 #include <array>
 #include <stdexcept>
 
-D3D::ImGuiWrapper::ImGuiWrapper(ImGui_ImplVulkan_InitInfo init_info, VkRenderPass renderPass, VkCommandBuffer commandBuffer, VkDevice device, uint32_t maxFrames)
+D3D::ImGuiWrapper::ImGuiWrapper(ImGui_ImplVulkan_InitInfo init_info, VkDevice device, uint32_t maxFrames)
 {	
 	// Initialize the descriptorPool
 	InitDescriptorPool(device, maxFrames);
@@ -47,7 +47,7 @@ void D3D::ImGuiWrapper::Cleanup(VkDevice device)
 
 	// Destroy the descriptorpool
 	vkDestroyDescriptorPool(device, m_DescriptorPool, nullptr);
-}// Show the demo window
+}
 
 void D3D::ImGuiWrapper::Render(VkCommandBuffer commandBuffer)
 {
@@ -95,6 +95,8 @@ void D3D::ImGuiWrapper::InitDescriptorPool(VkDevice device, uint32_t maxFrames)
 	poolInfo.pPoolSizes = poolSizes.data();
 	// Set max sets to max amount of frames
 	poolInfo.maxSets = static_cast<uint32_t>(maxFrames);
+	// Needed flag for this type of descriptorpool
+	poolInfo.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
 
 	// Create descriptorpool, if failed throw runtime error
 	if (vkCreateDescriptorPool(device, &poolInfo, nullptr, &m_DescriptorPool) != VK_SUCCESS) {

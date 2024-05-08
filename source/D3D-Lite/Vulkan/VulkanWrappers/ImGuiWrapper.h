@@ -16,12 +16,9 @@ namespace D3D
 		// Constructor
 		// Parameters:
 		//     init_info: the initialization info for imgui
-		//     renderpass: the handle to the renderpass that will be used
-		//     commandbuffer: a single time command buffer needed for initialization
 		//     device: the handle for the VkDevice
 		//     maxFrames: the max frames in flight
-		ImGuiWrapper(ImGui_ImplVulkan_InitInfo init_info, VkRenderPass renderPass, VkCommandBuffer commandBuffer,
-			VkDevice device, uint32_t maxFrames);
+		ImGuiWrapper(ImGui_ImplVulkan_InitInfo init_info, VkDevice device, uint32_t maxFrames);
 
 		// Default destructor
 		~ImGuiWrapper() = default;

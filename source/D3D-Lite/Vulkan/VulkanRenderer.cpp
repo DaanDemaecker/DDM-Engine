@@ -147,8 +147,8 @@ void D3D::VulkanRenderer::InitImGui()
 	// Create a single time command buffer
 	auto commandBuffer{ BeginSingleTimeCommands() };
 	// Initialize ImGui
-	m_pImGuiWrapper = std::make_unique<D3D::ImGuiWrapper>(init_info, m_pRenderpassWrapper->GetRenderpass(),
-		commandBuffer, m_pGpuObject->GetDevice(), static_cast<uint32_t>(m_MaxFramesInFlight));
+	m_pImGuiWrapper = std::make_unique<D3D::ImGuiWrapper>(init_info,
+		m_pGpuObject->GetDevice(), static_cast<uint32_t>(m_MaxFramesInFlight));
 	// End the single time command buffer
 	EndSingleTimeCommands(commandBuffer);
 }
