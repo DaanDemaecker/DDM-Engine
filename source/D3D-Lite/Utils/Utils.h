@@ -19,6 +19,11 @@ namespace Utils
 	// Parameters:
 	//     - filename: The name of the file to be read
 	std::vector<char> readFile(const std::string& filename);
+
+	// This function will read and return the extension of a given file name
+	// Parameters:
+	//     - filename: The name of the file
+	std::string GetExtension(const std::string& filename);
 }
 
 #endif // !UtilsIncluded
