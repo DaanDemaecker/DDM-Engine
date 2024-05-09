@@ -21,9 +21,6 @@
 
 void SetupCamera(D3D::Scene* scen);
 
-#include "fmod.hpp"
-void TestFmod();
-
 void load()
 {
 	auto scene = D3D::SceneManager::GetInstance().CreateScene("Test");
@@ -62,6 +59,12 @@ void load()
 	pVehicle->AddComponent<D3D::RotatorComponent>();
 
 	auto pVehicleMesh{ std::make_shared<D3D::Mesh>("Resources/Models/vehicle.obj") };
+
+	//auto pRobloxRigged{ std::make_shared<D3D::Mesh>("Resources/Models/RobloxRigged.obj") };
+	//auto pRobloxObject{ scene->CreateGameObject("Roblox rig") };
+	//auto pRobloxModel{ pRobloxObject->AddComponent<D3D::MeshRenderComponent>() };
+	//pRobloxModel->SetMesh(pRobloxRigged);
+	//pRobloxModel->SetMaterial(pVehicleMaterial);
 
 	auto pVehicleModel{ pVehicle->AddComponent<D3D::MeshRenderComponent>() };
 	pVehicleModel->SetMesh(pVehicleMesh);
@@ -124,58 +127,8 @@ void SetupCamera(D3D::Scene* scene)
 		"resources/images/CubeMap/Sky_Back.png"});
 }
 
-void ERRCHECK(FMOD_RESULT result) {
-	if (result != FMOD_OK) {
-		std::cerr << "FMOD error " << result << std::endl;
-		exit(1);
-	}
-}
-
-void TestFmod() {
-	FMOD::System* system;
-	FMOD::Sound* sound;
-	FMOD::Channel* channel;
-	FMOD_RESULT result;
-
-	// Initialize FMOD system
-	result = FMOD::System_Create(&system);
-	ERRCHECK(result);
-
-	result = system->init(32, FMOD_INIT_NORMAL, nullptr);
-	ERRCHECK(result);
-
-	// Load MP3 file
-	result = system->createSound("resources/Sound/waluigi.mp3", FMOD_DEFAULT, nullptr, &sound);
-	ERRCHECK(result);
-
-
-	// Play the sound
-	result = system->playSound(sound, nullptr, false, &channel);
-	ERRCHECK(result);
-
-	// Update FMOD system in a loop to allow sound playback
-
-	bool isPlaying;
-	result = channel->isPlaying(&isPlaying);
-	ERRCHECK(result);
-
-	while (isPlaying) {
-		system->update();
-
-		result = channel->isPlaying(&isPlaying);
-	}
-
-	// Release resources
-	sound->release();
-	system->close();
-	system->release();
-
-	return;
-}
-
 int main()
 {
-	TestFmod();
 	// Create the engine object and run it with the load function
 	D3D::D3DEngine engine{};
 	engine.Run(load);
