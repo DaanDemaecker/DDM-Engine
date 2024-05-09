@@ -19,13 +19,43 @@
 
 #include "../Vulkan/VulkanRenderer.h"
 
+
+void SetupPipelines();
+
+void SetupVehicle(D3D::Scene* scene);
+
+void SetupVikingRoom(D3D::Scene* scene);
+
 void SetupCamera(D3D::Scene* scen);
+
+void SetupLight(D3D::Scene* scene);
 
 void load()
 {
 	auto scene = D3D::SceneManager::GetInstance().CreateScene("Test");
 	D3D::SceneManager::GetInstance().SetActiveScene(scene);
 
+	SetupPipelines();
+
+	auto& renderer{ D3D::VulkanRenderer::GetInstance() };
+
+	SetupVehicle(scene.get());
+
+	SetupVikingRoom(scene.get());
+	
+	//auto pRobloxRigged{ std::make_shared<D3D::Mesh>("Resources/Models/RobloxRigged.obj") };
+	//auto pRobloxObject{ scene->CreateGameObject("Roblox rig") };
+	//auto pRobloxModel{ pRobloxObject->AddComponent<D3D::MeshRenderComponent>() };
+	//pRobloxModel->SetMesh(pRobloxRigged);
+	//pRobloxModel->SetMaterial(pVehicleMaterial);
+
+	SetupCamera(scene.get());
+
+	SetupLight(scene.get());
+}
+
+void SetupPipelines()
+{
 	auto& renderer{ D3D::VulkanRenderer::GetInstance() };
 
 	renderer.AddGraphicsPipeline("Diffuse", { "Resources/Shaders/Diffuse.Vert.spv", "Resources/Shaders/Diffuse.Frag.spv" });
@@ -35,13 +65,35 @@ void load()
 	renderer.AddGraphicsPipeline("DiffuseUnshaded", { "Resources/Shaders/DiffuseUnshaded.Vert.spv", "Resources/Shaders/DiffuseUnshaded.Frag.spv" });
 	renderer.AddGraphicsPipeline("Specular", { "Resources/Shaders/Specular.Vert.spv", "Resources/Shaders/Specular.Frag.spv" });
 	renderer.AddGraphicsPipeline("DiffNormSpec", { "Resources/Shaders/DiffNormSpec.Vert.spv", "Resources/Shaders/DiffNormSpec.Frag.spv" });
+}
 
-	std::shared_ptr<D3D::TexturedMaterial> pVikingMaterial{ std::make_shared<D3D::TexturedMaterial>(std::initializer_list<const std::string>{"resources/images/viking_room.png"}, "Diffuse") };
+void SetupVehicle(D3D::Scene* scene)
+{
 	std::shared_ptr<D3D::TexturedMaterial> pVehicleMaterial{ std::make_shared<D3D::TexturedMaterial>
 		(std::initializer_list<const std::string>{"resources/images/vehicle_diffuse.png", "resources/images/vehicle_normal.png",
 		"resources/images/vehicle_gloss.png", "resources/images/vehicle_specular.png"},
 			"DiffNormSpec") };
 
+	auto pVehicle{ scene->CreateGameObject("Vehicle") };
+	pVehicle->AddComponent<D3D::RotatorComponent>();
+
+	auto pVehicleMesh{ std::make_shared<D3D::Mesh>("Resources/Models/vehicle.obj") };
+
+	auto pVehicleModel{ pVehicle->AddComponent<D3D::MeshRenderComponent>() };
+	pVehicleModel->SetMesh(pVehicleMesh);
+	pVehicleModel->SetMaterial(pVehicleMaterial);
+
+
+	auto pVehicleTransform{ pVehicle->GetTransform() };
+	pVehicleTransform->SetLocalPosition(-1.f, 0, 3.f);
+	pVehicleTransform->SetLocalRotation(0.f, glm::radians(75.0f), 0.f);
+	pVehicleTransform->SetLocalScale(0.05f, 0.05f, 0.05f);
+}
+
+void SetupVikingRoom(D3D::Scene* scene)
+{
+	std::shared_ptr<D3D::TexturedMaterial> pVikingMaterial{ std::make_shared<D3D::TexturedMaterial>(std::initializer_list<const std::string>{"resources/images/viking_room.png"}, "Diffuse") };
+	
 	auto pvikingRoom{ scene->CreateGameObject("Viking Room") };
 
 	auto pVikingRoomMesh{ std::make_shared<D3D::Mesh>("Resources/Models/viking_room.obj") };
@@ -54,44 +106,6 @@ void load()
 	pVikingTransform->SetLocalPosition(1.f, -0.2f, 3.f);
 	pVikingTransform->SetLocalRotation(glm::radians(-90.0f), glm::radians(45.0f), 0.f);
 	pVikingTransform->SetLocalScale(0.75f, 0.75f, 0.75f);
-
-	auto pVehicle{ scene->CreateGameObject("Vehicle") };
-	pVehicle->AddComponent<D3D::RotatorComponent>();
-
-	auto pVehicleMesh{ std::make_shared<D3D::Mesh>("Resources/Models/vehicle.obj") };
-
-	//auto pRobloxRigged{ std::make_shared<D3D::Mesh>("Resources/Models/RobloxRigged.obj") };
-	//auto pRobloxObject{ scene->CreateGameObject("Roblox rig") };
-	//auto pRobloxModel{ pRobloxObject->AddComponent<D3D::MeshRenderComponent>() };
-	//pRobloxModel->SetMesh(pRobloxRigged);
-	//pRobloxModel->SetMaterial(pVehicleMaterial);
-
-	auto pVehicleModel{ pVehicle->AddComponent<D3D::MeshRenderComponent>() };
-	pVehicleModel->SetMesh(pVehicleMesh);
-	pVehicleModel->SetMaterial(pVehicleMaterial);
-
-
-	auto pVehicleTransform{ pVehicle->GetTransform() };
-	pVehicleTransform->SetLocalPosition(-1.f, 0, 3.f);
-	pVehicleTransform->SetLocalRotation(0.f, glm::radians(75.0f), 0.f);
-	pVehicleTransform->SetLocalScale(0.05f, 0.05f, 0.05f);
-
-
-	SetupCamera(scene.get());
-
-
-	auto pLight{ scene->CreateGameObject("Light") };
-
-	auto pLightComponent{ pLight->AddComponent<D3D::DirectionalLightComponent>() };
-
-	auto pLightTransform{ pLight->GetTransform() };
-
-	pLightTransform->SetLocalRotation(glm::vec3(0.0f, glm::radians(180.f), 0.0f));
-
-	pLight->AddComponent<D3D::RotatorComponent>();
-
-	scene->SetLight(pLightComponent);
-	
 }
 
 void SetupCamera(D3D::Scene* scene)
@@ -125,6 +139,21 @@ void SetupCamera(D3D::Scene* scene)
 		"resources/images/CubeMap/Sky_Down.png",
 		"resources/images/CubeMap/Sky_Front.png",
 		"resources/images/CubeMap/Sky_Back.png"});
+}
+
+void SetupLight(D3D::Scene* scene)
+{
+	auto pLight{ scene->CreateGameObject("Light") };
+
+	auto pLightComponent{ pLight->AddComponent<D3D::DirectionalLightComponent>() };
+
+	auto pLightTransform{ pLight->GetTransform() };
+
+	pLightTransform->SetLocalRotation(glm::vec3(0.0f, glm::radians(180.f), 0.0f));
+
+	pLight->AddComponent<D3D::RotatorComponent>();
+
+	scene->SetLight(pLightComponent);
 }
 
 int main()

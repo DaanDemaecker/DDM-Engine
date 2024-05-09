@@ -83,6 +83,8 @@ void D3D::Window::InitWindow()
 	// If fullscreen is disabled, the monitor index is available and isn't 0, calculate position for the window on the requested monitor
 	if (!fullScreen && monitorIndex != 0 && monitorIndex < count)
 	{
+		glfwRestoreWindow(m_Window.pWindow);
+
 		int x, y, w, h;
 
 		// Get the current monitor
