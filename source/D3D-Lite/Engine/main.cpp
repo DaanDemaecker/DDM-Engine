@@ -42,12 +42,6 @@ void load()
 	SetupVehicle(scene.get());
 
 	SetupVikingRoom(scene.get());
-	
-	//auto pRobloxRigged{ std::make_shared<D3D::Mesh>("Resources/Models/RobloxRigged.obj") };
-	//auto pRobloxObject{ scene->CreateGameObject("Roblox rig") };
-	//auto pRobloxModel{ pRobloxObject->AddComponent<D3D::MeshRenderComponent>() };
-	//pRobloxModel->SetMesh(pRobloxRigged);
-	//pRobloxModel->SetMaterial(pVehicleMaterial);
 
 	SetupCamera(scene.get());
 
@@ -93,7 +87,7 @@ void SetupVehicle(D3D::Scene* scene)
 void SetupVikingRoom(D3D::Scene* scene)
 {
 	std::shared_ptr<D3D::TexturedMaterial> pVikingMaterial{ std::make_shared<D3D::TexturedMaterial>(std::initializer_list<const std::string>{"resources/images/viking_room.png"}, "Diffuse") };
-	
+
 	auto pvikingRoom{ scene->CreateGameObject("Viking Room") };
 
 	auto pVikingRoomMesh{ std::make_shared<D3D::Mesh>("Resources/Models/viking_room.obj") };
