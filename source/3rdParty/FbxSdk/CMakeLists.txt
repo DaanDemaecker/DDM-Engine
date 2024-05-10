@@ -1,15 +1,14 @@
-# Set the path to the FBX SDK
-set(FBX_SDK_DIR "C:/Program Files/Autodesk/FBX/FBX SDK/2020.3.7")
+# Include FMOD headers
+target_include_directories(D3D-Lite-Engine_Build PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-add_library(FbxSdk INTERFACE)
+# Link FMOD libraries
+add_custom_target(copy_fbxsdkDLL ALL)
+add_custom_command(
+	TARGET copy_fbxsdkDLL POST_BUILD
+	COMMAND ${CMAKE_COMMAND}
+	-E copy
+	${CMAKE_CURRENT_SOURCE_DIR}/bin/debug/libfbxsdk.dll
+	$<TARGET_FILE_DIR:D3D-Lite-Engine_Build>
+)
 
-# Include directories for FBX SDK
-target_include_directories(FbxSdk INTERFACE ${FBX_SDK_DIR}/include)
-
-# Link directories for FBX SDK
-target_link_directories(FbxSdk INTERFACE ${FBX_SDK_DIR}/lib/x64/debug)
-
-target_link_libraries(FbxSdk INTERFACE ${FBX_SDK_DIR}/lib/x64/debug/libfbxsdk.lib)
-
-# Link your executable or library against the FBX SDK libraries
-target_link_libraries(D3D-Lite-Engine_Build INTERFACE FbxSdk)
+target_link_libraries(D3D-Lite-Engine_Build PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/lib/debug/libfbxsdk.lib)

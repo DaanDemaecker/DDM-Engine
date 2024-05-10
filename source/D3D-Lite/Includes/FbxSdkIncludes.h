@@ -1,6 +1,6 @@
 #ifndef FbxSdkIncluded
 #define FbxSdkIncluded
 
-#include "FbxSdk/include/fbxsdk.h"
+#include "fbxsdk.h"
 
 #endif // !FbxSdkIncluded
