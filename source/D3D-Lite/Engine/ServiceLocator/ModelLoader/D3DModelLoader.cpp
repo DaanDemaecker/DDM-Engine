@@ -19,6 +19,11 @@ void D3D::D3DModelLoader::LoadModel(const std::string& path, std::vector<D3D::Ve
 		// If the extension is .obj, use obj loader
 		LoadObj(path, vertices, indices);
 	}
+	else if (extension == "fbx")
+	{
+		// If the extension is .fbx, use fbx sdk to load in model
+		LoadFbx(path, vertices, indices);
+	}
 	else
 	{
 		// If the extension can't be handled, warn user
@@ -132,3 +137,98 @@ void D3D::D3DModelLoader::LoadObj(const std::string& path, std::vector<D3D::Vert
 		v2.tangent += tangent;
 	}
 }
+
+void D3D::D3DModelLoader::LoadFbx(const std::string& path, std::vector<D3D::Vertex>& vertices, std::vector<uint32_t>& indices)
+{
+	// Initialize the FBX SDK
+	FbxManager* manager = FbxManager::Create();
+	FbxIOSettings* ios = FbxIOSettings::Create(manager, IOSROOT);
+	manager->SetIOSettings(ios);
+
+	// Create an importer
+	FbxImporter* importer = FbxImporter::Create(manager, "");
+
+	// Import the FBX file
+	const char* filename = path.c_str();
+	if (!importer->Initialize(filename, -1, manager->GetIOSettings())) {
+		std::cerr << "Failed to initialize importer: " << importer->GetStatus().GetErrorString() << std::endl;
+		return;
+	}
+
+	// Create a scene and import it
+	FbxScene* scene = FbxScene::Create(manager, "Scene");
+	importer->Import(scene);
+	importer->Destroy();
+
+	// Traverse the scene to find nodes containing the car model
+	FbxNode* root = scene->GetRootNode();
+	if (root) {
+		for (int i = 0; i < root->GetChildCount(); i++) {
+			FbxNode* child = root->GetChild(i);
+			// Check if the node contains mesh data
+			if (child->GetNodeAttribute() && child->GetNodeAttribute()->GetAttributeType() == FbxNodeAttribute::eMesh)
+			{
+				// Extract mesh data
+				FbxMesh* mesh = child->GetMesh();
+
+				ConvertMesh(mesh, vertices, indices);
+			}
+		}
+	}
+
+	// Destroy the scene and manager
+	scene->Destroy();
+	manager->Destroy();
+}
+
+void D3D::D3DModelLoader::ConvertMesh(FbxMesh* pMesh, std::vector<D3D::Vertex>& vertices, std::vector<uint32_t>& indices)
+{
+	int numPolygons = pMesh->GetPolygonCount();
+	FbxVector4* controlPoints = pMesh->GetControlPoints();
+	pMesh->GenerateNormals();
+	pMesh->GenerateTangentsData();
+
+	vertices.clear();
+	indices.clear();
+
+	// Create map to store vertices
+	std::unordered_map<D3D::Vertex, uint32_t> uniqueVertices{};
+
+	for (int polygonIndex = 0; polygonIndex < numPolygons; ++polygonIndex)
+	{
+		auto polygonSize = pMesh->GetPolygonSize(polygonIndex);
+
+		for (int i = 1; i <= polygonSize - 2; i++)
+		{
+			HandleFbxVertex(pMesh, controlPoints, polygonIndex, 0, uniqueVertices, vertices, indices);
+			HandleFbxVertex(pMesh, controlPoints, polygonIndex, i, uniqueVertices, vertices, indices);
+			HandleFbxVertex(pMesh, controlPoints, polygonIndex, i + 1, uniqueVertices, vertices, indices);
+		}
+	}
+}
+
+void D3D::D3DModelLoader::HandleFbxVertex(FbxMesh* pMesh, FbxVector4* controlPoints, int polygonIndex, int inPolygonPosition,
+	std::unordered_map<D3D::Vertex, uint32_t>& uniqueVertices,
+	std::vector<D3D::Vertex>& vertices, std::vector<uint32_t>& indices)
+{
+	int vertexIndex = pMesh->GetPolygonVertex(polygonIndex, inPolygonPosition);
+
+	auto controlPoint = controlPoints[vertexIndex];
+
+
+	D3D::Vertex vertex{};
+
+	vertex.pos = glm::vec3{ controlPoint[0], controlPoint[1], controlPoint[2] };
+	vertex.color = glm::vec3{ 1, 1, 1 };
+
+	// If vertex isn't in uniqueVertices vector, add it
+	if (!uniqueVertices.contains(vertex))
+	{
+		uniqueVertices[vertex] = static_cast<uint32_t>(vertices.size());
+		vertices.push_back(vertex);
+	}
+
+	// Add index to indices vector
+	indices.push_back(uniqueVertices[vertex]);
+}
+

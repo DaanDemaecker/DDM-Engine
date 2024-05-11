@@ -20,6 +20,7 @@ add_custom_command(
 	-E copy_directory
 	${CMAKE_SOURCE_DIR}/resources
 	$<TARGET_FILE_DIR:D3D-Lite-Engine_Build>/resources
+	 MAIN_DEPENDENCY ${CMAKE_SOURCE_DIR}/resources
 )
 
 add_custom_target(configFile ALL)

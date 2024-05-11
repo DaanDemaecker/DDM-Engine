@@ -26,6 +26,8 @@ void SetupVehicle(D3D::Scene* scene);
 
 void SetupVikingRoom(D3D::Scene* scene);
 
+void SetupCar(D3D::Scene* scene);
+
 void SetupCamera(D3D::Scene* scen);
 
 void SetupLight(D3D::Scene* scene);
@@ -42,6 +44,8 @@ void load()
 	SetupVehicle(scene.get());
 
 	SetupVikingRoom(scene.get());
+
+	SetupCar(scene.get());
 
 	SetupCamera(scene.get());
 
@@ -100,6 +104,24 @@ void SetupVikingRoom(D3D::Scene* scene)
 	pVikingTransform->SetLocalPosition(1.f, -0.2f, 3.f);
 	pVikingTransform->SetLocalRotation(glm::radians(-90.0f), glm::radians(45.0f), 0.f);
 	pVikingTransform->SetLocalScale(0.75f, 0.75f, 0.75f);
+}
+
+void SetupCar(D3D::Scene* scene)
+{
+	std::shared_ptr<D3D::Material> pCarMaterial{ std::make_shared<D3D::Material>()};
+
+	auto pCar{ scene->CreateGameObject("Car") };
+
+	auto pCarMesh{ std::make_shared<D3D::Mesh>("Resources/Models/car.fbx") };
+
+	auto PCarModel{ pCar->AddComponent<D3D::MeshRenderComponent>() };
+	PCarModel->SetMesh(pCarMesh);
+	PCarModel->SetMaterial(pCarMaterial);
+
+	auto pCarTransform{ pCar->GetTransform() };
+	pCarTransform->SetLocalPosition(0.f, -.2f, 6.f);
+	pCarTransform->SetLocalRotation(glm::radians(-90.f), 0.f, 0.f);
+	pCarTransform->SetLocalScale(0.5f, 0.5f, 0.5f);
 }
 
 void SetupCamera(D3D::Scene* scene)
