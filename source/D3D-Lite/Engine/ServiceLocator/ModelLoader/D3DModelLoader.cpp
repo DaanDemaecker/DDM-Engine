@@ -215,10 +215,14 @@ void D3D::D3DModelLoader::HandleFbxVertex(FbxMesh* pMesh, FbxVector4* controlPoi
 
 	auto controlPoint = controlPoints[vertexIndex];
 
+	FbxVector4 normal{};
+
+	pMesh->GetPolygonVertexNormal(polygonIndex, vertexIndex, normal);
 
 	D3D::Vertex vertex{};
 
 	vertex.pos = glm::vec3{ controlPoint[0], controlPoint[1], controlPoint[2] };
+	vertex.normal = glm::vec3{normal[0], normal[1], normal[2]};
 	vertex.color = glm::vec3{ 1, 1, 1 };
 
 	// If vertex isn't in uniqueVertices vector, add it
