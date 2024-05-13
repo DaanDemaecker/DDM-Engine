@@ -84,6 +84,8 @@ namespace D3D
 		glm::vec3 color;
 		// UV coordinates
 		glm::vec2 texCoord;
+		// Uv coordinate set index
+		float uvIndex{};
 		// Vertex normal
 		glm::vec3 normal;
 		// Vertex tangent
@@ -109,7 +111,7 @@ namespace D3D
 		static std::vector<VkVertexInputAttributeDescription> getAttributeDescription()
 		{
 			// Create attribute description
-			std::vector<VkVertexInputAttributeDescription> attributeDescriptions(5);
+			std::vector<VkVertexInputAttributeDescription> attributeDescriptions(6);
 
 			// Set binding to 0
 			attributeDescriptions[0].binding = 0;
@@ -142,10 +144,10 @@ namespace D3D
 			attributeDescriptions[3].binding = 0;
 			// Set location to 3
 			attributeDescriptions[3].location = 3;
-			// Set format to vector 3
-			attributeDescriptions[3].format = VK_FORMAT_R32G32B32_SFLOAT;
+			// Set format to signed int
+			attributeDescriptions[3].format = VK_FORMAT_R32_SFLOAT;
 			// Set offset
-			attributeDescriptions[3].offset = offsetof(Vertex, normal);
+			attributeDescriptions[3].offset = offsetof(Vertex, uvIndex);
 
 			// Set binding to 0
 			attributeDescriptions[4].binding = 0;
@@ -154,7 +156,16 @@ namespace D3D
 			// Set format to vector 3
 			attributeDescriptions[4].format = VK_FORMAT_R32G32B32_SFLOAT;
 			// Set offset
-			attributeDescriptions[4].offset = offsetof(Vertex, tangent);
+			attributeDescriptions[4].offset = offsetof(Vertex, normal);
+
+			// Set binding to 0
+			attributeDescriptions[5].binding = 0;
+			// Set location to 4
+			attributeDescriptions[5].location = 5;
+			// Set format to vector 3
+			attributeDescriptions[5].format = VK_FORMAT_R32G32B32_SFLOAT;
+			// Set offset
+			attributeDescriptions[5].offset = offsetof(Vertex, tangent);
 
 			// Return attribute descriptions
 			return attributeDescriptions;
@@ -166,7 +177,7 @@ namespace D3D
 		bool operator==(const Vertex& other) const
 		{
 			// Compare every attribute seperately
-			return pos == other.pos && color == other.color && texCoord == other.texCoord && tangent == other.tangent && normal == other.normal;
+			return pos == other.pos && color == other.color && texCoord == other.texCoord && uvIndex == other.uvIndex && tangent == other.tangent && normal == other.normal;
 		}
 	};
 

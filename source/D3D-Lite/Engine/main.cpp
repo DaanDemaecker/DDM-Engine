@@ -26,7 +26,7 @@ void SetupVehicle(D3D::Scene* scene);
 
 void SetupVikingRoom(D3D::Scene* scene);
 
-void SetupCar(D3D::Scene* scene);
+void SetupMario(D3D::Scene* scene);
 
 void SetupCamera(D3D::Scene* scen);
 
@@ -45,7 +45,7 @@ void load()
 
 	SetupVikingRoom(scene.get());
 
-	SetupCar(scene.get());
+	SetupMario(scene.get());
 
 	SetupCamera(scene.get());
 
@@ -106,22 +106,24 @@ void SetupVikingRoom(D3D::Scene* scene)
 	pVikingTransform->SetLocalScale(0.75f, 0.75f, 0.75f);
 }
 
-void SetupCar(D3D::Scene* scene)
+void SetupMario(D3D::Scene* scene)
 {
-	std::shared_ptr<D3D::Material> pCarMaterial{ std::make_shared<D3D::Material>()};
+	std::shared_ptr<D3D::Material> pMaroMaterial{ std::make_shared<D3D::Material>() };
 
-	auto pCar{ scene->CreateGameObject("Car") };
+	auto pMario{ scene->CreateGameObject("Mario") };
 
-	auto pCarMesh{ std::make_shared<D3D::Mesh>("Resources/Models/car.fbx") };
+	auto pMarioMesh{ std::make_shared<D3D::Mesh>("Resources/Models/gun.fbx") };
 
-	auto PCarModel{ pCar->AddComponent<D3D::MeshRenderComponent>() };
-	PCarModel->SetMesh(pCarMesh);
-	PCarModel->SetMaterial(pCarMaterial);
+	auto pCarMesh{ std::make_shared<D3D::Mesh>("Resources/Models/Car.fbx") };
 
-	auto pCarTransform{ pCar->GetTransform() };
-	pCarTransform->SetLocalPosition(0.f, -.2f, 6.f);
-	pCarTransform->SetLocalRotation(glm::radians(-90.f), 0.f, 0.f);
-	pCarTransform->SetLocalScale(0.5f, 0.5f, 0.5f);
+	auto pMarioModel{ pMario->AddComponent<D3D::MeshRenderComponent>() };
+	pMarioModel->SetMesh(pMarioMesh);
+	pMarioModel->SetMaterial(pMaroMaterial);
+
+	auto pMarioTransform{ pMario->GetTransform() };
+	pMarioTransform->SetLocalPosition(0.f, -.2f, 6.f);
+	pMarioTransform->SetLocalRotation(0.f, glm::radians(-90.f), 0.f);
+	pMarioTransform->SetLocalScale(0.5f, 0.5f, 0.5f);
 }
 
 void SetupCamera(D3D::Scene* scene)

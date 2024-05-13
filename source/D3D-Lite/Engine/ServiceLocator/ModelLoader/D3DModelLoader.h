@@ -13,8 +13,8 @@ namespace D3D
 	class D3DModelLoader final : public ModelLoader
 	{
 	public:
-		D3DModelLoader() = default;
-		virtual ~D3DModelLoader() override = default;
+		D3DModelLoader();
+		virtual ~D3DModelLoader() override;
 
 		// Load in a 3D model given a file path
 		// Parameters:
@@ -24,6 +24,9 @@ namespace D3D
 		virtual void LoadModel(const std::string& path, std::vector<D3D::Vertex>& vertices, std::vector<uint32_t>& indices) override;
 	
 	private:
+		FbxManager* m_pFbxManager{};
+
+
 		// Load in a obj file given a file path
 		// Parameters:
 		//     - path: The path to the model file
