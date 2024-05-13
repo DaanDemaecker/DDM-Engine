@@ -199,12 +199,16 @@ void D3D::D3DModelLoader::ConvertMesh(FbxMesh* pMesh, std::vector<D3D::Vertex>& 
 	// Create map to store vertices
 	std::unordered_map<D3D::Vertex, uint32_t> uniqueVertices{};
 
-	FbxStringList uvSetNames{};
-	pMesh->GetUVSetNames(uvSetNames);
+	std::unordered_map<std::string, uint32_t> uvSets{};
 
-	for (int i{}; i < uvSetNames.GetCount(); i++)
 	{
-		std::cout << uvSetNames[i] << std::endl;
+		FbxStringList uvSetNames{};
+		pMesh->GetUVSetNames(uvSetNames);
+
+		for (int i{}; i < uvSetNames.GetCount(); i++)
+		{
+			uvSets[static_cast<std::string>(uvSetNames[i])] = i;
+		}
 	}
 
 	for (int polygonIndex = 0; polygonIndex < numPolygons; ++polygonIndex)
@@ -213,15 +217,15 @@ void D3D::D3DModelLoader::ConvertMesh(FbxMesh* pMesh, std::vector<D3D::Vertex>& 
 
 		for (int i = 1; i <= polygonSize - 2; i++)
 		{
-			HandleFbxVertex(pMesh, controlPoints, polygonIndex, 0, uniqueVertices, vertices, indices);
-			HandleFbxVertex(pMesh, controlPoints, polygonIndex, i, uniqueVertices, vertices, indices);
-			HandleFbxVertex(pMesh, controlPoints, polygonIndex, i + 1, uniqueVertices, vertices, indices);
+			HandleFbxVertex(pMesh, controlPoints, polygonIndex, 0, uniqueVertices, uvSets, vertices, indices);
+			HandleFbxVertex(pMesh, controlPoints, polygonIndex, i, uniqueVertices, uvSets, vertices, indices);
+			HandleFbxVertex(pMesh, controlPoints, polygonIndex, i + 1, uniqueVertices, uvSets, vertices, indices);
 		}
 	}
 }
 
 void D3D::D3DModelLoader::HandleFbxVertex(FbxMesh* pMesh, FbxVector4* controlPoints, int polygonIndex, int inPolygonPosition,
-	std::unordered_map<D3D::Vertex, uint32_t>& uniqueVertices,
+	std::unordered_map<D3D::Vertex, uint32_t>& uniqueVertices, std::unordered_map<std::string, uint32_t>& uvSets,
 	std::vector<D3D::Vertex>& vertices, std::vector<uint32_t>& indices)
 {
 	int vertexIndex = pMesh->GetPolygonVertex(polygonIndex, inPolygonPosition);
@@ -233,6 +237,17 @@ void D3D::D3DModelLoader::HandleFbxVertex(FbxMesh* pMesh, FbxVector4* controlPoi
 	pMesh->GetPolygonVertexNormal(polygonIndex, inPolygonPosition, normal);
 
 	D3D::Vertex vertex{};
+
+	FbxVector2 uv{};
+	bool unmapped{};
+	for (auto& uvSet : uvSets)
+	{
+		if (pMesh->GetPolygonVertexUV(polygonIndex, inPolygonPosition, uvSet.first.c_str(), uv, unmapped))
+		{
+			vertex.texCoord = glm::vec2{ uv[0], 1-uv[1] };
+			vertex.uvSetIndex = static_cast<float>(uvSet.second);
+		}
+	}
 
 	vertex.pos = glm::vec3{ controlPoint[0], controlPoint[1], controlPoint[2] };
 	vertex.normal = glm::vec3{normal[0], normal[1], normal[2]};

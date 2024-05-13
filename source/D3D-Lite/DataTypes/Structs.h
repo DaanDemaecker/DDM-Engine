@@ -79,17 +79,17 @@ namespace D3D
 	struct Vertex
 	{
 		// Position
-		glm::vec3 pos;
+		alignas(16) glm::vec3 pos;
 		// Color
-		glm::vec3 color;
+		alignas(16) glm::vec3 color;
 		// UV coordinates
-		glm::vec2 texCoord;
-		// Uv coordinate set index
-		float uvIndex{};
+		alignas(16) glm::vec2 texCoord;
 		// Vertex normal
-		glm::vec3 normal;
+		alignas(16) glm::vec3 normal;
 		// Vertex tangent
-		glm::vec3 tangent;
+		alignas(16) glm::vec3 tangent;
+		// Uv set index
+		alignas(4) float uvSetIndex;
 
 		// Get vulkan binding description
 		static VkVertexInputBindingDescription getBindingDescription()
@@ -144,10 +144,10 @@ namespace D3D
 			attributeDescriptions[3].binding = 0;
 			// Set location to 3
 			attributeDescriptions[3].location = 3;
-			// Set format to signed int
-			attributeDescriptions[3].format = VK_FORMAT_R32_SFLOAT;
+			// Set format to vector 3
+			attributeDescriptions[3].format = VK_FORMAT_R32G32B32_SFLOAT;
 			// Set offset
-			attributeDescriptions[3].offset = offsetof(Vertex, uvIndex);
+			attributeDescriptions[3].offset = offsetof(Vertex, normal);
 
 			// Set binding to 0
 			attributeDescriptions[4].binding = 0;
@@ -156,16 +156,16 @@ namespace D3D
 			// Set format to vector 3
 			attributeDescriptions[4].format = VK_FORMAT_R32G32B32_SFLOAT;
 			// Set offset
-			attributeDescriptions[4].offset = offsetof(Vertex, normal);
+			attributeDescriptions[4].offset = offsetof(Vertex, tangent);
 
 			// Set binding to 0
 			attributeDescriptions[5].binding = 0;
-			// Set location to 4
+			// Set location to 5
 			attributeDescriptions[5].location = 5;
-			// Set format to vector 3
-			attributeDescriptions[5].format = VK_FORMAT_R32G32B32_SFLOAT;
+			// Set format to float
+			attributeDescriptions[5].format = VK_FORMAT_R32_SFLOAT;
 			// Set offset
-			attributeDescriptions[5].offset = offsetof(Vertex, tangent);
+			attributeDescriptions[5].offset = offsetof(Vertex, uvSetIndex);
 
 			// Return attribute descriptions
 			return attributeDescriptions;
@@ -177,7 +177,7 @@ namespace D3D
 		bool operator==(const Vertex& other) const
 		{
 			// Compare every attribute seperately
-			return pos == other.pos && color == other.color && texCoord == other.texCoord && uvIndex == other.uvIndex && tangent == other.tangent && normal == other.normal;
+			return pos == other.pos && color == other.color && texCoord == other.texCoord && tangent == other.tangent && normal == other.normal;
 		}
 	};
 

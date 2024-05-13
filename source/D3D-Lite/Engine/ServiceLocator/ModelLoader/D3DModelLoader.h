@@ -44,7 +44,8 @@ namespace D3D
 
 		void ConvertMesh(FbxMesh* pMesh, std::vector<D3D::Vertex>& vertices, std::vector<uint32_t>& indices);
 
-		void HandleFbxVertex(FbxMesh* pMesh, FbxVector4* controlPoints, int polygonIndex, int inPolygonPosition, std::unordered_map<D3D::Vertex, uint32_t>& uniqueVertices,
+		void HandleFbxVertex(FbxMesh* pMesh, FbxVector4* controlPoints, int polygonIndex, int inPolygonPosition,
+			std::unordered_map<D3D::Vertex, uint32_t>& uniqueVertices, std::unordered_map<std::string, uint32_t>& uvSets,
 			std::vector<D3D::Vertex>& vertices, std::vector<uint32_t>& indices);
 	};
 }

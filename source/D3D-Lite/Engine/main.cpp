@@ -108,22 +108,20 @@ void SetupVikingRoom(D3D::Scene* scene)
 
 void SetupMario(D3D::Scene* scene)
 {
-	std::shared_ptr<D3D::Material> pMaroMaterial{ std::make_shared<D3D::Material>() };
+	std::shared_ptr<D3D::TexturedMaterial> pGunMaterial{ std::make_shared<D3D::TexturedMaterial>(std::initializer_list<const std::string>{"resources/images/gun_BaseColor.png"}, "Diffuse") };
 
-	auto pMario{ scene->CreateGameObject("Mario") };
+	auto pGun{ scene->CreateGameObject("Gun") };
 
-	auto pMarioMesh{ std::make_shared<D3D::Mesh>("Resources/Models/gun.fbx") };
+	auto pGunMesh{ std::make_shared<D3D::Mesh>("Resources/Models/gun.fbx") };
 
-	auto pCarMesh{ std::make_shared<D3D::Mesh>("Resources/Models/Car.fbx") };
+	auto pGunModel{ pGun->AddComponent<D3D::MeshRenderComponent>() };
+	pGunModel->SetMesh(pGunMesh);
+	pGunModel->SetMaterial(pGunMaterial);
 
-	auto pMarioModel{ pMario->AddComponent<D3D::MeshRenderComponent>() };
-	pMarioModel->SetMesh(pMarioMesh);
-	pMarioModel->SetMaterial(pMaroMaterial);
-
-	auto pMarioTransform{ pMario->GetTransform() };
-	pMarioTransform->SetLocalPosition(0.f, -.2f, 6.f);
-	pMarioTransform->SetLocalRotation(0.f, glm::radians(-90.f), 0.f);
-	pMarioTransform->SetLocalScale(0.5f, 0.5f, 0.5f);
+	auto pGunTransform{ pGun->GetTransform() };
+	pGunTransform->SetLocalPosition(0.f, -.2f, 6.f);
+	pGunTransform->SetLocalRotation(0.f, glm::radians(-90.f), 0.f);
+	pGunTransform->SetLocalScale(0.5f, 0.5f, 0.5f);
 }
 
 void SetupCamera(D3D::Scene* scene)
