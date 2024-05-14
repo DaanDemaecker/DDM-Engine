@@ -26,7 +26,7 @@ void SetupVehicle(D3D::Scene* scene);
 
 void SetupVikingRoom(D3D::Scene* scene);
 
-void SetupMario(D3D::Scene* scene);
+void SetupGun(D3D::Scene* scene);
 
 void SetupCamera(D3D::Scene* scen);
 
@@ -45,7 +45,7 @@ void load()
 
 	SetupVikingRoom(scene.get());
 
-	SetupMario(scene.get());
+	SetupGun(scene.get());
 
 	SetupCamera(scene.get());
 
@@ -63,6 +63,7 @@ void SetupPipelines()
 	renderer.AddGraphicsPipeline("DiffuseUnshaded", { "Resources/Shaders/DiffuseUnshaded.Vert.spv", "Resources/Shaders/DiffuseUnshaded.Frag.spv" });
 	renderer.AddGraphicsPipeline("Specular", { "Resources/Shaders/Specular.Vert.spv", "Resources/Shaders/Specular.Frag.spv" });
 	renderer.AddGraphicsPipeline("DiffNormSpec", { "Resources/Shaders/DiffNormSpec.Vert.spv", "Resources/Shaders/DiffNormSpec.Frag.spv" });
+	renderer.AddGraphicsPipeline("MultiShader", { "Resources/Shaders/MultiShader.Vert.spv", "Resources/Shaders/MultiShader.Frag.spv" });
 }
 
 void SetupVehicle(D3D::Scene* scene)
@@ -106,9 +107,10 @@ void SetupVikingRoom(D3D::Scene* scene)
 	pVikingTransform->SetLocalScale(0.75f, 0.75f, 0.75f);
 }
 
-void SetupMario(D3D::Scene* scene)
+void SetupGun(D3D::Scene* scene)
 {
-	std::shared_ptr<D3D::TexturedMaterial> pGunMaterial{ std::make_shared<D3D::TexturedMaterial>(std::initializer_list<const std::string>{"resources/images/gun_BaseColor.png"}, "Diffuse") };
+	std::shared_ptr<D3D::TexturedMaterial> pGunMaterial{ std::make_shared<D3D::TexturedMaterial>(std::initializer_list<const std::string>{"resources/images/gun_BaseColor.png", "resources/images/gun_Normal.png"}, "DiffNorm")};
+
 
 	auto pGun{ scene->CreateGameObject("Gun") };
 
@@ -119,7 +121,7 @@ void SetupMario(D3D::Scene* scene)
 	pGunModel->SetMaterial(pGunMaterial);
 
 	auto pGunTransform{ pGun->GetTransform() };
-	pGunTransform->SetLocalPosition(0.f, -.2f, 6.f);
+	pGunTransform->SetLocalPosition(0.f, -.5f, 6.f);
 	pGunTransform->SetLocalRotation(0.f, glm::radians(-90.f), 0.f);
 	pGunTransform->SetLocalScale(0.5f, 0.5f, 0.5f);
 }

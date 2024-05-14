@@ -13,7 +13,7 @@ foreach(GLSL ${GLSL_SOURCE_FILES})
     add_custom_command(
         OUTPUT ${SPIRV}
         COMMAND ${Vulkan_GLSLC_EXECUTABLE} ${GLSL} -o ${SPIRV}
-        DEPENDS ${GLSL}
+        DEPENDS ${GLSL} Shaders
         POST_BUILD
     )
     list(APPEND SPIRV_BINARY_FILES ${SPIRV})
