@@ -114,6 +114,9 @@ void SetupGun(D3D::Scene* scene)
 
 	std::shared_ptr<D3D::MultiMaterial> pGunMaterial{ std::make_shared<D3D::MultiMaterial>("MultiShader") };
 
+	pGunMaterial->AddDiffuseTextures(std::initializer_list<const std::string>{"resources/images/gun_BaseColor.png"});
+
+
 	auto pGun{ scene->CreateGameObject("Gun") };
 
 	auto pGunMesh{ std::make_shared<D3D::Mesh>("Resources/Models/gun.fbx") };

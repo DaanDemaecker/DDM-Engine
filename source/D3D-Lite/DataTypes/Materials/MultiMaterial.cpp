@@ -11,13 +11,7 @@ D3D::MultiMaterial::MultiMaterial(const std::string& pipeline)
 
 	m_pDiffuseTextureObject = std::make_unique<D3D::TextureDescriptorObject>();
 
-
-	auto& renderer{ D3D::VulkanRenderer::GetInstance() };
-
-	for (int frame{}; frame < renderer.GetMaxFrames(); frame++)
-	{
-		m_pMultiShaderBufferDescriptor->UpdateUboBuffer(m_MultiShaderBuffer, frame);
-	}
+	UpdateShaderBuffer();
 }
 
 void D3D::MultiMaterial::UpdateDescriptorSets(std::vector<VkDescriptorSet>& descriptorSets, std::vector<DescriptorObject*>& descriptorObjects)
@@ -42,4 +36,29 @@ void D3D::MultiMaterial::UpdateDescriptorSets(std::vector<VkDescriptorSet>& desc
 
 	// Update descriptorsets
 	descriptorPool->UpdateDescriptorSets(descriptorSets, descriptorObjectList);
+}
+
+void D3D::MultiMaterial::AddDiffuseTextures(std::initializer_list<const std::string>&& filePaths)
+{
+	AddDiffuseTextures(filePaths);
+}
+
+void D3D::MultiMaterial::AddDiffuseTextures(std::initializer_list<const std::string>& filePaths)
+{
+	m_pDiffuseTextureObject = std::make_unique<D3D::TextureDescriptorObject>(filePaths);
+	
+	m_MultiShaderBuffer.diffuseAmount = filePaths.size();
+	m_MultiShaderBuffer.diffuseEnabled = true;
+	
+	UpdateShaderBuffer();
+}
+
+void D3D::MultiMaterial::UpdateShaderBuffer()
+{
+	auto& renderer{ D3D::VulkanRenderer::GetInstance() };
+
+	for (int frame{}; frame < renderer.GetMaxFrames(); frame++)
+	{
+		m_pMultiShaderBufferDescriptor->UpdateUboBuffer(m_MultiShaderBuffer, frame);
+	}
 }

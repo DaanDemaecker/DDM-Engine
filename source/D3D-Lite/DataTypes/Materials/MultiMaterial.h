@@ -34,12 +34,19 @@ namespace D3D
 		//     descriptorObjects: a vector of pointers to descriptorobjects in the same order as the shader code
 		virtual void UpdateDescriptorSets(std::vector<VkDescriptorSet>& descriptorSets, std::vector<DescriptorObject*>& descriptorObjects);
 
+		void AddDiffuseTextures(std::initializer_list<const std::string>&& filePaths);
+
+		void AddDiffuseTextures(std::initializer_list<const std::string>& filePaths);
+
+
 	private:
 		MultiShaderBuffer m_MultiShaderBuffer{};
 		std::unique_ptr<D3D::UboDescriptorObject<MultiShaderBuffer>> m_pMultiShaderBufferDescriptor{};
 
 
 		std::unique_ptr<D3D::TextureDescriptorObject> m_pDiffuseTextureObject{};
+
+		void UpdateShaderBuffer();
 	};
 }
 
