@@ -172,9 +172,9 @@ void SetupLight(D3D::Scene* scene)
 
 	auto pLightTransform{ pLight->GetTransform() };
 
-	pLightTransform->SetLocalRotation(glm::vec3(0.0f, glm::radians(180.f), 0.0f));
+	pLightTransform->SetLocalRotation(glm::vec3(0.0f, glm::radians(45.f), 0.0f));
 
-	pLight->AddComponent<D3D::RotatorComponent>();
+	//pLight->AddComponent<D3D::RotatorComponent>();
 
 	scene->SetLight(pLightComponent);
 }

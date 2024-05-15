@@ -64,7 +64,7 @@ void D3D::MultiMaterial::AddDiffuseTextures(std::initializer_list<const std::str
 
 void D3D::MultiMaterial::AddDiffuseTextures(std::initializer_list<const std::string>& filePaths)
 {
-	m_pDiffuseTextureObject = std::make_unique<D3D::TextureDescriptorObject>(filePaths);
+	m_pDiffuseTextureObject->AddTextures(filePaths);
 	
 	m_MultiShaderBuffer.diffuseAmount = static_cast<int>(filePaths.size());
 	m_MultiShaderBuffer.diffuseEnabled = true;

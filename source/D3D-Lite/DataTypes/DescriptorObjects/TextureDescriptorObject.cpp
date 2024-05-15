@@ -13,37 +13,49 @@ D3D::TextureDescriptorObject::TextureDescriptorObject()
 	m_PlaceholderImageInfo.sampler = renderer.GetSampler();
 }
 
-D3D::TextureDescriptorObject::TextureDescriptorObject(Texture& texture)
-	:DescriptorObject(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER)
-
+void D3D::TextureDescriptorObject::AddTextures(Texture& texture)
 {
 	// Add the texture to the list of textures
 	m_Textures.push_back(texture);
 
-	// Set up the image infos
 	SetupImageInfos();
 }
 
-D3D::TextureDescriptorObject::TextureDescriptorObject(std::initializer_list<const std::string>& filePaths)
-	:DescriptorObject(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER)
+void D3D::TextureDescriptorObject::AddTextures(std::initializer_list<const std::string>& filePaths)
 {
-	// Set up all textures
-	SetupTextures(filePaths);
+	// Initialize index variable
+	int index{static_cast<int>(m_Textures.size()) - 1};
 
-	// Set up the image infos
+	if (index < 0)
+	{
+		index = 0;
+	}
+
+	// Resize textures to textureAmount
+	m_Textures.resize(filePaths.size() + m_Textures.size());
+
+	auto& renderer{ VulkanRenderer::GetInstance() };
+
+	// Loop trough all filePaths
+	for (const auto& path : filePaths)
+	{
+		// Create texture
+		renderer.CreateTexture(m_Textures[index], path);
+
+		// Increment index
+		++index;
+	}
+
 	SetupImageInfos();
 }
 
-D3D::TextureDescriptorObject::TextureDescriptorObject(const std::string& filePath)
-	:DescriptorObject(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER)
+void D3D::TextureDescriptorObject::AddTextures(const std::string& filePath)
 {
 	auto& renderer{ VulkanRenderer::GetInstance() };
 
-	m_Textures.clear();
-	m_Textures.resize(1);
+	m_Textures.resize(m_Textures.size() + 1);
 
-	// Create texture
-	renderer.CreateTexture(m_Textures[0], filePath);
+	renderer.CreateTexture(m_Textures[m_Textures.size() - 1], filePath);
 
 	SetupImageInfos();
 }
@@ -108,27 +120,6 @@ void D3D::TextureDescriptorObject::AddDescriptorWrite(VkDescriptorSet descriptor
 	}
 
 	binding++;
-}
-
-void D3D::TextureDescriptorObject::SetupTextures(std::initializer_list<const std::string>& filePaths)
-{
-	// Resize textures to textureAmount
-	m_Textures.resize(filePaths.size());
-
-	// Initialize index variable
-	int index{};
-
-	auto& renderer{ VulkanRenderer::GetInstance() };
-
-	// Loop trough all filePaths
-	for (const auto& path : filePaths)
-	{
-		// Create texture
-		renderer.CreateTexture(m_Textures[index], path);
-
-		// Increment index
-		++index;
-	}
 }
 
 void D3D::TextureDescriptorObject::SetupImageInfos()

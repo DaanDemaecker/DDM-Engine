@@ -18,20 +18,12 @@ namespace D3D
         // Default constructor
         TextureDescriptorObject();
 
-        // Constructor
-        // Parameters:
-        //     texture: a pre loaded texture to be used in this object
-        TextureDescriptorObject(Texture& texture);
+        void AddTextures(Texture& texture);
 
-        // Constructor
-        // Parameters:
-        //     filePaths: a list of filepaths to the textures to be used in this object
-        TextureDescriptorObject(std::initializer_list<const std::string>& filePaths);
+        void AddTextures(std::initializer_list<const std::string>& filePaths);
 
-        //Constructor
-        // Parameters:
-        //     filePath: a single filepath to the texture to be used in this object
-        TextureDescriptorObject(const std::string& filePaths);
+        void AddTextures(const std::string& filePath);
+
 
         // Destructor
         virtual ~TextureDescriptorObject();
@@ -50,11 +42,6 @@ namespace D3D
         std::vector<VkDescriptorImageInfo> m_ImageInfos{};
 
         VkDescriptorImageInfo m_PlaceholderImageInfo{ VkDescriptorImageInfo()};
-
-        // Set up a list of textures
-        // Parameters:
-        //     filePaths: a list of file paths pointing to the image files
-        void SetupTextures(std::initializer_list<const std::string>& filePaths);
 
         // Set up an image info object for each texture
         void SetupImageInfos();

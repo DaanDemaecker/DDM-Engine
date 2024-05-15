@@ -24,7 +24,8 @@ D3D::CubeMapMaterial::CubeMapMaterial(const std::initializer_list<const std::str
 	VulkanRenderer::GetInstance().CreateCubeTexture(cubeTexture, filePaths);
 
 	// Create the descriptor object and give the cube texture by value
-	m_pDescriptorObject = std::make_unique<TextureDescriptorObject>(cubeTexture);
+	m_pDescriptorObject = std::make_unique<TextureDescriptorObject>();
+	m_pDescriptorObject->AddTextures(cubeTexture);
 }
 
 void D3D::CubeMapMaterial::UpdateDescriptorSets(std::vector<VkDescriptorSet>& descriptorSets, std::vector<DescriptorObject*>& descriptorObjects)

@@ -10,10 +10,14 @@
 D3D::TexturedMaterial::TexturedMaterial(std::initializer_list<const std::string>&& filePaths, const std::string& pipelineName)
 	:Material(pipelineName)
 {
-	for (auto& filePath : filePaths)
+	m_pDescriptorObjects.resize(filePaths.size());
+	
+	int index = 0;
+	for (const auto& filePath : filePaths)
 	{
-		// Create a descriptor object with the list of file paths given
-		m_pDescriptorObjects.push_back(std::make_unique<D3D::TextureDescriptorObject>(filePath));
+		m_pDescriptorObjects[index] = std::make_unique<D3D::TextureDescriptorObject>();
+		m_pDescriptorObjects[index]->AddTextures(filePath);
+		++index;
 	}
 }
 
