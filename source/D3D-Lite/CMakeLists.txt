@@ -42,4 +42,5 @@ add_executable(D3D-Lite-Engine_Build
 "Vulkan/VulkanWrappers/SurfaceWrapper.cpp"
 "Vulkan/VulkanWrappers/SwapchainWrapper.cpp"
 "Vulkan/VulkanRenderer.cpp"
-"Vulkan/VulkanUtils.cpp")
+"Vulkan/VulkanUtils.cpp"
+"DataTypes/Materials/MultiMaterial.cpp")

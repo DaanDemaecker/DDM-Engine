@@ -25,6 +25,20 @@ D3D::TextureDescriptorObject::TextureDescriptorObject(std::initializer_list<cons
 	SetupImageInfos();
 }
 
+D3D::TextureDescriptorObject::TextureDescriptorObject(const std::string& filePath)
+	:DescriptorObject(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER)
+{
+	auto& renderer{ VulkanRenderer::GetInstance() };
+
+	m_Textures.clear();
+	m_Textures.resize(1);
+
+	// Create texture
+	renderer.CreateTexture(m_Textures[0], filePath);
+
+	SetupImageInfos();
+}
+
 D3D::TextureDescriptorObject::~TextureDescriptorObject()
 {
 	// Get the device and clean up all the textures
@@ -42,6 +56,8 @@ void D3D::TextureDescriptorObject::AddDescriptorWrite(VkDescriptorSet descriptor
 	// Resize the descriptor writes vector
 	descriptorWrites.resize(binding + m_Textures.size());
 
+	int index{};
+
 	// Loop trough all the image infos
 	for (auto& imageInfo : m_ImageInfos)
 	{
@@ -52,15 +68,16 @@ void D3D::TextureDescriptorObject::AddDescriptorWrite(VkDescriptorSet descriptor
 
 		// Set all fields of current binding with correct values
 		currentBinding.dstBinding = binding;
-		currentBinding.dstArrayElement = 0;
+		currentBinding.dstArrayElement = index;
 		currentBinding.descriptorType = m_Type;
 		currentBinding.descriptorCount = 1;
 		currentBinding.pImageInfo = &imageInfo;
 		currentBinding.dstSet = descriptorSet;
 
-		// Increase the binding index
-		binding++;
+		index++;
 	}
+
+	binding++;
 }
 
 void D3D::TextureDescriptorObject::SetupTextures(std::initializer_list<const std::string>& filePaths)

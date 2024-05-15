@@ -28,6 +28,11 @@ namespace D3D
         //     filePaths: a list of filepaths to the textures to be used in this object
         TextureDescriptorObject(std::initializer_list<const std::string>& filePaths);
 
+        //Constructor
+        // Parameters:
+        //     filePath: a single filepath to the texture to be used in this object
+        TextureDescriptorObject(const std::string& filePaths);
+
         // Destructor
         virtual ~TextureDescriptorObject();
 

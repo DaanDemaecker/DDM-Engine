@@ -10,8 +10,11 @@
 D3D::TexturedMaterial::TexturedMaterial(std::initializer_list<const std::string>&& filePaths, const std::string& pipelineName)
 	:Material(pipelineName)
 {
-	// Create a descriptor object with the list of file paths given
-	m_pDescriptorObject = std::make_unique<D3D::TextureDescriptorObject>(filePaths);
+	for (auto& filePath : filePaths)
+	{
+		// Create a descriptor object with the list of file paths given
+		m_pDescriptorObjects.push_back(std::make_unique<D3D::TextureDescriptorObject>(filePath));
+	}
 
 	// Create sampler
 	CreateTextureSampler();
@@ -43,21 +46,14 @@ void D3D::TexturedMaterial::UpdateDescriptorSets(std::vector<VkDescriptorSet>& d
 	// Add the descriptor object of the global light
 	descriptorObjectList.push_back(VulkanRenderer::GetInstance().GetLightDescriptor());
 
-	// Add the descriptor object holding the textures
-	descriptorObjectList.push_back(m_pDescriptorObject.get());
+	for (auto& descriptorObject : m_pDescriptorObjects)
+	{
+		// Add the descriptor object holding the textures
+		descriptorObjectList.push_back(descriptorObject.get());
+	}	
 
 	// Update descriptorsets
 	descriptorPool->UpdateDescriptorSets(descriptorSets, descriptorObjectList);
-}
-
-VkDescriptorSetLayout D3D::TexturedMaterial::GetDescriptorLayout()
-{
-	return m_pPipeline->GetDescriptorSetLayout();
-}
-
-D3D::DescriptorPoolWrapper* D3D::TexturedMaterial::GetDescriptorPool()
-{
-	return m_pPipeline->GetDescriptorPool();
 }
 
 void D3D::TexturedMaterial::CreateTextureSampler()

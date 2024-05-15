@@ -39,9 +39,9 @@ namespace D3D
 		virtual void UpdateDescriptorSets(std::vector<VkDescriptorSet>& descriptorSets, std::vector<DescriptorObject*>& descriptorObjects);
 
 
-		virtual VkDescriptorSetLayout GetDescriptorLayout();
+		VkDescriptorSetLayout GetDescriptorLayout();
 
-		virtual DescriptorPoolWrapper* GetDescriptorPool();
+		DescriptorPoolWrapper* GetDescriptorPool();
 
 	protected:
 		// The pipeline pair that is used for this material

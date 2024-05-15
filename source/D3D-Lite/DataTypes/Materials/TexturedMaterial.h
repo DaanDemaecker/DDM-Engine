@@ -27,13 +27,8 @@ namespace D3D
 		//     descriptorObjects: a vector of pointers to descriptorobjects in the same order as the shader code
 		virtual void UpdateDescriptorSets(std::vector<VkDescriptorSet>& descriptorSets, std::vector<DescriptorObject*>& descriptorObjects) override;
 
-
-		virtual VkDescriptorSetLayout GetDescriptorLayout() override;
-
-		virtual DescriptorPoolWrapper* GetDescriptorPool() override;
-
 	private:
-		std::unique_ptr<TextureDescriptorObject> m_pDescriptorObject{};
+		std::vector<std::unique_ptr<TextureDescriptorObject>> m_pDescriptorObjects{};
 
 		// The sampler for the textures
 		VkSampler m_TextureSampler{};
