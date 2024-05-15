@@ -24,6 +24,8 @@ namespace D3D
 
 		virtual void Render() override;
 
+		virtual void OnGUI() override;
+
 		void CreateDescriptorSets();
 
 

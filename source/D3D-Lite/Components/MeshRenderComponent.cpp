@@ -58,6 +58,11 @@ void D3D::MeshRenderComponent::Render()
 	m_pMesh->Render(GetPipeline(), &m_DescriptorSets[frame]);
 }
 
+void D3D::MeshRenderComponent::OnGUI()
+{
+	m_pMaterial->OnGUI();
+}
+
 void D3D::MeshRenderComponent::CreateUniformBuffers()
 {
 	// Get reference to renderer

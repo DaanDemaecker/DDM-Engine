@@ -3,6 +3,7 @@
 #include "../DescriptorObjects/TextureDescriptorObject.h"
 #include "../DescriptorObjects/UboDescriptorObject.h"
 #include "../../Vulkan/VulkanWrappers/DescriptorPoolWrapper.h"
+#include "../../Includes/ImGuiIncludes.h"
 
 D3D::MultiMaterial::MultiMaterial(const std::string& pipeline)
 	:Material(pipeline)
@@ -10,6 +11,24 @@ D3D::MultiMaterial::MultiMaterial(const std::string& pipeline)
 	m_pMultiShaderBufferDescriptor = std::make_unique<D3D::UboDescriptorObject<MultiShaderBuffer>>();
 
 	m_pDiffuseTextureObject = std::make_unique<D3D::TextureDescriptorObject>();
+
+	UpdateShaderBuffer();
+}
+
+void D3D::MultiMaterial::OnGUI()
+{
+	ImGui::Begin("MultiMaterial", &m_ShowGuiWindow);
+
+	ImGui::Text("Textures: ");
+	
+	bool placeHolder{static_cast<bool>(m_MultiShaderBuffer.diffuseEnabled)};
+
+	// Create a checkbox (toggle box) and update its value
+	ImGui::Checkbox("Diffuse", &placeHolder);
+
+	m_MultiShaderBuffer.diffuseEnabled = static_cast<uint32_t>(placeHolder);
+
+	ImGui::End();
 
 	UpdateShaderBuffer();
 }
@@ -47,7 +66,7 @@ void D3D::MultiMaterial::AddDiffuseTextures(std::initializer_list<const std::str
 {
 	m_pDiffuseTextureObject = std::make_unique<D3D::TextureDescriptorObject>(filePaths);
 	
-	m_MultiShaderBuffer.diffuseAmount = filePaths.size();
+	m_MultiShaderBuffer.diffuseAmount = static_cast<int>(filePaths.size());
 	m_MultiShaderBuffer.diffuseEnabled = true;
 	
 	UpdateShaderBuffer();

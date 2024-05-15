@@ -6,7 +6,7 @@
 
 void D3D::TransformComponent::OnGUI()
 {
-	static bool test{ true };
+	/*static bool test{ true };
 
 	ImGui::Begin(GetOwner()->GetName().c_str(), &test);
 
@@ -46,7 +46,7 @@ void D3D::TransformComponent::OnGUI()
 		ImGui::Text(text.c_str());
 
 
-	ImGui::End();
+	ImGui::End();*/
 }
 
 void D3D::TransformComponent::SetLocalPosition(float x, float y, float z)

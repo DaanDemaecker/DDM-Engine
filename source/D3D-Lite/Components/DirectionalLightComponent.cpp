@@ -7,34 +7,29 @@
 D3D::DirectionalLightComponent::DirectionalLightComponent()
 {
 	CreateLightBuffer();
-
-	/*for (int frame{}; frame < VulkanRenderer::GetInstance().GetMaxFrames(); frame++)
-	{
-		UpdateBuffer(frame);
-	}*/
 }
 
 void D3D::DirectionalLightComponent::OnGUI()
 {
-	static bool test{ true };
-
-	ImGui::Begin(GetOwner()->GetName().c_str(), &test);
-
-	ImGuiTreeNodeFlags mainFlags = ImGuiTreeNodeFlags_Framed;
-
-	if (ImGui::TreeNodeEx("General Info", mainFlags))
-	{
-		std::string text = "x: " + std::to_string(m_BufferObject.direction.x) +
-			"y: " + std::to_string(m_BufferObject.direction.y) +
-			"z: " + std::to_string(m_BufferObject.direction.z);
-
-		ImGui::Text(text.c_str());
-
-		ImGui::TreePop();
-	}
-
-
-	ImGui::End();
+	//static bool test{ true };
+	//
+	//ImGui::Begin(GetOwner()->GetName().c_str(), &test);
+	//
+	//ImGuiTreeNodeFlags mainFlags = ImGuiTreeNodeFlags_Framed;
+	//
+	//if (ImGui::TreeNodeEx("General Info", mainFlags))
+	//{
+	//	std::string text = "x: " + std::to_string(m_BufferObject.direction.x) +
+	//		"y: " + std::to_string(m_BufferObject.direction.y) +
+	//		"z: " + std::to_string(m_BufferObject.direction.z);
+	//
+	//	ImGui::Text(text.c_str());
+	//
+	//	ImGui::TreePop();
+	//}
+	//
+	//
+	//ImGui::End();
 }
 
 void D3D::DirectionalLightComponent::LateUpdate()

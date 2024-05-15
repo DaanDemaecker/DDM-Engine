@@ -9,7 +9,7 @@ layout(binding = 1) uniform UniformLightObject {
 layout(binding = 2) uniform UniformMultiShaderObject
 {
     int diffuseAmount;
-    bool diffuseEnabled;
+    uint diffuseEnabled;
 } multiShaderObject;
 
 layout(binding = 3) uniform sampler2D diffuseSampler;
@@ -32,7 +32,7 @@ void main()
 
     vec3 finalColor = fragColor;
 
-    if(multiShaderObject.diffuseEnabled && multiShaderObject.diffuseAmount > 0)
+    if(multiShaderObject.diffuseEnabled != 0)
     {
 	    finalColor = texture(diffuseSampler, fragTexCoord).rgb;
     }

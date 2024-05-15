@@ -13,8 +13,8 @@ namespace D3D
 {
 	struct MultiShaderBuffer
 	{
-		int diffuseAmount{0};
-		bool diffuseEnabled{false};
+		alignas(4) int diffuseAmount{0};
+		alignas(4) uint32_t diffuseEnabled{0};
 	};
 
 	class TextureDescriptorObject;
@@ -27,6 +27,8 @@ namespace D3D
 		MultiMaterial(const std::string& pipeline = "Default");
 
 		virtual ~MultiMaterial() override = default;
+
+		virtual void OnGUI() override;
 
 		// Update the descriptorsets
 		// Parameters:
@@ -43,8 +45,9 @@ namespace D3D
 		MultiShaderBuffer m_MultiShaderBuffer{};
 		std::unique_ptr<D3D::UboDescriptorObject<MultiShaderBuffer>> m_pMultiShaderBufferDescriptor{};
 
-
 		std::unique_ptr<D3D::TextureDescriptorObject> m_pDiffuseTextureObject{};
+
+		bool m_ShowGuiWindow{ true };
 
 		void UpdateShaderBuffer();
 	};

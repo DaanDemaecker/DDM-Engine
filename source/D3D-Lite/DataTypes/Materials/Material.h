@@ -23,6 +23,8 @@ namespace D3D
 		Material& operator=(Material& other) = delete;
 		Material& operator=(Material&& other) = delete;
 
+		virtual void OnGUI() {}
+
 		// Get the pipeline that is used by this material
 		PipelineWrapper* GetPipeline();
 
