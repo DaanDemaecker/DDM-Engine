@@ -15,20 +15,8 @@ D3D::TexturedMaterial::TexturedMaterial(std::initializer_list<const std::string>
 		// Create a descriptor object with the list of file paths given
 		m_pDescriptorObjects.push_back(std::make_unique<D3D::TextureDescriptorObject>(filePath));
 	}
-
-	// Create sampler
-	CreateTextureSampler();
 }
 
-void D3D::TexturedMaterial::CreateDescriptorSets(MeshRenderComponent* pModel, std::vector<VkDescriptorSet>& descriptorSets)
-{
-	// Get descriptorpool associated with this material
-	auto descriptorPool = GetDescriptorPool();
-	// Add model to descriptorpool
-	descriptorPool->AddModel(pModel);
-	// Create descriptorpool
-	descriptorPool->CreateDescriptorSets(GetDescriptorLayout(), descriptorSets);
-}
 
 void D3D::TexturedMaterial::UpdateDescriptorSets(std::vector<VkDescriptorSet>& descriptorSets, std::vector<DescriptorObject*>& descriptorObjects)
 {
@@ -54,9 +42,4 @@ void D3D::TexturedMaterial::UpdateDescriptorSets(std::vector<VkDescriptorSet>& d
 
 	// Update descriptorsets
 	descriptorPool->UpdateDescriptorSets(descriptorSets, descriptorObjectList);
-}
-
-void D3D::TexturedMaterial::CreateTextureSampler()
-{
-	m_TextureSampler = VulkanRenderer::GetInstance().GetSampler();
 }

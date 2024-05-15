@@ -15,12 +15,6 @@ namespace D3D
 		TexturedMaterial(std::initializer_list<const std::string>&& filePaths, const std::string& pipelineName = "Default");
 		~TexturedMaterial() = default;
 
-		// Create the descriptorsets
-		// Parameters:
-		//     pModel: the model that the descriptorsets belong to
-		//     descriptorSets: vector of descriptorsets that have to be created
-		virtual void CreateDescriptorSets(MeshRenderComponent* pModel, std::vector<VkDescriptorSet>& descriptorSets) override;
-
 		// Update the descriptorsets
 		// Parameters:
 		//     descriptorsets: the descriptorsets that should be updated
@@ -29,12 +23,6 @@ namespace D3D
 
 	private:
 		std::vector<std::unique_ptr<TextureDescriptorObject>> m_pDescriptorObjects{};
-
-		// The sampler for the textures
-		VkSampler m_TextureSampler{};
-
-		//Initialization functions
-		void CreateTextureSampler();
 	};
 }
 #endif // !TexturedMaterialIncluded

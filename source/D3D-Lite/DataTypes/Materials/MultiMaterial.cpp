@@ -1,16 +1,45 @@
 
 #include "MultiMaterial.h"
+#include "../DescriptorObjects/TextureDescriptorObject.h"
+#include "../DescriptorObjects/UboDescriptorObject.h"
+#include "../../Vulkan/VulkanWrappers/DescriptorPoolWrapper.h"
 
 D3D::MultiMaterial::MultiMaterial(const std::string& pipeline)
 	:Material(pipeline)
 {
+	m_pMultiShaderBufferDescriptor = std::make_unique<D3D::UboDescriptorObject<MultiShaderBuffer>>();
 
-}
+	m_pDiffuseTextureObject = std::make_unique<D3D::TextureDescriptorObject>();
 
-void D3D::MultiMaterial::CreateDescriptorSets(MeshRenderComponent* pModel, std::vector<VkDescriptorSet>& descriptorSets)
-{
+
+	auto& renderer{ D3D::VulkanRenderer::GetInstance() };
+
+	for (int frame{}; frame < renderer.GetMaxFrames(); frame++)
+	{
+		m_pMultiShaderBufferDescriptor->UpdateUboBuffer(m_MultiShaderBuffer, frame);
+	}
 }
 
 void D3D::MultiMaterial::UpdateDescriptorSets(std::vector<VkDescriptorSet>& descriptorSets, std::vector<DescriptorObject*>& descriptorObjects)
 {
+	// Get pointer to the descriptorpool wrapper
+	auto descriptorPool = GetDescriptorPool();
+
+	// Create list of descriptor objects and add the objects of the model to it
+	std::vector<DescriptorObject*> descriptorObjectList{};
+
+	for (auto& descriptorObject : descriptorObjects)
+	{
+		descriptorObjectList.push_back(descriptorObject);
+	}
+
+	// Add the descriptor object of the global light
+	descriptorObjectList.push_back(VulkanRenderer::GetInstance().GetLightDescriptor());
+
+	descriptorObjectList.push_back(m_pMultiShaderBufferDescriptor.get());
+
+	descriptorObjectList.push_back(m_pDiffuseTextureObject.get());
+
+	// Update descriptorsets
+	descriptorPool->UpdateDescriptorSets(descriptorSets, descriptorObjectList);
 }

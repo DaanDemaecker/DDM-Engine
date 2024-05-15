@@ -27,16 +27,6 @@ D3D::CubeMapMaterial::CubeMapMaterial(const std::initializer_list<const std::str
 	m_pDescriptorObject = std::make_unique<TextureDescriptorObject>(cubeTexture);
 }
 
-void D3D::CubeMapMaterial::CreateDescriptorSets(MeshRenderComponent* pModel, std::vector<VkDescriptorSet>& descriptorSets)
-{
-	// Get descriptorpool associated with this material
-	auto descriptorPool = GetDescriptorPool();
-	// Add model to descriptorpool
-	descriptorPool->AddModel(pModel);
-	// Create descriptor sets
-	descriptorPool->CreateDescriptorSets(GetDescriptorLayout(), descriptorSets);
-}
-
 void D3D::CubeMapMaterial::UpdateDescriptorSets(std::vector<VkDescriptorSet>& descriptorSets, std::vector<DescriptorObject*>& descriptorObjects)
 {
 	// Get pointer to the descriptorpool

@@ -3,10 +3,22 @@
 
 // File includes
 #include "Material.h"
+#include "../DescriptorObjects/UboDescriptorObject.h"
 
+
+// Standard library includes
+#include <vector>
 
 namespace D3D
 {
+	struct MultiShaderBuffer
+	{
+		int diffuseAmount{0};
+		bool diffuseEnabled{false};
+	};
+
+	class TextureDescriptorObject;
+	
 	class MultiMaterial final : public Material
 	{
 	public:
@@ -14,13 +26,7 @@ namespace D3D
 
 		MultiMaterial(const std::string& pipeline = "Default");
 
-		virtual ~MultiMaterial() = default;
-
-		// Create the descriptorsets
-		// Parameters:
-		//     pModel: the model that the descriptorsets belong to
-		//     descriptorSets: vector of descriptorsets that have to be created
-		virtual void CreateDescriptorSets(MeshRenderComponent* pModel, std::vector<VkDescriptorSet>& descriptorSets);
+		virtual ~MultiMaterial() override = default;
 
 		// Update the descriptorsets
 		// Parameters:
@@ -29,7 +35,11 @@ namespace D3D
 		virtual void UpdateDescriptorSets(std::vector<VkDescriptorSet>& descriptorSets, std::vector<DescriptorObject*>& descriptorObjects);
 
 	private:
+		MultiShaderBuffer m_MultiShaderBuffer{};
+		std::unique_ptr<D3D::UboDescriptorObject<MultiShaderBuffer>> m_pMultiShaderBufferDescriptor{};
 
+
+		std::unique_ptr<D3D::TextureDescriptorObject> m_pDiffuseTextureObject{};
 	};
 }
 

@@ -30,12 +30,6 @@ namespace D3D
 		CubeMapMaterial& operator=(CubeMapMaterial& other) = delete;
 		CubeMapMaterial& operator=(CubeMapMaterial&& other) = delete;
 
-		// Create the descriptorsets
-		// Parameters:
-		//     pModel: the model the descriptorsets are bound to
-		//     descriptorSets: the descriptorsets that have to be created
-		virtual void CreateDescriptorSets(MeshRenderComponent* pModel, std::vector<VkDescriptorSet>& descriptorSets) override;
-
 		// Update the descriptorsets
 		// Parameters:
 		//     descriptorsets: a vector of the descriptorsets that have to be updated

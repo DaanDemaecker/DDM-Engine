@@ -6,8 +6,13 @@ layout(binding = 1) uniform UniformLightObject {
     float intensity;
 } light;
 
-layout(binding = 2) uniform sampler2D texSampler;
-layout(binding = 3) uniform sampler2D normSampler;
+layout(binding = 2) uniform UniformMultiShaderObject
+{
+    int diffuseAmount;
+    bool diffuseEnabled;
+} multiShaderObject;
+
+layout(binding = 3) uniform sampler2D diffuseSampler;
 
 layout(location = 0) in vec3 fragColor;
 layout(location = 1) in vec2 fragTexCoord;
@@ -19,15 +24,18 @@ layout(location = 0) out vec4 outColor;
 
 float GetObservedArea(vec3 normal);
 
-vec3 CalculateNormal();
-
 void main()
 {
-    vec3 normal = CalculateNormal();
+    vec3 normal = fragNormal;
     
     float observedArea = GetObservedArea(fragNormal);
 
-	vec3 finalColor = texture(texSampler, fragTexCoord).rgb;
+    vec3 finalColor = fragColor;
+
+    if(multiShaderObject.diffuseEnabled && multiShaderObject.diffuseAmount > 0)
+    {
+	    finalColor = texture(diffuseSampler, fragTexCoord).rgb;
+    }
 	
 	finalColor *= light.color * light.intensity * observedArea;
 
@@ -45,22 +53,4 @@ float GetObservedArea(vec3 normal)
     float dotProduct = dot(normal, -light.direction);
     float observedArea = clamp(dotProduct, 0, 1);
     return observedArea;
-}
-
-vec3 CalculateNormal()
-{
-    vec3 binormal = cross(fragTangent, fragNormal);
-	
-    mat3 tangentSpaceAxis = mat3(
-        fragTangent,
-        normalize(binormal),
-        normalize(fragNormal)
-    );
-    
-    vec3 normalColor = texture(normSampler, fragTexCoord).rgb;
-    
-    vec3 sampledNormal = 2.0 * normalColor - vec3(1.0);
-    
-    // Transform the normal to tangent space
-    return normalize(tangentSpaceAxis * sampledNormal);
 }

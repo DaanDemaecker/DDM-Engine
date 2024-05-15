@@ -4,6 +4,7 @@
 
 #include "../DataTypes/Materials/Material.h"
 #include "../DataTypes/Materials/TexturedMaterial.h"
+#include "../DataTypes/Materials/MultiMaterial.h"
 
 #include "../Components/MeshRenderComponent.h"
 #include "../DataTypes/Mesh.h"
@@ -109,8 +110,9 @@ void SetupVikingRoom(D3D::Scene* scene)
 
 void SetupGun(D3D::Scene* scene)
 {
-	std::shared_ptr<D3D::TexturedMaterial> pGunMaterial{ std::make_shared<D3D::TexturedMaterial>(std::initializer_list<const std::string>{"resources/images/gun_BaseColor.png", "resources/images/gun_Normal.png"}, "DiffNorm")};
+	//std::shared_ptr<D3D::TexturedMaterial> pGunMaterial{ std::make_shared<D3D::TexturedMaterial>(std::initializer_list<const std::string>{"resources/images/gun_BaseColor.png", "resources/images/gun_Normal.png"}, "DiffNorm")};
 
+	std::shared_ptr<D3D::MultiMaterial> pGunMaterial{ std::make_shared<D3D::MultiMaterial>("MultiShader") };
 
 	auto pGun{ scene->CreateGameObject("Gun") };
 

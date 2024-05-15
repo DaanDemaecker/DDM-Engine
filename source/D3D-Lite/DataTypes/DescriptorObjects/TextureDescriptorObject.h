@@ -15,8 +15,8 @@ namespace D3D
     class TextureDescriptorObject final : public DescriptorObject
     {
     public:
-        // Delete default constructor
-        TextureDescriptorObject() = delete;
+        // Default constructor
+        TextureDescriptorObject();
 
         // Constructor
         // Parameters:
@@ -48,6 +48,8 @@ namespace D3D
         std::vector<Texture> m_Textures{};
         // List of image info per texture
         std::vector<VkDescriptorImageInfo> m_ImageInfos{};
+
+        VkDescriptorImageInfo m_PlaceholderImageInfo{ VkDescriptorImageInfo()};
 
         // Set up a list of textures
         // Parameters:

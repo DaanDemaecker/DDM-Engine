@@ -4,6 +4,15 @@
 #include "TextureDescriptorObject.h"
 #include "../../Vulkan/VulkanRenderer.h"
 
+D3D::TextureDescriptorObject::TextureDescriptorObject()
+	:DescriptorObject(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER)
+{
+	auto& renderer{ VulkanRenderer::GetInstance() };
+	m_PlaceholderImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+	m_PlaceholderImageInfo.imageView = renderer.GetDefaultImageView();
+	m_PlaceholderImageInfo.sampler = renderer.GetSampler();
+}
+
 D3D::TextureDescriptorObject::TextureDescriptorObject(Texture& texture)
 	:DescriptorObject(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER)
 
@@ -53,14 +62,36 @@ D3D::TextureDescriptorObject::~TextureDescriptorObject()
 
 void D3D::TextureDescriptorObject::AddDescriptorWrite(VkDescriptorSet descriptorSet, std::vector<VkWriteDescriptorSet>& descriptorWrites, int& binding, int /*index*/)
 {
-	// Resize the descriptor writes vector
-	descriptorWrites.resize(binding + m_Textures.size());
-
-	int index{};
-
-	// Loop trough all the image infos
-	for (auto& imageInfo : m_ImageInfos)
+	if (m_ImageInfos.size() > 0)
 	{
+		// Resize the descriptor writes vector
+		descriptorWrites.resize(binding + m_Textures.size());
+
+		int index{};
+
+		// Loop trough all the image infos
+		for (auto& imageInfo : m_ImageInfos)
+		{
+			// Create new binding
+			auto& currentBinding{ descriptorWrites[binding] };
+
+			currentBinding.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+
+			// Set all fields of current binding with correct values
+			currentBinding.dstBinding = binding;
+			currentBinding.dstArrayElement = index;
+			currentBinding.descriptorType = m_Type;
+			currentBinding.descriptorCount = 1;
+			currentBinding.pImageInfo = &imageInfo;
+			currentBinding.dstSet = descriptorSet;
+
+			index++;
+		}
+	}
+	else
+	{
+		// Resize the descriptor writes vector
+		descriptorWrites.resize(binding + 1);
 		// Create new binding
 		auto& currentBinding{ descriptorWrites[binding] };
 
@@ -68,13 +99,12 @@ void D3D::TextureDescriptorObject::AddDescriptorWrite(VkDescriptorSet descriptor
 
 		// Set all fields of current binding with correct values
 		currentBinding.dstBinding = binding;
-		currentBinding.dstArrayElement = index;
+		currentBinding.dstArrayElement = 0;
 		currentBinding.descriptorType = m_Type;
 		currentBinding.descriptorCount = 1;
-		currentBinding.pImageInfo = &imageInfo;
+		currentBinding.pImageInfo = &m_PlaceholderImageInfo;
 		currentBinding.dstSet = descriptorSet;
 
-		index++;
 	}
 
 	binding++;
@@ -103,6 +133,7 @@ void D3D::TextureDescriptorObject::SetupTextures(std::initializer_list<const std
 
 void D3D::TextureDescriptorObject::SetupImageInfos()
 {
+	m_ImageInfos.clear();
 	// resize image infos
 	m_ImageInfos.resize(m_Textures.size());
 
