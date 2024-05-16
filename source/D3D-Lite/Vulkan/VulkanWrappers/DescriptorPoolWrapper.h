@@ -70,6 +70,9 @@ namespace D3D
 		// The amount of bindings per descriptor set type
 		std::map<VkDescriptorType, int> m_DescriptorTypeCount{};
 
+		// The amount of descriptor sets per binding, needed for arrays
+		std::map<int, int> m_DescriptorsPerBinding{};
+
 		// The max amount of descriptorsets that can be allocated with this pool
 		int m_MaxDescriptorSets{ 8 };
 

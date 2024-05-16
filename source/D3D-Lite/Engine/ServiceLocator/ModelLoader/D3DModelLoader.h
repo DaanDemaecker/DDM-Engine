@@ -42,10 +42,10 @@ namespace D3D
 		void LoadFbx(const std::string& path, std::vector<D3D::Vertex>& vertices, std::vector<uint32_t>& indices);
 	
 
-		void ConvertMesh(FbxMesh* pMesh, std::vector<D3D::Vertex>& vertices, std::vector<uint32_t>& indices);
+		void ConvertMesh(FbxMesh* pMesh, std::vector<D3D::Vertex>& vertices, std::vector<uint32_t>& indices, int& baseUvIndex);
 
 		void HandleFbxVertex(FbxMesh* pMesh, FbxVector4* controlPoints, int polygonIndex, int inPolygonPosition,
-			std::unordered_map<D3D::Vertex, uint32_t>& uniqueVertices, std::unordered_map<std::string, uint32_t>& uvSets,
+			std::unordered_map<D3D::Vertex, uint32_t>& uniqueVertices, int uvIndex, FbxStringList uvSets,
 			std::vector<D3D::Vertex>& vertices, std::vector<uint32_t>& indices);
 	};
 }

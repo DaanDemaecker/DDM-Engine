@@ -72,51 +72,31 @@ D3D::TextureDescriptorObject::~TextureDescriptorObject()
 	}
 }
 
-void D3D::TextureDescriptorObject::AddDescriptorWrite(VkDescriptorSet descriptorSet, std::vector<VkWriteDescriptorSet>& descriptorWrites, int& binding, int /*index*/)
+void D3D::TextureDescriptorObject::AddDescriptorWrite(VkDescriptorSet descriptorSet, std::vector<VkWriteDescriptorSet>& descriptorWrites, int& binding, int amount, int /*index*/)
 {
-	if (m_ImageInfos.size() > 0)
+	for (int i{}; i < amount; i++)
 	{
-		// Resize the descriptor writes vector
-		descriptorWrites.resize(binding + m_Textures.size());
+		VkWriteDescriptorSet descriptorWrite{};
 
-		int index{};
-
-		// Loop trough all the image infos
-		for (auto& imageInfo : m_ImageInfos)
-		{
-			// Create new binding
-			auto& currentBinding{ descriptorWrites[binding] };
-
-			currentBinding.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-
-			// Set all fields of current binding with correct values
-			currentBinding.dstBinding = binding;
-			currentBinding.dstArrayElement = index;
-			currentBinding.descriptorType = m_Type;
-			currentBinding.descriptorCount = 1;
-			currentBinding.pImageInfo = &imageInfo;
-			currentBinding.dstSet = descriptorSet;
-
-			index++;
-		}
-	}
-	else
-	{
-		// Resize the descriptor writes vector
-		descriptorWrites.resize(binding + 1);
-		// Create new binding
-		auto& currentBinding{ descriptorWrites[binding] };
-
-		currentBinding.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+		descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 
 		// Set all fields of current binding with correct values
-		currentBinding.dstBinding = binding;
-		currentBinding.dstArrayElement = 0;
-		currentBinding.descriptorType = m_Type;
-		currentBinding.descriptorCount = 1;
-		currentBinding.pImageInfo = &m_PlaceholderImageInfo;
-		currentBinding.dstSet = descriptorSet;
+		descriptorWrite.dstBinding = binding;
+		descriptorWrite.dstArrayElement = i;
+		descriptorWrite.descriptorType = m_Type;
+		descriptorWrite.descriptorCount = 1;
 
+		if (m_ImageInfos.size() >= i + 1)
+		{
+			descriptorWrite.pImageInfo = &m_ImageInfos[i];
+		}
+		else
+		{
+			descriptorWrite.pImageInfo = &m_PlaceholderImageInfo;
+		}
+		descriptorWrite.dstSet = descriptorSet;
+
+		descriptorWrites.push_back(descriptorWrite);
 	}
 
 	binding++;

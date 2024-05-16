@@ -96,7 +96,7 @@ void D3D::DescriptorPoolWrapper::UpdateDescriptorSets(std::vector<VkDescriptorSe
 		// Loop trough all descriptor objects and add the descriptor writes
 		for (auto& descriptorObject : descriptorObjects)
 		{
-			descriptorObject->AddDescriptorWrite(descriptorSets[i], descriptorWrites, binding, i);
+			descriptorObject->AddDescriptorWrite(descriptorSets[i], descriptorWrites, binding, m_DescriptorsPerBinding[binding], i);
 		}
 
 
@@ -130,7 +130,7 @@ void D3D::DescriptorPoolWrapper::ReadDescriptorTypeCount(std::vector<std::unique
 	// Loop trough all shader modules and add the descriptor count
 	for (auto& shaderModule : shaderModules)
 	{
-		shaderModule->AddDescriptorTypeCount(m_DescriptorTypeCount);
+		shaderModule->AddDescriptorInfo(m_DescriptorTypeCount, m_DescriptorsPerBinding);
 	}
 }
 

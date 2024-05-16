@@ -44,12 +44,19 @@ void D3D::ShaderModuleWrapper::AddDescriptorSetLayoutBindings(std::vector<VkDesc
 	// Loop trough the amoun of bindings
 	for (uint32_t i{}; i < amount; i++)
 	{
+		auto descriptorCount = descriptorBindings[i].count;
+		if (descriptorBindings[i].array.dims_count > 0) {
+			// Found a texture array binding
+			descriptorCount = descriptorBindings[i].array.dims[0];
+			// numTextures now contains the number of textures in the array
+		}
+
 		// Create ubolayoutbinding and get the information from the reflect shader module
 		VkDescriptorSetLayoutBinding binding{};
 		binding.binding = descriptorBindings[i].binding;
 		binding.descriptorType = static_cast<VkDescriptorType>(descriptorBindings[i].descriptor_type);
-		binding.descriptorCount = descriptorBindings[i].count;
-		binding.stageFlags = stage;
+		binding.descriptorCount = descriptorCount;
+		binding.stageFlags = stage; 
 		binding.pImmutableSamplers = nullptr;
 
 		// Place binding in the vector of bindings
@@ -57,7 +64,7 @@ void D3D::ShaderModuleWrapper::AddDescriptorSetLayoutBindings(std::vector<VkDesc
 	}
 }
 
-void D3D::ShaderModuleWrapper::AddDescriptorTypeCount(std::map<VkDescriptorType, int>& typeCount)
+void D3D::ShaderModuleWrapper::AddDescriptorInfo(std::map<VkDescriptorType, int>& typeCount, std::map<int, int>& descriptorsPerBinding)
 {
 	// Get the amount of descriptor bindings
 	auto amount{ m_ReflectShaderModule.descriptor_binding_count };
@@ -68,6 +75,14 @@ void D3D::ShaderModuleWrapper::AddDescriptorTypeCount(std::map<VkDescriptorType,
 	// Loop trough the amount of descriptors
 	for (uint32_t i{}; i < amount; i++)
 	{
+		descriptorsPerBinding[descriptorBindings[i].binding] = descriptorBindings[i].count;
+		if (descriptorBindings[i].array.dims_count > 0) {
+			// Found a texture array binding
+			descriptorsPerBinding[descriptorBindings[i].binding] = descriptorBindings[i].array.dims[0];
+			// numTextures now contains the number of textures in the array
+		}
+
+
 		// Get the type of the current binding
 		auto currentType{ static_cast<VkDescriptorType>(descriptorBindings[i].descriptor_type) };
 

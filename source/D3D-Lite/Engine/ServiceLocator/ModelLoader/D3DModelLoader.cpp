@@ -27,6 +27,9 @@ void D3D::D3DModelLoader::LoadModel(const std::string& path, std::vector<D3D::Ve
 	// Get the extension of the file
 	auto extension{std::move(Utils::GetExtension(path))};
 
+	vertices.clear();
+	indices.clear();
+
 	if (extension == "obj")
 	{
 		// If the extension is .obj, use obj loader
@@ -46,10 +49,6 @@ void D3D::D3DModelLoader::LoadModel(const std::string& path, std::vector<D3D::Ve
 
 void D3D::D3DModelLoader::LoadObj(const std::string& path, std::vector<D3D::Vertex>& vertices, std::vector<uint32_t>& indices)
 {
-	// Clear the vectors in case they aren't empty
-	vertices.clear();
-	indices.clear();
-
 	// Create needed objects to read in .obj file
 	tinyobj::attrib_t attrib{};
 	std::vector<tinyobj::shape_t> shapes{};
@@ -165,10 +164,14 @@ void D3D::D3DModelLoader::LoadFbx(const std::string& path, std::vector<D3D::Vert
 	FbxScene* scene = FbxScene::Create(m_pFbxManager, "Scene");
 	pFbxImporter->Import(scene);
 
+	int baseUvIndex{};
+
 	// Traverse the scene to find nodes containing the car model
 	FbxNode* root = scene->GetRootNode();
-	if (root) {
-		for (int i = 0; i < root->GetChildCount(); i++) {
+	if (root)
+	{
+		for (int i = 0; i < root->GetChildCount(); i++)
+		{
 			FbxNode* child = root->GetChild(i);
 			// Check if the node contains mesh data
 			if (child->GetNodeAttribute() && child->GetNodeAttribute()->GetAttributeType() == FbxNodeAttribute::eMesh)
@@ -176,7 +179,7 @@ void D3D::D3DModelLoader::LoadFbx(const std::string& path, std::vector<D3D::Vert
 				// Extract mesh data
 				FbxMesh* mesh = child->GetMesh();
 
-				ConvertMesh(mesh, vertices, indices);
+				ConvertMesh(mesh, vertices, indices, baseUvIndex);
 			}
 		}
 	}
@@ -184,32 +187,23 @@ void D3D::D3DModelLoader::LoadFbx(const std::string& path, std::vector<D3D::Vert
 	// Destroy the scene and manager
 	scene->Destroy();
 	pFbxImporter->Destroy();
+
 }
 
-void D3D::D3DModelLoader::ConvertMesh(FbxMesh* pMesh, std::vector<D3D::Vertex>& vertices, std::vector<uint32_t>& indices)
+void D3D::D3DModelLoader::ConvertMesh(FbxMesh* pMesh, std::vector<D3D::Vertex>& vertices, std::vector<uint32_t>& indices, int& baseUvIndex)
 {
 	int numPolygons = pMesh->GetPolygonCount();
 	FbxVector4* controlPoints = pMesh->GetControlPoints();
 	pMesh->GenerateNormals();
 	pMesh->GenerateTangentsData();
 
-	vertices.clear();
-	indices.clear();
-
 	// Create map to store vertices
 	std::unordered_map<D3D::Vertex, uint32_t> uniqueVertices{};
 
-	std::unordered_map<std::string, uint32_t> uvSets{};
+	FbxStringList uvSets{};
+	pMesh->GetUVSetNames(uvSets);
 
-	{
-		FbxStringList uvSetNames{};
-		pMesh->GetUVSetNames(uvSetNames);
-
-		for (int i{}; i < uvSetNames.GetCount(); i++)
-		{
-			uvSets[static_cast<std::string>(uvSetNames[i])] = i;
-		}
-	}
+	int nextBaseUvIndex{baseUvIndex};
 
 	for (int polygonIndex = 0; polygonIndex < numPolygons; ++polygonIndex)
 	{
@@ -217,15 +211,24 @@ void D3D::D3DModelLoader::ConvertMesh(FbxMesh* pMesh, std::vector<D3D::Vertex>& 
 
 		for (int i = 1; i <= polygonSize - 2; i++)
 		{
-			HandleFbxVertex(pMesh, controlPoints, polygonIndex, 0, uniqueVertices, uvSets, vertices, indices);
-			HandleFbxVertex(pMesh, controlPoints, polygonIndex, i, uniqueVertices, uvSets, vertices, indices);
-			HandleFbxVertex(pMesh, controlPoints, polygonIndex, i + 1, uniqueVertices, uvSets, vertices, indices);
+			int uvIndex = pMesh->GetElementMaterial()->GetIndexArray().GetAt(polygonIndex) + baseUvIndex;
+			
+			if (uvIndex >= nextBaseUvIndex)
+			{
+				nextBaseUvIndex = uvIndex + 1;
+			}
+
+			HandleFbxVertex(pMesh, controlPoints, polygonIndex, 0, uniqueVertices, uvIndex, uvSets, vertices, indices);
+			HandleFbxVertex(pMesh, controlPoints, polygonIndex, i, uniqueVertices, uvIndex, uvSets, vertices, indices);
+			HandleFbxVertex(pMesh, controlPoints, polygonIndex, i + 1, uniqueVertices, uvIndex, uvSets, vertices, indices);
 		}
 	}
+
+	baseUvIndex = nextBaseUvIndex;
 }
 
 void D3D::D3DModelLoader::HandleFbxVertex(FbxMesh* pMesh, FbxVector4* controlPoints, int polygonIndex, int inPolygonPosition,
-	std::unordered_map<D3D::Vertex, uint32_t>& uniqueVertices, std::unordered_map<std::string, uint32_t>& uvSets,
+	std::unordered_map<D3D::Vertex, uint32_t>& uniqueVertices, int uvIndex, FbxStringList uvSets,
 	std::vector<D3D::Vertex>& vertices, std::vector<uint32_t>& indices)
 {
 	int vertexIndex = pMesh->GetPolygonVertex(polygonIndex, inPolygonPosition);
@@ -240,18 +243,18 @@ void D3D::D3DModelLoader::HandleFbxVertex(FbxMesh* pMesh, FbxVector4* controlPoi
 
 	FbxVector2 uv{};
 	bool unmapped{};
-	for (auto& uvSet : uvSets)
+	for (int i{}; i < uvSets.GetCount(); i++)
 	{
-		if (pMesh->GetPolygonVertexUV(polygonIndex, inPolygonPosition, uvSet.first.c_str(), uv, unmapped))
+		if (pMesh->GetPolygonVertexUV(polygonIndex, inPolygonPosition, uvSets[i], uv, unmapped))
 		{
-			vertex.texCoord = glm::vec2{ uv[0], 1-uv[1] };
-			vertex.uvSetIndex = static_cast<float>(uvSet.second);
+			vertex.texCoord = glm::vec2{ uv[0], 1 - uv[1] };
+			vertex.uvSetIndex = uvIndex;
 		}
 	}
 
 	vertex.pos = glm::vec3{ controlPoint[0], controlPoint[1], controlPoint[2] };
-	vertex.normal = glm::vec3{normal[0], normal[1], normal[2]};
-	vertex.color = glm::vec3{ 1, 1, 1};
+	vertex.normal = glm::vec3{ normal[0], normal[1], normal[2] };
+	vertex.color = glm::vec3{ 1, 1, 1 };
 
 	// If vertex isn't in uniqueVertices vector, add it
 	if (!uniqueVertices.contains(vertex))

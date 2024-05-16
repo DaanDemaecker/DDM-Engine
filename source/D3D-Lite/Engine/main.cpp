@@ -29,6 +29,8 @@ void SetupVikingRoom(D3D::Scene* scene);
 
 void SetupGun(D3D::Scene* scene);
 
+void SetupLion(D3D::Scene* scene);
+
 void SetupCamera(D3D::Scene* scen);
 
 void SetupLight(D3D::Scene* scene);
@@ -42,11 +44,13 @@ void load()
 
 	auto& renderer{ D3D::VulkanRenderer::GetInstance() };
 
-	SetupVehicle(scene.get());
+	//SetupVehicle(scene.get());
 
-	SetupVikingRoom(scene.get());
+	//SetupVikingRoom(scene.get());
 
-	SetupGun(scene.get());
+	//SetupGun(scene.get());
+
+	SetupLion(scene.get());
 
 	SetupCamera(scene.get());
 
@@ -129,6 +133,29 @@ void SetupGun(D3D::Scene* scene)
 	pGunTransform->SetLocalPosition(0.f, -.5f, 6.f);
 	pGunTransform->SetLocalRotation(0.f, glm::radians(-90.f), 0.f);
 	pGunTransform->SetLocalScale(0.5f, 0.5f, 0.5f);
+}
+
+void SetupLion(D3D::Scene* scene)
+{
+	//std::shared_ptr<D3D::TexturedMaterial> pGunMaterial{ std::make_shared<D3D::TexturedMaterial>(std::initializer_list<const std::string>{"resources/images/gun_BaseColor.png", "resources/images/gun_Normal.png"}, "DiffNorm")};
+
+	std::shared_ptr<D3D::MultiMaterial> pLionMaterial{ std::make_shared<D3D::MultiMaterial>("MultiShader") };
+
+	pLionMaterial->AddDiffuseTextures(std::initializer_list<const std::string>{"resources/images/LionDiffuse0.png", "resources/images/LionDiffuse1.png", "resources/images/LionDiffuse1.png"});
+
+
+	auto pLion{ scene->CreateGameObject("Lion") };
+
+	auto pLionMesh{ std::make_shared<D3D::Mesh>("Resources/Models/Lion.fbx") };
+
+	auto pLionModel{ pLion->AddComponent<D3D::MeshRenderComponent>() };
+	pLionModel->SetMesh(pLionMesh);
+	pLionModel->SetMaterial(pLionMaterial);
+
+	auto pLionTransform{ pLion->GetTransform() };
+	pLionTransform->SetLocalPosition(0.f, -.5f, 6.f);
+	pLionTransform->SetLocalRotation(glm::radians(-90.f), glm::radians(90.f), 0.f);
+	pLionTransform->SetLocalScale(0.01f, 0.01f, 0.01f);
 }
 
 void SetupCamera(D3D::Scene* scene)

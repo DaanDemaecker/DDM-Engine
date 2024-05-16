@@ -24,8 +24,9 @@ namespace D3D
 		//     descriptorSet: the current descriptorset connected to this descriptor object
 		//     descriptorWrites: the list of descriptorWrites this function will add to
 		//     binding: the current binding in the shader files
+		//     amount: the amount of descriptors for the current binding
 		//     index: the current frame index of the renderer
-		virtual void AddDescriptorWrite(VkDescriptorSet descriptorSet, std::vector<VkWriteDescriptorSet>& descriptorWrites, int& binding, int index) override;
+		virtual void AddDescriptorWrite(VkDescriptorSet descriptorSet, std::vector<VkWriteDescriptorSet>& descriptorWrites, int& binding, int amount, int index) override;
 
 		// Update the buffer of the object
 		// Parameters:
@@ -72,27 +73,27 @@ namespace D3D
 	}
 
 	template<typename T>
-	inline void UboDescriptorObject<T>::AddDescriptorWrite(VkDescriptorSet descriptorSet, std::vector<VkWriteDescriptorSet>& descriptorWrites, int& binding, int index)
+	inline void UboDescriptorObject<T>::AddDescriptorWrite(VkDescriptorSet descriptorSet, std::vector<VkWriteDescriptorSet>& descriptorWrites, int& binding, int amount, int index)
 	{
-		// Resize the descriptor writes so that the current descriptor write fits
-		descriptorWrites.resize(binding + 1);
+		VkWriteDescriptorSet descriptorWrite{};
 
 		// DescriptorWrites
 		// Set the type to WriteDescriptorSet
-		descriptorWrites[binding].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+		descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 		// Set the binding used in the shader
-		descriptorWrites[binding].dstBinding = binding;
+		descriptorWrite.dstBinding = binding;
 		// Set array index
-		descriptorWrites[binding].dstArrayElement = 0;
+		descriptorWrite.dstArrayElement = 0;
 		// Set descriptor type
-		descriptorWrites[binding].descriptorType = m_Type;
+		descriptorWrite.descriptorType = m_Type;
 		// Set descriptor amount
-		descriptorWrites[binding].descriptorCount = 1;
+		descriptorWrite.descriptorCount = 1;
 		// Set the correct bufferInfo
-		descriptorWrites[binding].pBufferInfo = &m_BufferInfos[index];
+		descriptorWrite.pBufferInfo = &m_BufferInfos[index];
 		// Give the correct descriptorset
-		descriptorWrites[binding].dstSet = descriptorSet;
+		descriptorWrite.dstSet = descriptorSet;
 
+		descriptorWrites.push_back(descriptorWrite);
 
 		binding++;
 	}

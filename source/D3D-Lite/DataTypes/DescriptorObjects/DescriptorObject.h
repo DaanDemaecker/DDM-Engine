@@ -43,8 +43,9 @@ namespace D3D
 		//     descriptorSet: the current descriptorset connected to this descriptor object
 		//     descriptorWrites: the list of descriptorWrites this function will add to
 		//     binding: the current binding in the shader files
+		//     amount: the amount of descriptors for the current binding
 		//     index: the current frame index of the renderer
-		virtual void AddDescriptorWrite(VkDescriptorSet descriptorSet, std::vector<VkWriteDescriptorSet>& descriptorWrites, int& binding, int index) = 0;
+		virtual void AddDescriptorWrite(VkDescriptorSet descriptorSet, std::vector<VkWriteDescriptorSet>& descriptorWrites, int& binding, int amount, int index) = 0;
 
 	protected:
 		// The type of descriptor this object will hold

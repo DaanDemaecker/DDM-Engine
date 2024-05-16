@@ -12,7 +12,7 @@ layout(binding = 2) uniform UniformMultiShaderObject
     uint diffuseEnabled;
 } multiShaderObject;
 
-layout(binding = 3) uniform sampler2D diffuseSampler;
+layout(binding = 3) uniform sampler2D diffuseSampler[5];
 
 layout(location = 0) in vec3 fragColor;
 layout(location = 1) in vec2 fragTexCoord;
@@ -34,7 +34,10 @@ void main()
 
     if(multiShaderObject.diffuseEnabled != 0)
     {
-	    finalColor = texture(diffuseSampler, fragTexCoord).rgb;
+        if(uvSetIndex <= multiShaderObject.diffuseAmount)
+        {
+	        finalColor = texture(diffuseSampler[int(uvSetIndex)], fragTexCoord).rgb;
+        }
     }
 	
 	finalColor *= light.color * light.intensity * observedArea;
