@@ -15,6 +15,8 @@ namespace D3D
 	{
 		alignas(4) int diffuseAmount{0};
 		alignas(4) uint32_t diffuseEnabled{0};
+		alignas(4) int normalAmount{ 0 };
+		alignas(4) uint32_t normalEnabled { 0 };
 	};
 
 	class TextureDescriptorObject;
@@ -40,12 +42,18 @@ namespace D3D
 
 		void AddDiffuseTextures(std::initializer_list<const std::string>& filePaths);
 
+		void AddNormalMap(std::initializer_list<const std::string>&& filePaths);
+
+		void AddNormalMap(std::initializer_list<const std::string>& filePaths);
+
 
 	private:
 		MultiShaderBuffer m_MultiShaderBuffer{};
 		std::unique_ptr<D3D::UboDescriptorObject<MultiShaderBuffer>> m_pMultiShaderBufferDescriptor{};
 
 		std::unique_ptr<D3D::TextureDescriptorObject> m_pDiffuseTextureObject{};
+
+		std::unique_ptr<D3D::TextureDescriptorObject> m_pNormalTextureObject{};
 
 		bool m_ShowGuiWindow{ true };
 

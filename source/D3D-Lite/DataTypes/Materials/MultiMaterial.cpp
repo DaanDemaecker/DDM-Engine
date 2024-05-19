@@ -12,6 +12,8 @@ D3D::MultiMaterial::MultiMaterial(const std::string& pipeline)
 
 	m_pDiffuseTextureObject = std::make_unique<D3D::TextureDescriptorObject>();
 
+	m_pNormalTextureObject = std::make_unique<D3D::TextureDescriptorObject>();
+
 	UpdateShaderBuffer();
 }
 
@@ -27,6 +29,13 @@ void D3D::MultiMaterial::OnGUI()
 	ImGui::Checkbox("Diffuse", &placeHolder);
 
 	m_MultiShaderBuffer.diffuseEnabled = static_cast<uint32_t>(placeHolder);
+
+	placeHolder = static_cast<bool>(m_MultiShaderBuffer.normalEnabled);
+
+	// Create a checkbox (toggle box) and update its value
+	ImGui::Checkbox("Normal map", &placeHolder);
+
+	m_MultiShaderBuffer.normalEnabled = static_cast<uint32_t>(placeHolder);
 
 	ImGui::End();
 
@@ -53,6 +62,8 @@ void D3D::MultiMaterial::UpdateDescriptorSets(std::vector<VkDescriptorSet>& desc
 
 	descriptorObjectList.push_back(m_pDiffuseTextureObject.get());
 
+	descriptorObjectList.push_back(m_pNormalTextureObject.get());
+
 	// Update descriptorsets
 	descriptorPool->UpdateDescriptorSets(descriptorSets, descriptorObjectList);
 }
@@ -69,6 +80,21 @@ void D3D::MultiMaterial::AddDiffuseTextures(std::initializer_list<const std::str
 	m_MultiShaderBuffer.diffuseAmount = static_cast<int>(filePaths.size());
 	m_MultiShaderBuffer.diffuseEnabled = true;
 	
+	UpdateShaderBuffer();
+}
+
+void D3D::MultiMaterial::AddNormalMap(std::initializer_list<const std::string>&& filePaths)
+{
+	AddNormalMap(filePaths);
+}
+
+void D3D::MultiMaterial::AddNormalMap(std::initializer_list<const std::string>& filePaths)
+{
+	m_pNormalTextureObject->AddTextures(filePaths);
+
+	m_MultiShaderBuffer.normalAmount = static_cast<int>(filePaths.size());
+	m_MultiShaderBuffer.normalEnabled = true;
+
 	UpdateShaderBuffer();
 }
 

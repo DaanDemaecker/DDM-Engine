@@ -17,7 +17,11 @@ float GetObservedArea(vec3 normal);
 
 void main()
 {
-	outColor = vec4(fragColor * GetObservedArea(fragNormal) * light.color * light.intensity, 1);
+    float observedArea = GetObservedArea(fragNormal);
+
+	outColor = vec4(fragColor * observedArea * light.color * light.intensity, 1);
+
+    outColor = vec4(fragNormal, 1);
 }
 
 float GetObservedArea(vec3 normal)

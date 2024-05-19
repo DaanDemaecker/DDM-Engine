@@ -44,13 +44,13 @@ void load()
 
 	auto& renderer{ D3D::VulkanRenderer::GetInstance() };
 
-	//SetupVehicle(scene.get());
+	SetupVehicle(scene.get());
 
 	//SetupVikingRoom(scene.get());
 
 	//SetupGun(scene.get());
 
-	SetupLion(scene.get());
+	//SetupLion(scene.get());
 
 	SetupCamera(scene.get());
 
@@ -73,13 +73,20 @@ void SetupPipelines()
 
 void SetupVehicle(D3D::Scene* scene)
 {
-	std::shared_ptr<D3D::TexturedMaterial> pVehicleMaterial{ std::make_shared<D3D::TexturedMaterial>
-		(std::initializer_list<const std::string>{"resources/images/vehicle_diffuse.png", "resources/images/vehicle_normal.png",
-		"resources/images/vehicle_gloss.png", "resources/images/vehicle_specular.png"},
-			"DiffNormSpec") };
+	std::shared_ptr<D3D::MultiMaterial> pVehicleMaterial{ std::make_shared<D3D::MultiMaterial>("MultiShader") };
+	
+	pVehicleMaterial->AddDiffuseTextures(std::initializer_list<const std::string>{"resources/images/vehicle_diffuse.png"});
+	
+	pVehicleMaterial->AddNormalMap(std::initializer_list<const std::string>{"resources/images/vehicle_normal.png"});
 
+
+	//std::shared_ptr<D3D::TexturedMaterial> pVehicleMaterial{ std::make_shared<D3D::TexturedMaterial>
+	//	(std::initializer_list<const std::string>{"resources/images/vehicle_diffuse.png", "resources/images/vehicle_normal.png",
+	//	"resources/images/vehicle_gloss.png", "resources/images/vehicle_specular.png"},
+	//		"DiffNormSpec") };
+	
 	auto pVehicle{ scene->CreateGameObject("Vehicle") };
-	pVehicle->AddComponent<D3D::RotatorComponent>();
+	//pVehicle->AddComponent<D3D::RotatorComponent>();
 
 	auto pVehicleMesh{ std::make_shared<D3D::Mesh>("Resources/Models/vehicle.obj") };
 
@@ -89,7 +96,7 @@ void SetupVehicle(D3D::Scene* scene)
 
 
 	auto pVehicleTransform{ pVehicle->GetTransform() };
-	pVehicleTransform->SetLocalPosition(-1.f, 0, 3.f);
+	pVehicleTransform->SetLocalPosition(0, 0, 3.f);
 	pVehicleTransform->SetLocalRotation(0.f, glm::radians(75.0f), 0.f);
 	pVehicleTransform->SetLocalScale(0.05f, 0.05f, 0.05f);
 }
@@ -114,12 +121,11 @@ void SetupVikingRoom(D3D::Scene* scene)
 
 void SetupGun(D3D::Scene* scene)
 {
-	//std::shared_ptr<D3D::TexturedMaterial> pGunMaterial{ std::make_shared<D3D::TexturedMaterial>(std::initializer_list<const std::string>{"resources/images/gun_BaseColor.png", "resources/images/gun_Normal.png"}, "DiffNorm")};
-
 	std::shared_ptr<D3D::MultiMaterial> pGunMaterial{ std::make_shared<D3D::MultiMaterial>("MultiShader") };
 
 	pGunMaterial->AddDiffuseTextures(std::initializer_list<const std::string>{"resources/images/gun_BaseColor.png"});
 
+	pGunMaterial->AddNormalMap(std::initializer_list<const std::string>{"resources/images/gun_Normal.png"});
 
 	auto pGun{ scene->CreateGameObject("Gun") };
 
@@ -137,8 +143,6 @@ void SetupGun(D3D::Scene* scene)
 
 void SetupLion(D3D::Scene* scene)
 {
-	//std::shared_ptr<D3D::TexturedMaterial> pGunMaterial{ std::make_shared<D3D::TexturedMaterial>(std::initializer_list<const std::string>{"resources/images/gun_BaseColor.png", "resources/images/gun_Normal.png"}, "DiffNorm")};
-
 	std::shared_ptr<D3D::MultiMaterial> pLionMaterial{ std::make_shared<D3D::MultiMaterial>("MultiShader") };
 
 	pLionMaterial->AddDiffuseTextures(std::initializer_list<const std::string>{"resources/images/LionDiffuse0.png", "resources/images/LionDiffuse1.png", "resources/images/LionDiffuse1.png"});
