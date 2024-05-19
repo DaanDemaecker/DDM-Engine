@@ -7,7 +7,7 @@ add_custom_command(
 	TARGET copy_fmodDLL POST_BUILD
 	COMMAND ${CMAKE_COMMAND}
 	-E copy
-	${CMAKE_CURRENT_SOURCE_DIR}/bin/debug/fmodL64.dll
+	${CMAKE_CURRENT_SOURCE_DIR}/dll/debug/fmodL64.dll
 	$<TARGET_FILE_DIR:D3D-Lite-Engine_Build>
 )
 
