@@ -20,8 +20,6 @@ void main()
     float observedArea = GetObservedArea(fragNormal);
 
 	outColor = vec4(fragColor * observedArea * light.color * light.intensity, 1);
-
-    outColor = vec4(fragNormal, 1);
 }
 
 float GetObservedArea(vec3 normal)

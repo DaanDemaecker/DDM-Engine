@@ -26,6 +26,14 @@ namespace D3D
 	private:
 		FbxManager* m_pFbxManager{};
 
+		struct fbxTexturedInfo
+		{
+			bool textured{ false };
+			int uvIndex{};
+			FbxStringList uvSets{};
+			int uvSetsCount{};
+		};
+
 
 		// Load in a obj file given a file path
 		// Parameters:
@@ -45,7 +53,7 @@ namespace D3D
 		void ConvertMesh(FbxMesh* pMesh, std::vector<D3D::Vertex>& vertices, std::vector<uint32_t>& indices, int& baseUvIndex);
 
 		void HandleFbxVertex(FbxMesh* pMesh, FbxVector4* controlPoints, int polygonIndex, int inPolygonPosition,
-			std::unordered_map<D3D::Vertex, uint32_t>& uniqueVerticesint, bool textured, int uvIndex, FbxStringList uvSets,
+			std::unordered_map<D3D::Vertex, uint32_t>& uniqueVerticesint, fbxTexturedInfo& textureInfo,
 			std::vector<D3D::Vertex>& vertices, std::vector<uint32_t>& indices);
 	};
 }
