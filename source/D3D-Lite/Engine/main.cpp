@@ -29,7 +29,7 @@ void SetupVikingRoom(D3D::Scene* scene);
 
 void SetupGun(D3D::Scene* scene);
 
-void SetupLion(D3D::Scene* scene);
+void SetupMario(D3D::Scene* scene);
 
 void SetupCamera(D3D::Scene* scen);
 
@@ -44,13 +44,13 @@ void load()
 
 	auto& renderer{ D3D::VulkanRenderer::GetInstance() };
 
-	SetupVehicle(scene.get());
+	//SetupVehicle(scene.get());
 
 	//SetupVikingRoom(scene.get());
 
-	//SetupGun(scene.get());
+	SetupGun(scene.get());
 
-	//SetupLion(scene.get());
+	SetupMario(scene.get());
 
 	SetupCamera(scene.get());
 
@@ -141,25 +141,19 @@ void SetupGun(D3D::Scene* scene)
 	pGunTransform->SetLocalScale(0.5f, 0.5f, 0.5f);
 }
 
-void SetupLion(D3D::Scene* scene)
+void SetupMario(D3D::Scene* scene)
 {
-	std::shared_ptr<D3D::MultiMaterial> pLionMaterial{ std::make_shared<D3D::MultiMaterial>("MultiShader") };
+	auto pMario{ scene->CreateGameObject("Mario") };
 
-	pLionMaterial->AddDiffuseTextures(std::initializer_list<const std::string>{"resources/images/LionDiffuse0.png", "resources/images/LionDiffuse1.png", "resources/images/LionDiffuse1.png"});
+	auto pGunMesh{ std::make_shared<D3D::Mesh>("Resources/Models/MarioDancing.fbx") };
 
+	auto pMarioModel{ pMario->AddComponent<D3D::MeshRenderComponent>() };
+	pMarioModel->SetMesh(pGunMesh);
 
-	auto pLion{ scene->CreateGameObject("Lion") };
-
-	auto pLionMesh{ std::make_shared<D3D::Mesh>("Resources/Models/Lion.fbx") };
-
-	auto pLionModel{ pLion->AddComponent<D3D::MeshRenderComponent>() };
-	pLionModel->SetMesh(pLionMesh);
-	pLionModel->SetMaterial(pLionMaterial);
-
-	auto pLionTransform{ pLion->GetTransform() };
-	pLionTransform->SetLocalPosition(0.f, -.5f, 6.f);
-	pLionTransform->SetLocalRotation(glm::radians(-90.f), glm::radians(90.f), 0.f);
-	pLionTransform->SetLocalScale(0.01f, 0.01f, 0.01f);
+	auto pMarioTransform{ pMario->GetTransform() };
+	pMarioTransform->SetLocalPosition(0.f, -.5f, 6.f);
+	pMarioTransform->SetLocalRotation(0.f, glm::radians(-90.f), 0.f);
+	pMarioTransform->SetLocalScale(0.5f, 0.5f, 0.5f);
 }
 
 void SetupCamera(D3D::Scene* scene)

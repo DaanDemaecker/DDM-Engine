@@ -241,13 +241,17 @@ void D3D::D3DModelLoader::ConvertMesh(FbxMesh* pMesh, std::vector<D3D::Vertex>& 
 	pMesh->GenerateNormals();
 	pMesh->GenerateTangentsData();
 
+	std::cout << "Geometry weigted map count: " << pMesh->GetDestinationGeometryWeightedMapCount() << std::endl;
+
 	// Create map to store vertices
 	std::unordered_map<D3D::Vertex, uint32_t> uniqueVertices{};
 
 	FbxStringList uvSets{};
 	pMesh->GetUVSetNames(uvSets);
 
-	int nextBaseUvIndex{baseUvIndex};
+	int nextBaseUvIndex{baseUvIndex};;
+
+	bool textured{ static_cast<bool>(pMesh->GetElementMaterialCount())};
 
 	for (int polygonIndex = 0; polygonIndex < numPolygons; ++polygonIndex)
 	{
@@ -255,16 +259,20 @@ void D3D::D3DModelLoader::ConvertMesh(FbxMesh* pMesh, std::vector<D3D::Vertex>& 
 
 		for (int i = 1; i <= polygonSize - 2; i++)
 		{
-			int uvIndex = pMesh->GetElementMaterial()->GetIndexArray().GetAt(polygonIndex) + baseUvIndex;
+			int uvIndex{};
+			if (textured)
+			{
+				int uvIndex = pMesh->GetElementMaterial()->GetIndexArray().GetAt(polygonIndex) + baseUvIndex;
+			}
 			
 			if (uvIndex >= nextBaseUvIndex)
 			{
 				nextBaseUvIndex = uvIndex + 1;
 			}
 
-			HandleFbxVertex(pMesh, controlPoints, polygonIndex, 0, uniqueVertices, uvIndex, uvSets, vertices, indices);
-			HandleFbxVertex(pMesh, controlPoints, polygonIndex, i, uniqueVertices, uvIndex, uvSets, vertices, indices);
-			HandleFbxVertex(pMesh, controlPoints, polygonIndex, i + 1, uniqueVertices, uvIndex, uvSets, vertices, indices);
+			HandleFbxVertex(pMesh, controlPoints, polygonIndex, 0, uniqueVertices, textured, uvIndex, uvSets, vertices, indices);
+			HandleFbxVertex(pMesh, controlPoints, polygonIndex, i, uniqueVertices, textured, uvIndex, uvSets, vertices, indices);
+			HandleFbxVertex(pMesh, controlPoints, polygonIndex, i + 1, uniqueVertices, textured, uvIndex, uvSets, vertices, indices);
 		}
 	}
 
@@ -272,7 +280,7 @@ void D3D::D3DModelLoader::ConvertMesh(FbxMesh* pMesh, std::vector<D3D::Vertex>& 
 }
 
 void D3D::D3DModelLoader::HandleFbxVertex(FbxMesh* pMesh, FbxVector4* controlPoints, int polygonIndex, int inPolygonPosition,
-	std::unordered_map<D3D::Vertex, uint32_t>& uniqueVertices, int uvIndex, FbxStringList uvSets,
+	std::unordered_map<D3D::Vertex, uint32_t>& uniqueVertices, bool textured, int uvIndex, FbxStringList uvSets,
 	std::vector<D3D::Vertex>& vertices, std::vector<uint32_t>& indices)
 {
 	int vertexIndex = pMesh->GetPolygonVertex(polygonIndex, inPolygonPosition);
@@ -286,14 +294,17 @@ void D3D::D3DModelLoader::HandleFbxVertex(FbxMesh* pMesh, FbxVector4* controlPoi
 
 	D3D::Vertex vertex{};
 
-	FbxVector2 uv{};
-	bool unmapped{};
-	for (int i{}; i < uvSets.GetCount(); i++)
+	if (textured)
 	{
-		if (pMesh->GetPolygonVertexUV(polygonIndex, inPolygonPosition, uvSets[i], uv, unmapped))
+		FbxVector2 uv{};
+		bool unmapped{};
+		for (int i{}; i < uvSets.GetCount(); i++)
 		{
-			vertex.texCoord = glm::vec2{ uv[0], 1 - uv[1] };
-			vertex.uvSetIndex = uvIndex;
+			if (pMesh->GetPolygonVertexUV(polygonIndex, inPolygonPosition, uvSets[i], uv, unmapped))
+			{
+				vertex.texCoord = glm::vec2{ uv[0], 1 - uv[1] };
+				vertex.uvSetIndex = uvIndex;
+			}
 		}
 	}
 
