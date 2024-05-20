@@ -5,6 +5,7 @@
 
 #include <iostream>
 #include "../Includes/GLFWIncludes.h"
+#include "../Includes/ImGuiIncludes.h"
 #include "../Engine/Window.h"
 
 D3D::SpectatorMovementComponent::SpectatorMovementComponent()
@@ -54,7 +55,10 @@ void D3D::SpectatorMovementComponent::Update()
 	double xpos, ypos;
 	glfwGetCursorPos(window, &xpos, &ypos);
 
-	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT))
+	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) &&
+		!ImGui::IsAnyItemActive() &&
+		!ImGui::IsAnyItemHovered() &&
+		!ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow))
 	{
 		double deltaX = xpos - m_PrevXPos;
 		double deltaY = ypos - m_PrevYPos;
