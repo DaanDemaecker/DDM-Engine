@@ -43,4 +43,5 @@ add_executable(D3D-Lite-Engine_Build
 "Vulkan/VulkanWrappers/SwapchainWrapper.cpp"
 "Vulkan/VulkanRenderer.cpp"
 "Vulkan/VulkanUtils.cpp"
-"DataTypes/Materials/MultiMaterial.cpp")
+"DataTypes/Materials/MultiMaterial.cpp"
+"Engine/ServiceLocator/ModelLoader/ObjLoader.cpp")

@@ -44,11 +44,11 @@ void load()
 
 	auto& renderer{ D3D::VulkanRenderer::GetInstance() };
 
-	//SetupVehicle(scene.get());
+	SetupVehicle(scene.get());
 
 	//SetupVikingRoom(scene.get());
 
-	SetupGun(scene.get());
+	//SetupGun(scene.get());
 
 	SetupMario(scene.get());
 
@@ -151,9 +151,9 @@ void SetupMario(D3D::Scene* scene)
 	pMarioModel->SetMesh(pGunMesh);
 
 	auto pMarioTransform{ pMario->GetTransform() };
-	pMarioTransform->SetLocalPosition(0.f, -.5f, 6.f);
-	pMarioTransform->SetLocalRotation(0.f, glm::radians(-90.f), 0.f);
-	pMarioTransform->SetLocalScale(0.5f, 0.5f, 0.5f);
+	pMarioTransform->SetLocalPosition(0.f, -5.f, 8.f);
+	pMarioTransform->SetLocalRotation(0.f, glm::radians(180.f), 0.f);
+	//pMarioTransform->SetLocalScale(0.5f, 0.5f, 0.5f);
 }
 
 void SetupCamera(D3D::Scene* scene)

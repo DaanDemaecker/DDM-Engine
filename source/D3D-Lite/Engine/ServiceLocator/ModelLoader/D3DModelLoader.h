@@ -8,8 +8,14 @@
 #include "ModelLoader.h"
 #include "../../../Includes/FbxSdkIncludes.h"
 
+// Standard library includes
+#include <memory>
+
 namespace D3D
 {
+	// Class forward declarations
+	class ObjLoader;
+
 	class D3DModelLoader final : public ModelLoader
 	{
 	public:
@@ -24,6 +30,9 @@ namespace D3D
 		virtual void LoadModel(const std::string& path, std::vector<D3D::Vertex>& vertices, std::vector<uint32_t>& indices) override;
 	
 	private:
+		std::unique_ptr<ObjLoader> m_pObjLoader{};
+
+
 		FbxManager* m_pFbxManager{};
 
 		struct fbxTexturedInfo
@@ -34,13 +43,11 @@ namespace D3D
 			int uvSetsCount{};
 		};
 
-
-		// Load in a obj file given a file path
-		// Parameters:
-		//     - path: The path to the model file
-		//     - vertices: The vector that will be used to store the vertices
-		//     - indices: The vector that will be used to store the indices
-		void LoadObj(const std::string& path, std::vector<D3D::Vertex>& vertices, std::vector<uint32_t>& indices);
+		struct fbxSkinnedInfo
+		{
+			bool isSkinned{ false };
+			FbxSkin* pSkin{nullptr};
+		};
 
 		// Load in a fbx file given a file path
 		// Parameters:
