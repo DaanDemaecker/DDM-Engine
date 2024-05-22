@@ -88,21 +88,7 @@ void D3D::FbxLoader::ConvertMesh(FbxMesh* pMesh,
 	if (skinnedInfo.isSkinned)
 	{
 		skinnedInfo.pSkin = static_cast<FbxSkin*>(pMesh->GetDeformer(0, FbxDeformer::eSkin));
-
-		for (int i{}; i < skinnedInfo.pSkin->GetClusterCount(); i++)
-		{
-			auto cluster = skinnedInfo.pSkin->GetCluster(i);
-
-			for (int j{}; j < cluster->GetControlPointIndicesCount(); j++)
-			{
-				int current = cluster->GetControlPointIndices()[j];
-
-				if (current == toTest)
-				{
-					amount++;
-				}
-			}
-		}
+		SetupSkin(skinnedInfo, pMesh->GetControlPointsCount());
 	}
 
 	int nextBaseUvIndex{ baseUvIndex };;
@@ -128,9 +114,9 @@ void D3D::FbxLoader::ConvertMesh(FbxMesh* pMesh,
 				nextBaseUvIndex = texturedInfo.uvIndex + 1;
 			}
 
-			HandleFbxVertex(pMesh, controlPoints, polygonIndex, 0, uniqueVertices, texturedInfo, vertices, indices);
-			HandleFbxVertex(pMesh, controlPoints, polygonIndex, i, uniqueVertices, texturedInfo, vertices, indices);
-			HandleFbxVertex(pMesh, controlPoints, polygonIndex, i + 1, uniqueVertices, texturedInfo, vertices, indices);
+			HandleFbxVertex(pMesh, controlPoints, polygonIndex, 0, uniqueVertices, texturedInfo, skinnedInfo, vertices, indices);
+			HandleFbxVertex(pMesh, controlPoints, polygonIndex, i, uniqueVertices, texturedInfo, skinnedInfo, vertices, indices);
+			HandleFbxVertex(pMesh, controlPoints, polygonIndex, i + 1, uniqueVertices, texturedInfo, skinnedInfo, vertices, indices);
 		}
 	}
 
@@ -138,7 +124,9 @@ void D3D::FbxLoader::ConvertMesh(FbxMesh* pMesh,
 }
 
 void D3D::FbxLoader::HandleFbxVertex(FbxMesh* pMesh, FbxVector4* controlPoints, int polygonIndex, int inPolygonPosition,
-	std::unordered_map<D3D::Vertex, uint32_t>& uniqueVertices, fbxTexturedInfo& textureInfo, std::vector<D3D::Vertex>& vertices, std::vector<uint32_t>& indices)
+	std::unordered_map<D3D::Vertex, uint32_t>& uniqueVertices,
+	fbxTexturedInfo& textureInfo, fbxSkinnedInfo& skinnedInfo,
+	std::vector<D3D::Vertex>& vertices, std::vector<uint32_t>& indices)
 {
 	int vertexIndex = pMesh->GetPolygonVertex(polygonIndex, inPolygonPosition);
 
@@ -160,10 +148,17 @@ void D3D::FbxLoader::HandleFbxVertex(FbxMesh* pMesh, FbxVector4* controlPoints, 
 			if (pMesh->GetPolygonVertexUV(polygonIndex, inPolygonPosition, textureInfo.uvSets[i], uv, unmapped))
 			{
 				vertex.texCoord = glm::vec2{ uv[0], 1 - uv[1] };
-				vertex.uvSetIndex = textureInfo.uvIndex;
+				vertex.uvSetIndex = static_cast<float>(textureInfo.uvIndex);
 			}
 		}
 	}
+
+	if (skinnedInfo.isSkinned)
+	{
+		vertex.boneIndices = skinnedInfo.boneInfos[vertexIndex].boneIndices;
+		vertex.boneWeights = skinnedInfo.boneInfos[vertexIndex].boneWeights;
+	}
+
 
 	vertex.pos = glm::vec3{ controlPoint[0], controlPoint[1], controlPoint[2] };
 	vertex.normal = glm::vec3{ normal[0], normal[1], normal[2] };
@@ -213,5 +208,24 @@ void D3D::FbxLoader::SetupTangents(std::vector<D3D::Vertex>& vertices, std::vect
 		v0.tangent += tangent;
 		v1.tangent += tangent;
 		v2.tangent += tangent;
+	}
+}
+
+void D3D::FbxLoader::SetupSkin(fbxSkinnedInfo& skinnedInfo, int controlPointAmount)
+{
+	skinnedInfo.boneInfos.resize(controlPointAmount);
+
+
+	for (int boneIndex{}; boneIndex < skinnedInfo.pSkin->GetClusterCount(); boneIndex++)
+	{
+		auto cluster = skinnedInfo.pSkin->GetCluster(boneIndex);
+
+		for (int j{}; j < cluster->GetControlPointIndicesCount(); j++)
+		{
+			int controlPointIndex = cluster->GetControlPointIndices()[j];
+			float boneWeight = static_cast<float>(cluster->GetControlPointWeights()[j]);
+
+			skinnedInfo.boneInfos[controlPointIndex].AddBone(static_cast<float>(boneIndex), boneWeight);
+		}
 	}
 }
