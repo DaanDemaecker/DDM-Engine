@@ -44,4 +44,5 @@ add_executable(D3D-Lite-Engine_Build
 "Vulkan/VulkanRenderer.cpp"
 "Vulkan/VulkanUtils.cpp"
 "DataTypes/Materials/MultiMaterial.cpp"
-"Engine/ServiceLocator/ModelLoader/ObjLoader.cpp")
+"Engine/ServiceLocator/ModelLoader/ObjLoader.cpp"
+"Engine/ServiceLocator/ModelLoader/FbxLoader.cpp")
