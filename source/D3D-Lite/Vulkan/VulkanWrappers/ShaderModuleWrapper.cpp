@@ -98,6 +98,24 @@ void D3D::ShaderModuleWrapper::AddDescriptorInfo(std::map<VkDescriptorType, int>
 	}
 }
 
+void D3D::ShaderModuleWrapper::AddPushConstantRanges(std::vector<VkPushConstantRange>& pushConstantRanges)
+{
+	auto index = pushConstantRanges.size();
+	auto ranges = m_ReflectShaderModule.push_constant_blocks;
+	int pushConstantRangeAmount = m_ReflectShaderModule.push_constant_block_count;
+
+	pushConstantRanges.resize(index + pushConstantRangeAmount);
+
+	for (int i{}; i < pushConstantRangeAmount; i++)
+	{
+		pushConstantRanges[index].offset = ranges[i].offset;
+		pushConstantRanges[index].size = ranges[i].size;
+		pushConstantRanges[index].stageFlags = m_ReflectShaderModule.shader_stage;
+
+		index++;
+	}
+}
+
 void D3D::ShaderModuleWrapper::CreateShaderModule(VkDevice device)
 {
 	// Create modlue create info

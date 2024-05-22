@@ -52,6 +52,8 @@ namespace D3D
 
 		// Add the amount of each descriptor type and the amount of descriptors per binding
 		void AddDescriptorInfo(std::map<VkDescriptorType, int>& typeCount, std::map<int, int>& descriptorsPerBinding);
+
+		void AddPushConstantRanges(std::vector<VkPushConstantRange>& pushConstantRanges);
 	private:
 		// The binary code from the shader
 		std::vector<char> m_ShaderCode{};

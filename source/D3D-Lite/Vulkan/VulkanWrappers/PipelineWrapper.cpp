@@ -135,8 +135,9 @@ void D3D::PipelineWrapper::CreatePipeline(VkDevice device, VkRenderPass renderPa
 
 	// Create pipeline layout info
 	VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
+	std::vector<VkPushConstantRange> pushConstantRanges{};
 	// Set pipeline layout info
-	SetPipelineLayoutCreateInfo(pipelineLayoutInfo);
+	SetPipelineLayoutCreateInfo(pipelineLayoutInfo, pushConstantRanges, shaderModuleWrappers);
 
 	// Create pipeline layout
 	if (vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &m_PipelineLayout) != VK_SUCCESS)
@@ -358,7 +359,9 @@ void D3D::PipelineWrapper::SetColorblendStateCreateInfo(VkPipelineColorBlendStat
 	colorBlending.blendConstants[3] = 0.0f;
 }
 
-void D3D::PipelineWrapper::SetPipelineLayoutCreateInfo(VkPipelineLayoutCreateInfo& pipelineLayoutInfo)
+void D3D::PipelineWrapper::SetPipelineLayoutCreateInfo(VkPipelineLayoutCreateInfo& pipelineLayoutInfo,
+	std::vector<VkPushConstantRange>& pushConstantRanges,
+	std::vector<std::unique_ptr<D3D::ShaderModuleWrapper>>& shaderModules)
 {
 	// Set type to pipeline layout create info
 	pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
@@ -367,12 +370,11 @@ void D3D::PipelineWrapper::SetPipelineLayoutCreateInfo(VkPipelineLayoutCreateInf
 	// Get the correct layout
 	pipelineLayoutInfo.pSetLayouts = &m_DescriptorSetLayout;
 
-	// Code for adding push constant
-	/*VkPushConstantRange pushConstantRange = {};
-	pushConstantRange.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-	pushConstantRange.offset = 0;
-	pushConstantRange.size = sizeof(LightObject);*/
+	for (auto& module : shaderModules)
+	{
+		module->AddPushConstantRanges(pushConstantRanges);
+	}
 
-	//pipelineLayoutInfo.pushConstantRangeCount = 1; // Number of push constant ranges used by the pipeline
-	//pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange; // Array of push constant ranges used by the pipeline
+	pipelineLayoutInfo.pushConstantRangeCount = static_cast<uint32_t>(pushConstantRanges.size());
+	pipelineLayoutInfo.pPushConstantRanges = pushConstantRanges.data();
 }
