@@ -21,17 +21,7 @@ D3D::FbxLoader::~FbxLoader()
 
 void D3D::FbxLoader::LoadFbxModel(const std::string& path, std::vector<D3D::Vertex>& vertices, std::vector<uint32_t>& indices)
 {
-	auto pFbxImporter = FbxImporter::Create(m_pFbxManager, "importer");
-	// Import the FBX file
-	const char* filename = path.c_str();
-	if (!pFbxImporter->Initialize(filename, -1, m_pFbxManager->GetIOSettings())) {
-		std::cerr << "Failed to initialize importer: " << pFbxImporter->GetStatus().GetErrorString() << std::endl;
-		return;
-	}
-
-	// Create a scene and import it
-	FbxScene* scene = FbxScene::Create(m_pFbxManager, "Scene");
-	pFbxImporter->Import(scene);
+	FbxScene* scene = LoadScene(path);
 
 	int baseUvIndex{};
 
@@ -59,8 +49,6 @@ void D3D::FbxLoader::LoadFbxModel(const std::string& path, std::vector<D3D::Vert
 
 	// Destroy the scene and manager
 	scene->Destroy();
-	pFbxImporter->Destroy();
-
 
 	SetupTangents(vertices, indices);
 }
@@ -80,11 +68,6 @@ void D3D::FbxLoader::ConvertMesh(FbxMesh* pMesh,
 	fbxSkinnedInfo skinnedInfo{};
 	skinnedInfo.isSkinned = static_cast<bool>(pMesh->GetDeformerCount());
 
-	int toTest{};
-
-
-
-	int amount{};
 	if (skinnedInfo.isSkinned)
 	{
 		skinnedInfo.pSkin = static_cast<FbxSkin*>(pMesh->GetDeformer(0, FbxDeformer::eSkin));
@@ -234,3 +217,23 @@ void D3D::FbxLoader::LoadAnimations(const std::string& path, std::vector<std::un
 {
 
 }
+
+FbxScene* D3D::FbxLoader::LoadScene(const std::string& path)
+{
+	auto pFbxImporter = FbxImporter::Create(m_pFbxManager, "importer");
+	// Import the FBX file
+	const char* filename = path.c_str();
+	if (!pFbxImporter->Initialize(filename, -1, m_pFbxManager->GetIOSettings())) {
+		std::cerr << "Failed to initialize importer: " << pFbxImporter->GetStatus().GetErrorString() << std::endl;
+		return nullptr;
+	}
+
+	// Create a scene and import it
+	FbxScene* scene = FbxScene::Create(m_pFbxManager, "Scene");
+	pFbxImporter->Import(scene);
+
+	pFbxImporter->Destroy();
+
+	return scene;
+}
+

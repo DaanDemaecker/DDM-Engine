@@ -83,6 +83,8 @@ namespace D3D
 		void SetupTangents(std::vector<D3D::Vertex>& vertices, std::vector<uint32_t>& indices);
 
 		void SetupSkin(fbxSkinnedInfo& skinnedInfo, int controlPointAmount);
+
+		FbxScene* LoadScene(const std::string& path);
 	};
 }
 
