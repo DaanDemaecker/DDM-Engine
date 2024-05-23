@@ -11,7 +11,7 @@
 // Standard library includes
 #include <vector>
 #include <unordered_map>
-
+#include <memory>
 
 namespace D3D
 {
@@ -22,14 +22,18 @@ namespace D3D
 
 		~FbxLoader();
 
-
 		// Load in a fbx file given a file path
 		// Parameters:
 		//     - path: The path to the model file
 		//     - vertices: The vector that will be used to store the vertices
 		//     - indices: The vector that will be used to store the indices
-		void LoadFbx(const std::string& path, std::vector<D3D::Vertex>& vertices, std::vector<uint32_t>& indices);
+		void LoadFbxModel(const std::string& path, std::vector<D3D::Vertex>& vertices, std::vector<uint32_t>& indices);
 
+		// Load in animations given a file path
+		// Parameters:
+		//     - path: The path to the file
+		//     - animationClips: The vector that will be used to store the animationc lips
+		void LoadAnimations(const std::string& path, std::vector<std::unique_ptr<AnimationClip>>& animationClips);
 	private:
 
 		FbxManager* m_pFbxManager{};

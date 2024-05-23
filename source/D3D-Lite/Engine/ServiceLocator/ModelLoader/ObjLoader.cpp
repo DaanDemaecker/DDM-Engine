@@ -7,7 +7,7 @@
 // Standard library includes
 #include <iostream>
 
-void D3D::ObjLoader::LoadObj(const std::string& path, std::vector<D3D::Vertex>& vertices, std::vector<uint32_t>& indices)
+void D3D::ObjLoader::LoadObjModel(const std::string& path, std::vector<D3D::Vertex>& vertices, std::vector<uint32_t>& indices)
 {
 	// Create needed objects to read in .obj file
 	tinyobj::attrib_t attrib{};

@@ -25,7 +25,7 @@ namespace D3D
 		void SetWorldPosition(float x, float y, float z);
 		void SetWorldPosition(const glm::vec3& pos);
 
-		void SetPositionDirtyFlag();
+		void SetPositionDirtyFlag() const;
 
 		//Rotation
 		const glm::quat& GetLocalRotation() const { return m_LocalRotation; }
@@ -42,7 +42,7 @@ namespace D3D
 		void SetWorldRotation(float x, float y, float z);
 		void SetWorldRotation(const glm::vec3& rot);
 
-		void SetRotationDirtyFlag();
+		void SetRotationDirtyFlag() const;
 
 		//Scale
 		const glm::vec3& GetLocalScale() const { return m_LocalScale; }
@@ -53,7 +53,7 @@ namespace D3D
 		void SetWorldScale(float x, float y, float z);
 		void SetWorldScale(const  glm::vec3 scale);
 
-		void SetScaleDirtyFlag();
+		void SetScaleDirtyFlag() const;
 
 		glm::vec3 GetForward();
 		glm::vec3 GetUp();

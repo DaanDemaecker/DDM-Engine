@@ -101,7 +101,7 @@ void D3D::TransformComponent::SetWorldPosition(const glm::vec3& pos)
 	SetLocalPosition(pos - (GetWorldPosition() - m_LocalPosition));
 }
 
-void D3D::TransformComponent::SetPositionDirtyFlag()
+void D3D::TransformComponent::SetPositionDirtyFlag() const
 {
 	for (auto& pChild : GetOwner()->GetChildren())
 	{
@@ -177,7 +177,7 @@ void D3D::TransformComponent::SetWorldRotation(const glm::vec3& rot)
 	SetLocalRotation(localRotation);
 }
 
-void D3D::TransformComponent::SetRotationDirtyFlag()
+void D3D::TransformComponent::SetRotationDirtyFlag() const
 {
 	for (auto& pChild : GetOwner()->GetChildren())
 	{
@@ -214,7 +214,7 @@ void D3D::TransformComponent::SetWorldScale(const glm::vec3 scale)
 	SetLocalScale(scale/(GetWorldScale()/m_LocalScale));
 }
 
-void D3D::TransformComponent::SetScaleDirtyFlag()
+void D3D::TransformComponent::SetScaleDirtyFlag() const
 {
 	for (auto& pChild : GetOwner()->GetChildren())
 	{

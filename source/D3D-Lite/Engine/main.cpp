@@ -17,6 +17,7 @@
 
 #include "../Components/RotatorComponent.h"
 #include "../Components/SpectatorMovementComponent.h"
+#include "../Components/AnimatorComponent.h"
 
 #include "../Vulkan/VulkanRenderer.h"
 
@@ -44,11 +45,11 @@ void load()
 
 	auto& renderer{ D3D::VulkanRenderer::GetInstance() };
 
-	SetupVehicle(scene.get());
+	//SetupVehicle(scene.get());
 
 	//SetupVikingRoom(scene.get());
 
-	//SetupGun(scene.get());
+	SetupGun(scene.get());
 
 	SetupMario(scene.get());
 
@@ -69,6 +70,7 @@ void SetupPipelines()
 	renderer.AddGraphicsPipeline("Specular", { "Resources/Shaders/Specular.Vert.spv", "Resources/Shaders/Specular.Frag.spv" });
 	renderer.AddGraphicsPipeline("DiffNormSpec", { "Resources/Shaders/DiffNormSpec.Vert.spv", "Resources/Shaders/DiffNormSpec.Frag.spv" });
 	renderer.AddGraphicsPipeline("MultiShader", { "Resources/Shaders/MultiShader.Vert.spv", "Resources/Shaders/MultiShader.Frag.spv" });
+	renderer.AddGraphicsPipeline("Skinned", { "Resources/Shaders/Skinned.Vert.spv", "Resources/Shaders/MultiShader.Frag.spv" });
 }
 
 void SetupVehicle(D3D::Scene* scene)
@@ -149,6 +151,9 @@ void SetupMario(D3D::Scene* scene)
 
 	auto pMarioModel{ pMario->AddComponent<D3D::MeshRenderComponent>() };
 	pMarioModel->SetMesh(pGunMesh);
+
+	auto pMarioAnimationComponent{ pMario->AddComponent<D3D::AnimatorComponent>() };
+	pMarioAnimationComponent->AddAnimations("Resources/Models/MarioDancing.fbx");
 
 	auto pMarioTransform{ pMario->GetTransform() };
 	pMarioTransform->SetLocalPosition(0.f, -5.f, 8.f);

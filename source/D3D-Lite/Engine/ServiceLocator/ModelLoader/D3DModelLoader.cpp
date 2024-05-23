@@ -33,12 +33,12 @@ void D3D::D3DModelLoader::LoadModel(const std::string& path, std::vector<D3D::Ve
 	if (extension == "obj")
 	{
 		// If the extension is .obj, use obj loader
-		m_pObjLoader->LoadObj(path, vertices, indices);
+		m_pObjLoader->LoadObjModel(path, vertices, indices);
 	}
 	else if (extension == "fbx")
 	{
 		// If the extension is .fbx, use fbx sdk to load in model
-		m_pFbxLoader->LoadFbx(path, vertices, indices);
+		m_pFbxLoader->LoadFbxModel(path, vertices, indices);
 	}
 	else
 	{
@@ -47,3 +47,19 @@ void D3D::D3DModelLoader::LoadModel(const std::string& path, std::vector<D3D::Ve
 	}
 }
 
+void D3D::D3DModelLoader::LoadAnimations(const std::string& path, std::vector<std::unique_ptr<AnimationClip>>& animationClips)
+{
+	// Get the extension of the file
+	auto extension{ std::move(Utils::GetExtension(path)) };
+
+	 if (extension == "fbx")
+	{
+		// If the extension is .fbx, use fbx sdk to load in model
+		m_pFbxLoader->LoadAnimations(path, animationClips);
+	}
+	else
+	{
+		// If the extension can't be handled, warn user
+		std::cout << extension << " is not a supported animation format \n";
+	}
+}

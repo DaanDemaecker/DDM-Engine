@@ -11,6 +11,7 @@
 
 // Standard library includes
 #include <string>
+#include <memory>
 
 namespace D3D
 {
@@ -33,6 +34,11 @@ namespace D3D
 	//     - indices: The vector that will be used to store the indices
 	virtual void LoadModel(const std::string& path, std::vector<D3D::Vertex>& vertices, std::vector<uint32_t>& indices) = 0;
 
+	// Load in animations given a file path
+	// Parameters:
+	//     - path: The path to the file
+	//     - animationClips: The vector that will be used to store the animationc lips
+	virtual void LoadAnimations(const std::string& path, std::vector<std::unique_ptr<AnimationClip>>& animationClips) = 0;
 	};
 
 
@@ -48,6 +54,12 @@ namespace D3D
 	//     - vertices: The vector that will be used to store the vertices
 	//     - indices: The vector that will be used to store the indices
 	virtual void LoadModel(const std::string& /*path*/, std::vector<D3D::Vertex>& /*vertices*/, std::vector<uint32_t>& /*indices*/) override {};
+
+	// Load in animations given a file path
+	// Parameters:
+	//     - path: The path to the file
+	//     - animationClips: The vector that will be used to store the animationc lips
+	virtual void LoadAnimations(const std::string& path, std::vector<std::unique_ptr<AnimationClip>>& animationClips) override {};
 
 	};
 }

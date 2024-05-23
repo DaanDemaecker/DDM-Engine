@@ -19,7 +19,7 @@ D3D::FbxLoader::~FbxLoader()
 	m_pFbxManager->Destroy();
 }
 
-void D3D::FbxLoader::LoadFbx(const std::string& path, std::vector<D3D::Vertex>& vertices, std::vector<uint32_t>& indices)
+void D3D::FbxLoader::LoadFbxModel(const std::string& path, std::vector<D3D::Vertex>& vertices, std::vector<uint32_t>& indices)
 {
 	auto pFbxImporter = FbxImporter::Create(m_pFbxManager, "importer");
 	// Import the FBX file
@@ -228,4 +228,9 @@ void D3D::FbxLoader::SetupSkin(fbxSkinnedInfo& skinnedInfo, int controlPointAmou
 			skinnedInfo.boneInfos[controlPointIndex].AddBone(static_cast<float>(boneIndex), boneWeight);
 		}
 	}
+}
+
+void D3D::FbxLoader::LoadAnimations(const std::string& path, std::vector<std::unique_ptr<AnimationClip>>& animationClips)
+{
+
 }

@@ -45,4 +45,10 @@ add_executable(D3D-Lite-Engine_Build
 "Vulkan/VulkanUtils.cpp"
 "DataTypes/Materials/MultiMaterial.cpp"
 "Engine/ServiceLocator/ModelLoader/ObjLoader.cpp"
-"Engine/ServiceLocator/ModelLoader/FbxLoader.cpp")
+"Engine/ServiceLocator/ModelLoader/FbxLoader.cpp"
+"Components/AnimatorComponent.cpp")
+
+# Suppress warning C26459 for this specific target
+if(MSVC)
+    target_compile_options(D3D-Lite-Engine_Build PRIVATE /wd26459)
+endif()

@@ -11,6 +11,7 @@
 // Standard library includes
 #include <optional>
 #include <array>
+#include <string>
 
 namespace D3D
 {
@@ -23,7 +24,7 @@ namespace D3D
 		std::optional<uint32_t> presentFamily;
 
 		// Function used to see if values have been initialized
-		bool isComplete()
+		bool isComplete() const
 		{
 			// Check if both variables have value
 			return graphicsFamily.has_value() && presentFamily.has_value();
@@ -201,6 +202,22 @@ namespace D3D
 			// Compare every attribute seperately
 			return pos == other.pos && color == other.color && texCoord == other.texCoord && tangent == other.tangent && normal == other.normal;
 		}
+	};
+
+	struct AnimationKey
+	{
+		float tick{};
+		std::vector<glm::mat4x4> boneTransforms{};
+	};
+
+	struct AnimationClip
+	{
+		AnimationClip() = default;
+
+		std::wstring name{};
+		float duration{};
+		float ticksPerSecond{};
+		std::vector<AnimationKey> keys{};
 	};
 
 	// Uniform buffer object
