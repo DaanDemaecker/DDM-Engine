@@ -46,6 +46,9 @@ namespace D3D
 		// Descriptorpool needed for ImGUI
 		VkDescriptorPool m_DescriptorPool{};
 
+		// Show the ImGui Demo
+		bool m_ShowDemo{ true };
+
 		// Initialization of descriptorpool
 		// Parameters:
 		//     device: handle for the VkDevice

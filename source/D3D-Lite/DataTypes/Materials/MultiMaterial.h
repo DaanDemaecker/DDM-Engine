@@ -71,8 +71,6 @@ namespace D3D
 
 		std::unique_ptr<D3D::TextureDescriptorObject> m_pSpecularTextureObject{};
 
-		bool m_ShowGuiWindow{ true };
-
 		void UpdateShaderBuffer();
 	};
 }

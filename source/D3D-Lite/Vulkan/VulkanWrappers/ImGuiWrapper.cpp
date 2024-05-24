@@ -56,9 +56,11 @@ void D3D::ImGuiWrapper::Render(VkCommandBuffer commandBuffer)
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
 
-	ImGui::ShowDemoWindow();
+	if (m_ShowDemo)
+	{
+		ImGui::ShowDemoWindow();
+	}
 
-	//ImGui::ShowDemoWindow();
 	SceneManager::GetInstance().OnGui();
 
 	// End ImGui frame

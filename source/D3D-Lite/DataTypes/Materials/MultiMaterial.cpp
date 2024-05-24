@@ -23,53 +23,57 @@ D3D::MultiMaterial::MultiMaterial(const std::string& pipeline)
 
 void D3D::MultiMaterial::OnGUI()
 {
-	ImGui::Begin("MultiMaterial", &m_ShowGuiWindow);
+	ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_Framed;
 
-	ImGui::Text("Textures: ");
-	
-	bool placeHolder{false};
-
-	if (m_MultiShaderBuffer.diffuseAmount > 0)
+	if (ImGui::TreeNodeEx("Multi Material", flags))
 	{
-		placeHolder = static_cast<bool>(m_MultiShaderBuffer.diffuseEnabled);
-		
-		// Create a checkbox (toggle box) and update its value
-		ImGui::Checkbox("Diffuse", &placeHolder);
+		ImGui::Text("Textures: ");
 
-		m_MultiShaderBuffer.diffuseEnabled = static_cast<uint32_t>(placeHolder);
+		bool placeHolder{ false };
+
+		if (m_MultiShaderBuffer.diffuseAmount > 0)
+		{
+			placeHolder = static_cast<bool>(m_MultiShaderBuffer.diffuseEnabled);
+
+			// Create a checkbox (toggle box) and update its value
+			ImGui::Checkbox("Diffuse", &placeHolder);
+
+			m_MultiShaderBuffer.diffuseEnabled = static_cast<uint32_t>(placeHolder);
+		}
+
+		if (m_MultiShaderBuffer.normalAmount > 0)
+		{
+			placeHolder = static_cast<bool>(m_MultiShaderBuffer.normalEnabled);
+
+			// Create a checkbox (toggle box) and update its value
+			ImGui::Checkbox("Normal map", &placeHolder);
+
+			m_MultiShaderBuffer.normalEnabled = static_cast<uint32_t>(placeHolder);
+		}
+
+		if (m_MultiShaderBuffer.glossAmount > 0)
+		{
+			placeHolder = static_cast<bool>(m_MultiShaderBuffer.glossEnabled);
+
+			// Create a checkbox (toggle box) and update its value
+			ImGui::Checkbox("Gloss", &placeHolder);
+
+			m_MultiShaderBuffer.glossEnabled = static_cast<uint32_t>(placeHolder);
+		}
+
+		if (m_MultiShaderBuffer.specularAmount > 0)
+		{
+			placeHolder = static_cast<bool>(m_MultiShaderBuffer.specularEnabled);
+
+			// Create a checkbox (toggle box) and update its value
+			ImGui::Checkbox("Specular", &placeHolder);
+
+			m_MultiShaderBuffer.specularEnabled = static_cast<uint32_t>(placeHolder);
+		}
+
+
+		ImGui::TreePop();
 	}
-
-	if (m_MultiShaderBuffer.normalAmount > 0)
-	{
-		placeHolder = static_cast<bool>(m_MultiShaderBuffer.normalEnabled);
-
-		// Create a checkbox (toggle box) and update its value
-		ImGui::Checkbox("Normal map", &placeHolder);
-
-		m_MultiShaderBuffer.normalEnabled = static_cast<uint32_t>(placeHolder);
-	}
-
-	if (m_MultiShaderBuffer.glossAmount > 0)
-	{
-		placeHolder = static_cast<bool>(m_MultiShaderBuffer.glossEnabled);
-
-		// Create a checkbox (toggle box) and update its value
-		ImGui::Checkbox("Gloss", &placeHolder);
-
-		m_MultiShaderBuffer.glossEnabled = static_cast<uint32_t>(placeHolder);
-	}
-
-	if (m_MultiShaderBuffer.specularAmount > 0)
-	{
-		placeHolder = static_cast<bool>(m_MultiShaderBuffer.specularEnabled);
-
-		// Create a checkbox (toggle box) and update its value
-		ImGui::Checkbox("Specular", &placeHolder);
-
-		m_MultiShaderBuffer.specularEnabled = static_cast<uint32_t>(placeHolder);
-	}
-
-	ImGui::End();
 
 	UpdateShaderBuffer();
 }

@@ -1,5 +1,6 @@
 #include "GameObject.h"
 #include "../Components/TransformComponent.h"
+#include "../Includes/ImGuiIncludes.h"
 
 D3D::GameObject::~GameObject()
 {
@@ -73,6 +74,7 @@ void D3D::GameObject::Init()
 
 void D3D::GameObject::OnSceneLoad()
 {
+
 	for (auto& component : m_pComponents)
 	{
 		component->OnSceneLoad();
@@ -199,10 +201,17 @@ void D3D::GameObject::Render() const
 
 void D3D::GameObject::OnGUI()
 {
-	for (auto& component : m_pComponents)
+	ImGui::Begin(m_Name.c_str(), &m_ShowGuiWindow);
+
+	if (m_ShowGuiWindow)
 	{
-		component->OnGUI();
+		for (auto& component : m_pComponents)
+		{
+			component->OnGUI();
+		}
 	}
+
+	ImGui::End();
 
 	for (auto& pChild : m_pChildren)
 	{

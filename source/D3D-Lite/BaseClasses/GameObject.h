@@ -91,6 +91,8 @@ namespace D3D
 		std::shared_ptr<TransformComponent> m_pTransform{};
 
 		std::vector<std::shared_ptr<Component>> m_pComponents{};
+
+		bool m_ShowGuiWindow{ true };
 	};
 
 	template<class T>
