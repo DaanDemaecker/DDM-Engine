@@ -45,11 +45,11 @@ void load()
 
 	auto& renderer{ D3D::VulkanRenderer::GetInstance() };
 
-	//SetupVehicle(scene.get());
+	SetupVehicle(scene.get());
 
 	//SetupVikingRoom(scene.get());
 
-	SetupGun(scene.get());
+	//SetupGun(scene.get());
 
 	SetupMario(scene.get());
 
@@ -81,11 +81,9 @@ void SetupVehicle(D3D::Scene* scene)
 	
 	pVehicleMaterial->AddNormalMap(std::initializer_list<const std::string>{"resources/images/vehicle_normal.png"});
 
+	pVehicleMaterial->AddGlossTextures(std::initializer_list<const std::string>{"resources/images/vehicle_gloss.png"});
 
-	//std::shared_ptr<D3D::TexturedMaterial> pVehicleMaterial{ std::make_shared<D3D::TexturedMaterial>
-	//	(std::initializer_list<const std::string>{"resources/images/vehicle_diffuse.png", "resources/images/vehicle_normal.png",
-	//	"resources/images/vehicle_gloss.png", "resources/images/vehicle_specular.png"},
-	//		"DiffNormSpec") };
+	pVehicleMaterial->AddSpecularTextures(std::initializer_list<const std::string>{"resources/images/vehicle_specular.png"});
 	
 	auto pVehicle{ scene->CreateGameObject("Vehicle") };
 	//pVehicle->AddComponent<D3D::RotatorComponent>();

@@ -17,6 +17,10 @@ namespace D3D
 		alignas(4) uint32_t diffuseEnabled{0};
 		alignas(4) int normalAmount{ 0 };
 		alignas(4) uint32_t normalEnabled { 0 };
+		alignas(4) int glossAmount{ 0 };
+		alignas(4) uint32_t glossEnabled { 0 };
+		alignas(4) int specularAmount{ 0 };
+		alignas(4) uint32_t specularEnabled { 0 };
 	};
 
 	class TextureDescriptorObject;
@@ -46,6 +50,14 @@ namespace D3D
 
 		void AddNormalMap(std::initializer_list<const std::string>& filePaths);
 
+		void AddGlossTextures(std::initializer_list<const std::string>&& filePaths);
+
+		void AddGlossTextures(std::initializer_list<const std::string>& filePaths);
+
+		void AddSpecularTextures(std::initializer_list<const std::string>&& filePaths);
+
+		void AddSpecularTextures(std::initializer_list<const std::string>& filePaths);
+
 
 	private:
 		MultiShaderBuffer m_MultiShaderBuffer{};
@@ -54,6 +66,10 @@ namespace D3D
 		std::unique_ptr<D3D::TextureDescriptorObject> m_pDiffuseTextureObject{};
 
 		std::unique_ptr<D3D::TextureDescriptorObject> m_pNormalTextureObject{};
+
+		std::unique_ptr<D3D::TextureDescriptorObject> m_pGlossTextureObject{};
+
+		std::unique_ptr<D3D::TextureDescriptorObject> m_pSpecularTextureObject{};
 
 		bool m_ShowGuiWindow{ true };
 

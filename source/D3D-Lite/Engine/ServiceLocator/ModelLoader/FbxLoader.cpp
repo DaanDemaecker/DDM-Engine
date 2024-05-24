@@ -215,7 +215,18 @@ void D3D::FbxLoader::SetupSkin(fbxSkinnedInfo& skinnedInfo, int controlPointAmou
 
 void D3D::FbxLoader::LoadAnimations(const std::string& path, std::vector<std::unique_ptr<AnimationClip>>& animationClips)
 {
+	FbxScene* pScene = LoadScene(path);
 
+	//int animStackCount = pScene->GetSrcObjectCount<FbxAnimLayer>();
+
+	FbxAnimLayer* test = nullptr;
+	for (int i = 0; i < 5; ++i) {
+		//FbxAnimStack* animStack = (FbxAnimStack*)pScene->GetSrcObject<FbxAnimStack>(i);
+		// Use animStack
+	}
+
+
+	pScene->Destroy();
 }
 
 FbxScene* D3D::FbxLoader::LoadScene(const std::string& path)

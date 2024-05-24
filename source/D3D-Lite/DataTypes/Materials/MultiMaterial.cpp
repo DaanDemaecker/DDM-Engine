@@ -14,6 +14,10 @@ D3D::MultiMaterial::MultiMaterial(const std::string& pipeline)
 
 	m_pNormalTextureObject = std::make_unique<D3D::TextureDescriptorObject>();
 
+	m_pGlossTextureObject = std::make_unique<D3D::TextureDescriptorObject>();
+
+	m_pSpecularTextureObject = std::make_unique<D3D::TextureDescriptorObject>();
+
 	UpdateShaderBuffer();
 }
 
@@ -23,19 +27,47 @@ void D3D::MultiMaterial::OnGUI()
 
 	ImGui::Text("Textures: ");
 	
-	bool placeHolder{static_cast<bool>(m_MultiShaderBuffer.diffuseEnabled)};
+	bool placeHolder{false};
 
-	// Create a checkbox (toggle box) and update its value
-	ImGui::Checkbox("Diffuse", &placeHolder);
+	if (m_MultiShaderBuffer.diffuseAmount > 0)
+	{
+		placeHolder = static_cast<bool>(m_MultiShaderBuffer.diffuseEnabled);
+		
+		// Create a checkbox (toggle box) and update its value
+		ImGui::Checkbox("Diffuse", &placeHolder);
 
-	m_MultiShaderBuffer.diffuseEnabled = static_cast<uint32_t>(placeHolder);
+		m_MultiShaderBuffer.diffuseEnabled = static_cast<uint32_t>(placeHolder);
+	}
 
-	placeHolder = static_cast<bool>(m_MultiShaderBuffer.normalEnabled);
+	if (m_MultiShaderBuffer.normalAmount > 0)
+	{
+		placeHolder = static_cast<bool>(m_MultiShaderBuffer.normalEnabled);
 
-	// Create a checkbox (toggle box) and update its value
-	ImGui::Checkbox("Normal map", &placeHolder);
+		// Create a checkbox (toggle box) and update its value
+		ImGui::Checkbox("Normal map", &placeHolder);
 
-	m_MultiShaderBuffer.normalEnabled = static_cast<uint32_t>(placeHolder);
+		m_MultiShaderBuffer.normalEnabled = static_cast<uint32_t>(placeHolder);
+	}
+
+	if (m_MultiShaderBuffer.glossAmount > 0)
+	{
+		placeHolder = static_cast<bool>(m_MultiShaderBuffer.glossEnabled);
+
+		// Create a checkbox (toggle box) and update its value
+		ImGui::Checkbox("Gloss", &placeHolder);
+
+		m_MultiShaderBuffer.glossEnabled = static_cast<uint32_t>(placeHolder);
+	}
+
+	if (m_MultiShaderBuffer.specularAmount > 0)
+	{
+		placeHolder = static_cast<bool>(m_MultiShaderBuffer.specularEnabled);
+
+		// Create a checkbox (toggle box) and update its value
+		ImGui::Checkbox("Specular", &placeHolder);
+
+		m_MultiShaderBuffer.specularEnabled = static_cast<uint32_t>(placeHolder);
+	}
 
 	ImGui::End();
 
@@ -63,6 +95,10 @@ void D3D::MultiMaterial::UpdateDescriptorSets(std::vector<VkDescriptorSet>& desc
 	descriptorObjectList.push_back(m_pDiffuseTextureObject.get());
 
 	descriptorObjectList.push_back(m_pNormalTextureObject.get());
+
+	descriptorObjectList.push_back(m_pGlossTextureObject.get());
+
+	descriptorObjectList.push_back(m_pSpecularTextureObject.get());
 
 	// Update descriptorsets
 	descriptorPool->UpdateDescriptorSets(descriptorSets, descriptorObjectList);
@@ -94,6 +130,36 @@ void D3D::MultiMaterial::AddNormalMap(std::initializer_list<const std::string>& 
 
 	m_MultiShaderBuffer.normalAmount = static_cast<int>(filePaths.size());
 	m_MultiShaderBuffer.normalEnabled = true;
+
+	UpdateShaderBuffer();
+}
+
+void D3D::MultiMaterial::AddGlossTextures(std::initializer_list<const std::string>&& filePaths)
+{
+	AddGlossTextures(filePaths);
+}
+
+void D3D::MultiMaterial::AddGlossTextures(std::initializer_list<const std::string>& filePaths)
+{
+	m_pGlossTextureObject->AddTextures(filePaths);
+
+	m_MultiShaderBuffer.glossAmount = static_cast<int>(filePaths.size());
+	m_MultiShaderBuffer.glossEnabled = true;
+
+	UpdateShaderBuffer();
+}
+
+void D3D::MultiMaterial::AddSpecularTextures(std::initializer_list<const std::string>&& filePaths)
+{
+	AddSpecularTextures(filePaths);
+}
+
+void D3D::MultiMaterial::AddSpecularTextures(std::initializer_list<const std::string>& filePaths)
+{
+	m_pSpecularTextureObject->AddTextures(filePaths);
+
+	m_MultiShaderBuffer.specularAmount = static_cast<int>(filePaths.size());
+	m_MultiShaderBuffer.specularEnabled = true;
 
 	UpdateShaderBuffer();
 }

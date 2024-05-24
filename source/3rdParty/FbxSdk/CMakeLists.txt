@@ -1,14 +1,25 @@
-# Include FMOD headers
-target_include_directories(D3D-Lite-Engine_Build PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
-
-# Link FMOD libraries
-add_custom_target(copy_fbxsdkDLL ALL)
-add_custom_command(
-	TARGET copy_fbxsdkDLL POST_BUILD
-	COMMAND ${CMAKE_COMMAND}
-	-E copy
-	${CMAKE_CURRENT_SOURCE_DIR}/dll/debug/libfbxsdk.dll
-	$<TARGET_FILE_DIR:D3D-Lite-Engine_Build>
-)
 
 target_link_libraries(D3D-Lite-Engine_Build PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/lib/debug/libfbxsdk.lib)
+
+# Include FBX SDK headers
+target_include_directories(D3D-Lite-Engine_Build PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+# Link FBX SDK libraries
+target_link_libraries(D3D-Lite-Engine_Build PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/lib/debug/libfbxsdk.lib)
+
+
+
+add_custom_target(copy_fbxsdkDLL ALL)
+# Copy the FBX SDK DLL to the output directory after build
+add_custom_command(
+    TARGET copy_fbxsdkDLL POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy
+    ${CMAKE_CURRENT_SOURCE_DIR}/dll/debug/libfbxsdk.dll
+    $<TARGET_FILE_DIR:D3D-Lite-Engine_Build>
+)
+
+# Optional: Specify properties for MSVC runtime library linkage
+if (MSVC)
+    set_property(TARGET D3D-Lite-Engine_Build PROPERTY
+        MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
+endif()

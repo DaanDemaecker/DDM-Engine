@@ -6,7 +6,7 @@ layout(binding = 0) uniform UniformBufferObject {
     mat4 proj;
 } ubo;
 
-layout(binding = 5) uniform Bones
+layout(binding = 7) uniform Bones
 {
 	mat4 boneList[];
 }bones;
