@@ -33,8 +33,6 @@ void D3D::D3DEngine::Run(const std::function<void()>& load)
 {
 	load();
 
-	std::cout << ConfigManager::GetInstance().GetString("ApplicationName") << std::endl;
-
 	auto& renderer{ VulkanRenderer::GetInstance() };
 	auto& sceneManager{ SceneManager::GetInstance() };
 	auto& time{ TimeManager::GetInstance() };

@@ -145,10 +145,10 @@ namespace LoadTestScene
 	{
 		auto pMario{ scene->CreateGameObject("Mario") };
 
-		auto pGunMesh{ std::make_shared<D3D::Mesh>("Resources/Models/MarioDancing.fbx") };
+		auto pMarioMesh{ std::make_shared<D3D::Mesh>("Resources/Models/MarioDancing.fbx") };
 
 		auto pMarioModel{ pMario->AddComponent<D3D::MeshRenderComponent>() };
-		pMarioModel->SetMesh(pGunMesh);
+		pMarioModel->SetMesh(pMarioMesh);
 
 		auto pMarioAnimationComponent{ pMario->AddComponent<D3D::AnimatorComponent>() };
 		pMarioAnimationComponent->AddAnimations("Resources/Models/MarioDancing.fbx");

@@ -6,6 +6,7 @@
 #include "../../Components/SkyBoxComponent.h"
 #include "../../Components/TransformComponent.h"
 #include "../../Components/DirectionalLightComponent.h"
+#include "../../Components/ModelLoaderComponent.h"
 
 namespace LoadModelLoaderScene
 {
@@ -15,6 +16,7 @@ namespace LoadModelLoaderScene
 
 	void SetupLight(D3D::Scene* scene);
 
+	void SetupModelLoader(D3D::Scene* scene);
 
 	void LoadModelLoaderScene()
 	{
@@ -27,6 +29,7 @@ namespace LoadModelLoaderScene
 
 		SetupLight(scene.get());
 
+		SetupModelLoader(scene.get());
 	}
 
 	void SetupPipelines()
@@ -99,4 +102,14 @@ namespace LoadModelLoaderScene
 
 		scene->SetLight(pLightComponent);
 	}
+
+	void SetupModelLoader(D3D::Scene* scene)
+	{
+		auto pModelLoader{ scene->CreateGameObject("ModelLoader") };
+		pModelLoader->SetShowImGui(true);
+
+		auto pModelLoaderComponent{pModelLoader->AddComponent<D3D::ModelLoaderComponent>()};
+		pModelLoaderComponent->SetShowImGui(true);
+	}
 }
+
