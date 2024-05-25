@@ -6,47 +6,33 @@
 
 void D3D::TransformComponent::OnGUI()
 {
-	/*static bool test{ true };
+	ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_None;
 
-	ImGui::Begin(GetOwner()->GetName().c_str(), &test);
+	if (ImGui::TreeNodeEx("Location", flags))
+	{
+		ImGui::InputFloat("x", &m_LocalPosition.x);
+		ImGui::InputFloat("y", &m_LocalPosition.y);
+		ImGui::InputFloat("z", &m_LocalPosition.z);
+		ImGui::TreePop();
+	}
 
+	if (ImGui::TreeNodeEx("Rotation", flags))
+	{
+		ImGui::InputFloat("x", &m_LocalRotation.x);
+		ImGui::InputFloat("y", &m_LocalRotation.y);
+		ImGui::InputFloat("z", &m_LocalRotation.z);
+		ImGui::TreePop();
+	}
 
-	auto vector{ GetWorldPosition() };
+	if (ImGui::TreeNodeEx("Scale", flags))
+	{
+		ImGui::InputFloat("x", &m_LocalScale.x);
+		ImGui::InputFloat("y", &m_LocalScale.y);
+		ImGui::InputFloat("z", &m_LocalScale.z);
+		ImGui::TreePop();
+	}
 
-		std::string text = "x: " + std::to_string(vector.x) +
-			"y: " + std::to_string(vector.y) +
-			"z: " + std::to_string(vector.z);
-
-		ImGui::Text("World position: ");
-		ImGui::Text(text.c_str());
-
-
-		vector = GetForward();
-		text = "x: " + std::to_string(vector.x) +
-			"y: " + std::to_string(vector.y) +
-			"z: " + std::to_string(vector.z);
-
-		ImGui::Text("Forward: ");
-		ImGui::Text(text.c_str());
-
-		vector = GetRight();
-		text = "x: " + std::to_string(vector.x) +
-			"y: " + std::to_string(vector.y) +
-			"z: " + std::to_string(vector.z);
-
-		ImGui::Text("Right: ");
-		ImGui::Text(text.c_str());
-
-		vector = GetUp();
-		text = "x: " + std::to_string(vector.x) +
-			"y: " + std::to_string(vector.y) +
-			"z: " + std::to_string(vector.z);
-
-		ImGui::Text("Up: ");
-		ImGui::Text(text.c_str());
-
-
-	ImGui::End();*/
+	SetPositionDirtyFlag();
 }
 
 void D3D::TransformComponent::SetLocalPosition(float x, float y, float z)
