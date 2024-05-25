@@ -57,6 +57,13 @@ namespace D3D
 		//     maximized: int that indicates if window was maximized or restored
 		static void MaximizeWindowCallback(GLFWwindow* pWindow, int maximized);
 
+		// Function that is called when file is dropped on this window
+		// Parameters:
+		//     pWindow: pointer to the window
+		//     count: amount of files dropped
+		//     paths: pointer to file path list
+		static void DropFileCallback(GLFWwindow* pWindow, int count, const char** paths);
+
 
 		// The window struct object
 		WindowStruct m_Window{};

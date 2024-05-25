@@ -6,6 +6,7 @@
 
 // Static library includes
 #include <functional>
+#include <iostream>
 
 D3D::Window::Window()
 {
@@ -114,6 +115,7 @@ void D3D::Window::InitWindow()
 	glfwSetWindowUserPointer(m_Window.pWindow, this);
 	glfwSetFramebufferSizeCallback(m_Window.pWindow, FramebufferResizeCallback);
 	glfwSetWindowMaximizeCallback(m_Window.pWindow, MaximizeWindowCallback);
+	glfwSetDropCallback(m_Window.pWindow, DropFileCallback);
 }
 
 void D3D::Window::FramebufferResizeCallback(GLFWwindow* pWindow, int width, int height)
@@ -131,4 +133,13 @@ void D3D::Window::FramebufferResizeCallback(GLFWwindow* pWindow, int width, int 
 void D3D::Window::MaximizeWindowCallback(GLFWwindow* /*pWindow*/, int /*maximized*/)
 {
 
+}
+
+
+void D3D::Window::DropFileCallback(GLFWwindow* window, int count, const char** paths)
+{
+	if (count > 0)
+	{
+		std::cout << paths[0] << std::endl;
+	}
 }
