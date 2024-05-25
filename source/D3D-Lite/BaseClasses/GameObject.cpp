@@ -201,17 +201,23 @@ void D3D::GameObject::Render() const
 
 void D3D::GameObject::OnGUI()
 {
-	ImGui::Begin(m_Name.c_str(), &m_ShowGuiWindow);
-
-	if (m_ShowGuiWindow)
+	if (m_ShowImGui)
 	{
-		for (auto& component : m_pComponents)
-		{
-			component->OnGUI();
-		}
-	}
+		ImGui::Begin(m_Name.c_str(), &m_ShowGuiWindow);
 
-	ImGui::End();
+		if (m_ShowGuiWindow)
+		{
+			for (auto& component : m_pComponents)
+			{
+				if (component->ShouldShowImGui())
+				{
+					component->OnGUI();
+				}
+			}
+		}
+
+		ImGui::End();
+	}
 
 	for (auto& pChild : m_pChildren)
 	{

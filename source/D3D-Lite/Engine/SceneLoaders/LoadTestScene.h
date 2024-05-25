@@ -84,6 +84,7 @@ namespace LoadTestScene
 		pVehicleMaterial->AddSpecularTextures(std::initializer_list<const std::string>{"resources/images/vehicle_specular.png"});
 
 		auto pVehicle{ scene->CreateGameObject("Vehicle") };
+		pVehicle->SetShowImGui(true);
 		//pVehicle->AddComponent<D3D::RotatorComponent>();
 
 		auto pVehicleMesh{ std::make_shared<D3D::Mesh>("Resources/Models/vehicle.obj") };
@@ -94,6 +95,7 @@ namespace LoadTestScene
 
 
 		auto pVehicleTransform{ pVehicle->GetTransform() };
+		pVehicleTransform->SetShowImGui(true);
 		pVehicleTransform->SetLocalPosition(0, 0, 3.f);
 		pVehicleTransform->SetLocalRotation(0.f, glm::radians(75.0f), 0.f);
 		pVehicleTransform->SetLocalScale(0.05f, 0.05f, 0.05f);
@@ -193,13 +195,15 @@ namespace LoadTestScene
 	void SetupLight(D3D::Scene* scene)
 	{
 		auto pLight{ scene->CreateGameObject("Light") };
+		pLight->SetShowImGui(true);
 
 		auto pLightComponent{ pLight->AddComponent<D3D::DirectionalLightComponent>() };
+		pLightComponent->SetShowImGui(true);
 
 		//pLightComponent->SetColor(glm::vec3{ 0, 0, 0 });
 
 		auto pLightTransform{ pLight->GetTransform() };
-
+		pLightTransform->SetShowImGui(true);
 		pLightTransform->SetLocalRotation(glm::vec3(0.0f, glm::radians(45.f), 0.0f));
 
 

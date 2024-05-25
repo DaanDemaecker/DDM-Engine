@@ -6,33 +6,45 @@
 
 void D3D::TransformComponent::OnGUI()
 {
-	ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_None;
+	ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_Framed;
 
-	if (ImGui::TreeNodeEx("Location", flags))
+	if (ImGui::TreeNodeEx("Transform", flags))
 	{
-		ImGui::InputFloat("x", &m_LocalPosition.x);
-		ImGui::InputFloat("y", &m_LocalPosition.y);
-		ImGui::InputFloat("z", &m_LocalPosition.z);
-		ImGui::TreePop();
-	}
 
-	if (ImGui::TreeNodeEx("Rotation", flags))
-	{
-		ImGui::InputFloat("x", &m_LocalRotation.x);
-		ImGui::InputFloat("y", &m_LocalRotation.y);
-		ImGui::InputFloat("z", &m_LocalRotation.z);
-		ImGui::TreePop();
-	}
+		if (ImGui::TreeNodeEx("Location", flags))
+		{
+			ImGui::SliderFloat("x", &m_LocalPosition.x, -10, 10);
+			ImGui::SliderFloat("y", &m_LocalPosition.y, -10, 10);
+			ImGui::SliderFloat("z", &m_LocalPosition.z, -10, 10);
+			ImGui::TreePop();
+		}
 
-	if (ImGui::TreeNodeEx("Scale", flags))
-	{
-		ImGui::InputFloat("x", &m_LocalScale.x);
-		ImGui::InputFloat("y", &m_LocalScale.y);
-		ImGui::InputFloat("z", &m_LocalScale.z);
+		if (ImGui::TreeNodeEx("Rotation", flags))
+		{
+			glm::vec3 rotation = glm::eulerAngles(m_LocalRotation);
+
+			ImGui::SliderAngle("x", &rotation.x);
+			ImGui::SliderAngle("y", &rotation.y);
+			ImGui::SliderAngle("z", &rotation.z);
+
+			m_LocalRotation = glm::quat(rotation);
+
+			ImGui::TreePop();
+		}
+
+		if (ImGui::TreeNodeEx("Scale", flags))
+		{
+			ImGui::SliderFloat("x", &m_LocalScale.x, 0.001, 2);
+			ImGui::SliderFloat("y", &m_LocalScale.y, 0.001, 2);
+			ImGui::SliderFloat("z", &m_LocalScale.z, 0.001, 2);
+			ImGui::TreePop();
+		}
 		ImGui::TreePop();
 	}
 
 	SetPositionDirtyFlag();
+	SetRotationDirtyFlag();
+	SetScaleDirtyFlag();
 }
 
 void D3D::TransformComponent::SetLocalPosition(float x, float y, float z)

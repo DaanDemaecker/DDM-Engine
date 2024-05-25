@@ -72,6 +72,9 @@ namespace D3D
 
 		void SetActive(bool isActive) { m_IsActive = isActive; }
 
+		bool ShouldShowImGui() const { return m_ShowImGui; }
+		void SetShowImGui(bool showImGui) { m_ShowImGui = showImGui; }
+
 		std::shared_ptr<TransformComponent> GetTransform() { return m_pTransform; }
 
 		const std::string& GetName() const { return m_Name; }
@@ -82,6 +85,7 @@ namespace D3D
 		const std::string m_Tag;
 
 		bool m_IsActive{ true };
+		bool m_ShowImGui{ false };
 		bool m_ShouldDestroy{ false };
 
 		GameObject* m_pParent{};

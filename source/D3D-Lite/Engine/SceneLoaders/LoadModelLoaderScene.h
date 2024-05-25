@@ -82,11 +82,15 @@ namespace LoadModelLoaderScene
 	{
 		auto pLight{ scene->CreateGameObject("Light") };
 
+		pLight->SetShowImGui(true);
+
 		auto pLightComponent{ pLight->AddComponent<D3D::DirectionalLightComponent>() };
+		pLightComponent->SetShowImGui(true);
 
 		//pLightComponent->SetColor(glm::vec3{ 0, 0, 0 });
 
 		auto pLightTransform{ pLight->GetTransform() };
+		pLightTransform->SetShowImGui(true);
 
 		pLightTransform->SetLocalRotation(glm::vec3(0.0f, glm::radians(45.f), 0.0f));
 

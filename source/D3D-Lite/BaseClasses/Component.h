@@ -54,8 +54,13 @@ namespace D3D
 		bool IsActive() const { return m_IsActive; }
 		void SetActive(bool isActive) { m_IsActive = isActive; }
 
+		bool ShouldShowImGui() const { return m_ShowImGui; }
+		void SetShowImGui(bool showImGui) { m_ShowImGui = showImGui; }
+
 	private:
 		bool m_IsActive{ true };
+
+		bool m_ShowImGui{ false };
 
 		GameObject* m_pOwner{nullptr};
 

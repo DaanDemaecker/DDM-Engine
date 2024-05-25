@@ -11,7 +11,9 @@
 #pragma warning(disable : 4201)
 #include <glm/gtx/hash.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #pragma warning(pop)
 
 #endif // !GLMIncluded
 
+//   glm/gtc/type_ptr.hpp
