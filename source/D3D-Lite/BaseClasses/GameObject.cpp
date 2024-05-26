@@ -183,6 +183,28 @@ void D3D::GameObject::LateUpdate()
 	}
 }
 
+void D3D::GameObject::PostUpdate()
+{
+	m_pComponents.erase(std::remove_if(m_pComponents.begin(), m_pComponents.end(), [](std::shared_ptr<Component>& pComponent)
+		{
+			return pComponent->ShouldDestroy();
+		}), m_pComponents.end());
+
+	m_pChildren.erase(std::remove_if(m_pChildren.begin(), m_pChildren.end(), [](std::unique_ptr<GameObject>& pChild)
+		{
+			return pChild->ShouldDestroy();
+		}), m_pChildren.end());
+
+
+	for (auto& pChild : m_pChildren)
+	{
+		if (pChild->IsActive())
+		{
+			pChild->PostUpdate();
+		}
+	}
+}
+
 void D3D::GameObject::Render() const
 {
 	for (auto& component : m_pComponents)
@@ -204,6 +226,13 @@ void D3D::GameObject::OnGUI()
 	if (m_ShowImGui)
 	{
 		ImGui::Begin(m_Name.c_str(), &m_ShowGuiWindow);
+
+		// Create a button
+		if (ImGui::Button("Destroy object"))
+		{
+			// Call the function with the text input
+			Destroy();
+		}
 
 		if (m_ShowGuiWindow)
 		{

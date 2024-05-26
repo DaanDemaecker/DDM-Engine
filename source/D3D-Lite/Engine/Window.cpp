@@ -132,14 +132,14 @@ void D3D::Window::FramebufferResizeCallback(GLFWwindow* pWindow, int width, int 
 
 void D3D::Window::MaximizeWindowCallback(GLFWwindow* /*pWindow*/, int /*maximized*/)
 {
-
+	 
 }
 
 
 void D3D::Window::DropFileCallback(GLFWwindow* window, int count, const char** paths)
 {
-	if (count > 0)
+	for (int i{}; i < count; i++)
 	{
-		std::cout << paths[0] << std::endl;
+		std::cout << paths[i] << std::endl;
 	}
 }
