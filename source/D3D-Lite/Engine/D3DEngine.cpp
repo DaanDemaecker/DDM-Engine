@@ -81,6 +81,8 @@ void D3D::D3DEngine::Run(const std::function<void()>& load)
 
 		sceneManager.LateUpdate();
 
+		sceneManager.PostUpdate();
+
 		sceneManager.Cleanup();
 
 		renderer.Render();

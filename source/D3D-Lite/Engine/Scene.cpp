@@ -63,6 +63,11 @@ void D3D::Scene::LateUpdate()
 	m_pSceneRoot->LateUpdate();
 }
 
+void D3D::Scene::PostUpdate()
+{
+	m_pSceneRoot->PostUpdate();
+}
+
 void D3D::Scene::RenderSkyBox()
 {
 	if (m_pActiveCamera != nullptr)

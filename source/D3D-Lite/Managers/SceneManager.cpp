@@ -152,6 +152,14 @@ void D3D::SceneManager::LateUpdate()
     }
 }
 
+void D3D::SceneManager::PostUpdate()
+{
+    if (m_ActiveScene != nullptr)
+    {
+        m_ActiveScene->PostUpdate();
+    }
+}
+
 void D3D::SceneManager::OnGui()
 {
     if (m_ActiveScene != nullptr)

@@ -79,6 +79,9 @@ namespace D3D
 
 		// Late update function
 		void LateUpdate();
+		
+		// Post update function
+		void PostUpdate();
 
 		// OnGui function
 		void OnGui();

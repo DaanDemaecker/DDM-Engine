@@ -37,6 +37,8 @@ namespace D3D
 
 		void LateUpdate();
 
+		void PostUpdate();
+
 		void RenderSkyBox();
 
 		void Render() const;
