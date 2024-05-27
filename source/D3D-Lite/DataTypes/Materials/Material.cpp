@@ -44,6 +44,8 @@ void D3D::Material::UpdateDescriptorSets(std::vector<VkDescriptorSet>& descripto
 
 	// Update descriptorsets
 	descriptorPool->UpdateDescriptorSets(descriptorSets, descriptorObjectList);
+
+	m_ShouldUpdateDescriptorSets = false;
 }
 
 VkDescriptorSetLayout D3D::Material::GetDescriptorLayout()

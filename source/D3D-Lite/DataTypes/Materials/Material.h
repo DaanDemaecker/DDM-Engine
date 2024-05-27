@@ -45,9 +45,12 @@ namespace D3D
 
 		DescriptorPoolWrapper* GetDescriptorPool();
 
+		bool ShouldUpdateDescriptorSets() const { return m_ShouldUpdateDescriptorSets; }
 	protected:
 		// The pipeline pair that is used for this material
 		PipelineWrapper* m_pPipeline{};
+
+		bool m_ShouldUpdateDescriptorSets{true};
 	};
 }
 #endif // !MaterialIncluded

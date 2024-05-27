@@ -51,6 +51,11 @@ void D3D::MeshRenderComponent::Render()
 	if (m_pMesh == nullptr)
 		return;
 
+	if (m_pMaterial->ShouldUpdateDescriptorSets())
+	{
+		UpdateDescriptorSets();
+	}
+
 	auto frame{ VulkanRenderer::GetInstance().GetCurrentFrame() };
 
 	UpdateUniformBuffer(frame);

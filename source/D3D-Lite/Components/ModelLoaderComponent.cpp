@@ -6,6 +6,7 @@
 #include "../Managers/SceneManager.h"
 #include "../Engine/Scene.h"
 #include "../DataTypes/Mesh.h"
+#include "../DataTypes/Materials/MultiMaterial.h"
 #include "../Components/MeshRenderComponent.h"
 #include "../Components/TransformComponent.h"
 
@@ -15,6 +16,7 @@
 D3D::ModelLoaderComponent::ModelLoaderComponent()
 	:Component()
 {
+
 }
 
 void D3D::ModelLoaderComponent::OnGUI()
@@ -42,11 +44,15 @@ void D3D::ModelLoaderComponent::LoadObject()
 	auto pObject{ SceneManager::GetInstance().GetActiveScene()->CreateGameObject(m_ObjectName)};
 	pObject->SetShowImGui(true);
 
+	std::shared_ptr<D3D::MultiMaterial> pMaterial{ std::make_shared<D3D::MultiMaterial>("MultiShader") };
 	auto pMesh{ std::make_shared<D3D::Mesh>(m_FilePath) };
 
-	auto pObjectModel{ pObject->AddComponent<D3D::MeshRenderComponent>() };
-	pObjectModel->SetMesh(pMesh);
+	auto pMeshRenderer{ pObject->AddComponent<D3D::MeshRenderComponent>() };
+	pMeshRenderer->SetShowImGui(true);
+	pMeshRenderer->SetMesh(pMesh);
+	pMeshRenderer->SetMaterial(pMaterial);
 
-	auto pObjectTransform{ pObject->GetTransform() };
-	pObjectTransform->SetShowImGui(true);
+	auto pGunTransform{ pObject->GetTransform() };
+	pGunTransform->SetShowImGui(true);
+	
 }

@@ -5,6 +5,8 @@
 #include "../DataTypes/Structs.h"
 #include "../DataTypes/DescriptorObjects/UboDescriptorObject.h"
 
+#include <memory>
+#include <vector>
 
 namespace D3D
 {

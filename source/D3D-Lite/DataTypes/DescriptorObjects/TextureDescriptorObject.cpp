@@ -60,6 +60,19 @@ void D3D::TextureDescriptorObject::AddTextures(const std::string& filePath)
 	SetupImageInfos();
 }
 
+
+void D3D::TextureDescriptorObject::Clear()
+{
+	m_Textures.clear();
+	
+	SetupImageInfos();
+}
+
+int D3D::TextureDescriptorObject::GetTextureAmount() const
+{
+	return m_Textures.size();
+}
+
 D3D::TextureDescriptorObject::~TextureDescriptorObject()
 {
 	// Get the device and clean up all the textures

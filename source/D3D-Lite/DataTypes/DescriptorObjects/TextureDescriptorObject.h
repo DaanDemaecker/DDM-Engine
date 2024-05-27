@@ -1,5 +1,8 @@
 // TextureDescriptorObject.h
 // This class wil handle the updating of texture descriptor sets
+#ifndef TextureDescriptorObjectIncluded
+#define TextureDescriptorObjectIncluded
+
 
 // File includes
 #include "DescriptorObject.h"
@@ -23,7 +26,10 @@ namespace D3D
         void AddTextures(std::initializer_list<const std::string>& filePaths);
 
         void AddTextures(const std::string& filePath);
+         
+        void Clear();
 
+        int GetTextureAmount() const;
 
         // Destructor
         virtual ~TextureDescriptorObject();
@@ -48,3 +54,5 @@ namespace D3D
         void SetupImageInfos();
     };
 }
+
+#endif // !TextureDescriptorObjectIncluded

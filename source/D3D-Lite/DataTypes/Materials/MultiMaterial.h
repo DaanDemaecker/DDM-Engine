@@ -4,6 +4,7 @@
 // File includes
 #include "Material.h"
 #include "../DescriptorObjects/UboDescriptorObject.h"
+#include "../DescriptorObjects/TextureDescriptorObject.h"
 
 
 // Standard library includes
@@ -22,8 +23,6 @@ namespace D3D
 		alignas(4) int specularAmount{ 0 };
 		alignas(4) uint32_t specularEnabled { 0 };
 	};
-
-	class TextureDescriptorObject;
 	
 	class MultiMaterial final : public Material
 	{
@@ -60,6 +59,16 @@ namespace D3D
 
 
 	private:
+		const int m_TextLength{ 125 };
+		struct GuiObject
+		{
+			char diffuseName[125]{};
+			char normalMapName[125]{};
+			char glossName[125]{};
+			char specularName[125]{};
+		} m_GuiObject;
+
+
 		MultiShaderBuffer m_MultiShaderBuffer{};
 		std::unique_ptr<D3D::UboDescriptorObject<MultiShaderBuffer>> m_pMultiShaderBufferDescriptor{};
 
