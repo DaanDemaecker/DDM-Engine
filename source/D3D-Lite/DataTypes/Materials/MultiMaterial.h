@@ -89,6 +89,14 @@ namespace D3D
 		void DropFileCallback(int count, const char** paths);
 
 		void SetFileName(char* text, int textLength, const char* path);
+
+		void DiffuseGui();
+
+		void NormalMapGui();
+
+		void GlossMapGui();
+
+		void SpecularMapGui();
 	};
 }
 

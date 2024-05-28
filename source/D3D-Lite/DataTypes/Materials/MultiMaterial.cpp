@@ -41,157 +41,14 @@ void D3D::MultiMaterial::OnGUI()
 	{
 		ImGui::Text("Textures: ");
 
-		bool placeHolder{ false };
+		DiffuseGui();
 
-		ImGui::Text("Diffuse: ");
+		NormalMapGui();
 
-		ImGui::InputText("Diffuse texture file path", m_GuiObject.diffuseName, IM_ARRAYSIZE(m_GuiObject.diffuseName));
-		if (ImGui::IsItemHovered())
-		{
-			m_GuiObject.diffuseHovered = true;
-		}
-		else
-		{
-			m_GuiObject.diffuseHovered = false;
-		}
+		GlossMapGui();
 
-
-		// Create a button
-		if (ImGui::Button("Add diffuse Texture"))
-		{
-			AddDiffuseTextures({ std::string{m_GuiObject.diffuseName} });
-		}
-
-		// Create a button
-		if (ImGui::Button("Clear Diffuse textures"))
-		{
-			m_pDiffuseTextureObject->Clear();
-			m_ShouldUpdateDescriptorSets = true;
-			m_MultiShaderBuffer.diffuseEnabled = false;
-		}
-
-		if (m_MultiShaderBuffer.diffuseAmount > 0)
-		{
-			placeHolder = static_cast<bool>(m_MultiShaderBuffer.diffuseEnabled);
-
-			// Create a checkbox (toggle box) and update its value
-			ImGui::Checkbox("", &placeHolder);
-
-			m_MultiShaderBuffer.diffuseEnabled = static_cast<uint32_t>(placeHolder);
-		}
-
-		ImGui::Text("Normal map: ");
-
-		ImGui::InputText("Normal map file path", m_GuiObject.normalMapName, IM_ARRAYSIZE(m_GuiObject.normalMapName));
-		if (ImGui::IsItemHovered())
-		{
-			m_GuiObject.normalMapHovered = true;
-		}
-		else
-		{
-			m_GuiObject.normalMapHovered = false;
-		}
-
-
-		// Create a button
-		if (ImGui::Button("Add normal map"))
-		{
-			AddNormalMap({ std::string{m_GuiObject.normalMapName} });
-		}
-
-		// Create a button
-		if (ImGui::Button("Clear Normal maps"))
-		{
-			m_pNormalTextureObject->Clear();
-			m_ShouldUpdateDescriptorSets = true;
-			m_MultiShaderBuffer.normalEnabled = false;
-		}
-
-		if (m_MultiShaderBuffer.normalAmount > 0)
-		{
-			placeHolder = static_cast<bool>(m_MultiShaderBuffer.normalEnabled);
-
-			// Create a checkbox (toggle box) and update its value
-			ImGui::Checkbox("", &placeHolder);
-
-			m_MultiShaderBuffer.normalEnabled = static_cast<uint32_t>(placeHolder);
-		}
-
-
-		ImGui::Text("Gloss map: ");
-
-		ImGui::InputText("Gloss map file path", m_GuiObject.glossName, IM_ARRAYSIZE(m_GuiObject.glossName));
-		if (ImGui::IsItemHovered())
-		{
-			m_GuiObject.glossHovered = true;
-		}
-		else
-		{
-			m_GuiObject.glossHovered = false;
-		}
-
-
-		// Create a button
-		if (ImGui::Button("Add gloss map"))
-		{
-			AddGlossTextures({ std::string{m_GuiObject.glossName} });
-		}
-
-		// Create a button
-		if (ImGui::Button("Clear Gloss maps"))
-		{
-			m_pGlossTextureObject->Clear();
-			m_ShouldUpdateDescriptorSets = true;
-			m_MultiShaderBuffer.glossEnabled = false;
-		}
-
-		if (m_MultiShaderBuffer.glossAmount > 0)
-		{
-			placeHolder = static_cast<bool>(m_MultiShaderBuffer.glossEnabled);
-
-			// Create a checkbox (toggle box) and update its value
-			ImGui::Checkbox("", &placeHolder);
-
-			m_MultiShaderBuffer.glossEnabled = static_cast<uint32_t>(placeHolder);
-		}
-
-
-		ImGui::Text("Specular map: ");
-		ImGui::InputText("Specular map file path", m_GuiObject.specularName, IM_ARRAYSIZE(m_GuiObject.specularName));
-		if (ImGui::IsItemHovered())
-		{
-			m_GuiObject.specularHovered = true;
-		}
-		else
-		{
-			m_GuiObject.specularHovered = false;
-		}
-
-
-		// Create a button
-		if (ImGui::Button("Add specular map"))
-		{
-			AddSpecularTextures({ std::string{m_GuiObject.specularName} });
-		}
-
-		// Create a button
-		if (ImGui::Button("Clear specular maps"))
-		{
-			m_pSpecularTextureObject->Clear();
-			m_ShouldUpdateDescriptorSets = true;
-			m_MultiShaderBuffer.glossEnabled = false;
-		}
-
-		if (m_MultiShaderBuffer.specularAmount > 0)
-		{
-			placeHolder = static_cast<bool>(m_MultiShaderBuffer.specularEnabled);
-
-			// Create a checkbox (toggle box) and update its value
-			ImGui::Checkbox("", &placeHolder);
-
-			m_MultiShaderBuffer.specularEnabled = static_cast<uint32_t>(placeHolder);
-		}
-
+		SpecularMapGui();
+		
 
 		ImGui::TreePop();
 	}
@@ -349,4 +206,173 @@ void D3D::MultiMaterial::SetFileName(char* text, int textLength, const char* pat
 			text[i] = path[i];
 		}
 	}
+}
+
+void D3D::MultiMaterial::DiffuseGui()
+{
+	bool placeHolder{ false };
+
+	ImGui::Text("Diffuse: ");
+
+	ImGui::InputText("Diffuse texture file path", m_GuiObject.diffuseName, IM_ARRAYSIZE(m_GuiObject.diffuseName));
+	if (ImGui::IsItemHovered())
+	{
+		m_GuiObject.diffuseHovered = true;
+	}
+	else
+	{
+		m_GuiObject.diffuseHovered = false;
+	}
+
+
+	// Create a button
+	if (ImGui::Button("Add diffuse Texture"))
+	{
+		AddDiffuseTextures({ std::string{m_GuiObject.diffuseName} });
+	}
+
+	// Create a button
+	if (ImGui::Button("Clear Diffuse textures"))
+	{
+		m_pDiffuseTextureObject->Clear();
+		m_ShouldUpdateDescriptorSets = true;
+		m_MultiShaderBuffer.diffuseEnabled = false;
+	}
+
+	if (m_MultiShaderBuffer.diffuseAmount > 0)
+	{
+		placeHolder = static_cast<bool>(m_MultiShaderBuffer.diffuseEnabled);
+
+		// Create a checkbox (toggle box) and update its value
+		ImGui::Checkbox("Diffuse", &placeHolder);
+
+		m_MultiShaderBuffer.diffuseEnabled = static_cast<uint32_t>(placeHolder);
+	}
+}
+
+void D3D::MultiMaterial::NormalMapGui()
+{
+
+	bool placeHolder{ false };
+
+	ImGui::Text("Normal map: ");
+
+	ImGui::InputText("Normal map file path", m_GuiObject.normalMapName, IM_ARRAYSIZE(m_GuiObject.normalMapName));
+	if (ImGui::IsItemHovered())
+	{
+		m_GuiObject.normalMapHovered = true;
+	}
+	else
+	{
+		m_GuiObject.normalMapHovered = false;
+	}
+
+
+	// Create a button
+	if (ImGui::Button("Add normal map"))
+	{
+		AddNormalMap({ std::string{m_GuiObject.normalMapName} });
+	}
+
+	// Create a button
+	if (ImGui::Button("Clear Normal maps"))
+	{
+		m_pNormalTextureObject->Clear();
+		m_ShouldUpdateDescriptorSets = true;
+		m_MultiShaderBuffer.normalEnabled = false;
+	}
+
+	if (m_MultiShaderBuffer.normalAmount > 0)
+	{
+		placeHolder = static_cast<bool>(m_MultiShaderBuffer.normalEnabled);
+
+		// Create a checkbox (toggle box) and update its value
+		ImGui::Checkbox("Normal map", &placeHolder);
+
+		m_MultiShaderBuffer.normalEnabled = static_cast<uint32_t>(placeHolder);
+	}
+}
+
+void D3D::MultiMaterial::GlossMapGui()
+{
+	bool placeHolder{ false };
+
+	ImGui::Text("Gloss map: ");
+
+	ImGui::InputText("Gloss map file path", m_GuiObject.glossName, IM_ARRAYSIZE(m_GuiObject.glossName));
+	if (ImGui::IsItemHovered())
+	{
+		m_GuiObject.glossHovered = true;
+	}
+	else
+	{
+		m_GuiObject.glossHovered = false;
+	}
+
+
+	// Create a button
+	if (ImGui::Button("Add gloss map"))
+	{
+		AddGlossTextures({ std::string{m_GuiObject.glossName} });
+	}
+
+	// Create a button
+	if (ImGui::Button("Clear Gloss maps"))
+	{
+		m_pGlossTextureObject->Clear();
+		m_ShouldUpdateDescriptorSets = true;
+		m_MultiShaderBuffer.glossEnabled = false;
+	}
+
+	if (m_MultiShaderBuffer.glossAmount > 0)
+	{
+		placeHolder = static_cast<bool>(m_MultiShaderBuffer.glossEnabled);
+
+		// Create a checkbox (toggle box) and update its value
+		ImGui::Checkbox("Gloss map", &placeHolder);
+
+		m_MultiShaderBuffer.glossEnabled = static_cast<uint32_t>(placeHolder);
+	}
+}
+
+void D3D::MultiMaterial::SpecularMapGui()
+{
+	bool placeHolder{ false };
+
+	ImGui::Text("Specular map: ");
+	ImGui::InputText("Specular map file path", m_GuiObject.specularName, IM_ARRAYSIZE(m_GuiObject.specularName));
+	if (ImGui::IsItemHovered())
+	{
+		m_GuiObject.specularHovered = true;
+	}
+	else
+	{
+		m_GuiObject.specularHovered = false;
+	}
+
+
+	// Create a button
+	if (ImGui::Button("Add specular map"))
+	{
+		AddSpecularTextures({ std::string{m_GuiObject.specularName} });
+	}
+
+	// Create a button
+	if (ImGui::Button("Clear specular maps"))
+	{
+		m_pSpecularTextureObject->Clear();
+		m_ShouldUpdateDescriptorSets = true;
+		m_MultiShaderBuffer.glossEnabled = false;
+	}
+
+	if (m_MultiShaderBuffer.specularAmount > 0)
+	{
+		placeHolder = static_cast<bool>(m_MultiShaderBuffer.specularEnabled);
+
+		// Create a checkbox (toggle box) and update its value
+		ImGui::Checkbox("Specular map", &placeHolder);
+
+		m_MultiShaderBuffer.specularEnabled = static_cast<uint32_t>(placeHolder);
+	}
+
 }
