@@ -23,6 +23,7 @@ namespace D3D
 		const int m_TextLength{125};
 		char m_ObjectName[125]{};
 		char m_FilePath[125]{};
+		bool m_IsTextboxHovered{false};
 
 		void DropFileCallback(int count, const char** paths);
 

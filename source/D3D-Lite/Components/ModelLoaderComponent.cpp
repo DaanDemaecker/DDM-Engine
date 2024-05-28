@@ -32,6 +32,15 @@ void D3D::ModelLoaderComponent::OnGUI()
 	{
 		ImGui::InputText("Object name", m_ObjectName, IM_ARRAYSIZE(m_ObjectName));
 		ImGui::InputText("File path", m_FilePath, IM_ARRAYSIZE(m_FilePath));
+
+		if (ImGui::IsItemHovered())
+		{
+			m_IsTextboxHovered = true;
+		}
+		else
+		{
+			m_IsTextboxHovered = false;
+		}
 		
 		// Create a button
 		if (ImGui::Button("Submit"))
@@ -64,6 +73,8 @@ void D3D::ModelLoaderComponent::LoadObject()
 
 void D3D::ModelLoaderComponent::DropFileCallback(int count, const char** paths)
 {
+	if (!m_IsTextboxHovered)
+		return;
 	if (count > 0)
 	{
 		std::fill(std::begin(m_FilePath), std::end(m_FilePath), 0);
