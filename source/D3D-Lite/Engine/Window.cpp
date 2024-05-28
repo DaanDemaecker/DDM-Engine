@@ -34,6 +34,19 @@ void D3D::Window::SetFrameBufferResized(bool value)
 	m_Window.FrameBufferResized = value;
 }
 
+void D3D::Window::AddCallback(void* object, std::function<void(int, const char**)> function)
+{
+	if (!m_DropFileCallbacks.contains(object))
+	{
+		m_DropFileCallbacks[object] = function;
+	}
+}
+
+void D3D::Window::RemoveCallback(void* object)
+{
+	m_DropFileCallbacks.erase(object);
+}
+
 void D3D::Window::InitWindow()
 {
 	// Initialize glfw
@@ -138,8 +151,13 @@ void D3D::Window::MaximizeWindowCallback(GLFWwindow* /*pWindow*/, int /*maximize
 
 void D3D::Window::DropFileCallback(GLFWwindow* window, int count, const char** paths)
 {
-	for (int i{}; i < count; i++)
+	Window::GetInstance().CallDropFileCallbacks(count, paths);
+}
+
+void D3D::Window::CallDropFileCallbacks(int count, const char** paths)
+{
+	for (auto& callback : m_DropFileCallbacks)
 	{
-		std::cout << paths[i] << std::endl;
+		callback.second(count, paths);
 	}
 }

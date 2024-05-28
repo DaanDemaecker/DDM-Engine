@@ -100,6 +100,7 @@ void D3D::DescriptorPoolWrapper::UpdateDescriptorSets(std::vector<VkDescriptorSe
 		}
 
 
+		//vkDeviceWaitIdle(VulkanRenderer::GetInstance().GetDevice());
 		// Update descriptorsets
 		vkUpdateDescriptorSets(VulkanRenderer::GetInstance().GetDevice(), static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
 	}

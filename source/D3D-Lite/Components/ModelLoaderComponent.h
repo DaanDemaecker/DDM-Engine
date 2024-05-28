@@ -24,8 +24,10 @@ namespace D3D
 		char m_ObjectName[125]{};
 		char m_FilePath[125]{};
 
+		void DropFileCallback(int count, const char** paths);
 
 		void LoadObject();
+
 	};
 }
 #endif // !ModelLoaderComponentIncluded

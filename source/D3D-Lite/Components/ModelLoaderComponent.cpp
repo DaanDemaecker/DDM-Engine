@@ -9,14 +9,19 @@
 #include "../DataTypes/Materials/MultiMaterial.h"
 #include "../Components/MeshRenderComponent.h"
 #include "../Components/TransformComponent.h"
+#include "../Engine/Window.h"
 
 // Standard library includes
 #include <iostream>
+#include <algorithm>
 
 D3D::ModelLoaderComponent::ModelLoaderComponent()
 	:Component()
 {
+	auto boundCallback = std::bind(&D3D::ModelLoaderComponent::DropFileCallback, this, std::placeholders::_1, std::placeholders::_2);
 
+
+	Window::GetInstance().AddCallback(this, boundCallback);
 }
 
 void D3D::ModelLoaderComponent::OnGUI()
@@ -55,4 +60,25 @@ void D3D::ModelLoaderComponent::LoadObject()
 	auto pGunTransform{ pObject->GetTransform() };
 	pGunTransform->SetShowImGui(true);
 	
+}
+
+void D3D::ModelLoaderComponent::DropFileCallback(int count, const char** paths)
+{
+	if (count > 0)
+	{
+		std::fill(std::begin(m_FilePath), std::end(m_FilePath), 0);
+		
+
+		for (int i{}; i < 125; i++)
+		{
+			if (paths[0][i] == '\0')
+			{
+				break;
+			}
+			else
+			{
+				m_FilePath[i] = paths[0][i];
+			}
+		}
+	}
 }

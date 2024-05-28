@@ -8,6 +8,10 @@
 #include "Singleton.h"
 #include "../Includes/GLFWIncludes.h"
 
+// Standard library includes
+#include <functional>
+#include <map>
+
 namespace D3D
 {
 	// Window struct
@@ -39,7 +43,16 @@ namespace D3D
 		// Set the FrameBufferResized variable
 		void SetFrameBufferResized(bool value);
 
+		void AddCallback(void* object, std::function<void(int, const char**)> function);
+
+		void RemoveCallback(void* object);
+
 	private:
+		// List of function callbacks
+		std::map<void*, std::function<void(int, const char**)>> m_DropFileCallbacks{};
+
+		// The window struct object
+		WindowStruct m_Window{};
 
 		// Function that will initialize the glfw window
 		void InitWindow();
@@ -64,10 +77,7 @@ namespace D3D
 		//     paths: pointer to file path list
 		static void DropFileCallback(GLFWwindow* pWindow, int count, const char** paths);
 
-
-		// The window struct object
-		WindowStruct m_Window{};
-
+		void CallDropFileCallbacks(int count, const char** paths);
 	};
 }
 
