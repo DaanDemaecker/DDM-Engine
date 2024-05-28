@@ -24,6 +24,11 @@ D3D::ModelLoaderComponent::ModelLoaderComponent()
 	Window::GetInstance().AddCallback(this, boundCallback);
 }
 
+D3D::ModelLoaderComponent::~ModelLoaderComponent()
+{
+	Window::GetInstance().RemoveCallback(this);
+}
+
 void D3D::ModelLoaderComponent::OnGUI()
 {
 	ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_Framed;

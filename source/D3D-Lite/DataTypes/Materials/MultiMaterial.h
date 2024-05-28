@@ -31,7 +31,7 @@ namespace D3D
 
 		MultiMaterial(const std::string& pipeline = "Default");
 
-		virtual ~MultiMaterial() override = default;
+		virtual ~MultiMaterial() override;
 
 		virtual void OnGUI() override;
 
@@ -62,9 +62,13 @@ namespace D3D
 		const int m_TextLength{ 125 };
 		struct GuiObject
 		{
+			bool diffuseHovered{ false };
 			char diffuseName[125]{};
+			bool normalMapHovered{ false };
 			char normalMapName[125]{};
+			bool glossHovered{ false };
 			char glossName[125]{};
+			bool specularHovered{false};
 			char specularName[125]{};
 		} m_GuiObject;
 
@@ -81,6 +85,10 @@ namespace D3D
 		std::unique_ptr<D3D::TextureDescriptorObject> m_pSpecularTextureObject{};
 
 		void UpdateShaderBuffer();
+
+		void DropFileCallback(int count, const char** paths);
+
+		void SetFileName(char* text, int textLength, const char* path);
 	};
 }
 

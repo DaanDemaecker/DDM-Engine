@@ -15,7 +15,7 @@ namespace D3D
 	{
 	public:
 		ModelLoaderComponent();
-		~ModelLoaderComponent() = default;
+		~ModelLoaderComponent();
 
 		virtual void OnGUI() override;
 
