@@ -32,6 +32,9 @@ namespace D3D
 		float GetFixedTime() const { return m_FixedTime; }
 
 	private:
+		friend class Singleton<TimeManager>;
+		TimeManager() = default;
+
 		// Frames per second of current frame
 		int m_Fps = 0;
 

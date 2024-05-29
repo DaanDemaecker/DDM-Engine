@@ -14,9 +14,6 @@ namespace D3D
 	class ConfigManager : public Singleton<ConfigManager>
 	{
 	public:
-		// Constructor
-		ConfigManager();
-
 		// Get string object from json
 		// Parameters:
 		//     propertyName: name of the property
@@ -58,6 +55,10 @@ namespace D3D
 		float GetFloat(const std::string&& propertyName);
 
 	private:
+		// Constructor
+		friend class Singleton<ConfigManager>;
+		ConfigManager();
+
 		// File name of the config file
 		const std::string m_FileName{ "Config.json" };
 

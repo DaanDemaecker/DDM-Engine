@@ -31,7 +31,6 @@ namespace D3D
     class VulkanRenderer final : public Singleton<VulkanRenderer>
     {
     public:
-        VulkanRenderer();
         ~VulkanRenderer();
 
         VulkanRenderer(VulkanRenderer& other) = delete;
@@ -115,6 +114,10 @@ namespace D3D
 
         void AddDefaultPipeline();
     private:
+        // Constructor
+        friend class Singleton<VulkanRenderer>;
+        VulkanRenderer();
+
         const size_t m_MaxFramesInFlight{ 2 };
 
         //----Member variables----
