@@ -5,14 +5,19 @@
 
 // File includes
 #include "../Engine/Singleton.h"
+#include "../DataTypes/Mesh.h"
 
 // Standard library includes
+#include <memory>
+#include <string>
 
 namespace D3D
 {
 	class ResourceManager final : public Singleton<ResourceManager>
 	{
 	public:
+		std::shared_ptr<D3D::Mesh> LoadMesh(std::string&& filePath);
+		std::shared_ptr<D3D::Mesh> LoadMesh(std::string& filePath);
 
 	private:
 		// Default constructor

@@ -19,6 +19,7 @@
 #include "../Components/AnimatorComponent.h"
 
 #include "../Vulkan/VulkanRenderer.h"
+#include "../../Managers/ResourceManager.h"
 
 namespace LoadTestScene
 {
@@ -87,7 +88,7 @@ namespace LoadTestScene
 		pVehicle->SetShowImGui(true);
 		//pVehicle->AddComponent<D3D::RotatorComponent>();
 
-		auto pVehicleMesh{ std::make_shared<D3D::Mesh>("Resources/Models/vehicle.obj") };
+		auto pVehicleMesh{ D3D::ResourceManager::GetInstance().LoadMesh("Resources/Models/vehicle.obj") };
 
 		auto pVehicleModel{ pVehicle->AddComponent<D3D::MeshRenderComponent>() };
 		pVehicleModel->SetMesh(pVehicleMesh);
