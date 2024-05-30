@@ -42,8 +42,7 @@ void D3D::D3DModelLoader::LoadModel(const std::string& path, std::vector<D3D::Ve
 	}
 	else
 	{
-		// If the extension can't be handled, warn user
-		std::cout << extension << " is not a supported model format \n";
+		throw std::runtime_error(extension + " is not a supported model format");
 	}
 }
 

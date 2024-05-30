@@ -22,7 +22,9 @@ namespace D3D
 	private:
 		// Default constructor
 		friend class Singleton<ResourceManager>;
-		ResourceManager() = default;
+		ResourceManager();
+
+		std::shared_ptr<D3D::Mesh> m_pDefaultMesh{};
 
 	};
 

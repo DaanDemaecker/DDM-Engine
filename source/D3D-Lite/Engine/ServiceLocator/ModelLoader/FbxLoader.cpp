@@ -23,6 +23,12 @@ void D3D::FbxLoader::LoadFbxModel(const std::string& path, std::vector<D3D::Vert
 {
 	FbxScene* scene = LoadScene(path);
 
+	if (!scene)
+	{
+		throw std::runtime_error(path + " is not a valid file path");
+	}
+
+
 	int baseUvIndex{};
 
 
@@ -235,8 +241,7 @@ FbxScene* D3D::FbxLoader::LoadScene(const std::string& path)
 	// Import the FBX file
 	const char* filename = path.c_str();
 	if (!pFbxImporter->Initialize(filename, -1, m_pFbxManager->GetIOSettings())) {
-		std::cerr << "Failed to initialize importer: " << pFbxImporter->GetStatus().GetErrorString() << std::endl;
-		return nullptr;
+		throw std::runtime_error(path + " is not a valid file path");
 	}
 
 	// Create a scene and import it

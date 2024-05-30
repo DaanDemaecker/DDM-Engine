@@ -20,7 +20,7 @@ void D3D::ObjLoader::LoadObjModel(const std::string& path, std::vector<D3D::Vert
 	// Read file, returned false, throw error
 	if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &err, path.c_str()))
 	{
-		throw std::runtime_error(err);
+		throw std::runtime_error(path + " is not a valid file path");
 	}
 
 	// Create map to store vertices

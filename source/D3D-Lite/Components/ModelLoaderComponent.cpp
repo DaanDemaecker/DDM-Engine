@@ -10,6 +10,7 @@
 #include "../Components/MeshRenderComponent.h"
 #include "../Components/TransformComponent.h"
 #include "../Engine/Window.h"
+#include "../Managers/ResourceManager.h"
 
 // Standard library includes
 #include <iostream>
@@ -60,11 +61,14 @@ void D3D::ModelLoaderComponent::OnGUI()
 
 void D3D::ModelLoaderComponent::LoadObject()
 {
+	if (m_ObjectName[0] == '\0')
+		return;
+
 	auto pObject{ SceneManager::GetInstance().GetActiveScene()->CreateGameObject(m_ObjectName)};
 	pObject->SetShowImGui(true);
 
 	std::shared_ptr<D3D::MultiMaterial> pMaterial{ std::make_shared<D3D::MultiMaterial>("MultiShader") };
-	auto pMesh{ std::make_shared<D3D::Mesh>(m_FilePath) };
+	auto pMesh{ D3D::ResourceManager::GetInstance().LoadMesh(m_FilePath) };
 
 	auto pMeshRenderer{ pObject->AddComponent<D3D::MeshRenderComponent>() };
 	pMeshRenderer->SetShowImGui(true);
