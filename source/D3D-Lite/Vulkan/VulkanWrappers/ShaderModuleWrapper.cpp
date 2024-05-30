@@ -89,11 +89,11 @@ void D3D::ShaderModuleWrapper::AddDescriptorInfo(std::map<VkDescriptorType, int>
 		// Add 1 to the value of the current binding type
 		if (typeCount.contains(currentType))
 		{
-			typeCount[currentType]++;
+			typeCount[currentType] += m_ReflectShaderModule.descriptor_binding_count;
 		}
 		else
 		{
-			typeCount[currentType] = 1;
+			typeCount[currentType] = m_ReflectShaderModule.descriptor_binding_count;
 		}
 	}
 }

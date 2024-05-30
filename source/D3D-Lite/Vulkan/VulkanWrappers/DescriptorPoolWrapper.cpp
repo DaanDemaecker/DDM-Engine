@@ -108,6 +108,8 @@ void D3D::DescriptorPoolWrapper::UpdateDescriptorSets(std::vector<VkDescriptorSe
 
 void D3D::DescriptorPoolWrapper::ResizeDescriptorPool()
 {
+	vkDeviceWaitIdle(VulkanRenderer::GetInstance().GetDevice());
+
 	// Destroy current descriptorpool
 	vkDestroyDescriptorPool(VulkanRenderer::GetInstance().GetDevice(), m_DescriptorPool, nullptr);
 
