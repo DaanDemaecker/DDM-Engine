@@ -13,7 +13,7 @@ std::shared_ptr<D3D::Mesh> D3D::ResourceManager::LoadMesh(std::string& filePath)
 
 	try
 	{
-		pMesh = std::make_shared<D3D::Mesh>(filePath);
+		pMesh = CreateMesh(filePath);
 
 		return pMesh;
 	}
@@ -26,5 +26,10 @@ std::shared_ptr<D3D::Mesh> D3D::ResourceManager::LoadMesh(std::string& filePath)
 
 D3D::ResourceManager::ResourceManager()
 {
-	m_pDefaultMesh = std::make_shared<D3D::Mesh>("Resources/DefaultResources/error.obj");
+	m_pDefaultMesh = CreateMesh("Resources/DefaultResources/error.obj");
+}
+
+std::shared_ptr<D3D::Mesh> D3D::ResourceManager::CreateMesh(const std::string& filePath)
+{
+	return std::shared_ptr<D3D::Mesh>(new D3D::Mesh(filePath));
 }

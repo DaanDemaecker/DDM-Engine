@@ -7,12 +7,13 @@
 #include "../DataTypes/Mesh.h"
 #include "../DataTypes/DescriptorObjects/TextureDescriptorObject.h"	
 #include "../DataTypes/Materials/CubeMapMaterial.h"
+#include "../Managers/ResourceManager.h"
 #include "TransformComponent.h"
 
 D3D::SkyBoxComponent::SkyBoxComponent()
 {
 	// Create the model
-	auto pMesh = std::make_shared<Mesh>("Resources/Models/cube.obj");
+	auto pMesh = ResourceManager::GetInstance().LoadMesh("Resources/Models/cube.obj");
 
 	SetMesh(pMesh);
 }

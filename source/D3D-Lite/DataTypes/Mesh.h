@@ -12,16 +12,12 @@
 namespace D3D
 {
 	// Class forward declarations
+	class ResourceManager;
 	class PipelineWrapper;
 
 	class Mesh final
 	{
 	public:
-		// Constructor
-		// Parameters:
-		//     filePath: the filepath to the 3D model
-		Mesh(const std::string& filePath);
-
 		// Delete default constructor
 		Mesh() = delete;
 
@@ -34,6 +30,14 @@ namespace D3D
 		//     descriptorSet: the descriptorset to bind before drawing
 		void Render(PipelineWrapper* pPipeline, VkDescriptorSet* descriptorSet);
 	private:
+		// Friend class declaration
+		friend class ResourceManager;
+
+		// Constructor
+		// Parameters:
+		//     filePath: the filepath to the 3D model
+		Mesh(const std::string& filePath);
+
 		// Vector of vertices
 		std::vector<Vertex> m_Vertices{};
 

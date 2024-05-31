@@ -26,6 +26,9 @@ namespace D3D
 
 		std::shared_ptr<D3D::Mesh> m_pDefaultMesh{};
 
+
+		// Factory method to create Mesh instances
+		std::shared_ptr<Mesh> CreateMesh(const std::string& filePath);
 	};
 
 }

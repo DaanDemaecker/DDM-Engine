@@ -108,7 +108,7 @@ namespace LoadTestScene
 
 		auto pvikingRoom{ scene->CreateGameObject("Viking Room") };
 
-		auto pVikingRoomMesh{ std::make_shared<D3D::Mesh>("Resources/Models/viking_room.obj") };
+		auto pVikingRoomMesh{ D3D::ResourceManager::GetInstance().LoadMesh("Resources/Models/viking_room.obj") };
 
 		auto pVikingRoomModel{ pvikingRoom->AddComponent<D3D::MeshRenderComponent>() };
 		pVikingRoomModel->SetMesh(pVikingRoomMesh);
@@ -130,7 +130,7 @@ namespace LoadTestScene
 
 		auto pGun{ scene->CreateGameObject("Gun") };
 
-		auto pGunMesh{ std::make_shared<D3D::Mesh>("Resources/Models/gun.fbx") };
+		auto pGunMesh{ D3D::ResourceManager::GetInstance().LoadMesh("Resources/Models/gun.fbx") };
 
 		auto pGunModel{ pGun->AddComponent<D3D::MeshRenderComponent>() };
 		pGunModel->SetMesh(pGunMesh);
@@ -146,7 +146,7 @@ namespace LoadTestScene
 	{
 		auto pMario{ scene->CreateGameObject("Mario") };
 
-		auto pMarioMesh{ std::make_shared<D3D::Mesh>("Resources/Models/MarioDancing.fbx") };
+		auto pMarioMesh{ D3D::ResourceManager::GetInstance().LoadMesh("Resources/Models/MarioDancing.fbx") };
 
 		auto pMarioModel{ pMario->AddComponent<D3D::MeshRenderComponent>() };
 		pMarioModel->SetMesh(pMarioMesh);

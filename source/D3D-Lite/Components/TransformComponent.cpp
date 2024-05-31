@@ -21,12 +21,15 @@ void D3D::TransformComponent::OnGUI()
 
 		if (ImGui::TreeNodeEx("Rotation", flags))
 		{
-			glm::vec3 rotation = glm::eulerAngles(m_LocalRotation);
+			// Convert quaternion to Euler angles in degrees
+			glm::vec3 rotation =glm::eulerAngles(m_LocalRotation);
 
+			// Create sliders for each axis
 			ImGui::SliderAngle("x", &rotation.x);
 			ImGui::SliderAngle("y", &rotation.y);
 			ImGui::SliderAngle("z", &rotation.z);
 
+			// Update quaternion with new Euler angles
 			m_LocalRotation = glm::quat(rotation);
 
 			ImGui::TreePop();
