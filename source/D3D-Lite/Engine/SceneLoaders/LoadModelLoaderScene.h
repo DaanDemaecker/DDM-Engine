@@ -7,6 +7,7 @@
 #include "../../Components/TransformComponent.h"
 #include "../../Components/DirectionalLightComponent.h"
 #include "../../Components/ModelLoaderComponent.h"
+#include "../../Managers/ConfigManager.h"
 
 namespace LoadModelLoaderScene
 {
@@ -63,13 +64,15 @@ namespace LoadModelLoaderScene
 
 		scene->SetCamera(pCameraComponent);
 
+		auto& configManager{ D3D::ConfigManager::GetInstance() };
+
 		// Set the vertex shader name
-		const std::string vertShaderName{ "Resources/Shaders/Skybox.Vert.spv" };
+		const std::string vertShaderName{ configManager.GetString("SkyboxVertName") };
 		// Set the fragment shader name
-		const std::string fragShaderName{ "Resources/Shaders/Skybox.Frag.spv" };
+		const std::string fragShaderName{ configManager.GetString("SkyboxFragName") };
 
 		// Create the graphics pipeline for the skybox
-		D3D::VulkanRenderer::GetInstance().AddGraphicsPipeline("Skybox", { vertShaderName, fragShaderName }, false);
+		D3D::VulkanRenderer::GetInstance().AddGraphicsPipeline(configManager.GetString("SkyboxPipelineName"), { vertShaderName, fragShaderName }, false);
 
 		auto pSkyBox{ pCamera->AddComponent<D3D::SkyBoxComponent>() };
 

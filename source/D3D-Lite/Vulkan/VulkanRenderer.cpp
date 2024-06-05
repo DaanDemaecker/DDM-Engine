@@ -201,8 +201,6 @@ void D3D::VulkanRenderer::Render()
 		throw std::runtime_error("failed to acquire swap chain image!");
 	}
 
-
-
 	vkResetFences(device, 1, &m_pSyncObjectManager->GetInFlightFence(m_CurrentFrame));
 
 	auto commandBuffer{ GetCurrentCommandBuffer() };

@@ -5,6 +5,7 @@
 #include "../../Vulkan/VulkanRenderer.h"
 #include "../../Vulkan/VulkanWrappers/DescriptorPoolWrapper.h"
 #include "../../DataTypes/DescriptorObjects/TextureDescriptorObject.h"
+#include "../../Managers/ConfigManager.h"
 
 // Standard library includes
 #include <stdexcept>
@@ -16,7 +17,7 @@ D3D::CubeMapMaterial::CubeMapMaterial(const std::initializer_list<const std::str
 }
 
 D3D::CubeMapMaterial::CubeMapMaterial(const std::initializer_list<const std::string>& filePaths)
-	:Material("Skybox")
+	:Material(ConfigManager::GetInstance().GetString("SkyboxPipelineName"))
 {
 	Texture cubeTexture{};
 

@@ -1,5 +1,8 @@
 // ConfigManager.h
 // This singleton will read, write and manage the config file
+#ifndef ConfigManagerIncluded
+#define ConfigManagerIncluded
+
 
 // File includes
 #include "../Engine/Singleton.h"
@@ -71,4 +74,4 @@ namespace D3D
 		void ReadFile();
 	};
 }
-
+#endif // !ConfigManagerIncluded

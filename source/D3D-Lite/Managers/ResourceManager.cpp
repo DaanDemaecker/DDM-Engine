@@ -26,7 +26,7 @@ std::shared_ptr<D3D::Mesh> D3D::ResourceManager::LoadMesh(std::string& filePath)
 
 D3D::ResourceManager::ResourceManager()
 {
-	m_pDefaultMesh = CreateMesh("Resources/DefaultResources/error.obj");
+	m_pDefaultMesh = CreateMesh(ConfigManager::GetInstance().GetString("DefaultModelName"));
 }
 
 std::shared_ptr<D3D::Mesh> D3D::ResourceManager::CreateMesh(const std::string& filePath)

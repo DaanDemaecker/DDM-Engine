@@ -9,11 +9,12 @@
 #include "../DataTypes/Materials/CubeMapMaterial.h"
 #include "../Managers/ResourceManager.h"
 #include "TransformComponent.h"
+#include "../Managers/ConfigManager.h"
 
 D3D::SkyBoxComponent::SkyBoxComponent()
 {
 	// Create the model
-	auto pMesh = ResourceManager::GetInstance().LoadMesh("Resources/Models/cube.obj");
+	auto pMesh = ResourceManager::GetInstance().LoadMesh(ConfigManager::GetInstance().GetString("SkyboxModel"));
 
 	SetMesh(pMesh);
 }

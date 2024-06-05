@@ -1,25 +1,26 @@
-#include "../Vulkan/VulkanRenderer.h"
-#include "../Managers/SceneManager.h"
+#include "../../Vulkan/VulkanRenderer.h"
+#include "../../Managers/SceneManager.h"
 
-#include "../DataTypes/Materials/Material.h"
-#include "../DataTypes/Materials/TexturedMaterial.h"
-#include "../DataTypes/Materials/MultiMaterial.h"
+#include "../../DataTypes/Materials/Material.h"
+#include "../../DataTypes/Materials/TexturedMaterial.h"
+#include "../../DataTypes/Materials/MultiMaterial.h"
 
-#include "../Components/MeshRenderComponent.h"
-#include "../DataTypes/Mesh.h"
-#include "../Components/TransformComponent.h"
-#include "Scene.h"
-#include "../Components/SkyBoxComponent.h"
+#include "../../Components/MeshRenderComponent.h"
+#include "../../DataTypes/Mesh.h"
+#include "../../Components/TransformComponent.h"
+#include "../Scene.h"
+#include "../../Components/SkyBoxComponent.h"
 
-#include "../Components/CameraComponent.h"
-#include "../Components/DirectionalLightComponent.h"
+#include "../../Components/CameraComponent.h"
+#include "../../Components/DirectionalLightComponent.h"
 
-#include "../Components/RotatorComponent.h"
-#include "../Components/SpectatorMovementComponent.h"
-#include "../Components/AnimatorComponent.h"
+#include "../../Components/RotatorComponent.h"
+#include "../../Components/SpectatorMovementComponent.h"
+#include "../../Components/AnimatorComponent.h"
 
-#include "../Vulkan/VulkanRenderer.h"
+#include "../../Vulkan/VulkanRenderer.h"
 #include "../../Managers/ResourceManager.h"
+#include "../../Managers/ConfigManager.h"
 
 namespace LoadTestScene
 {
@@ -175,13 +176,15 @@ namespace LoadTestScene
 
 		scene->SetCamera(pCameraComponent);
 
+		auto& configManager{ D3D::ConfigManager::GetInstance() };
+
 		// Set the vertex shader name
-		const std::string vertShaderName{ "Resources/Shaders/Skybox.Vert.spv" };
+		const std::string vertShaderName{configManager.GetString("SkyboxVertName")};
 		// Set the fragment shader name
-		const std::string fragShaderName{ "Resources/Shaders/Skybox.Frag.spv" };
+		const std::string fragShaderName{ configManager.GetString("SkyboxFragName") };
 
 		// Create the graphics pipeline for the skybox
-		D3D::VulkanRenderer::GetInstance().AddGraphicsPipeline("Skybox", { vertShaderName, fragShaderName }, false);
+		D3D::VulkanRenderer::GetInstance().AddGraphicsPipeline(configManager.GetString("SkyboxPipelineName"), {vertShaderName, fragShaderName}, false);
 
 		auto pSkyBox{ pCamera->AddComponent<D3D::SkyBoxComponent>() };
 
