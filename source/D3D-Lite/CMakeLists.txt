@@ -48,7 +48,8 @@ add_executable(D3D-Lite-Engine_Build
 "Engine/ServiceLocator/ModelLoader/FbxLoader.cpp"
 "Components/AnimatorComponent.cpp"
 "Components/ModelLoaderComponent.cpp"
-"Managers/ResourceManager.cpp")
+"Managers/ResourceManager.cpp"
+"Managers/InputManager.cpp")
 
 # Suppress warning C26459 for this specific target
 if(MSVC)
