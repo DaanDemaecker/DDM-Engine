@@ -23,22 +23,22 @@ void D3D::SpectatorMovementComponent::Update()
 	auto deltaTime = TimeManager::GetInstance().GetDeltaTime();
 
 	// Determine movement direction based on key presses
-	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 	{
 		//direction += transform->GetForward() * m_Speed * deltaTime;
 		direction += transform->GetForward();
 	}
-	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
 	{
 		//direction -= transform->GetForward() * m_Speed * deltaTime;
 		direction -= transform->GetForward();
 	}
-	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 	{
 		//direction -= transform->GetRight() * m_Speed * deltaTime;
 		direction -= transform->GetRight();
 	}
-	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 	{
 		//direction += transform->GetRight() * m_Speed * deltaTime;
 		direction += transform->GetRight();
