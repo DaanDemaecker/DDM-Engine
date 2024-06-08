@@ -38,12 +38,16 @@ namespace LoadTestScene
 
 	void SetupLight(D3D::Scene* scene);
 
+	void SetupGroundPlane(D3D::Scene* scene);
+
 	void loadTestScene()
 	{
 		auto scene = D3D::SceneManager::GetInstance().CreateScene("Test");
 		D3D::SceneManager::GetInstance().SetActiveScene(scene);
 
 		SetupPipelines();
+
+		SetupGroundPlane(scene.get());
 
 		SetupVehicle(scene.get());
 
@@ -98,7 +102,7 @@ namespace LoadTestScene
 
 		auto pVehicleTransform{ pVehicle->GetTransform() };
 		pVehicleTransform->SetShowImGui(true);
-		pVehicleTransform->SetLocalPosition(0, 0, 3.f);
+		pVehicleTransform->SetLocalPosition(0, 3, 0);
 		pVehicleTransform->SetLocalRotation(0.f, glm::radians(75.0f), 0.f);
 		pVehicleTransform->SetLocalScale(0.05f, 0.05f, 0.05f);
 	}
@@ -156,7 +160,7 @@ namespace LoadTestScene
 		pMarioAnimationComponent->AddAnimations("Resources/Models/MarioDancing.fbx");
 
 		auto pMarioTransform{ pMario->GetTransform() };
-		pMarioTransform->SetLocalPosition(0.f, -5.f, 8.f);
+		pMarioTransform->SetLocalPosition(0.f, 0.f, 2);
 		pMarioTransform->SetLocalRotation(0.f, glm::radians(180.f), 0.f);
 		//pMarioTransform->SetLocalScale(0.5f, 0.5f, 0.5f);
 	}
@@ -170,6 +174,7 @@ namespace LoadTestScene
 		auto pCameraComponent{ pCamera->AddComponent<D3D::CameraComponent>() };
 
 		auto pCameraTransform{ pCamera->GetTransform() };
+		pCameraTransform->SetLocalPosition(0, 5, -5);
 		//pCameraTransform->SetLocalRotation(glm::vec3(0.0f, glm::radians(180.f), 0.0f));
 
 		//pCamera->AddComponent<D3D::RotatorComponent>();
@@ -208,11 +213,32 @@ namespace LoadTestScene
 
 		auto pLightTransform{ pLight->GetTransform() };
 		pLightTransform->SetShowImGui(true);
-		pLightTransform->SetLocalRotation(glm::vec3(0.0f, glm::radians(45.f), 0.0f));
+		pLightTransform->SetLocalRotation(glm::vec3(glm::radians(45.f), glm::radians(45.f), 0.0f));
 
 
 		//pLight->AddComponent<D3D::RotatorComponent>();
 
 		scene->SetLight(pLightComponent);
+	}
+
+	void SetupGroundPlane(D3D::Scene* scene)
+	{
+		std::shared_ptr<D3D::MultiMaterial> pFloorMaterial{ std::make_shared<D3D::MultiMaterial>("MultiShader") };
+
+
+		//std::shared_ptr<D3D::TexturedMaterial> pFloorMaterial{
+		//	std::make_shared<D3D::TexturedMaterial>(std::initializer_list<const std::string>{"resources/images/GroundPlane.png"}, "DiffuseUnshaded") };
+
+		pFloorMaterial->AddDiffuseTextures(std::initializer_list<const std::string>{"resources/images/GroundPlane.png"});
+
+		auto pGroundPlane{ scene->CreateGameObject("Ground Plane") };
+		pGroundPlane->SetShowImGui(true);
+
+		auto pGroundplaneMesh{ D3D::ResourceManager::GetInstance().LoadMesh("Resources/Models/Plane.obj") };
+
+		auto pGroundPlaneModel{ pGroundPlane->AddComponent<D3D::MeshRenderComponent>() };
+		pGroundPlaneModel->SetShowImGui(true);
+		pGroundPlaneModel->SetMesh(pGroundplaneMesh);
+		pGroundPlaneModel->SetMaterial(pFloorMaterial);
 	}
 }

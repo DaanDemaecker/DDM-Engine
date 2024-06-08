@@ -6,8 +6,8 @@ layout(binding = 1) uniform UniformLightObject {
     float intensity;
 } light;
 
-layout(binding = 2) uniform sampler2D texSampler;
-layout(binding = 3) uniform sampler2D texSampler2;
+//layout(binding = 2) uniform sampler2D texSampler;
+//layout(binding = 3) uniform sampler2D texSampler2;
 
 layout(location = 0) in vec3 fragColor;
 layout(location = 1) in vec2 fragTexCoord;
@@ -24,15 +24,15 @@ void main()
 {
 	float observedArea = GetObservedArea(fragNormal);
 
-    vec4 sampled = texture(texSampler, fragTexCoord);
+    //vec4 sampled = texture(texSampler, fragTexCoord);
+    //
+	//vec3 finalColor = texture(texSampler, fragTexCoord).rgb + texture(texSampler2, fragTexCoord).rgb;
+	//
+    ////finalColor = vec3(1, 0, 0);
+    //
+	//finalColor *= light.color * light.intensity * observedArea;
 
-	vec3 finalColor = texture(texSampler, fragTexCoord).rgb + texture(texSampler2, fragTexCoord).rgb;
-	
-    //finalColor = vec3(1, 0, 0);
-
-	finalColor *= light.color * light.intensity * observedArea;
-
-	outColor = vec4(finalColor, 1);
+	outColor = vec4(fragNormal, 1);
 }
 
 void test()
