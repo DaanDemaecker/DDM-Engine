@@ -11,4 +11,5 @@ https://github.com/DaanDemaecker/VulkanRenderer.git
 
 ## Object Loader
 For my graphics programming 2 course, we used Vulkan in class, a first time for our school. We were task to make a project to showcase our knowlegde.  
-As the choice of project was very free, it took me a while to choose and concidering the amount of time we got for this assignment, i chose to make a runtime model and material loader.
+As the choice of project was very free, it took me a while to choose and concidering the amount of time we got for this assignment, i chose to make a runtime model and material loader.  
+I used the Dear Imgui library to make a simple interface to load the objects and Textures.
