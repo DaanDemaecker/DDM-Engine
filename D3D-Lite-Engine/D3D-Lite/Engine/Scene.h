@@ -39,6 +39,8 @@ namespace D3D
 
 		void PostUpdate();
 
+		void PrepareRender();
+
 		void RenderSkyBox();
 
 		void Render() const;

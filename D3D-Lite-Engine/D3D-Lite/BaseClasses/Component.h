@@ -31,6 +31,8 @@ namespace D3D
 
 		virtual void LateUpdate() {}
 
+		virtual void PrepareRender() {}
+
 		virtual void Render() {}
 
 		virtual void OnGUI() {}

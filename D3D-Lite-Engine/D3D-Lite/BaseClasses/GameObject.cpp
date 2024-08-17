@@ -205,6 +205,22 @@ void D3D::GameObject::PostUpdate()
 	}
 }
 
+void D3D::GameObject::PrepareRender()
+{
+	for (auto& component : m_pComponents)
+	{
+		component->PrepareRender();
+	}
+
+	for (auto& pChild : m_pChildren)
+	{
+		if (pChild->m_IsActive)
+		{
+			pChild->PrepareRender();
+		}
+	}
+}
+
 void D3D::GameObject::Render() const
 {
 	for (auto& component : m_pComponents)

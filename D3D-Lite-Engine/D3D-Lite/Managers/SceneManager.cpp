@@ -168,6 +168,14 @@ void D3D::SceneManager::OnGui()
     }
 }
 
+void D3D::SceneManager::PrepareRender()
+{
+    if (m_ActiveScene != nullptr)
+    {
+        m_ActiveScene->PrepareRender();
+    }
+}
+
 void D3D::SceneManager::RenderSkybox()
 {
     if (m_ActiveScene != nullptr)

@@ -44,6 +44,8 @@ namespace D3D
 
 		void PostUpdate();
 
+		void PrepareRender();
+
 		void Render() const;
 
 		void OnGUI();

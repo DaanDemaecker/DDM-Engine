@@ -86,6 +86,8 @@ namespace D3D
 		// OnGui function
 		void OnGui();
 
+		void PrepareRender();
+
 		// Render the skybox
 		void RenderSkybox();
 

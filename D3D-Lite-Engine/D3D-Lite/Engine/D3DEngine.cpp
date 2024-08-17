@@ -85,6 +85,8 @@ void D3D::D3DEngine::Run(const std::function<void()>& load)
 
 		sceneManager.Cleanup();
 
+		sceneManager.PrepareRender();
+
 		renderer.Render();
 
 		const auto frameDuration = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - currentTime);
