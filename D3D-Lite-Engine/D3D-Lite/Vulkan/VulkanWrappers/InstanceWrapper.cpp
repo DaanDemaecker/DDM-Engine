@@ -1,10 +1,14 @@
 // InstaceWrapper.cpp
 
-// File includes
+// Header include
 #include "InstanceWrapper.h"  
-#include "../../Includes/GLFWIncludes.h"
-#include "../VulkanUtils.h"
-#include "../../Managers/ConfigManager.h"
+
+// File includes
+#include "Includes/GLFWIncludes.h"
+
+#include "Vulkan/VulkanUtils.h"
+
+#include "Managers/ConfigManager.h"
 
 // Standard library includes
 #include <stdexcept>
