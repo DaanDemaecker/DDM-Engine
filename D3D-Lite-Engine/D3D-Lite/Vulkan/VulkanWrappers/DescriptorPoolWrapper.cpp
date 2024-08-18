@@ -1,11 +1,16 @@
 // DescriptorPoolWrapper.cpp
 
-// File includes
+// Header include
 #include "DescriptorPoolWrapper.h"
-#include "../VulkanRenderer.h"
-#include "../../Components/MeshRenderComponent.h" 
-#include "../../DataTypes/DescriptorObjects/DescriptorObject.h"
+
+// File includes
+#include "Vulkan/VulkanRenderer.h"
+
 #include "ShaderModuleWrapper.h"
+
+#include "Components/MeshRenderComponent.h" 
+
+#include "DataTypes/DescriptorObjects/DescriptorObject.h"
 
 
 D3D::DescriptorPoolWrapper::DescriptorPoolWrapper(std::vector<std::unique_ptr<D3D::ShaderModuleWrapper>>& shaderModules)
