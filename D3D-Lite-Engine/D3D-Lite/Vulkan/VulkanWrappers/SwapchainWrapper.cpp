@@ -1,12 +1,17 @@
 // SwapchainWrapper.cpp
 
-// File includes
+// Header include
 #include "SwapchainWrapper.h"
+
+// File includes
+#include "Engine/Window.h"
+
 #include "GPUObject.h"
-#include "../VulkanManagers/ImageViewManager.h"
-#include "../../Engine/Window.h"
-#include "../VulkanManagers//ImageManager.h"
-#include "../VulkanUtils.h"
+
+#include "Vulkan/VulkanManagers/ImageViewManager.h"
+#include "Vulkan/VulkanManagers//ImageManager.h"
+
+#include "Vulkan/VulkanUtils.h"
 
 // Standard library includes
 #include <stdexcept>
