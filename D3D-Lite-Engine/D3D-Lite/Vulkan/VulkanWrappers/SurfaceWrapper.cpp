@@ -1,6 +1,12 @@
-#include "SurfaceWrapper.h"
-#include "../../Engine/Window.h"
+// SurfaceWrapper.cpp
 
+// Header include
+#include "SurfaceWrapper.h"
+
+// File includes
+#include "Engine/Window.h"
+
+// Standard library includes
 #include <stdexcept>
 
 D3D::SurfaceWrapper::SurfaceWrapper(VkInstance instance)
