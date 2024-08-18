@@ -1,6 +1,6 @@
 // RenderpassWrapper.cpp
 
-// File includes
+// Header include
 #include "RenderpassWrapper.h"
 
 // Standard library includes
