@@ -1,9 +1,15 @@
+// VulkanRenderer.h
+
+// This class will hold and manage most vulkan objects and  handle rendering
+
 #ifndef VulkanRendererIncluded
 #define VulkanRendererIncluded
 
-#include "../Engine/Singleton.h"
-#include "../DataTypes/Structs.h"
+// File includes
+#include "Engine/Singleton.h"
+#include "DataTypes/Structs.h"
 
+// Standard library includes
 #include <iostream>
 #include <tuple>
 #include <map>
@@ -12,7 +18,6 @@
 namespace D3D
 {
     // Class forward declarations
-    class MeshRenderComponent;
     class ImGuiWrapper;
     class InstanceWrapper;
     class SurfaceWrapper;

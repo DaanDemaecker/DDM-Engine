@@ -1,36 +1,41 @@
+// VulkanRenderer.cpp
+
+// Header include
 #include "VulkanRenderer.h"
-#include "../Engine/D3DEngine.h"
-#include "../Utils/Utils.h"
-#include <set>
-#include <algorithm>
 
-#include "../Managers/SceneManager.h"
-#include "../Components/MeshRenderComponent.h"
-#include "../Components/CameraComponent.h"
-#include "../Components/TransformComponent.h"
-#include "VulkanWrappers/SurfaceWrapper.h"
-#include "VulkanManagers/CommandpoolManager.h"
-#include "VulkanManagers/BufferManager.h"
-#include "VulkanManagers/ImageManager.h"
-#include "VulkanWrappers/SwapchainWrapper.h"
-#include "VulkanWrappers/RenderpassWrapper.h"
-#include "VulkanManagers/PipelineManager.h"
-#include "VulkanWrappers/PipelineWrapper.h"
+// File includes
+#include "Engine/D3DEngine.h"
+#include "Engine/Window.h"
+#include "Managers/SceneManager.h"
 
+#include "Includes/STBIncludes.h"
+#include "Includes/ImGuiIncludes.h"
+#include "Includes/GLFWIncludes.h"
 
-#include "../Includes/STBIncludes.h"
-#include "../Includes/ImGuiIncludes.h"
-#include "../Includes/GLFWIncludes.h"
-#include "../Engine/Window.h"
+#include "VulkanUtils.h"
+#include "Utils/Utils.h"
 
+#include "Vulkan/VulkanWrappers/SurfaceWrapper.h"
+#include "Vulkan/VulkanManagers/CommandpoolManager.h"
+#include "Vulkan/VulkanManagers/BufferManager.h"
+#include "Vulkan/VulkanManagers/ImageManager.h"
+#include "Vulkan/VulkanWrappers/SwapchainWrapper.h"
+#include "Vulkan/VulkanWrappers/RenderpassWrapper.h"
+#include "Vulkan/VulkanManagers/PipelineManager.h"
+#include "Vulkan/VulkanWrappers/PipelineWrapper.h"
 #include "VulkanWrappers/InstanceWrapper.h"
 #include "VulkanWrappers/GPUObject.h"
 #include "VulkanWrappers/ImGuiWrapper.h"
 #include "VulkanManagers/SyncObjectManager.h"
 
-#include "../Components/DirectionalLightComponent.h"
+#include "Components/MeshRenderComponent.h"
+#include "Components/CameraComponent.h"
+#include "Components/TransformComponent.h"
+#include "Components/DirectionalLightComponent.h"
 
-#include "VulkanUtils.h"
+// Standard library includes
+#include <set>
+#include <algorithm>
 
 D3D::VulkanRenderer::VulkanRenderer()
 {

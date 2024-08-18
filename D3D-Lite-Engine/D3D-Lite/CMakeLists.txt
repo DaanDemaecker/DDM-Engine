@@ -51,6 +51,11 @@ add_executable(D3D-Lite-Engine_Build
 "Managers/ResourceManager.cpp"
 "Managers/InputManager.cpp")
 
+
+# Include directories specific to this target
+target_include_directories(D3D-Lite-Engine_Build PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+
+
 # Suppress warning C26459 for this specific target
 if(MSVC)
     target_compile_options(D3D-Lite-Engine_Build PRIVATE /wd26459)
