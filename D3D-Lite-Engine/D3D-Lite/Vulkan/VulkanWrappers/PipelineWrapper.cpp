@@ -1,9 +1,12 @@
 // PipelineWrapper.cpp
 
-// File includes
+// Header include
 #include "PipelineWrapper.h"
+
+// File includes
+#include "Vulkan/VulkanRenderer.h"
+
 #include "ShaderModuleWrapper.h"
-#include "../VulkanRenderer.h"
 #include "DescriptorPoolWrapper.h"
 
 // Standard library include
