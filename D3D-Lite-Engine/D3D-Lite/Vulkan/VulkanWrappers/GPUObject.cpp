@@ -1,9 +1,12 @@
 // GPUObject.h
 
-// File includes
+// Header include
 #include "GPUObject.h"
-#include "../VulkanUtils.h"
+
+// File includes
 #include "InstanceWrapper.h"
+
+#include "Vulkan/VulkanUtils.h"
 
 // Standard library includes
 #include <stdexcept>
