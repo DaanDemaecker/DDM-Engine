@@ -1,10 +1,12 @@
 // ImGuiWrapper.cpp
 
-// File includes
+// Header include
 #include "ImGuiWrapper.h"
-#include "../../Engine/D3DEngine.h"
-#include "../../Engine/Window.h"
-#include "../../Managers/SceneManager.h"
+
+// File includes
+#include "Engine/D3DEngine.h"
+#include "Engine/Window.h"
+#include "Managers/SceneManager.h"
 
 // Standard library includes
 #include <array>
