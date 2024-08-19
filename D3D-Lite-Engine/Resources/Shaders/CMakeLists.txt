@@ -25,4 +25,4 @@ add_custom_target(
     DEPENDS ${SPIRV_BINARY_FILES}
 )
 
-add_dependencies(D3D-Lite-Engine_Build Shaders)
+add_dependencies(${EXECUTABLE_NAME} Shaders)

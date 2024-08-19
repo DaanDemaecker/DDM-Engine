@@ -1,5 +1,5 @@
 # Create the executable
-add_executable(D3D-Lite-Engine_Build
+add_executable(${EXECUTABLE_NAME}
 "BaseClasses/GameObject.cpp"
 "Components/CameraComponent.cpp"
 "Components/DirectionalLightComponent.cpp"
@@ -53,10 +53,10 @@ add_executable(D3D-Lite-Engine_Build
 
 
 # Include directories specific to this target
-target_include_directories(D3D-Lite-Engine_Build PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(${EXECUTABLE_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
 
 # Suppress warning C26459 for this specific target
 if(MSVC)
-    target_compile_options(D3D-Lite-Engine_Build PRIVATE /wd26459)
+    target_compile_options(${EXECUTABLE_NAME} PRIVATE /wd26459)
 endif()

@@ -1,5 +1,6 @@
 include(FetchContent)
 
+# Declare GLFW as a dependency
 FetchContent_Declare(
   glfw
   GIT_REPOSITORY https://github.com/glfw/glfw.git
@@ -7,13 +8,15 @@ FetchContent_Declare(
   GIT_SHALLOW TRUE
 )
 
-option(GLFW_BUILD_EXAMPLES "Build the GLFW example programs" OFF)
-option(GLFW_BUILD_TESTS "Build the GLFW test programs" OFF)
-option(GLFW_BUILD_DOCS "Build the GLFW documentation" OFF)
-option(GLFW_INSTALL "Generate installation target" OFF)
-option(GLFW_DOCUMENT_INTERNALS "Include internals in documentation" OFF)
+# Set GLFW options before making it available
+set(GLFW_BUILD_EXAMPLES OFF)
+set(GLFW_BUILD_TESTS OFF)
+set(GLFW_BUILD_DOCS OFF)
+set(GLFW_INSTALL OFF)
+set(GLFW_DOCUMENT_INTERNALS OFF)
 
+# Make GLFW available after setting options
 FetchContent_MakeAvailable(glfw)
 
-
-target_link_libraries(D3D-Lite-Engine_Build PRIVATE glfw)
+# Link GLFW to your executable
+target_link_libraries(${EXECUTABLE_NAME} PRIVATE glfw)

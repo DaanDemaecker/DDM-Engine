@@ -11,4 +11,4 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(tinyOBJLoader)
 
 # Link libraries
-target_link_libraries(D3D-Lite-Engine_Build PRIVATE tinyobjloader)
+target_link_libraries(${EXECUTABLE_NAME} PRIVATE tinyobjloader)
