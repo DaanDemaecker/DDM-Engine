@@ -1,6 +1,6 @@
 // SyncObjectManager.cpp
 
-// File includes
+// Header include
 #include "SyncObjectManager.h"
 
 // Standard library includes

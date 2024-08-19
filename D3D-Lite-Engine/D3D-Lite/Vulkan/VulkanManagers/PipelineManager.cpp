@@ -1,10 +1,12 @@
 // PipelineManager.cpp
 
-// File includes
+// Header include
 #include "PipelineManager.h"
-#include "../../Managers/ConfigManager.h"
-#include "../VulkanWrappers/PipelineWrapper.h"
-#include "../VulkanWrappers/DescriptorPoolWrapper.h"
+
+// File includes
+#include "Managers/ConfigManager.h"
+#include "Vulkan/VulkanWrappers/PipelineWrapper.h"
+#include "Vulkan/VulkanWrappers/DescriptorPoolWrapper.h"
 
 D3D::PipelineManager::PipelineManager()
 {

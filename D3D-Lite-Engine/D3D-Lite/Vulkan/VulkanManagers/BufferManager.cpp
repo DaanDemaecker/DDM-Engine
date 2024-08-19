@@ -1,11 +1,12 @@
 // BufferManager.cpp
 
-// File includes
+// Header include
 #include "BufferManager.h"
-#include "../VulkanWrappers/GPUObject.h"
-#include "../VulkanUtils.h"
-#include "CommandpoolManager.h"
-#include "../VulkanWrappers/GPUObject.h"
+
+// File includes
+#include "Vulkan/VulkanWrappers/GPUObject.h"
+#include "Vulkan/VulkanUtils.h"
+
 #include "CommandpoolManager.h"
 
 // Standard library includes

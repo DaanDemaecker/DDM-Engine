@@ -1,13 +1,18 @@
 // ImageManager.cpp
 
-// File includes
+// Header include
 #include "ImageManager.h"
-#include "../../Includes/STBIncludes.h"
-#include "../VulkanUtils.h"
-#include "../VulkanWrappers/GPUObject.h"
+
+// File includes
+#include "Includes/STBIncludes.h"
+#include "Vulkan/VulkanUtils.h"
+
+#include "Managers/ConfigManager.h"
+
 #include "BufferManager.h"
-#include "../../Managers/ConfigManager.h"
 #include "CommandpoolManager.h"
+
+#include "Vulkan/VulkanWrappers/GPUObject.h"
 
 // Standard library includes
 #include <stdexcept>

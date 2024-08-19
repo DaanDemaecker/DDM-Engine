@@ -1,9 +1,11 @@
 // CommandpoolManager.cpp
 
-// File includes
+// Header include
 #include "CommandpoolManager.h"
-#include "../VulkanUtils.h"
-#include "../VulkanWrappers/GPUObject.h"
+
+// File includes
+#include "Vulkan/VulkanUtils.h"
+#include "Vulkan/VulkanWrappers/GPUObject.h"
 
 // Standard library includes
 #include <stdexcept>

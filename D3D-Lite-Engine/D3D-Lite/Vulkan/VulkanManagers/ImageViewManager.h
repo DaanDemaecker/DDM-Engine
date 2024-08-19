@@ -2,8 +2,8 @@
 // This class will hold and manage the color- and depthImaveViews
 
 //File includes
-#include "../../Includes/VulkanIncludes.h"
-#include "../../DataTypes/Structs.h"
+#include "Includes/VulkanIncludes.h"
+#include "DataTypes/Structs.h"
 
 namespace D3D
 {
