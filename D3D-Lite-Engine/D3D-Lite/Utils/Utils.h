@@ -5,9 +5,6 @@
 #ifndef UtilsIncluded
 #define UtilsIncluded
 
-// File includes
-#include "../DataTypes/Structs.h"
-
 // Standard library includes
 #include <vector>
 #include <fstream>

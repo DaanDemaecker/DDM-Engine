@@ -1,7 +1,9 @@
 // Utils.cpp
 
-// File includes
+// Header include
 #include "Utils.h"
+
+// Standard library includes
 #include <string>
 
 std::vector<char> Utils::readFile(const std::string& filename)
