@@ -1,9 +1,15 @@
-#include "SceneManager.h"
-#include "../Engine/Scene.h"
-#include "../BaseClasses/GameObject.h"
+// SceneManager.cpp
 
-#include "../Components/CameraComponent.h"
-#include "../Components/DirectionalLightComponent.h"
+// Header include
+#include "SceneManager.h"
+
+// File includes
+#include "Engine/Scene.h"
+
+#include "BaseClasses/GameObject.h"
+
+#include "Components/CameraComponent.h"
+#include "Components/DirectionalLightComponent.h"
 
 void D3D::SceneManager::EndProgram()
 {

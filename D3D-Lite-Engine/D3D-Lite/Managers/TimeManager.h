@@ -5,7 +5,7 @@
 #define TimeManagerIncluded
 
 // File includes
-#include "../Engine/Singleton.h"
+#include "Engine/Singleton.h"
 
 namespace D3D
 {
@@ -42,7 +42,7 @@ namespace D3D
 		float m_DeltaTime = 0;
 
 		// Fixed time step
-		float m_FixedTime = 0;
+		float m_FixedTime = 0.2f;
 	};
 }
 

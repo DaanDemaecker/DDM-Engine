@@ -4,8 +4,8 @@
 #define ResourceManagerIncluded
 
 // File includes
-#include "../Engine/Singleton.h"
-#include "../DataTypes/Mesh.h"
+#include "Engine/Singleton.h"
+#include "DataTypes/Mesh.h"
 
 // Standard library includes
 #include <memory>

@@ -1,6 +1,12 @@
+// ResourceManager.cpp
+
+// Header include
 #include "ResourceManager.h"
-#include "../Vulkan/VulkanRenderer.h"
-#include "../Managers/ConfigManager.h"
+
+// File includes
+#include "Managers/ConfigManager.h"
+
+#include "Vulkan/VulkanRenderer.h"
 
 std::shared_ptr<D3D::Mesh> D3D::ResourceManager::LoadMesh(std::string&& filePath)
 {

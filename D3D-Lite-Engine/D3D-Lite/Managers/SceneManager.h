@@ -6,7 +6,7 @@
 #define SceneManagerIncluded
 
 // File includes
-#include "../Engine/Singleton.h"
+#include "Engine/Singleton.h"
 
 // Standard library includes
 #include <memory>
