@@ -1,8 +1,10 @@
 // Window.cpp
 
-// File includes
+// Header include
 #include "Window.h"
-#include "../Managers/ConfigManager.h"
+
+// File includes
+#include "Managers/ConfigManager.h"
 
 // Static library includes
 #include <functional>

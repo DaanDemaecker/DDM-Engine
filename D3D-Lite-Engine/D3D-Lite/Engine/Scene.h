@@ -1,7 +1,8 @@
 #ifndef SceneIncluded
 #define SceneIncluded
 
-#include "../Managers/SceneManager.h"
+// File includes
+#include "Managers/SceneManager.h"
 
 namespace D3D
 {

@@ -1,7 +1,10 @@
 #ifndef D3DEngineIncluded
 #define D3DEngineIncluded
-#include "../Includes/GLFWIncludes.h"
 
+// File includes
+#include "Includes/GLFWIncludes.h"
+
+// Standard library includes
 #include <string>
 #include <functional>
 

@@ -1,16 +1,26 @@
+// D3DEngine.cpp
+
+// Header include
 #include "D3DEngine.h"
-#include "../Vulkan/VulkanRenderer.h"
-#include "../Managers/TimeManager.h"
-#include "../Managers/SceneManager.h"
-#include "../DataTypes/Materials/Material.h"
-#include "../Managers/ConfigManager.h"
+
+// File includes
+#include "Scene.h"
 #include "Window.h"
+
+#include "ServiceLocator/ModelLoader/D3DModelLoader.h"
+#include "ServiceLocator/ServiceLocator.h"
+
+#include "Managers/SceneManager.h"
+#include "Managers/ConfigManager.h"
+#include "Managers/TimeManager.h"
+
+//#include "DataTypes/Materials/Material.h"
+
+#include "Vulkan/VulkanRenderer.h"
+
+// Standard library includes
 #include <chrono>
 #include <thread>
-
-#include "Scene.h"
-#include "ServiceLocator/ServiceLocator.h"
-#include "ServiceLocator/ModelLoader/D3DModelLoader.h"
 
 D3D::D3DEngine::D3DEngine()
 {

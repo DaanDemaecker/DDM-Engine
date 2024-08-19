@@ -1,13 +1,16 @@
-#include "Scene.h"
-#include "../BaseClasses/GameObject.h"
+// Scene.cpp
 
-#include "../Components/CameraComponent.h"
-#include "../Components/DirectionalLightComponent.h"
-#include "../Components/TransformComponent.h"
+// Header include
+#include "Scene.h"
+
+// File includes
+#include "BaseClasses/GameObject.h"
+
+#include "Components/CameraComponent.h"
+#include "Components/DirectionalLightComponent.h"
+#include "Components/TransformComponent.h"
 
 unsigned int D3D::Scene::m_IdCounter = 0;
-
-
 
 D3D::Scene::Scene(const std::string& name) : m_Name(name)
 {

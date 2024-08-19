@@ -6,7 +6,7 @@
 
 // File includes
 #include "Singleton.h"
-#include "../Includes/GLFWIncludes.h"
+#include "Includes/GLFWIncludes.h"
 
 // Standard library includes
 #include <functional>
