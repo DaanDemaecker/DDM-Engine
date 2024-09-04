@@ -9,6 +9,6 @@ int main()
 	D3D::D3DEngine engine{};
 	engine.Run(LoadTestScene::loadTestScene);
 	//engine.Run(LoadModelLoaderScene::LoadModelLoaderScene);
-
+	
 	return EXIT_SUCCESS;
 } 

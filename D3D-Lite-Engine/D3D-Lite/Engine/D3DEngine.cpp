@@ -14,9 +14,9 @@
 #include "Managers/ConfigManager.h"
 #include "Managers/TimeManager.h"
 
-//#include "DataTypes/Materials/Material.h"
-
 #include "Vulkan/VulkanRenderer.h"
+
+#include "Managers/InputManager.h"
 
 // Standard library includes
 #include <chrono>
@@ -47,6 +47,7 @@ void D3D::D3DEngine::Run(const std::function<void()>& load)
 	auto& sceneManager{ SceneManager::GetInstance() };
 	auto& time{ TimeManager::GetInstance() };
 	auto& window{ Window::GetInstance() };
+	auto& input{ InputManager::GetInstance() };
 
 
 	bool doContinue = true;
@@ -67,6 +68,8 @@ void D3D::D3DEngine::Run(const std::function<void()>& load)
 		const float deltaTime = std::chrono::duration<float>(currentTime - lastTime).count();
 
 		time.SetDeltaTime(deltaTime);
+
+		input.ProcessInput();
 
 		//std::cout << time.GetFps() << std::endl;
 
@@ -98,6 +101,11 @@ void D3D::D3DEngine::Run(const std::function<void()>& load)
 		sceneManager.PrepareRender();
 
 		renderer.Render();
+
+		if (input.GetKeyUp(GLFW_KEY_SPACE))
+		{
+			std::cout << "yes" << std::endl;
+		}
 
 		const auto frameDuration = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - currentTime);
 		const auto sleepTime = std::chrono::milliseconds(static_cast<int>(desiredFrameDuration)) - frameDuration;

@@ -49,7 +49,8 @@ add_executable(${EXECUTABLE_NAME}
 "Components/AnimatorComponent.cpp"
 "Components/ModelLoaderComponent.cpp"
 "Managers/ResourceManager.cpp"
-"Managers/InputManager.cpp")
+"Managers/InputManager.cpp"
+"Managers/Input/KeyboardImpl.cpp")
 
 
 # Include directories specific to this target
