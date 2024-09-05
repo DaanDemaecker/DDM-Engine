@@ -50,7 +50,7 @@ add_executable(${EXECUTABLE_NAME}
 "Components/ModelLoaderComponent.cpp"
 "Managers/ResourceManager.cpp"
 "Managers/InputManager.cpp"
-"Managers/Input/KeyboardImpl.cpp")
+"Managers/Input/KeyboardImpl.cpp" "Managers/Input/MouseImpl.h" "Managers/Input/MouseImpl.cpp")
 
 
 # Include directories specific to this target

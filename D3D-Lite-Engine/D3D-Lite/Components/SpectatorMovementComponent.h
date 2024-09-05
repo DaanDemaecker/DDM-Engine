@@ -19,9 +19,6 @@ namespace D3D
 
 		float m_TotalPitch{};
 		float m_TotalYaw{};
-
-		double m_PrevXPos{};
-		double m_PrevYPos{};
 	};
 }
 

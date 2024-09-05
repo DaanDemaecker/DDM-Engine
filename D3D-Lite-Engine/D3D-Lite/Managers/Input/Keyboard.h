@@ -45,7 +45,6 @@ namespace D3D
 			return m_pImpl->IsDown(button);
 		}
 
-
 	private:
 		std::unique_ptr<KeyBoardImpl> m_pImpl;
 	};
