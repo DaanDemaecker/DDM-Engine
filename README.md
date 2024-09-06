@@ -7,6 +7,13 @@ In my Graphics Programming class, we learned about DirectX and made our own [sof
 After some research, I decided to use the [Vulkan](https://www.vulkan.org) API to render.
 As I was new to Vulkan I started by creating a separate [renderer](https://github.com/DaanDemaecker/VulkanRenderer.git) that turned into a testing project, which can also be found on my GitHub.
 
+
+# Capabilities
+
+- Loading and rendering 3D objects in supported file types:
+     -.obj
+     -.fbx
+
 ## Object Loader
 For my Graphics Programming 2 course, we used Vulkan in class, for the first time for our school. We were tasked to make a project to showcase our knowledge.
 As the choice of project was very free, it took me a while to choose, and considering the amount of time we got for this assignment, I decided to make a runtime model and material loader.
