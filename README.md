@@ -10,9 +10,10 @@ As I was new to Vulkan I started by creating a separate [renderer](https://githu
 
 # Capabilities
 
-- Loading and rendering 3D objects in supported file types:
-     - .obj
-     - .fbx
+- ***Model Loading***  
+     Loading and rendering 3D Models, supported types:
+    - .obj
+    - .fbx
 
 ## Object Loader
 For my Graphics Programming 2 course, we used Vulkan in class, for the first time for our school. We were tasked to make a project to showcase our knowledge.
