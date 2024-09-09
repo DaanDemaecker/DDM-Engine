@@ -10,6 +10,9 @@ As I was new to Vulkan I started by creating a separate [renderer](https://githu
 
 # Capabilities
 
+- ***Component-based system***  
+      The player can create his own components and attach them to a game object to add custom functionality.
+
 - ***Model Loading***  
      Loading and rendering 3D Models, supported types:
     - .obj
