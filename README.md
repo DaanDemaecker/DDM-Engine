@@ -18,7 +18,7 @@ As I was new to Vulkan I started by creating a separate [renderer](https://githu
     - .obj
     - .fbx
 
-- ***Texture loading***. 
+- ***Texture loading***  
     Loading image files as Textures using the **STB** library
 
 ## Object Loader
