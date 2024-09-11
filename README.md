@@ -19,7 +19,7 @@ As I was new to Vulkan I started by creating a separate [renderer](https://githu
     - .fbx
 
 - ***Texture loading***  
-    Loading image files as Textures using the **STB** library
+    Loading image files as Textures using the [**STB**](https://github.com/nothings/stb) library
 
 ## Object Loader
 For my Graphics Programming 2 course, we used Vulkan in class, for the first time for our school. We were tasked to make a project to showcase our knowledge.
