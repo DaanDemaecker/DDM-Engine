@@ -21,6 +21,11 @@ As I was new to Vulkan I started by creating a separate [renderer](https://githu
 - ***Texture loading***  
     Loading image files as Textures using the [**STB**](https://github.com/nothings/stb) library
 
+- ***Skybox Display***  
+   A cubemap can be attached to any camera to display a skybox.
+
+
+
 ## Object Loader
 For my Graphics Programming 2 course, we used Vulkan in class, for the first time for our school. We were tasked to make a project to showcase our knowledge.
 As the choice of project was very free, it took me a while to choose, and considering the amount of time we got for this assignment, I decided to make a runtime model and material loader.
