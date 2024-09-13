@@ -24,7 +24,8 @@ As I was new to Vulkan I started by creating a separate [renderer](https://githu
 - ***Skybox Display***  
    A cubemap can be attached to any camera to display a skybox.
 
-
+- ***GUI***  
+ImGui has been implemented and can be used for debugging purposes or anything else the user wants to.
 
 ## Object Loader
 For my Graphics Programming 2 course, we used Vulkan in class, for the first time for our school. We were tasked to make a project to showcase our knowledge.
