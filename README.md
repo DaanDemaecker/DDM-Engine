@@ -27,6 +27,11 @@ As I was new to Vulkan I started by creating a separate [renderer](https://githu
 - ***GUI***  
 ImGui has been implemented and can be used for debugging purposes or anything else the user wants to.
 
+## Future goals
+Future goals for my engine include:
+
+- Sound system using fmod
+
 ## Object Loader
 For my Graphics Programming 2 course, we used Vulkan in class, for the first time for our school. We were tasked to make a project to showcase our knowledge.
 As the choice of project was very free, it took me a while to choose, and considering the amount of time we got for this assignment, I decided to make a runtime model and material loader.
