@@ -27,6 +27,9 @@ As I was new to Vulkan I started by creating a separate [renderer](https://githu
 - ***GUI***  
 ImGui has been implemented and can be used for debugging purposes or anything else the user wants to.
 
+- ***Global light***  
+Currently, there is a single global directional light that is used for shading in any way the user wants to. The light has a direction, color, and intensity that can be customized
+
 ## Future goals
 Future goals for my engine include:
 
