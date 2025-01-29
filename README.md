@@ -1,4 +1,4 @@
-# D3D-Lite-Engine  
+# DDM3-Lite-Engine  
 
 ## Motivation
 During my Game Development course at [Digital Arts and Entertainment](https://www.digitalartsandentertainment.be) in Belgium, we made our own basic 2D engine in our Programming 4 class.
