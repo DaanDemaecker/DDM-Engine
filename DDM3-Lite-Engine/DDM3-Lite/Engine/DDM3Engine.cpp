@@ -1,13 +1,13 @@
 // D3DEngine.cpp
 
 // Header include
-#include "D3DEngine.h"
+#include "DDM3Engine.h"
 
 // File includes
 #include "Scene.h"
 #include "Window.h"
 
-#include "ServiceLocator/ModelLoader/D3DModelLoader.h"
+#include "ServiceLocator/ModelLoader/DDM3ModelLoader.h"
 #include "ServiceLocator/ServiceLocator.h"
 
 #include "Managers/SceneManager.h"
@@ -22,24 +22,24 @@
 #include <chrono>
 #include <thread>
 
-DDM3::D3DEngine::D3DEngine()
+DDM3::DDM3Engine::DDM3Engine()
 {
 	// Create the window with the given width and height
 	DDM3::Window::GetInstance();
 
-	ServiceLocator::RegisterModelLoader(std::make_unique<D3DModelLoader>());
+	ServiceLocator::RegisterModelLoader(std::make_unique<DDM3ModelLoader>());
 
 	auto& renderer{ DDM3::VulkanRenderer::GetInstance() };
 
 	renderer.AddDefaultPipeline();
 }
 
-DDM3::D3DEngine::~D3DEngine()
+DDM3::DDM3Engine::~DDM3Engine()
 {
 
 }
 
-void DDM3::D3DEngine::Run(const std::function<void()>& load)
+void DDM3::DDM3Engine::Run(const std::function<void()>& load)
 {
 	load();
 

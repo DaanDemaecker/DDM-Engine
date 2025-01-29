@@ -16,11 +16,11 @@ namespace DDM3
 	class ObjLoader;
 	class FbxLoader;
 
-	class D3DModelLoader final : public ModelLoader
+	class DDM3ModelLoader final : public ModelLoader
 	{
 	public:
-		D3DModelLoader();
-		virtual ~D3DModelLoader() override;
+		DDM3ModelLoader();
+		virtual ~DDM3ModelLoader() override;
 
 		// Load in a 3D model given a file path
 		// Parameters:

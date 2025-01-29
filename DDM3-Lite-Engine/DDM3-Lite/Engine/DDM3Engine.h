@@ -10,17 +10,17 @@
 
 namespace DDM3
 {
-	class D3DEngine
+	class DDM3Engine
 	{
 	public:
-		D3DEngine();
-		~D3DEngine();
+		DDM3Engine();
+		~DDM3Engine();
 		void Run(const std::function<void()>& load);
 
-		D3DEngine(const D3DEngine& other) = delete;
-		D3DEngine(D3DEngine&& other) = delete;
-		D3DEngine& operator=(const D3DEngine& other) = delete;
-		D3DEngine& operator=(D3DEngine&& other) = delete;
+		DDM3Engine(const DDM3Engine& other) = delete;
+		DDM3Engine(DDM3Engine&& other) = delete;
+		DDM3Engine& operator=(const DDM3Engine& other) = delete;
+		DDM3Engine& operator=(DDM3Engine&& other) = delete;
 	};
 }
 
