@@ -2,17 +2,17 @@
 cmake_minimum_required(VERSION 3.11)
 
 # Project name
-project(D3D-LITE-ENGINE)
+project(DDM3-LITE-ENGINE)
 
 # C++ standard
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 cmake_policy(SET CMP0079 NEW)
 
-set(SOURCE_FOLDER_NAME "D3D-Lite")
+set(SOURCE_FOLDER_NAME "DDM3-Lite")
 
 
-set(EXECUTABLE_NAME "D3D-Lite-Engine")
+set(EXECUTABLE_NAME "DDM3-Lite-Engine")
 
 
 # Copy resources after Shaders
