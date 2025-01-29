@@ -34,6 +34,7 @@ Currently, there is a single global directional light that is used for shading i
 Future goals for my engine include:
 
 - Sound system using fmod
+- Support for more 3D files like GLFT
 
 ## Object Loader
 For my Graphics Programming 2 course, we used Vulkan in class, for the first time for our school. We were tasked to make a project to showcase our knowledge.
