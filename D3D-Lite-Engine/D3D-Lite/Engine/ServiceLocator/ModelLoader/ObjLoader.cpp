@@ -7,7 +7,7 @@
 // Standard library includes
 #include <iostream>
 
-void D3D::ObjLoader::LoadObjModel(const std::string& path, std::vector<D3D::Vertex>& vertices, std::vector<uint32_t>& indices)
+void DDM3::ObjLoader::LoadObjModel(const std::string& path, std::vector<DDM3::Vertex>& vertices, std::vector<uint32_t>& indices)
 {
 	// Create needed objects to read in .obj file
 	tinyobj::attrib_t attrib{};
@@ -24,7 +24,7 @@ void D3D::ObjLoader::LoadObjModel(const std::string& path, std::vector<D3D::Vert
 	}
 
 	// Create map to store vertices
-	std::unordered_map<D3D::Vertex, uint32_t> uniqueVertices{};
+	std::unordered_map<DDM3::Vertex, uint32_t> uniqueVertices{};
 
 	// Loop through every shape that was read from the file
 	for (const auto& shape : shapes)
@@ -33,7 +33,7 @@ void D3D::ObjLoader::LoadObjModel(const std::string& path, std::vector<D3D::Vert
 		for (const auto& index : shape.mesh.indices)
 		{
 			// Create empty vertex
-			D3D::Vertex vertex{};
+			DDM3::Vertex vertex{};
 
 			// Add position to vertex
 			vertex.pos = {
@@ -84,8 +84,8 @@ void D3D::ObjLoader::LoadObjModel(const std::string& path, std::vector<D3D::Vert
 	SetupTangents(vertices, indices);
 }
 
-void D3D::ObjLoader::SetupTangents
-(std::vector<D3D::Vertex>& vertices, std::vector<uint32_t>& indices)
+void DDM3::ObjLoader::SetupTangents
+(std::vector<DDM3::Vertex>& vertices, std::vector<uint32_t>& indices)
 {
 	// After all vertices are added loop through them to calculate the tangents
 	for (size_t i = 0; i < indices.size(); i += 3)
@@ -96,9 +96,9 @@ void D3D::ObjLoader::SetupTangents
 		uint32_t index2 = indices[i + 2];
 
 		// Get the vertices associated with this triangle
-		D3D::Vertex& v0 = vertices[index0];
-		D3D::Vertex& v1 = vertices[index1];
-		D3D::Vertex& v2 = vertices[index2];
+		DDM3::Vertex& v0 = vertices[index0];
+		DDM3::Vertex& v1 = vertices[index1];
+		DDM3::Vertex& v2 = vertices[index2];
 
 		// Get 2 edges of this triangle
 		glm::vec3 edge1 = v1.pos - v0.pos;

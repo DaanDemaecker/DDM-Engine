@@ -11,7 +11,7 @@
 #include "TransformComponent.h"
 #include "../Managers/ConfigManager.h"
 
-D3D::SkyBoxComponent::SkyBoxComponent()
+DDM3::SkyBoxComponent::SkyBoxComponent()
 {
 	// Create the model
 	auto pMesh = ResourceManager::GetInstance().LoadMesh(ConfigManager::GetInstance().GetString("SkyboxModel"));
@@ -19,7 +19,7 @@ D3D::SkyBoxComponent::SkyBoxComponent()
 	SetMesh(pMesh);
 }
 
-void D3D::SkyBoxComponent::EarlyUpdate()
+void DDM3::SkyBoxComponent::EarlyUpdate()
 {
 	if (m_ShouldCreateDescriptorSets)
 	{
@@ -28,24 +28,24 @@ void D3D::SkyBoxComponent::EarlyUpdate()
 	}
 }
 
-void D3D::SkyBoxComponent::LoadSkybox(std::initializer_list<const std::string>&& filePaths)
+void DDM3::SkyBoxComponent::LoadSkybox(std::initializer_list<const std::string>&& filePaths)
 {
 	// Create cubemap material
-	m_pMaterial = std::make_shared<D3D::CubeMapMaterial>(filePaths);
+	m_pMaterial = std::make_shared<DDM3::CubeMapMaterial>(filePaths);
 }
 
-void D3D::SkyBoxComponent::RenderSkyBox()
+void DDM3::SkyBoxComponent::RenderSkyBox()
 {
 	if (m_pMesh == nullptr)
 		return;
 
-	auto frame{ D3D::VulkanRenderer::GetInstance().GetCurrentFrame()};
+	auto frame{ DDM3::VulkanRenderer::GetInstance().GetCurrentFrame()};
 
 	UpdateUniformBuffer(frame);
 
 	m_pMesh->Render(GetPipeline(), &m_DescriptorSets[frame]);
 }
 
-void D3D::SkyBoxComponent::Render()
+void DDM3::SkyBoxComponent::Render()
 {
 }

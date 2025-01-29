@@ -6,34 +6,34 @@
 
 #include <algorithm>
 
-D3D::MultiMaterial::MultiMaterial(const std::string& pipeline)
+DDM3::MultiMaterial::MultiMaterial(const std::string& pipeline)
 	:Material(pipeline)
 {
-	m_pMultiShaderBufferDescriptor = std::make_unique<D3D::UboDescriptorObject<MultiShaderBuffer>>();
+	m_pMultiShaderBufferDescriptor = std::make_unique<DDM3::UboDescriptorObject<MultiShaderBuffer>>();
 
-	m_pDiffuseTextureObject = std::make_unique<D3D::TextureDescriptorObject>();
+	m_pDiffuseTextureObject = std::make_unique<DDM3::TextureDescriptorObject>();
 
-	m_pNormalTextureObject = std::make_unique<D3D::TextureDescriptorObject>();
+	m_pNormalTextureObject = std::make_unique<DDM3::TextureDescriptorObject>();
 
-	m_pGlossTextureObject = std::make_unique<D3D::TextureDescriptorObject>();
+	m_pGlossTextureObject = std::make_unique<DDM3::TextureDescriptorObject>();
 
-	m_pSpecularTextureObject = std::make_unique<D3D::TextureDescriptorObject>();
+	m_pSpecularTextureObject = std::make_unique<DDM3::TextureDescriptorObject>();
 
 	UpdateShaderBuffer();
 
 
 
-	auto boundCallback = std::bind(&D3D::MultiMaterial::DropFileCallback, this, std::placeholders::_1, std::placeholders::_2);
+	auto boundCallback = std::bind(&DDM3::MultiMaterial::DropFileCallback, this, std::placeholders::_1, std::placeholders::_2);
 
 	Window::GetInstance().AddCallback(this, boundCallback);
 }
 
-D3D::MultiMaterial::~MultiMaterial()
+DDM3::MultiMaterial::~MultiMaterial()
 {
 	Window::GetInstance().RemoveCallback(this);
 }
 
-void D3D::MultiMaterial::OnGUI()
+void DDM3::MultiMaterial::OnGUI()
 {
 	ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_Framed;
 
@@ -56,7 +56,7 @@ void D3D::MultiMaterial::OnGUI()
 	UpdateShaderBuffer();
 }
 
-void D3D::MultiMaterial::UpdateDescriptorSets(std::vector<VkDescriptorSet>& descriptorSets, std::vector<DescriptorObject*>& descriptorObjects)
+void DDM3::MultiMaterial::UpdateDescriptorSets(std::vector<VkDescriptorSet>& descriptorSets, std::vector<DescriptorObject*>& descriptorObjects)
 {
 	// Get pointer to the descriptorpool wrapper
 	auto descriptorPool = GetDescriptorPool();
@@ -88,12 +88,12 @@ void D3D::MultiMaterial::UpdateDescriptorSets(std::vector<VkDescriptorSet>& desc
 	m_ShouldUpdateDescriptorSets = false;
 }
 
-void D3D::MultiMaterial::AddDiffuseTextures(std::initializer_list<const std::string>&& filePaths)
+void DDM3::MultiMaterial::AddDiffuseTextures(std::initializer_list<const std::string>&& filePaths)
 {
 	AddDiffuseTextures(filePaths);
 }
 
-void D3D::MultiMaterial::AddDiffuseTextures(std::initializer_list<const std::string>& filePaths)
+void DDM3::MultiMaterial::AddDiffuseTextures(std::initializer_list<const std::string>& filePaths)
 {
 	m_pDiffuseTextureObject->AddTextures(filePaths);
 	
@@ -105,12 +105,12 @@ void D3D::MultiMaterial::AddDiffuseTextures(std::initializer_list<const std::str
 	UpdateShaderBuffer();
 }
 
-void D3D::MultiMaterial::AddNormalMap(std::initializer_list<const std::string>&& filePaths)
+void DDM3::MultiMaterial::AddNormalMap(std::initializer_list<const std::string>&& filePaths)
 {
 	AddNormalMap(filePaths);
 }
 
-void D3D::MultiMaterial::AddNormalMap(std::initializer_list<const std::string>& filePaths)
+void DDM3::MultiMaterial::AddNormalMap(std::initializer_list<const std::string>& filePaths)
 {
 	m_pNormalTextureObject->AddTextures(filePaths);
 
@@ -122,12 +122,12 @@ void D3D::MultiMaterial::AddNormalMap(std::initializer_list<const std::string>& 
 	UpdateShaderBuffer();
 }
 
-void D3D::MultiMaterial::AddGlossTextures(std::initializer_list<const std::string>&& filePaths)
+void DDM3::MultiMaterial::AddGlossTextures(std::initializer_list<const std::string>&& filePaths)
 {
 	AddGlossTextures(filePaths);
 }
 
-void D3D::MultiMaterial::AddGlossTextures(std::initializer_list<const std::string>& filePaths)
+void DDM3::MultiMaterial::AddGlossTextures(std::initializer_list<const std::string>& filePaths)
 {
 	m_pGlossTextureObject->AddTextures(filePaths);
 
@@ -139,12 +139,12 @@ void D3D::MultiMaterial::AddGlossTextures(std::initializer_list<const std::strin
 	UpdateShaderBuffer();
 }
 
-void D3D::MultiMaterial::AddSpecularTextures(std::initializer_list<const std::string>&& filePaths)
+void DDM3::MultiMaterial::AddSpecularTextures(std::initializer_list<const std::string>&& filePaths)
 {
 	AddSpecularTextures(filePaths);
 }
 
-void D3D::MultiMaterial::AddSpecularTextures(std::initializer_list<const std::string>& filePaths)
+void DDM3::MultiMaterial::AddSpecularTextures(std::initializer_list<const std::string>& filePaths)
 {
 	m_pSpecularTextureObject->AddTextures(filePaths);
 
@@ -156,9 +156,9 @@ void D3D::MultiMaterial::AddSpecularTextures(std::initializer_list<const std::st
 	UpdateShaderBuffer();
 }
 
-void D3D::MultiMaterial::UpdateShaderBuffer()
+void DDM3::MultiMaterial::UpdateShaderBuffer()
 {
-	auto& renderer{ D3D::VulkanRenderer::GetInstance() };
+	auto& renderer{ DDM3::VulkanRenderer::GetInstance() };
 
 	for (int frame{}; frame < renderer.GetMaxFrames(); frame++)
 	{
@@ -166,7 +166,7 @@ void D3D::MultiMaterial::UpdateShaderBuffer()
 	}
 }
 
-void D3D::MultiMaterial::DropFileCallback(int count, const char** paths)
+void DDM3::MultiMaterial::DropFileCallback(int count, const char** paths)
 {
 	if (count > 0)
 	{
@@ -190,7 +190,7 @@ void D3D::MultiMaterial::DropFileCallback(int count, const char** paths)
 
 }
 
-void D3D::MultiMaterial::SetFileName(char* text, int textLength, const char* path)
+void DDM3::MultiMaterial::SetFileName(char* text, int textLength, const char* path)
 {
 	std::fill(text, text + textLength, 0);
 
@@ -208,7 +208,7 @@ void D3D::MultiMaterial::SetFileName(char* text, int textLength, const char* pat
 	}
 }
 
-void D3D::MultiMaterial::DiffuseGui()
+void DDM3::MultiMaterial::DiffuseGui()
 {
 	bool placeHolder{ false };
 
@@ -250,7 +250,7 @@ void D3D::MultiMaterial::DiffuseGui()
 	}
 }
 
-void D3D::MultiMaterial::NormalMapGui()
+void DDM3::MultiMaterial::NormalMapGui()
 {
 
 	bool placeHolder{ false };
@@ -293,7 +293,7 @@ void D3D::MultiMaterial::NormalMapGui()
 	}
 }
 
-void D3D::MultiMaterial::GlossMapGui()
+void DDM3::MultiMaterial::GlossMapGui()
 {
 	bool placeHolder{ false };
 
@@ -335,7 +335,7 @@ void D3D::MultiMaterial::GlossMapGui()
 	}
 }
 
-void D3D::MultiMaterial::SpecularMapGui()
+void DDM3::MultiMaterial::SpecularMapGui()
 {
 	bool placeHolder{ false };
 

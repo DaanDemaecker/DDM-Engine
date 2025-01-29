@@ -15,7 +15,7 @@
 #include <map>
 #include <memory>
 
-namespace D3D
+namespace DDM3
 {
     // Class forward declarations
     class ImGuiWrapper;
@@ -63,7 +63,7 @@ namespace D3D
 
         VkSampler& GetSampler();
 
-        D3D::PipelineWrapper* GetPipeline(const std::string& name = "Default");
+        DDM3::PipelineWrapper* GetPipeline(const std::string& name = "Default");
 
         VkCommandBuffer& GetCurrentCommandBuffer();
 
@@ -90,7 +90,7 @@ namespace D3D
         //     vertices: reference to vector of vertices 
         //     vertexBuffer: handle to the vertex buffer to be created
         //     vertexBufferMemory: handle of the vertex buffer memory
-        void CreateVertexBuffer(std::vector<D3D::Vertex>& vertices, VkBuffer& vertexBuffer, VkDeviceMemory& vertexBufferMemory);
+        void CreateVertexBuffer(std::vector<DDM3::Vertex>& vertices, VkBuffer& vertexBuffer, VkDeviceMemory& vertexBufferMemory);
 
         // Create a vertex buffer
         // Parameters:

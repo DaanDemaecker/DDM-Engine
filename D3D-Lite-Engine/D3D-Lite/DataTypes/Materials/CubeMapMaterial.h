@@ -4,7 +4,7 @@
 // File includes
 #include "Material.h"
 
-namespace D3D
+namespace DDM3
 {
 	class TextureDescriptorObject;
 

@@ -8,7 +8,7 @@
 #include "DescriptorObject.h"
 #include "../../Vulkan/VulkanRenderer.h"
 
-namespace D3D
+namespace DDM3
 {
 	// Templated class so that the user can choose what the descriptor holds
 	template <typename T>
@@ -156,7 +156,7 @@ namespace D3D
 	inline void UboDescriptorObject<T>::Cleanup()
 	{
 		// Get reference to renderer
-		auto& renderer = D3D::VulkanRenderer::GetInstance();
+		auto& renderer = DDM3::VulkanRenderer::GetInstance();
 		// Get reference to device
 		auto device = renderer.GetDevice();
 

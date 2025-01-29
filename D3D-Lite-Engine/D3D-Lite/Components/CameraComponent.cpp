@@ -2,22 +2,22 @@
 #include "../Includes/GLMIncludes.h"
 #include "TransformComponent.h"
 
-D3D::CameraComponent::CameraComponent()
+DDM3::CameraComponent::CameraComponent()
 {
 	m_FovAngle = glm::radians(m_DefaultAngleDegrees);
 }
 
-void D3D::CameraComponent::SetFovAngleDegrees(float angle)
+void DDM3::CameraComponent::SetFovAngleDegrees(float angle)
 {
 	m_FovAngle = glm::radians(angle);
 }
 
-void D3D::CameraComponent::LateUpdate()
+void DDM3::CameraComponent::LateUpdate()
 {
 	UpdateMatrix();
 }
 
-void D3D::CameraComponent::UpdateUniformBuffer(UniformBufferObject& buffer, VkExtent2D extent)
+void DDM3::CameraComponent::UpdateUniformBuffer(UniformBufferObject& buffer, VkExtent2D extent)
 {
 	// Set buffer view matrix
 	buffer.view = m_Matrix;
@@ -31,11 +31,11 @@ void D3D::CameraComponent::UpdateUniformBuffer(UniformBufferObject& buffer, VkEx
 	buffer.proj[2][3] *= -1;
 }
 
-void D3D::CameraComponent::RenderSkybox()
+void DDM3::CameraComponent::RenderSkybox()
 {
 	if (m_pSkyBox == nullptr)
 	{
-		m_pSkyBox = GetComponent<D3D::SkyBoxComponent>();
+		m_pSkyBox = GetComponent<DDM3::SkyBoxComponent>();
 	}
 
 	if (m_pSkyBox != nullptr)
@@ -44,7 +44,7 @@ void D3D::CameraComponent::RenderSkybox()
 	}
 }
 
-void D3D::CameraComponent::UpdateMatrix()
+void DDM3::CameraComponent::UpdateMatrix()
 {
 	auto transform = GetTransform();
 

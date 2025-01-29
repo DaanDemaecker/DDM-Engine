@@ -8,7 +8,7 @@
 #include <string>
 #include <functional>
 
-namespace D3D
+namespace DDM3
 {
 	class D3DEngine
 	{

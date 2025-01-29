@@ -4,7 +4,7 @@
 
 #include <memory>
 
-namespace D3D
+namespace DDM3
 {
 	class TransformComponent;
 

@@ -22,24 +22,24 @@
 #include <chrono>
 #include <thread>
 
-D3D::D3DEngine::D3DEngine()
+DDM3::D3DEngine::D3DEngine()
 {
 	// Create the window with the given width and height
-	D3D::Window::GetInstance();
+	DDM3::Window::GetInstance();
 
 	ServiceLocator::RegisterModelLoader(std::make_unique<D3DModelLoader>());
 
-	auto& renderer{ D3D::VulkanRenderer::GetInstance() };
+	auto& renderer{ DDM3::VulkanRenderer::GetInstance() };
 
 	renderer.AddDefaultPipeline();
 }
 
-D3D::D3DEngine::~D3DEngine()
+DDM3::D3DEngine::~D3DEngine()
 {
 
 }
 
-void D3D::D3DEngine::Run(const std::function<void()>& load)
+void DDM3::D3DEngine::Run(const std::function<void()>& load)
 {
 	load();
 

@@ -13,7 +13,7 @@
 #include <functional>
 #include <iostream>
 
-D3D::MouseImpl::MouseImpl()
+DDM3::MouseImpl::MouseImpl()
 {
 	m_Pressed.resize(GLFW_MOUSE_BUTTON_LAST + 1);
 
@@ -22,9 +22,9 @@ D3D::MouseImpl::MouseImpl()
 	m_Up.resize(m_Pressed.size());
 }
 
-void D3D::MouseImpl::Update()
+void DDM3::MouseImpl::Update()
 {
-	auto window = D3D::Window::GetInstance().GetWindowStruct().pWindow;
+	auto window = DDM3::Window::GetInstance().GetWindowStruct().pWindow;
 
 	std::vector<bool> currentState;
 	currentState.resize(m_Pressed.size());
@@ -58,17 +58,17 @@ void D3D::MouseImpl::Update()
 	m_MousePos.y = static_cast<float>(y);
 }
 
-bool D3D::MouseImpl::IsPressed(int button)
+bool DDM3::MouseImpl::IsPressed(int button)
 {
 	return m_Pressed[button];
 }
 
-bool D3D::MouseImpl::IsUp(int button)
+bool DDM3::MouseImpl::IsUp(int button)
 {
 	return m_Up[button];
 }
 
-bool D3D::MouseImpl::IsDown(int button)
+bool DDM3::MouseImpl::IsDown(int button)
 {
 	return m_Down[button];
 }

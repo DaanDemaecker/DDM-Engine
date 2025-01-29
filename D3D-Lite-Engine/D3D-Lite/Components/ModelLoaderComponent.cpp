@@ -16,21 +16,21 @@
 #include <iostream>
 #include <algorithm>
 
-D3D::ModelLoaderComponent::ModelLoaderComponent()
+DDM3::ModelLoaderComponent::ModelLoaderComponent()
 	:Component()
 {
-	auto boundCallback = std::bind(&D3D::ModelLoaderComponent::DropFileCallback, this, std::placeholders::_1, std::placeholders::_2);
+	auto boundCallback = std::bind(&DDM3::ModelLoaderComponent::DropFileCallback, this, std::placeholders::_1, std::placeholders::_2);
 
 
 	Window::GetInstance().AddCallback(this, boundCallback);
 }
 
-D3D::ModelLoaderComponent::~ModelLoaderComponent()
+DDM3::ModelLoaderComponent::~ModelLoaderComponent()
 {
 	Window::GetInstance().RemoveCallback(this);
 }
 
-void D3D::ModelLoaderComponent::OnGUI()
+void DDM3::ModelLoaderComponent::OnGUI()
 {
 	ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_Framed;
 
@@ -59,7 +59,7 @@ void D3D::ModelLoaderComponent::OnGUI()
 	}
 }
 
-void D3D::ModelLoaderComponent::LoadObject()
+void DDM3::ModelLoaderComponent::LoadObject()
 {
 	if (m_ObjectName[0] == '\0')
 		return;
@@ -67,10 +67,10 @@ void D3D::ModelLoaderComponent::LoadObject()
 	auto pObject{ SceneManager::GetInstance().GetActiveScene()->CreateGameObject(m_ObjectName)};
 	pObject->SetShowImGui(true);
 
-	std::shared_ptr<D3D::MultiMaterial> pMaterial{ std::make_shared<D3D::MultiMaterial>("MultiShader") };
-	auto pMesh{ D3D::ResourceManager::GetInstance().LoadMesh(m_FilePath) };
+	std::shared_ptr<DDM3::MultiMaterial> pMaterial{ std::make_shared<DDM3::MultiMaterial>("MultiShader") };
+	auto pMesh{ DDM3::ResourceManager::GetInstance().LoadMesh(m_FilePath) };
 
-	auto pMeshRenderer{ pObject->AddComponent<D3D::MeshRenderComponent>() };
+	auto pMeshRenderer{ pObject->AddComponent<DDM3::MeshRenderComponent>() };
 	pMeshRenderer->SetShowImGui(true);
 	pMeshRenderer->SetMesh(pMesh);
 	pMeshRenderer->SetMaterial(pMaterial);
@@ -80,7 +80,7 @@ void D3D::ModelLoaderComponent::LoadObject()
 	
 }
 
-void D3D::ModelLoaderComponent::DropFileCallback(int count, const char** paths)
+void DDM3::ModelLoaderComponent::DropFileCallback(int count, const char** paths)
 {
 	if (!m_IsTextboxHovered)
 		return;

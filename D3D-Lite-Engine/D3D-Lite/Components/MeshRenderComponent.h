@@ -8,7 +8,7 @@
 #include <memory>
 #include <vector>
 
-namespace D3D
+namespace DDM3
 {
 	class Material;
 	class Mesh;
@@ -40,7 +40,7 @@ namespace D3D
 		// Vector of dirty flags for UBOs
 		std::vector<bool> m_UboChanged{};
 
-		std::unique_ptr<D3D::UboDescriptorObject<UniformBufferObject>> m_pUboDescriptorObject{};
+		std::unique_ptr<DDM3::UboDescriptorObject<UniformBufferObject>> m_pUboDescriptorObject{};
 
 		bool m_ShouldCreateDescriptorSets{ false };
 
@@ -61,7 +61,7 @@ namespace D3D
 		void UpdateUniformBuffer(uint32_t frame);
 
 		//Texture functions
-		D3D::PipelineWrapper* GetPipeline();
+		DDM3::PipelineWrapper* GetPipeline();
 	};
 }
 #endif // !MeshRenderComponentIncluded

@@ -9,7 +9,7 @@
 
 // Standard library includes
 
-namespace D3D
+namespace DDM3
 {
 	class ModelLoaderComponent final : public Component
 	{

@@ -10,7 +10,7 @@
 // Standard library includes
 #include <memory>
 
-namespace D3D
+namespace DDM3
 {
 	// Class forward declarations
 	class ObjLoader;
@@ -27,7 +27,7 @@ namespace D3D
 		//     - path: The path to the model file
 		//     - vertices: The vector that will be used to store the vertices
 		//     - indices: The vector that will be used to store the indices
-		virtual void LoadModel(const std::string& path, std::vector<D3D::Vertex>& vertices, std::vector<uint32_t>& indices) override;
+		virtual void LoadModel(const std::string& path, std::vector<DDM3::Vertex>& vertices, std::vector<uint32_t>& indices) override;
 
 		// Load in animations given a file path
 		// Parameters:

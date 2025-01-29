@@ -6,7 +6,7 @@
 #include "../DataTypes/Structs.h"
 #include "../DataTypes/DescriptorObjects/UboDescriptorObject.h"
 
-namespace D3D
+namespace DDM3
 {
 	class DirectionalLightComponent final : public Component
 	{

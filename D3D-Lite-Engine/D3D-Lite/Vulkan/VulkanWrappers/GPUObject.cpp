@@ -13,7 +13,7 @@
 #include <map>
 #include <set>
 
-D3D::GPUObject::GPUObject(InstanceWrapper* pInstanceWrapper, VkSurfaceKHR surface)
+DDM3::GPUObject::GPUObject(InstanceWrapper* pInstanceWrapper, VkSurfaceKHR surface)
 {
 	// Pick the physical device
 	PickPhysicalDevice(pInstanceWrapper, surface);
@@ -24,19 +24,19 @@ D3D::GPUObject::GPUObject(InstanceWrapper* pInstanceWrapper, VkSurfaceKHR surfac
 
 
 
-void D3D::GPUObject::CleanUp()
+void DDM3::GPUObject::CleanUp()
 {
 	// Destroy the logical device
 	vkDestroyDevice(m_Device, nullptr);
 }
 
-void D3D::GPUObject::WaitIdle()
+void DDM3::GPUObject::WaitIdle()
 {
 	// Wait until the device is idle
 	vkDeviceWaitIdle(m_Device);
 }
 
-void D3D::GPUObject::PickPhysicalDevice(InstanceWrapper* pInstanceWrapper, VkSurfaceKHR surface)
+void DDM3::GPUObject::PickPhysicalDevice(InstanceWrapper* pInstanceWrapper, VkSurfaceKHR surface)
 {
 	//Get number of physical devices that support Vulkan
 	uint32_t deviceCount = 0;
@@ -76,7 +76,7 @@ void D3D::GPUObject::PickPhysicalDevice(InstanceWrapper* pInstanceWrapper, VkSur
 	}
 }
 
-bool D3D::GPUObject::IsDeviceSuitable(VkPhysicalDevice device, VkSurfaceKHR surface)
+bool DDM3::GPUObject::IsDeviceSuitable(VkPhysicalDevice device, VkSurfaceKHR surface)
 {
 	// Get the queue families for the given physical device and surface
 	QueueFamilyIndices indices = VulkanUtils::FindQueueFamilies(device, surface);
@@ -111,7 +111,7 @@ bool D3D::GPUObject::IsDeviceSuitable(VkPhysicalDevice device, VkSurfaceKHR surf
 }
 
 
-bool D3D::GPUObject::CheckDeviceExtensionSupport(VkPhysicalDevice device)
+bool DDM3::GPUObject::CheckDeviceExtensionSupport(VkPhysicalDevice device)
 {
 	//Check how many extensions this device supports
 	uint32_t extensionCount;
@@ -135,7 +135,7 @@ bool D3D::GPUObject::CheckDeviceExtensionSupport(VkPhysicalDevice device)
 }
 
 
-void D3D::GPUObject::CreateLogicalDevice(InstanceWrapper* pInstanceWrapper, VkSurfaceKHR surface)
+void DDM3::GPUObject::CreateLogicalDevice(InstanceWrapper* pInstanceWrapper, VkSurfaceKHR surface)
 {
 	// Get the suited queue family indices
 	QueueFamilyIndices indices = VulkanUtils::FindQueueFamilies(m_PhysicalDevice, surface);

@@ -5,18 +5,18 @@
 #include "../../Includes/STBIncludes.h"
 #include "../../Vulkan/VulkanWrappers/PipelineWrapper.h"
 
-D3D::Material::Material(const std::string& pipelineName)
+DDM3::Material::Material(const std::string& pipelineName)
 {
 	// Get the requested pipeline from the renderer
 	m_pPipeline = VulkanRenderer::GetInstance().GetPipeline(pipelineName); 
 }
 
-D3D::PipelineWrapper* D3D::Material::GetPipeline()
+DDM3::PipelineWrapper* DDM3::Material::GetPipeline()
 {
 	return m_pPipeline;
 }
 
-void D3D::Material::CreateDescriptorSets(MeshRenderComponent* pModel, std::vector<VkDescriptorSet>& descriptorSets)
+void DDM3::Material::CreateDescriptorSets(MeshRenderComponent* pModel, std::vector<VkDescriptorSet>& descriptorSets)
 {
 	// Get pointer to the descriptorpool wrapper
 	auto descriptorPool = GetDescriptorPool();
@@ -26,7 +26,7 @@ void D3D::Material::CreateDescriptorSets(MeshRenderComponent* pModel, std::vecto
 	descriptorPool->CreateDescriptorSets(GetDescriptorLayout(), descriptorSets);
 }
 
-void D3D::Material::UpdateDescriptorSets(std::vector<VkDescriptorSet>& descriptorSets, std::vector<DescriptorObject*>& descriptorObjects)
+void DDM3::Material::UpdateDescriptorSets(std::vector<VkDescriptorSet>& descriptorSets, std::vector<DescriptorObject*>& descriptorObjects)
 {
 	// Get pointer to the descriptorpool wrapper
 	auto descriptorPool = GetDescriptorPool();
@@ -48,12 +48,12 @@ void D3D::Material::UpdateDescriptorSets(std::vector<VkDescriptorSet>& descripto
 	m_ShouldUpdateDescriptorSets = false;
 }
 
-VkDescriptorSetLayout D3D::Material::GetDescriptorLayout()
+VkDescriptorSetLayout DDM3::Material::GetDescriptorLayout()
 {
 	return m_pPipeline->GetDescriptorSetLayout();
 }
 
-D3D::DescriptorPoolWrapper* D3D::Material::GetDescriptorPool()
+DDM3::DescriptorPoolWrapper* DDM3::Material::GetDescriptorPool()
 {
 	return m_pPipeline->GetDescriptorPool();
 }

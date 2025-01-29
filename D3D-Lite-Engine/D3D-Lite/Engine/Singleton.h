@@ -1,7 +1,7 @@
 #ifndef SingletonIncluded
 #define SingletonIncluded
 
-namespace D3D
+namespace DDM3
 {
 	template <typename T>
 	class Singleton

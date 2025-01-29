@@ -4,7 +4,7 @@
 
 #include "TransformComponent.h"
 
-void D3D::RotatorComponent::Update()
+void DDM3::RotatorComponent::Update()
 {
 	constexpr float rotSpeed{ glm::radians(50.f) };
 

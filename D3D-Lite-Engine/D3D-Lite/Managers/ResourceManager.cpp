@@ -8,14 +8,14 @@
 
 #include "Vulkan/VulkanRenderer.h"
 
-std::shared_ptr<D3D::Mesh> D3D::ResourceManager::LoadMesh(std::string&& filePath)
+std::shared_ptr<DDM3::Mesh> DDM3::ResourceManager::LoadMesh(std::string&& filePath)
 {
 	return LoadMesh(filePath);
 }
 
-std::shared_ptr<D3D::Mesh> D3D::ResourceManager::LoadMesh(std::string& filePath)
+std::shared_ptr<DDM3::Mesh> DDM3::ResourceManager::LoadMesh(std::string& filePath)
 {
-	std::shared_ptr<D3D::Mesh> pMesh{};
+	std::shared_ptr<DDM3::Mesh> pMesh{};
 
 	try
 	{
@@ -30,12 +30,12 @@ std::shared_ptr<D3D::Mesh> D3D::ResourceManager::LoadMesh(std::string& filePath)
 	}
 }
 
-D3D::ResourceManager::ResourceManager()
+DDM3::ResourceManager::ResourceManager()
 {
 	m_pDefaultMesh = CreateMesh(ConfigManager::GetInstance().GetString("DefaultModelName"));
 }
 
-std::shared_ptr<D3D::Mesh> D3D::ResourceManager::CreateMesh(const std::string& filePath)
+std::shared_ptr<DDM3::Mesh> DDM3::ResourceManager::CreateMesh(const std::string& filePath)
 {
-	return std::shared_ptr<D3D::Mesh>(new D3D::Mesh(filePath));
+	return std::shared_ptr<DDM3::Mesh>(new DDM3::Mesh(filePath));
 }

@@ -7,19 +7,19 @@
 #include <array>
 #include <stdexcept>
 
-D3D::RenderpassWrapper::RenderpassWrapper(VkDevice device, VkFormat swapchainImageFormat, VkFormat depthFormat, VkSampleCountFlagBits msaaSamples)
+DDM3::RenderpassWrapper::RenderpassWrapper(VkDevice device, VkFormat swapchainImageFormat, VkFormat depthFormat, VkSampleCountFlagBits msaaSamples)
 {
 	// Initialize renderpass
 	CreateRenderPass(device, swapchainImageFormat, depthFormat, msaaSamples);
 }
 
-void D3D::RenderpassWrapper::cleanup(VkDevice device)
+void DDM3::RenderpassWrapper::cleanup(VkDevice device)
 {
 	// Destroy the renderpass
 	vkDestroyRenderPass(device, m_RenderPass, nullptr);
 }
 
-void D3D::RenderpassWrapper::CreateRenderPass(VkDevice device, VkFormat swapchainImageFormat, VkFormat depthFormat, VkSampleCountFlagBits msaaSamples)
+void DDM3::RenderpassWrapper::CreateRenderPass(VkDevice device, VkFormat swapchainImageFormat, VkFormat depthFormat, VkSampleCountFlagBits msaaSamples)
 {
 	// Create attachment description
 	VkAttachmentDescription colorAttachment{};

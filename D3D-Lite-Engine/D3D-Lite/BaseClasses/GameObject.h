@@ -4,7 +4,7 @@
 #include <memory>
 #include <vector>
 
-namespace D3D
+namespace DDM3
 {
 	class Component;
 	class TransformComponent;

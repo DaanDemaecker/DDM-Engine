@@ -8,7 +8,7 @@
 #include "../../../Includes/TinyObjLoaderIncludes.h"
 #include "../../../DataTypes/Structs.h"
 
-namespace D3D
+namespace DDM3
 {
 	class ObjLoader
 	{
@@ -22,11 +22,11 @@ namespace D3D
 		//     - path: The path to the model file
 		//     - vertices: The vector that will be used to store the vertices
 		//     - indices: The vector that will be used to store the indices
-		void LoadObjModel(const std::string& path, std::vector<D3D::Vertex>& vertices, std::vector<uint32_t>& indices);
+		void LoadObjModel(const std::string& path, std::vector<DDM3::Vertex>& vertices, std::vector<uint32_t>& indices);
 
 	private:
 
-		void SetupTangents(std::vector<D3D::Vertex>& vertices, std::vector<uint32_t>& indices);
+		void SetupTangents(std::vector<DDM3::Vertex>& vertices, std::vector<uint32_t>& indices);
 
 	};
 }

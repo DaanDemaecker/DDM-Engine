@@ -6,7 +6,7 @@
 // Standard library includes
 #include <iostream>
 
-D3D::FbxLoader::FbxLoader()
+DDM3::FbxLoader::FbxLoader()
 {
 	// Initialize the FBX SDK
 	m_pFbxManager = FbxManager::Create();
@@ -14,12 +14,12 @@ D3D::FbxLoader::FbxLoader()
 	m_pFbxManager->SetIOSettings(ios);
 }
 
-D3D::FbxLoader::~FbxLoader()
+DDM3::FbxLoader::~FbxLoader()
 {
 	m_pFbxManager->Destroy();
 }
 
-void D3D::FbxLoader::LoadFbxModel(const std::string& path, std::vector<D3D::Vertex>& vertices, std::vector<uint32_t>& indices)
+void DDM3::FbxLoader::LoadFbxModel(const std::string& path, std::vector<DDM3::Vertex>& vertices, std::vector<uint32_t>& indices)
 {
 	FbxScene* scene = LoadScene(path);
 
@@ -33,7 +33,7 @@ void D3D::FbxLoader::LoadFbxModel(const std::string& path, std::vector<D3D::Vert
 
 
 	// Create map to store vertices
-	std::unordered_map<D3D::Vertex, uint32_t> uniqueVertices{};
+	std::unordered_map<DDM3::Vertex, uint32_t> uniqueVertices{};
 
 	// Traverse the scene to find nodes containing the car model
 	FbxNode* root = scene->GetRootNode();
@@ -59,8 +59,8 @@ void D3D::FbxLoader::LoadFbxModel(const std::string& path, std::vector<D3D::Vert
 	SetupTangents(vertices, indices);
 }
 
-void D3D::FbxLoader::ConvertMesh(FbxMesh* pMesh,
-	std::unordered_map<D3D::Vertex, uint32_t>& uniqueVertices ,std::vector<D3D::Vertex>& vertices, 
+void DDM3::FbxLoader::ConvertMesh(FbxMesh* pMesh,
+	std::unordered_map<DDM3::Vertex, uint32_t>& uniqueVertices ,std::vector<DDM3::Vertex>& vertices, 
 	std::vector<uint32_t>& indices, int& baseUvIndex)
 {
 	int numPolygons = pMesh->GetPolygonCount();
@@ -112,10 +112,10 @@ void D3D::FbxLoader::ConvertMesh(FbxMesh* pMesh,
 	baseUvIndex = nextBaseUvIndex;
 }
 
-void D3D::FbxLoader::HandleFbxVertex(FbxMesh* pMesh, FbxVector4* controlPoints, int polygonIndex, int inPolygonPosition,
-	std::unordered_map<D3D::Vertex, uint32_t>& uniqueVertices,
+void DDM3::FbxLoader::HandleFbxVertex(FbxMesh* pMesh, FbxVector4* controlPoints, int polygonIndex, int inPolygonPosition,
+	std::unordered_map<DDM3::Vertex, uint32_t>& uniqueVertices,
 	fbxTexturedInfo& textureInfo, fbxSkinnedInfo& skinnedInfo,
-	std::vector<D3D::Vertex>& vertices, std::vector<uint32_t>& indices)
+	std::vector<DDM3::Vertex>& vertices, std::vector<uint32_t>& indices)
 {
 	int vertexIndex = pMesh->GetPolygonVertex(polygonIndex, inPolygonPosition);
 
@@ -126,7 +126,7 @@ void D3D::FbxLoader::HandleFbxVertex(FbxMesh* pMesh, FbxVector4* controlPoints, 
 
 	pMesh->GetPolygonVertexNormal(polygonIndex, inPolygonPosition, normal);
 
-	D3D::Vertex vertex{};
+	DDM3::Vertex vertex{};
 
 	if (textureInfo.textured)
 	{
@@ -164,7 +164,7 @@ void D3D::FbxLoader::HandleFbxVertex(FbxMesh* pMesh, FbxVector4* controlPoints, 
 	indices.push_back(uniqueVertices[vertex]);
 }
 
-void D3D::FbxLoader::SetupTangents(std::vector<D3D::Vertex>& vertices, std::vector<uint32_t>& indices)
+void DDM3::FbxLoader::SetupTangents(std::vector<DDM3::Vertex>& vertices, std::vector<uint32_t>& indices)
 {
 	// After all vertices are added loop trought them to calculate the tangents
 	for (size_t i = 0; i < indices.size(); i += 3)
@@ -175,9 +175,9 @@ void D3D::FbxLoader::SetupTangents(std::vector<D3D::Vertex>& vertices, std::vect
 		uint32_t index2 = indices[i + 2];
 
 		// Get the vertices asociated with this triangle
-		D3D::Vertex& v0 = vertices[index0];
-		D3D::Vertex& v1 = vertices[index1];
-		D3D::Vertex& v2 = vertices[index2];
+		DDM3::Vertex& v0 = vertices[index0];
+		DDM3::Vertex& v1 = vertices[index1];
+		DDM3::Vertex& v2 = vertices[index2];
 
 		// Get 2 edges of this triangle
 		glm::vec3 edge1 = v1.pos - v0.pos;
@@ -200,7 +200,7 @@ void D3D::FbxLoader::SetupTangents(std::vector<D3D::Vertex>& vertices, std::vect
 	}
 }
 
-void D3D::FbxLoader::SetupSkin(fbxSkinnedInfo& skinnedInfo, int controlPointAmount)
+void DDM3::FbxLoader::SetupSkin(fbxSkinnedInfo& skinnedInfo, int controlPointAmount)
 {
 	skinnedInfo.boneInfos.resize(controlPointAmount);
 
@@ -219,7 +219,7 @@ void D3D::FbxLoader::SetupSkin(fbxSkinnedInfo& skinnedInfo, int controlPointAmou
 	}
 }
 
-void D3D::FbxLoader::LoadAnimations(const std::string& path, std::vector<std::unique_ptr<AnimationClip>>& animationClips)
+void DDM3::FbxLoader::LoadAnimations(const std::string& path, std::vector<std::unique_ptr<AnimationClip>>& animationClips)
 {
 	FbxScene* pScene = LoadScene(path);
 
@@ -235,7 +235,7 @@ void D3D::FbxLoader::LoadAnimations(const std::string& path, std::vector<std::un
 	pScene->Destroy();
 }
 
-FbxScene* D3D::FbxLoader::LoadScene(const std::string& path)
+FbxScene* DDM3::FbxLoader::LoadScene(const std::string& path)
 {
 	auto pFbxImporter = FbxImporter::Create(m_pFbxManager, "importer");
 	// Import the FBX file

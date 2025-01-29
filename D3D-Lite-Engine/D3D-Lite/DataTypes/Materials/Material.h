@@ -4,7 +4,7 @@
 #include "../Structs.h"
 #include <iostream>
 
-namespace D3D
+namespace DDM3
 {
 	class DescriptorPoolWrapper;
 	class MeshRenderComponent;

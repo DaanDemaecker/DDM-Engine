@@ -6,7 +6,7 @@
 // File includes
 #include "MouseImpl.h"
 
-namespace D3D
+namespace DDM3
 {
 	class Mouse final
 	{

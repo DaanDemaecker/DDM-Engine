@@ -1,15 +1,15 @@
 // ServiceLocator.cpp
 #include "ServiceLocator.h"
 
-std::unique_ptr<D3D::DefaultModelLoader> D3D::ServiceLocator::m_pDefaultModelLoaderInstance{ std::make_unique<D3D::DefaultModelLoader>() };
-std::unique_ptr<D3D::ModelLoader> D3D::ServiceLocator::m_pModelLoaderInstance{ nullptr };
+std::unique_ptr<DDM3::DefaultModelLoader> DDM3::ServiceLocator::m_pDefaultModelLoaderInstance{ std::make_unique<DDM3::DefaultModelLoader>() };
+std::unique_ptr<DDM3::ModelLoader> DDM3::ServiceLocator::m_pModelLoaderInstance{ nullptr };
 
-D3D::ModelLoader& D3D::ServiceLocator::GetModelLoader()
+DDM3::ModelLoader& DDM3::ServiceLocator::GetModelLoader()
 {
     return m_pModelLoaderInstance.get() == nullptr ? *m_pDefaultModelLoaderInstance.get() : *m_pModelLoaderInstance.get();
 }
 
-void D3D::ServiceLocator::RegisterModelLoader(std::unique_ptr<ModelLoader> modelLoader)
+void DDM3::ServiceLocator::RegisterModelLoader(std::unique_ptr<ModelLoader> modelLoader)
 {
     if (modelLoader != nullptr)
     {

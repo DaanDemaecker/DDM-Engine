@@ -12,7 +12,7 @@
 #include <functional>
 #include <map>
 
-namespace D3D
+namespace DDM3
 {
 	// Window struct
 	// Member variables:

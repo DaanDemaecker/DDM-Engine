@@ -3,7 +3,7 @@
 #include "../BaseClasses/Component.h"
 #include "../Includes/GLMIncludes.h"
 
-namespace D3D
+namespace DDM3
 {
 	class TransformComponent final : public Component
 	{

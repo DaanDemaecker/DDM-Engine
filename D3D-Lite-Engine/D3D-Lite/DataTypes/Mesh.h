@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-namespace D3D
+namespace DDM3
 {
 	// Class forward declarations
 	class ResourceManager;

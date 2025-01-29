@@ -6,10 +6,10 @@
 #include "../Vulkan/VulkanWrappers/PipelineWrapper.h"
 #include "../Engine/ServiceLocator/ServiceLocator.h"
 
-D3D::Mesh::Mesh(const std::string& filePath)
+DDM3::Mesh::Mesh(const std::string& filePath)
 {
 	// Load the vertices and indices
-	D3D::ServiceLocator::GetModelLoader().LoadModel(filePath, m_Vertices, m_Indices);
+	DDM3::ServiceLocator::GetModelLoader().LoadModel(filePath, m_Vertices, m_Indices);
 
 	// Get reference to the renderer
 	auto& renderer{ VulkanRenderer::GetInstance() };
@@ -19,13 +19,13 @@ D3D::Mesh::Mesh(const std::string& filePath)
 	renderer.CreateIndexBuffer(m_Indices, m_IndexBuffer, m_IndexBufferMemory);
 }
 
-D3D::Mesh::~Mesh()
+DDM3::Mesh::~Mesh()
 {
 	// Call cleanup function
 	Cleanup();
 }
 
-void D3D::Mesh::Render(PipelineWrapper* pPipeline, VkDescriptorSet* descriptorSet)
+void DDM3::Mesh::Render(PipelineWrapper* pPipeline, VkDescriptorSet* descriptorSet)
 {
 	// Get current commandbuffer
 	auto commandBuffer{ VulkanRenderer::GetInstance().GetCurrentCommandBuffer() };
@@ -48,10 +48,10 @@ void D3D::Mesh::Render(PipelineWrapper* pPipeline, VkDescriptorSet* descriptorSe
 	vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(m_Indices.size()), 1, 0, 0, 0);
 }
 
-void D3D::Mesh::Cleanup()
+void DDM3::Mesh::Cleanup()
 {
 	// Get reference to renderer
-	auto& renderer = D3D::VulkanRenderer::GetInstance();
+	auto& renderer = DDM3::VulkanRenderer::GetInstance();
 	// Get reference to device
 	auto device = renderer.GetDevice();
 

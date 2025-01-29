@@ -7,7 +7,7 @@
 
 #include "../../Includes/STBIncludes.h"
 
-D3D::TexturedMaterial::TexturedMaterial(std::initializer_list<const std::string>&& filePaths, const std::string& pipelineName)
+DDM3::TexturedMaterial::TexturedMaterial(std::initializer_list<const std::string>&& filePaths, const std::string& pipelineName)
 	:Material(pipelineName)
 {
 	m_pDescriptorObjects.resize(filePaths.size());
@@ -15,14 +15,14 @@ D3D::TexturedMaterial::TexturedMaterial(std::initializer_list<const std::string>
 	int index = 0;
 	for (const auto& filePath : filePaths)
 	{
-		m_pDescriptorObjects[index] = std::make_unique<D3D::TextureDescriptorObject>();
+		m_pDescriptorObjects[index] = std::make_unique<DDM3::TextureDescriptorObject>();
 		m_pDescriptorObjects[index]->AddTextures(filePath);
 		++index;
 	}
 }
 
 
-void D3D::TexturedMaterial::UpdateDescriptorSets(std::vector<VkDescriptorSet>& descriptorSets, std::vector<DescriptorObject*>& descriptorObjects)
+void DDM3::TexturedMaterial::UpdateDescriptorSets(std::vector<VkDescriptorSet>& descriptorSets, std::vector<DescriptorObject*>& descriptorObjects)
 {
 	// Get pointer to the descriptorpool wrapper
 	auto descriptorPool = GetDescriptorPool();

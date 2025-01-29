@@ -14,7 +14,7 @@
 #include <string>
 #include <initializer_list>
 
-namespace D3D
+namespace DDM3
 {
 	// Class forward declarations
 	class ShaderModuleWrapper;
@@ -60,7 +60,7 @@ namespace D3D
 		VkDescriptorSetLayout GetDescriptorSetLayout() const { return m_DescriptorSetLayout; }
 
 		// Get a pointer to the descriptor pool wrapper
-		D3D::DescriptorPoolWrapper* GetDescriptorPool();
+		DDM3::DescriptorPoolWrapper* GetDescriptorPool();
 
 	private:
 		// Pipeline
@@ -89,7 +89,7 @@ namespace D3D
 		// Parameters:
 		//     device: handle of the VkDevice
 		//    shaderModules: vector of shader modules that hold information on shader stages
-		void CreateDescriptorSetLayout(VkDevice device, std::vector<std::unique_ptr<D3D::ShaderModuleWrapper>>& shaderModules);
+		void CreateDescriptorSetLayout(VkDevice device, std::vector<std::unique_ptr<DDM3::ShaderModuleWrapper>>& shaderModules);
 
 		// Set up vertex input state create info
 		// Parameters:
@@ -134,7 +134,7 @@ namespace D3D
 		//     pipelineLayoutInfo: a reference to the layout create info to avoid creating a new one in the function
 		void SetPipelineLayoutCreateInfo(VkPipelineLayoutCreateInfo& pipelineLayoutInfo,
 			std::vector<VkPushConstantRange>& pushConstantRanges,
-			std::vector<std::unique_ptr<D3D::ShaderModuleWrapper>>& shaderModules);
+			std::vector<std::unique_ptr<DDM3::ShaderModuleWrapper>>& shaderModules);
 	};
 }
 

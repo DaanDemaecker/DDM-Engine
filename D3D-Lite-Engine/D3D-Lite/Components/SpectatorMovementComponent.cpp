@@ -9,12 +9,12 @@
 #include "../Engine/Window.h"
 #include "Managers/InputManager.h"
 
-D3D::SpectatorMovementComponent::SpectatorMovementComponent()
+DDM3::SpectatorMovementComponent::SpectatorMovementComponent()
 {
 
 }
 
-void D3D::SpectatorMovementComponent::Update()
+void DDM3::SpectatorMovementComponent::Update()
 {
 	auto& input{ InputManager::GetInstance() };
 

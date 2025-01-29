@@ -2,11 +2,11 @@
 #include "../Components/TransformComponent.h"
 #include "../Includes/ImGuiIncludes.h"
 
-D3D::GameObject::~GameObject()
+DDM3::GameObject::~GameObject()
 {
 }
 
-D3D::GameObject* D3D::GameObject::CreateNewObject(const std::string& name, const std::string& tag)
+DDM3::GameObject* DDM3::GameObject::CreateNewObject(const std::string& name, const std::string& tag)
 {
 	auto pNewObject{ std::make_unique<GameObject>(name, tag) };
 
@@ -17,13 +17,13 @@ D3D::GameObject* D3D::GameObject::CreateNewObject(const std::string& name, const
 	return m_pChildrenToAdd.emplace_back(std::move(pNewObject)).get();
 }
 
-void D3D::GameObject::RemoveAllChildren()
+void DDM3::GameObject::RemoveAllChildren()
 {
 	m_pChildren.clear();
 	m_pChildrenToAdd.clear();
 }
 
-void D3D::GameObject::SetParent(GameObject* pParent, bool worldPositionStays)
+void DDM3::GameObject::SetParent(GameObject* pParent, bool worldPositionStays)
 {
 	if (pParent == nullptr || m_pParent == nullptr)
 	{
@@ -67,12 +67,12 @@ void D3D::GameObject::SetParent(GameObject* pParent, bool worldPositionStays)
 	}
 }
 
-void D3D::GameObject::Init()
+void DDM3::GameObject::Init()
 {
 	m_pTransform = AddComponent<TransformComponent>();
 }
 
-void D3D::GameObject::OnSceneLoad()
+void DDM3::GameObject::OnSceneLoad()
 {
 
 	for (auto& component : m_pComponents)
@@ -86,7 +86,7 @@ void D3D::GameObject::OnSceneLoad()
 	}
 }
 
-void D3D::GameObject::OnSceneUnload()
+void DDM3::GameObject::OnSceneUnload()
 {
 	m_ShouldDestroy = true;
 
@@ -101,7 +101,7 @@ void D3D::GameObject::OnSceneUnload()
 	}
 }
 
-void D3D::GameObject::StartFrame()
+void DDM3::GameObject::StartFrame()
 {
 	for (size_t i{}; i < m_pChildrenToAdd.size(); ++i)
 	{
@@ -119,7 +119,7 @@ void D3D::GameObject::StartFrame()
 	}
 }
 
-void D3D::GameObject::EarlyUpdate()
+void DDM3::GameObject::EarlyUpdate()
 {
 	for (auto& component : m_pComponents)
 	{
@@ -135,7 +135,7 @@ void D3D::GameObject::EarlyUpdate()
 	}
 }
 
-void D3D::GameObject::Update()
+void DDM3::GameObject::Update()
 {
 	for (auto& component : m_pComponents)
 	{
@@ -151,7 +151,7 @@ void D3D::GameObject::Update()
 	}
 }
 
-void D3D::GameObject::FixedUpdate()
+void DDM3::GameObject::FixedUpdate()
 {
 	for (auto& component : m_pComponents)
 	{
@@ -167,7 +167,7 @@ void D3D::GameObject::FixedUpdate()
 	}
 }
 
-void D3D::GameObject::LateUpdate()
+void DDM3::GameObject::LateUpdate()
 {
 	for (auto& component : m_pComponents)
 	{
@@ -183,7 +183,7 @@ void D3D::GameObject::LateUpdate()
 	}
 }
 
-void D3D::GameObject::PostUpdate()
+void DDM3::GameObject::PostUpdate()
 {
 	m_pComponents.erase(std::remove_if(m_pComponents.begin(), m_pComponents.end(), [](std::shared_ptr<Component>& pComponent)
 		{
@@ -205,7 +205,7 @@ void D3D::GameObject::PostUpdate()
 	}
 }
 
-void D3D::GameObject::PrepareRender()
+void DDM3::GameObject::PrepareRender()
 {
 	for (auto& component : m_pComponents)
 	{
@@ -221,7 +221,7 @@ void D3D::GameObject::PrepareRender()
 	}
 }
 
-void D3D::GameObject::Render() const
+void DDM3::GameObject::Render() const
 {
 	for (auto& component : m_pComponents)
 	{
@@ -237,7 +237,7 @@ void D3D::GameObject::Render() const
 	}
 }
 
-void D3D::GameObject::OnGUI()
+void DDM3::GameObject::OnGUI()
 {
 	if (m_ShowImGui)
 	{
@@ -273,7 +273,7 @@ void D3D::GameObject::OnGUI()
 	}
 }
 
-void D3D::GameObject::Cleanup()
+void DDM3::GameObject::Cleanup()
 {
 	for (auto& pChild : m_pChildren)
 	{
@@ -284,7 +284,7 @@ void D3D::GameObject::Cleanup()
 	}
 }
 
-void D3D::GameObject::Destroy()
+void DDM3::GameObject::Destroy()
 {
 	m_ShouldDestroy = true;
 }

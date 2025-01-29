@@ -9,13 +9,13 @@
 #include "Vulkan/VulkanWrappers/GPUObject.h"
 
 
-D3D::ImageViewManager::ImageViewManager(VkSampleCountFlagBits msaaSamples)
+DDM3::ImageViewManager::ImageViewManager(VkSampleCountFlagBits msaaSamples)
 // Initialize max amount of samples per pixel
 	:m_MsaaSamples{ msaaSamples }
 {
 }
 
-void D3D::ImageViewManager::Cleanup(VkDevice device)
+void DDM3::ImageViewManager::Cleanup(VkDevice device)
 {
 	// Clean up color image
 	m_ColorImage.Cleanup(device);
@@ -23,7 +23,7 @@ void D3D::ImageViewManager::Cleanup(VkDevice device)
 	m_DepthImage.Cleanup(device);
 }
 
-void D3D::ImageViewManager::CreateColorResources(GPUObject* pGPUObject, VkFormat format, VkExtent2D swapchainExtent, D3D::ImageManager* pImageManager)
+void DDM3::ImageViewManager::CreateColorResources(GPUObject* pGPUObject, VkFormat format, VkExtent2D swapchainExtent, DDM3::ImageManager* pImageManager)
 {
 	// Create the image for the color
 	// Set tiling to optimal
@@ -37,7 +37,7 @@ void D3D::ImageViewManager::CreateColorResources(GPUObject* pGPUObject, VkFormat
 	m_ColorImage.imageView = pImageManager->CreateImageView(pGPUObject->GetDevice(), m_ColorImage.image, format, VK_IMAGE_ASPECT_COLOR_BIT, 1);
 }
 
-void D3D::ImageViewManager::CreateDepthResources(GPUObject* pGPUObject, VkExtent2D swapchainExtent, D3D::ImageManager* pImageManager, VkCommandBuffer commandBuffer)
+void DDM3::ImageViewManager::CreateDepthResources(GPUObject* pGPUObject, VkExtent2D swapchainExtent, DDM3::ImageManager* pImageManager, VkCommandBuffer commandBuffer)
 {
 	// Get the depth formatµ
 	auto depthFormat = VulkanUtils::FindDepthFormat(pGPUObject->GetPhysicalDevice());

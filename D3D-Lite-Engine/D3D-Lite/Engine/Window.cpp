@@ -10,7 +10,7 @@
 #include <functional>
 #include <iostream>
 
-D3D::Window::Window()
+DDM3::Window::Window()
 {
 	// Set the width of the window
 	m_Window.Width = ConfigManager::GetInstance().GetInt("WindowWidth");
@@ -21,7 +21,7 @@ D3D::Window::Window()
 	InitWindow();
 }
 
-D3D::Window::~Window()
+DDM3::Window::~Window()
 {
 	// Destroy the window
 	glfwDestroyWindow(m_Window.pWindow);
@@ -30,13 +30,13 @@ D3D::Window::~Window()
 	glfwTerminate();
 }
 
-void D3D::Window::SetFrameBufferResized(bool value)
+void DDM3::Window::SetFrameBufferResized(bool value)
 {
 	// Set the value of frameBufferResized to the requested value
 	m_Window.FrameBufferResized = value;
 }
 
-void D3D::Window::AddCallback(void* object, std::function<void(int, const char**)> function)
+void DDM3::Window::AddCallback(void* object, std::function<void(int, const char**)> function)
 {
 	if (!m_DropFileCallbacks.contains(object))
 	{
@@ -44,12 +44,12 @@ void D3D::Window::AddCallback(void* object, std::function<void(int, const char**
 	}
 }
 
-void D3D::Window::RemoveCallback(void* object)
+void DDM3::Window::RemoveCallback(void* object)
 {
 	m_DropFileCallbacks.erase(object);
 }
 
-void D3D::Window::InitWindow()
+void DDM3::Window::InitWindow()
 {
 	// Initialize glfw
 	glfwInit();
@@ -133,7 +133,7 @@ void D3D::Window::InitWindow()
 	glfwSetDropCallback(m_Window.pWindow, DropFileCallback);
 }
 
-void D3D::Window::FramebufferResizeCallback(GLFWwindow* pWindow, int width, int height)
+void DDM3::Window::FramebufferResizeCallback(GLFWwindow* pWindow, int width, int height)
 {
 	// Get a reference to the window struct
 	auto& window = GetInstance().GetWindowStruct();
@@ -145,18 +145,18 @@ void D3D::Window::FramebufferResizeCallback(GLFWwindow* pWindow, int width, int 
 	window.Height = height;
 }
 
-void D3D::Window::MaximizeWindowCallback(GLFWwindow* /*pWindow*/, int /*maximized*/)
+void DDM3::Window::MaximizeWindowCallback(GLFWwindow* /*pWindow*/, int /*maximized*/)
 {
 	 
 }
 
 
-void D3D::Window::DropFileCallback(GLFWwindow* window, int count, const char** paths)
+void DDM3::Window::DropFileCallback(GLFWwindow* window, int count, const char** paths)
 {
 	Window::GetInstance().CallDropFileCallbacks(count, paths);
 }
 
-void D3D::Window::CallDropFileCallbacks(int count, const char** paths)
+void DDM3::Window::CallDropFileCallbacks(int count, const char** paths)
 {
 	for (auto& callback : m_DropFileCallbacks)
 	{

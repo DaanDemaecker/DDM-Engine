@@ -4,12 +4,12 @@
 #include "../Includes/ImGuiIncludes.h"
 
 
-D3D::DirectionalLightComponent::DirectionalLightComponent()
+DDM3::DirectionalLightComponent::DirectionalLightComponent()
 {
 	CreateLightBuffer();
 }
 
-void D3D::DirectionalLightComponent::OnGUI()
+void DDM3::DirectionalLightComponent::OnGUI()
 {
 	ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_Framed;
 
@@ -23,37 +23,37 @@ void D3D::DirectionalLightComponent::OnGUI()
 	}
 }
 
-void D3D::DirectionalLightComponent::LateUpdate()
+void DDM3::DirectionalLightComponent::LateUpdate()
 {
-	UpdateBuffer(D3D::VulkanRenderer::GetInstance().GetCurrentFrame());
+	UpdateBuffer(DDM3::VulkanRenderer::GetInstance().GetCurrentFrame());
 }
 
-void D3D::DirectionalLightComponent::SetColor(glm::vec3& color)
-{
-	m_BufferObject.color = color;
-}
-
-void D3D::DirectionalLightComponent::SetColor(glm::vec3&& color)
+void DDM3::DirectionalLightComponent::SetColor(glm::vec3& color)
 {
 	m_BufferObject.color = color;
 }
 
-void D3D::DirectionalLightComponent::SetIntensity(float intensity)
+void DDM3::DirectionalLightComponent::SetColor(glm::vec3&& color)
+{
+	m_BufferObject.color = color;
+}
+
+void DDM3::DirectionalLightComponent::SetIntensity(float intensity)
 {
 	m_BufferObject.intensity = intensity;
 }
 
-D3D::DescriptorObject* D3D::DirectionalLightComponent::GetDescriptorObject()
+DDM3::DescriptorObject* DDM3::DirectionalLightComponent::GetDescriptorObject()
 {
 	return static_cast<DescriptorObject*>(m_DescriptorObject.get());
 }
 
-void D3D::DirectionalLightComponent::CreateLightBuffer()
+void DDM3::DirectionalLightComponent::CreateLightBuffer()
 {
 	m_DescriptorObject = std::make_unique<UboDescriptorObject<DirectionalLightStruct>>();
 }
 
-void D3D::DirectionalLightComponent::UpdateBuffer(int frame)
+void DDM3::DirectionalLightComponent::UpdateBuffer(int frame)
 {
 	m_BufferObject.direction = GetTransform()->GetForward();
 	m_DescriptorObject->UpdateUboBuffer(m_BufferObject, frame);

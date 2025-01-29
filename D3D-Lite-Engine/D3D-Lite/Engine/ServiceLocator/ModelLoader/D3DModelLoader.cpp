@@ -10,19 +10,19 @@
 #include <stdexcept>
 #include <iostream>
 
-D3D::D3DModelLoader::D3DModelLoader()
+DDM3::D3DModelLoader::D3DModelLoader()
 {
-	m_pObjLoader = std::make_unique<D3D::ObjLoader>();
+	m_pObjLoader = std::make_unique<DDM3::ObjLoader>();
 
-	m_pFbxLoader = std::make_unique<D3D::FbxLoader>();
+	m_pFbxLoader = std::make_unique<DDM3::FbxLoader>();
 }
 
-D3D::D3DModelLoader::~D3DModelLoader()
+DDM3::D3DModelLoader::~D3DModelLoader()
 {
 
 }
 
-void D3D::D3DModelLoader::LoadModel(const std::string& path, std::vector<D3D::Vertex>& vertices, std::vector<uint32_t>& indices)
+void DDM3::D3DModelLoader::LoadModel(const std::string& path, std::vector<DDM3::Vertex>& vertices, std::vector<uint32_t>& indices)
 {
 	// Get the extension of the file
 	auto extension{std::move(Utils::GetExtension(path))};
@@ -46,7 +46,7 @@ void D3D::D3DModelLoader::LoadModel(const std::string& path, std::vector<D3D::Ve
 	}
 }
 
-void D3D::D3DModelLoader::LoadAnimations(const std::string& path, std::vector<std::unique_ptr<AnimationClip>>& animationClips)
+void DDM3::D3DModelLoader::LoadAnimations(const std::string& path, std::vector<std::unique_ptr<AnimationClip>>& animationClips)
 {
 	// Get the extension of the file
 	auto extension{ std::move(Utils::GetExtension(path)) };

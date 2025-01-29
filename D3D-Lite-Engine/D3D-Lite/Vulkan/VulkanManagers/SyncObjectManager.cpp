@@ -6,13 +6,13 @@
 // Standard library includes
 #include <stdexcept>
 
-D3D::SyncObjectManager::SyncObjectManager(VkDevice device, uint32_t maxFrames)
+DDM3::SyncObjectManager::SyncObjectManager(VkDevice device, uint32_t maxFrames)
 {
 	// Initialize the sync objects
 	CreateSyncObjects(device, maxFrames);
 }
 
-void D3D::SyncObjectManager::Cleanup(VkDevice device)
+void DDM3::SyncObjectManager::Cleanup(VkDevice device)
 {
 	// Loop trough the amount of fences and semaphores
 	for (size_t i = 0; i < m_ImageAvailableSemaphores.size(); ++i)
@@ -26,7 +26,7 @@ void D3D::SyncObjectManager::Cleanup(VkDevice device)
 	}
 }
 
-void D3D::SyncObjectManager::CreateSyncObjects(VkDevice device, uint32_t maxFrames)
+void DDM3::SyncObjectManager::CreateSyncObjects(VkDevice device, uint32_t maxFrames)
 {
 	// Resize image available semaphore to the amound of frames
 	m_ImageAvailableSemaphores.resize(maxFrames);

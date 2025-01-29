@@ -11,21 +11,21 @@
 #include "Components/CameraComponent.h"
 #include "Components/DirectionalLightComponent.h"
 
-void D3D::SceneManager::EndProgram()
+void DDM3::SceneManager::EndProgram()
 {
     m_pScenes.clear();
     m_ActiveScene = nullptr;
 }
 
-std::shared_ptr<D3D::Scene> D3D::SceneManager::CreateScene(const std::string& name)
+std::shared_ptr<DDM3::Scene> DDM3::SceneManager::CreateScene(const std::string& name)
 {
-    const auto& scene = std::shared_ptr<D3D::Scene>(new Scene(name));
+    const auto& scene = std::shared_ptr<DDM3::Scene>(new Scene(name));
     m_pScenes.push_back(scene);
 
     return scene;
 }
 
-void D3D::SceneManager::DeleteScene(const std::string& name)
+void DDM3::SceneManager::DeleteScene(const std::string& name)
 {
     auto scene = GetScene(name);
 
@@ -35,7 +35,7 @@ void D3D::SceneManager::DeleteScene(const std::string& name)
     }
 }
 
-std::shared_ptr<D3D::Scene> D3D::SceneManager::GetScene(const std::string& name)
+std::shared_ptr<DDM3::Scene> DDM3::SceneManager::GetScene(const std::string& name)
 {
     for (auto& scene : m_pScenes)
     {
@@ -47,7 +47,7 @@ std::shared_ptr<D3D::Scene> D3D::SceneManager::GetScene(const std::string& name)
     return nullptr;
 }
 
-void D3D::SceneManager::NextScene()
+void DDM3::SceneManager::NextScene()
 {
     int currentSceneIndex{ -1 };
 
@@ -66,7 +66,7 @@ void D3D::SceneManager::NextScene()
     }
 }
 
-void D3D::SceneManager::PreviousScene()
+void DDM3::SceneManager::PreviousScene()
 {
     int currentSceneIndex{ -1 };
 
@@ -89,12 +89,12 @@ void D3D::SceneManager::PreviousScene()
     }
 }
 
-void D3D::SceneManager::SetActiveScene(std::shared_ptr<Scene> scene)
+void DDM3::SceneManager::SetActiveScene(std::shared_ptr<Scene> scene)
 {
     m_NextActiveScene = scene;
 }
 
-void D3D::SceneManager::SetActiveScene(const std::string& name)
+void DDM3::SceneManager::SetActiveScene(const std::string& name)
 {
     for (auto& scene : m_pScenes)
     {
@@ -106,7 +106,7 @@ void D3D::SceneManager::SetActiveScene(const std::string& name)
     }
 }
 
-void D3D::SceneManager::StartFrame()
+void DDM3::SceneManager::StartFrame()
 {
     if (m_NextActiveScene != nullptr)
     {
@@ -126,7 +126,7 @@ void D3D::SceneManager::StartFrame()
     }
 }
 
-void D3D::SceneManager::EarlyUpdate()
+void DDM3::SceneManager::EarlyUpdate()
 {
     if (m_ActiveScene != nullptr)
     {
@@ -134,7 +134,7 @@ void D3D::SceneManager::EarlyUpdate()
     }
 }
 
-void D3D::SceneManager::Update()
+void DDM3::SceneManager::Update()
 {
     if (m_ActiveScene != nullptr)
     {
@@ -142,7 +142,7 @@ void D3D::SceneManager::Update()
     }
 }
 
-void D3D::SceneManager::FixedUpdate()
+void DDM3::SceneManager::FixedUpdate()
 {
     if (m_ActiveScene != nullptr)
     {
@@ -150,7 +150,7 @@ void D3D::SceneManager::FixedUpdate()
     }
 }
 
-void D3D::SceneManager::LateUpdate()
+void DDM3::SceneManager::LateUpdate()
 {
     if (m_ActiveScene != nullptr)
     {
@@ -158,7 +158,7 @@ void D3D::SceneManager::LateUpdate()
     }
 }
 
-void D3D::SceneManager::PostUpdate()
+void DDM3::SceneManager::PostUpdate()
 {
     if (m_ActiveScene != nullptr)
     {
@@ -166,7 +166,7 @@ void D3D::SceneManager::PostUpdate()
     }
 }
 
-void D3D::SceneManager::OnGui()
+void DDM3::SceneManager::OnGui()
 {
     if (m_ActiveScene != nullptr)
     {
@@ -174,7 +174,7 @@ void D3D::SceneManager::OnGui()
     }
 }
 
-void D3D::SceneManager::PrepareRender()
+void DDM3::SceneManager::PrepareRender()
 {
     if (m_ActiveScene != nullptr)
     {
@@ -182,7 +182,7 @@ void D3D::SceneManager::PrepareRender()
     }
 }
 
-void D3D::SceneManager::RenderSkybox()
+void DDM3::SceneManager::RenderSkybox()
 {
     if (m_ActiveScene != nullptr)
     {
@@ -190,7 +190,7 @@ void D3D::SceneManager::RenderSkybox()
     }
 }
 
-void D3D::SceneManager::Render() const
+void DDM3::SceneManager::Render() const
 {
     if (m_ActiveScene != nullptr)
     {
@@ -198,7 +198,7 @@ void D3D::SceneManager::Render() const
     }
 }
 
-void D3D::SceneManager::Cleanup()
+void DDM3::SceneManager::Cleanup()
 {
     if (m_ActiveScene != nullptr)
     {
@@ -206,7 +206,7 @@ void D3D::SceneManager::Cleanup()
     }
 }
 
-const std::shared_ptr<D3D::CameraComponent> D3D::SceneManager::GetCamera() const
+const std::shared_ptr<DDM3::CameraComponent> DDM3::SceneManager::GetCamera() const
 {
     if (m_ActiveScene != nullptr)
     {
@@ -220,7 +220,7 @@ const std::shared_ptr<D3D::CameraComponent> D3D::SceneManager::GetCamera() const
     return std::shared_ptr<CameraComponent>();
 }
 
-const std::shared_ptr<D3D::DirectionalLightComponent> D3D::SceneManager::GetGlobalLight() const
+const std::shared_ptr<DDM3::DirectionalLightComponent> DDM3::SceneManager::GetGlobalLight() const
 {
     if (m_ActiveScene != nullptr)
     {
