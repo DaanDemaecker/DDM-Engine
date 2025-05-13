@@ -5,18 +5,32 @@
 #include "../Vulkan/VulkanRenderer.h"
 #include "../Vulkan/VulkanWrappers/PipelineWrapper.h"
 #include "Engine/DDMModelLoader.h"
+#include "DDMModelLoader/DDMModelLoader.h"
+
+
+DDM3::Mesh::Mesh(DDMML::Mesh* pMesh)
+{
+	m_Vertices.clear();
+	m_Indices.clear();
+
+	auto& vertices = pMesh->GetVertices();
+	auto& indices = pMesh->GetIndices();
+
+	DDMModelLoader::GetInstance().ConvertVertices(vertices, m_Vertices);
+
+	m_Indices.resize(indices.size());
+
+	std::copy(indices.begin(), indices.end(), m_Indices.begin());
+
+	SetupBuffers();
+}
 
 DDM3::Mesh::Mesh(const std::string& filePath)
 {
 	// Load the vertices and indices
 	DDM3::DDMModelLoader::GetInstance().LoadModel(filePath, m_Vertices, m_Indices);
 
-	// Get reference to the renderer
-	auto& renderer{ VulkanRenderer::GetInstance() };
-
-	// Create vertex and index buffer
-	renderer.CreateVertexBuffer(m_Vertices, m_VertexBuffer, m_VertexBufferMemory);
-	renderer.CreateIndexBuffer(m_Indices, m_IndexBuffer, m_IndexBufferMemory);
+	SetupBuffers();
 }
 
 DDM3::Mesh::~Mesh()
@@ -67,4 +81,14 @@ void DDM3::Mesh::Cleanup()
 	vkDestroyBuffer(device, m_VertexBuffer, nullptr);
 	// Free vertex buffer
 	vkFreeMemory(device, m_VertexBufferMemory, nullptr);
+}
+
+void DDM3::Mesh::SetupBuffers()
+{	
+	// Get reference to the renderer
+	auto& renderer{ VulkanRenderer::GetInstance() };
+
+	// Create vertex and index buffer
+	renderer.CreateVertexBuffer(m_Vertices, m_VertexBuffer, m_VertexBufferMemory);
+	renderer.CreateIndexBuffer(m_Indices, m_IndexBuffer, m_IndexBufferMemory);
 }

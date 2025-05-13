@@ -37,7 +37,8 @@ namespace DDM3
 		/// </summary>
 		/// <param name="Path: ">Path to the requested model file</param>
 		/// <param name="pParent: ">Parent of the model to be loaded in</param>
-		void LoadModel(const std::string& filename, GameObject* pParent);
+		/// <returns>Game object holding rendercomponent</returns>
+		GameObject* LoadModel(const std::string& filename, GameObject* pParent);
 
 		/// <summary>
 		/// This function will load in a complete scene and set up the textures
@@ -55,6 +56,14 @@ namespace DDM3
 
 	private:
 		std::unique_ptr<DDMML::DDMModelLoader> m_pModelLoader;
+
+		/// <summary>
+		/// Converts a single DDMML mesh to a render object
+		/// </summary>
+		/// <param name="pDDMMLMesh: ">The DDMML mesh</param>
+		/// <param name="pParent: ">The parent of the to e created object</param>
+		/// <returns>Game object holding rendercomponent</returns>
+		GameObject* SetupModel(DDMML::Mesh* pDDMMLMesh, GameObject* pParent);
 	};
 }
 

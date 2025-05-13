@@ -6,8 +6,8 @@
 
 #include <algorithm>
 
-DDM3::MultiMaterial::MultiMaterial(const std::string& pipeline)
-	:Material(pipeline)
+DDM3::MultiMaterial::MultiMaterial()
+	:Material("MultiShader")
 {
 	m_pMultiShaderBufferDescriptor = std::make_unique<DDM3::UboDescriptorObject<MultiShaderBuffer>>();
 
@@ -88,21 +88,21 @@ void DDM3::MultiMaterial::UpdateDescriptorSets(std::vector<VkDescriptorSet>& des
 	m_ShouldUpdateDescriptorSets = false;
 }
 
-void DDM3::MultiMaterial::AddDiffuseTextures(std::initializer_list<const std::string>&& filePaths)
+void DDM3::MultiMaterial::AddDiffuseTexture(std::string& filePath)
 {
-	AddDiffuseTextures(filePaths);
-}
+	m_pDiffuseTextureObject->AddTexture(filePath);
 
-void DDM3::MultiMaterial::AddDiffuseTextures(std::initializer_list<const std::string>& filePaths)
-{
-	m_pDiffuseTextureObject->AddTextures(filePaths);
-	
 	m_MultiShaderBuffer.diffuseAmount = m_pDiffuseTextureObject->GetTextureAmount();
 	m_MultiShaderBuffer.diffuseEnabled = true;
 
 	m_ShouldUpdateDescriptorSets = true;
 
 	UpdateShaderBuffer();
+}
+
+void DDM3::MultiMaterial::AddDiffuseTexture(std::string&& filePath)
+{
+	AddDiffuseTexture(filePath);
 }
 
 void DDM3::MultiMaterial::AddNormalMap(std::initializer_list<const std::string>&& filePaths)
@@ -228,7 +228,7 @@ void DDM3::MultiMaterial::DiffuseGui()
 	// Create a button
 	if (ImGui::Button("Add diffuse Texture"))
 	{
-		AddDiffuseTextures({ std::string{m_GuiObject.diffuseName} });
+		AddDiffuseTexture( std::string{m_GuiObject.diffuseName});
 	}
 
 	// Create a button

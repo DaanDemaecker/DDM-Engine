@@ -27,9 +27,7 @@ namespace DDM3
 	class MultiMaterial final : public Material
 	{
 	public:
-		MultiMaterial() = delete;
-
-		MultiMaterial(const std::string& pipeline = "Default");
+		MultiMaterial();
 
 		virtual ~MultiMaterial() override;
 
@@ -39,11 +37,12 @@ namespace DDM3
 		// Parameters:
 		//     descriptorsets: the descriptorsets that should be updated
 		//     descriptorObjects: a vector of pointers to descriptorobjects in the same order as the shader code
-		virtual void UpdateDescriptorSets(std::vector<VkDescriptorSet>& descriptorSets, std::vector<DescriptorObject*>& descriptorObjects);
+		virtual void UpdateDescriptorSets(std::vector<VkDescriptorSet>& descriptorSets, std::vector<DescriptorObject*>& descriptorObjects) override;
 
-		void AddDiffuseTextures(std::initializer_list<const std::string>&& filePaths);
 
-		void AddDiffuseTextures(std::initializer_list<const std::string>& filePaths);
+		void AddDiffuseTexture(std::string& filePath);
+
+		void AddDiffuseTexture(std::string&& filePath);
 
 		void AddNormalMap(std::initializer_list<const std::string>&& filePaths);
 

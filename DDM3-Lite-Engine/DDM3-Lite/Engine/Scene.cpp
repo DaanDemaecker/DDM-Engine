@@ -123,3 +123,8 @@ const std::shared_ptr<DDM3::DirectionalLightComponent> DDM3::Scene::GetLight() c
 	return m_pDefaultLightComponent;
 }
 
+DDM3::GameObject* DDM3::Scene::GetSceneRoot()
+{
+	return m_pSceneRoot.get();
+}
+

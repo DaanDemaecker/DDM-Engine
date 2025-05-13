@@ -49,7 +49,7 @@ void DDM3::TextureDescriptorObject::AddTextures(std::initializer_list<const std:
 	SetupImageInfos();
 }
 
-void DDM3::TextureDescriptorObject::AddTextures(const std::string& filePath)
+void DDM3::TextureDescriptorObject::AddTexture(const std::string& filePath)
 {
 	auto& renderer{ VulkanRenderer::GetInstance() };
 

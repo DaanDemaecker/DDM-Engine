@@ -5,6 +5,8 @@
 
 // File includes
 #include "BaseClasses/GameObject.h"
+#include "Components/MeshRenderComponent.h"
+#include "DataTypes/Materials/MultiMaterial.h"
 
 DDM3::DDMModelLoader::DDMModelLoader()
 {
@@ -29,13 +31,24 @@ void DDM3::DDMModelLoader::LoadModel(const std::string& filename, std::vector<Ve
 	std::copy(ddmmlIndices.begin(), ddmmlIndices.end(), indices.begin());
 }
 
-void DDM3::DDMModelLoader::LoadModel(const std::string& filename, GameObject* pParent)
+DDM3::GameObject* DDM3::DDMModelLoader::LoadModel(const std::string& filename, GameObject* pParent)
 {
+	auto pDDMMLMesh{ std::make_unique<DDMML::Mesh>() };
 
+	m_pModelLoader->LoadModel(filename, pDDMMLMesh.get());
+
+	return SetupModel(pDDMMLMesh.get(), pParent);
 }
 
 void DDM3::DDMModelLoader::LoadScene(const std::string& path, GameObject* pParent)
 {
+	auto meshes = std::vector<std::unique_ptr<DDMML::Mesh>>{};
+	m_pModelLoader->LoadScene(path, meshes);
+	for (auto& mesh : meshes)
+	{
+		auto pObject = SetupModel(mesh.get(), pParent);
+		pObject->SetShowImGui(true);
+	}
 }
 
 void DDM3::DDMModelLoader::ConvertVertices(const std::vector<DDMML::Vertex>& ddmmlVertices, std::vector<Vertex>& vertices)
@@ -55,4 +68,25 @@ void DDM3::DDMModelLoader::ConvertVertices(const std::vector<DDMML::Vertex>& ddm
 
 		vertices.emplace_back(vertex);
 	}
+}
+
+DDM3::GameObject* DDM3::DDMModelLoader::SetupModel(DDMML::Mesh* pDDMMLMesh, GameObject* pParent)
+{
+	auto pObject{ pParent->CreateNewObject(pDDMMLMesh->GetName()) };
+	pObject->SetShowImGui(true);
+
+	auto pRenderComponent{ pObject->AddComponent<DDM3::MeshRenderComponent>() };
+	pRenderComponent->SetMesh(pDDMMLMesh);
+	pRenderComponent->SetShowImGui(true);
+
+	auto pMaterial = std::make_shared<DDM3::MultiMaterial>();
+	
+	for (auto& texture : pDDMMLMesh->GetDiffuseTextureNames())
+	{
+		pMaterial->AddDiffuseTexture(texture);
+	}
+
+	pRenderComponent->SetMaterial(pMaterial);
+
+	return pObject;
 }

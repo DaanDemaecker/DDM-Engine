@@ -8,6 +8,11 @@
 #include <memory>
 #include <vector>
 
+namespace DDMML
+{
+	class Mesh;
+}
+
 namespace DDM3
 {
 	class Material;
@@ -22,6 +27,7 @@ namespace DDM3
 		virtual void EarlyUpdate() override;
 
 		void SetMesh(std::shared_ptr<Mesh> pMesh);
+		void SetMesh(DDMML::Mesh* pMesh);
 		void SetMaterial(std::shared_ptr<Material> pMaterial);
 
 		virtual void Render() override;

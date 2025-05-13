@@ -38,6 +38,18 @@ void DDM3::MeshRenderComponent::SetMesh(std::shared_ptr<Mesh> pMesh)
 	m_Initialized = true;
 }
 
+void DDM3::MeshRenderComponent::SetMesh(DDMML::Mesh* pMesh)
+{
+	if (m_Initialized)
+	{
+		m_Initialized = false;
+	}
+	m_pMesh = std::make_shared<Mesh>(pMesh);
+	m_ShouldCreateDescriptorSets = true;
+	CreateUniformBuffers();
+	m_Initialized = true;
+}
+
 void DDM3::MeshRenderComponent::SetMaterial(std::shared_ptr<Material> pMaterial)
 {
 	m_pMaterial->GetDescriptorPool()->RemoveModel(this);

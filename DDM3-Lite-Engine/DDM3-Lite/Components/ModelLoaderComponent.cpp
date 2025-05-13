@@ -67,7 +67,7 @@ void DDM3::ModelLoaderComponent::LoadObject()
 	auto pObject{ SceneManager::GetInstance().GetActiveScene()->CreateGameObject(m_ObjectName)};
 	pObject->SetShowImGui(true);
 
-	std::shared_ptr<DDM3::MultiMaterial> pMaterial{ std::make_shared<DDM3::MultiMaterial>("MultiShader") };
+	std::shared_ptr<DDM3::MultiMaterial> pMaterial{ std::make_shared<DDM3::MultiMaterial>() };
 	auto pMesh{ DDM3::ResourceManager::GetInstance().LoadMesh(m_FilePath) };
 
 	auto pMeshRenderer{ pObject->AddComponent<DDM3::MeshRenderComponent>() };

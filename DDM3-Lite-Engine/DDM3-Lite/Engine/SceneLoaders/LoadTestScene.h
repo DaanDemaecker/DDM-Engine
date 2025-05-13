@@ -20,6 +20,7 @@
 #include "../../Vulkan/VulkanRenderer.h"
 #include "../../Managers/ResourceManager.h"
 #include "../../Managers/ConfigManager.h"
+#include "Engine/DDMModelLoader.h"
 
 namespace LoadTestScene
 {
@@ -32,6 +33,8 @@ namespace LoadTestScene
 	void SetupGun(DDM3::Scene* scene);
 
 	void SetupMario(DDM3::Scene* scene);
+
+	void SetupAtrium(DDM3::Scene* scene);
 
 	void SetupCamera(DDM3::Scene* scen);
 
@@ -46,15 +49,17 @@ namespace LoadTestScene
 
 		SetupPipelines();
 
-		SetupGroundPlane(scene.get());
+		//SetupGroundPlane(scene.get());
 
-		SetupVehicle(scene.get());
+		//SetupVehicle(scene.get());
 
 		//SetupVikingRoom(scene.get());
 
 		//SetupGun(scene.get());
 
-		SetupMario(scene.get());
+		//SetupMario(scene.get());
+
+		SetupAtrium(scene.get());
 
 		SetupCamera(scene.get());
 
@@ -78,9 +83,9 @@ namespace LoadTestScene
 
 	void SetupVehicle(DDM3::Scene* scene)
 	{
-		std::shared_ptr<DDM3::MultiMaterial> pVehicleMaterial{ std::make_shared<DDM3::MultiMaterial>("MultiShader") };
+		std::shared_ptr<DDM3::MultiMaterial> pVehicleMaterial{ std::make_shared<DDM3::MultiMaterial>() };
 
-		pVehicleMaterial->AddDiffuseTextures(std::initializer_list<const std::string>{"resources/images/vehicle_diffuse.png"});
+		pVehicleMaterial->AddDiffuseTexture("resources/images/vehicle_diffuse.png");
 
 		pVehicleMaterial->AddNormalMap(std::initializer_list<const std::string>{"resources/images/vehicle_normal.png"});
 
@@ -126,9 +131,9 @@ namespace LoadTestScene
 
 	void SetupGun(DDM3::Scene* scene)
 	{
-		std::shared_ptr<DDM3::MultiMaterial> pGunMaterial{ std::make_shared<DDM3::MultiMaterial>("MultiShader") };
+		std::shared_ptr<DDM3::MultiMaterial> pGunMaterial{ std::make_shared<DDM3::MultiMaterial>() };
 
-		pGunMaterial->AddDiffuseTextures(std::initializer_list<const std::string>{"resources/images/gun_BaseColor.png"});
+		pGunMaterial->AddDiffuseTexture("resources/images/gun_BaseColor.png");
 
 		pGunMaterial->AddNormalMap(std::initializer_list<const std::string>{"resources/images/gun_Normal.png"});
 
@@ -148,17 +153,18 @@ namespace LoadTestScene
 
 	void SetupMario(DDM3::Scene* scene)
 	{
-		auto pMario{ scene->CreateGameObject("Mario") };
-
-		auto pMarioMesh{ DDM3::ResourceManager::GetInstance().LoadMesh("Resources/Models/MarioDancing.fbx") };
-
-		auto pMarioModel{ pMario->AddComponent<DDM3::MeshRenderComponent>() };
-		pMarioModel->SetMesh(pMarioMesh);;
-
-		auto pMarioTransform{ pMario->GetTransform() };
-		pMarioTransform->SetLocalPosition(0.f, 0.f, 2);
-		pMarioTransform->SetLocalRotation(0.f, glm::radians(180.f), 0.f);
+		auto pMario = DDM3::DDMModelLoader::GetInstance().LoadModel("Resources/Models/MarioDancing.fbx", scene->GetSceneRoot());
+		
+		//auto pMarioTransform{ pMario->GetTransform() };
+		//pMarioTransform->SetLocalPosition(0.f, 0.f, 2);
+		//pMarioTransform->SetLocalRotation(0.f, glm::radians(180.f), 0.f);
 		//pMarioTransform->SetLocalScale(0.5f, 0.5f, 0.5f);
+	}
+
+
+	void SetupAtrium(DDM3::Scene* scene)
+	{
+		DDM3::DDMModelLoader::GetInstance().LoadScene("Resources/Models/SponzaAtrium/Sponza.gltf", scene->GetSceneRoot());
 	}
 
 	void SetupCamera(DDM3::Scene* scene)
@@ -219,13 +225,13 @@ namespace LoadTestScene
 
 	void SetupGroundPlane(DDM3::Scene* scene)
 	{
-		std::shared_ptr<DDM3::MultiMaterial> pFloorMaterial{ std::make_shared<DDM3::MultiMaterial>("MultiShader") };
+		std::shared_ptr<DDM3::MultiMaterial> pFloorMaterial{ std::make_shared<DDM3::MultiMaterial>() };
 
 
 		//std::shared_ptr<D3D::TexturedMaterial> pFloorMaterial{
 		//	std::make_shared<D3D::TexturedMaterial>(std::initializer_list<const std::string>{"resources/images/GroundPlane.png"}, "DiffuseUnshaded") };
 
-		pFloorMaterial->AddDiffuseTextures(std::initializer_list<const std::string>{"resources/images/GroundPlane.png"});
+		pFloorMaterial->AddDiffuseTexture("resources/images/GroundPlane.png");
 
 		auto pGroundPlane{ scene->CreateGameObject("Ground Plane") };
 		pGroundPlane->SetShowImGui(true);

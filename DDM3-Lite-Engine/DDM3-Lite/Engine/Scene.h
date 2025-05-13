@@ -58,6 +58,8 @@ namespace DDM3
 
 		const std::shared_ptr<DirectionalLightComponent> GetLight() const;
 
+		GameObject* GetSceneRoot();
+
 	private:
 
 		explicit Scene(const std::string& name);

@@ -25,7 +25,7 @@ namespace DDM3
 
         void AddTextures(std::initializer_list<const std::string>& filePaths);
 
-        void AddTextures(const std::string& filePath);
+        void AddTexture(const std::string& filePath);
          
         void Clear();
 

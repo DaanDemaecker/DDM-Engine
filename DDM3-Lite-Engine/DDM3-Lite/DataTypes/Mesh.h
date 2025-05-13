@@ -9,6 +9,12 @@
 #include <string>
 #include <vector>
 
+namespace DDMML
+{
+	// Class forward declarations
+	class Mesh;
+}
+
 namespace DDM3
 {
 	// Class forward declarations
@@ -18,6 +24,8 @@ namespace DDM3
 	class Mesh final
 	{
 	public:
+		Mesh(DDMML::Mesh* pMesh);
+
 		// Delete default constructor
 		Mesh() = delete;
 
@@ -58,6 +66,11 @@ namespace DDM3
 
 		// Clean up all allocated objects
 		void Cleanup();
+
+		/// <summary>
+		/// Set up index and vertex buffers
+		/// </summary>
+		void SetupBuffers();
 	};
 }
 

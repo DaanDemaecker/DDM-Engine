@@ -16,7 +16,7 @@ DDM3::TexturedMaterial::TexturedMaterial(std::initializer_list<const std::string
 	for (const auto& filePath : filePaths)
 	{
 		m_pDescriptorObjects[index] = std::make_unique<DDM3::TextureDescriptorObject>();
-		m_pDescriptorObjects[index]->AddTextures(filePath);
+		m_pDescriptorObjects[index]->AddTexture(filePath);
 		++index;
 	}
 }
