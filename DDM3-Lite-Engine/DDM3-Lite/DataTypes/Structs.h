@@ -94,7 +94,7 @@ namespace DDM3
 		// Bone weights
 		alignas(16) glm::vec4 boneWeights;
 		// Uv set index
-		alignas(4) float uvSetIndex;
+		alignas(4) float uvSetIndex{0};
 
 		// Get vulkan binding description
 		static VkVertexInputBindingDescription getBindingDescription()

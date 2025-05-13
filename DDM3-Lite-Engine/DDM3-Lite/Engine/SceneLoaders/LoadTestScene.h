@@ -16,7 +16,6 @@
 
 #include "../../Components/RotatorComponent.h"
 #include "../../Components/SpectatorMovementComponent.h"
-#include "../../Components/AnimatorComponent.h"
 
 #include "../../Vulkan/VulkanRenderer.h"
 #include "../../Managers/ResourceManager.h"
@@ -154,10 +153,7 @@ namespace LoadTestScene
 		auto pMarioMesh{ DDM3::ResourceManager::GetInstance().LoadMesh("Resources/Models/MarioDancing.fbx") };
 
 		auto pMarioModel{ pMario->AddComponent<DDM3::MeshRenderComponent>() };
-		pMarioModel->SetMesh(pMarioMesh);
-
-		auto pMarioAnimationComponent{ pMario->AddComponent<DDM3::AnimatorComponent>() };
-		pMarioAnimationComponent->AddAnimations("Resources/Models/MarioDancing.fbx");
+		pMarioModel->SetMesh(pMarioMesh);;
 
 		auto pMarioTransform{ pMario->GetTransform() };
 		pMarioTransform->SetLocalPosition(0.f, 0.f, 2);

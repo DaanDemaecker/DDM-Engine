@@ -7,8 +7,6 @@
 #include "Scene.h"
 #include "Window.h"
 
-#include "ServiceLocator/ModelLoader/DDM3ModelLoader.h"
-#include "ServiceLocator/ServiceLocator.h"
 
 #include "Managers/SceneManager.h"
 #include "Managers/ConfigManager.h"
@@ -26,8 +24,6 @@ DDM3::DDM3Engine::DDM3Engine()
 {
 	// Create the window with the given width and height
 	DDM3::Window::GetInstance();
-
-	ServiceLocator::RegisterModelLoader(std::make_unique<DDM3ModelLoader>());
 
 	auto& renderer{ DDM3::VulkanRenderer::GetInstance() };
 

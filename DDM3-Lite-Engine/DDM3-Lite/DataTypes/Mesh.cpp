@@ -4,12 +4,12 @@
 #include "Mesh.h"
 #include "../Vulkan/VulkanRenderer.h"
 #include "../Vulkan/VulkanWrappers/PipelineWrapper.h"
-#include "../Engine/ServiceLocator/ServiceLocator.h"
+#include "Engine/DDMModelLoader.h"
 
 DDM3::Mesh::Mesh(const std::string& filePath)
 {
 	// Load the vertices and indices
-	DDM3::ServiceLocator::GetModelLoader().LoadModel(filePath, m_Vertices, m_Indices);
+	DDM3::DDMModelLoader::GetInstance().LoadModel(filePath, m_Vertices, m_Indices);
 
 	// Get reference to the renderer
 	auto& renderer{ VulkanRenderer::GetInstance() };
