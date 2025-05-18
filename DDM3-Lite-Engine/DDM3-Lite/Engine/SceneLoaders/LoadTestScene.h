@@ -17,10 +17,12 @@
 #include "../../Components/RotatorComponent.h"
 #include "../../Components/SpectatorMovementComponent.h"
 
-#include "../../Vulkan/VulkanRenderer.h"
 #include "../../Managers/ResourceManager.h"
 #include "../../Managers/ConfigManager.h"
 #include "Engine/DDMModelLoader.h"
+
+#include "Components/MaterialSwitcher/MaterialSwitchManager.h"
+#include "Components/MaterialSwitcher/MaterialSwitcher.h"
 
 namespace LoadTestScene
 {
@@ -69,9 +71,9 @@ namespace LoadTestScene
 
 		//SetupAtrium(scene.get());
 
-		SetupAtrium2(scene.get());
+		//SetupAtrium2(scene.get());
 
-		//SetupSkull(scene.get());
+		SetupSkull(scene.get());
 
 		SetupCamera(scene.get());
 
@@ -229,7 +231,38 @@ namespace LoadTestScene
 
 	void SetupSkull(DDM3::Scene* scene)
 	{
-		DDM3::DDMModelLoader::GetInstance().LoadModel("Resources/Models/Skull/Scene.gltf", scene->GetSceneRoot());
+		auto switchManager = scene->GetSceneRoot()->CreateNewObject("Material switch manager");
+		switchManager->SetShowImGui(true);
+
+		auto switchManagerComponent = switchManager->AddComponent<DDM3::MaterialSwitchManager>();
+		switchManagerComponent->RegisterKey("Diffuse");
+		switchManagerComponent->RegisterKey("Default");
+
+		auto pMesh = std::unique_ptr<DDMML::Mesh>(std::make_unique<DDMML::Mesh>());
+
+		DDM3::DDMModelLoader::GetInstance().LoadModel("Resources/Models/Skull/Scene.gltf", pMesh);
+
+		auto pGameObject = scene->GetSceneRoot()->CreateNewObject(pMesh->GetName());
+		auto renderComponent = pGameObject->AddComponent<DDM3::MeshRenderComponent>();
+		renderComponent->SetMesh(pMesh.get());
+
+
+		auto texturedMaterial = std::make_shared<DDM3::TexturedMaterial>("Diffuse");
+
+		for (auto& texture : pMesh->GetDiffuseTextureNames())
+		{
+			texturedMaterial->AddTexture(texture);
+		}
+
+		auto defaultMaterial = std::make_shared<DDM3::Material>();
+
+		renderComponent->SetMaterial(texturedMaterial);
+
+		auto pMaterialSwitcher = pGameObject->AddComponent<DDM3::MaterialSwitcher>();
+		pMaterialSwitcher->RegisterMaterial("Diffuse", texturedMaterial);
+		pMaterialSwitcher->RegisterMaterial("Default", defaultMaterial);
+
+		switchManagerComponent->RegisterMaterialSwitcher(pMaterialSwitcher);
 	}
 
 	void SetupCamera(DDM3::Scene* scene)

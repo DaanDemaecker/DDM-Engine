@@ -41,6 +41,13 @@ namespace DDM3
 		GameObject* LoadModel(const std::string& filename, GameObject* pParent);
 
 		/// <summary>
+		/// This function will load in a single model into a DDMML Mesh
+		/// </summary>
+		/// <param name="fileName: ">Path to the requested model file</param>
+		/// <param name="mesh: ">reference of mesh to store model in</param>
+		void LoadModel(const std::string& fileName, std::unique_ptr<DDMML::Mesh>& mesh);
+
+		/// <summary>
 		/// This function will load in a complete scene and set up the textures
 		/// </summary>
 		/// <param name="path: ">Path to the requested scene file</param>

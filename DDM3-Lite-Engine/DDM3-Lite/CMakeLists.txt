@@ -13,13 +13,11 @@ add_executable(${EXECUTABLE_NAME}
 "DataTypes/Materials/Material.cpp"
 "DataTypes/Materials/TexturedMaterial.cpp"
 "DataTypes/Mesh.cpp"
-
 "Engine/DDM3Engine.cpp"
 "Engine/main.cpp"
 "Engine/Scene.cpp"
 "Engine/Window.cpp"
 "Includes/STBIncludes.cpp"
-
 "Managers/ConfigManager.cpp"
 "Managers/SceneManager.cpp"
 "Managers/TimeManager.cpp"
@@ -43,14 +41,15 @@ add_executable(${EXECUTABLE_NAME}
 "Vulkan/VulkanRenderer.cpp"
 "Vulkan/VulkanUtils.cpp"
 "DataTypes/Materials/MultiMaterial.cpp"
-
 "Components/ModelLoaderComponent.cpp"
 "Managers/ResourceManager.cpp"
 "Managers/InputManager.cpp"
 "Managers/Input/KeyboardImpl.cpp"
 "Managers/Input/MouseImpl.h"
 "Managers/Input/MouseImpl.cpp"
-"Engine/DDMModelLoader.cpp")
+"Engine/DDMModelLoader.cpp"
+"Components/MaterialSwitcher/MaterialSwitcher.cpp"
+"Components/MaterialSwitcher/MaterialSwitchManager.cpp")
 
 
 # Include directories specific to this target

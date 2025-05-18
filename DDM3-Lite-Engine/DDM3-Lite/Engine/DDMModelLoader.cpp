@@ -40,6 +40,11 @@ DDM3::GameObject* DDM3::DDMModelLoader::LoadModel(const std::string& filename, G
 	return SetupModel(pDDMMLMesh.get(), pParent);
 }
 
+void DDM3::DDMModelLoader::LoadModel(const std::string& fileName, std::unique_ptr<DDMML::Mesh>& mesh)
+{
+	m_pModelLoader->LoadModel(fileName, mesh.get());
+}
+
 void DDM3::DDMModelLoader::LoadTexturedScene(const std::string& path, GameObject* pParent)
 {
 	auto pMeshes = std::vector<std::unique_ptr<DDMML::Mesh>>{};
