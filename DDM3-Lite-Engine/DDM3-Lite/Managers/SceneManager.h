@@ -53,7 +53,7 @@ namespace DDM3
 		void SetActiveScene(const std::string& name);
 
 		// Get a pointer to the active scene
-		std::shared_ptr<Scene> GetActiveScene() { return m_ActiveScene; }
+		std::shared_ptr<Scene> GetActiveScene();
 
 		// Set a specific scene active
 		// Parameters:

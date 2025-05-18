@@ -43,9 +43,18 @@ namespace DDM3
 		/// <summary>
 		/// This function will load in a complete scene and set up the textures
 		/// </summary>
-		/// <param name="Path: ">Path to the requested scene file</param>
+		/// <param name="path: ">Path to the requested scene file</param>
 		/// <param name="pParent: ">Parent of the scene to be loaded in</param>
-		void LoadScene(const std::string& path, GameObject* pParent);
+		void LoadTexturedScene(const std::string& path, GameObject* pParent);
+
+
+		/// <summary>
+		/// Load a scene into a vector of DDMML meshes
+		/// </summary>
+		/// <param name="path: ">Path to the requested scene file</param>
+		/// <param name="pMeshes: ">Vector to store meshes</param>
+		void LoadScene(const std::string& path, std::vector<std::unique_ptr<DDMML::Mesh>>& pMeshes);
+
 
 		/// <summary>
 		/// This function converts the vertices from the DDMML::Vertex to the Vertex struct

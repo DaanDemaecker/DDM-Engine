@@ -38,6 +38,8 @@ namespace LoadTestScene
 
 	void SetupAtrium(DDM3::Scene* scene);
 
+	void SetupAtrium2(DDM3::Scene* scene);
+
 	void SetupSkull(DDM3::Scene* scene);
 
 	void SetupCamera(DDM3::Scene* scen);
@@ -65,7 +67,9 @@ namespace LoadTestScene
 
 		//SetupMario(scene.get());
 
-		SetupAtrium(scene.get());
+		//SetupAtrium(scene.get());
+
+		SetupAtrium2(scene.get());
 
 		//SetupSkull(scene.get());
 
@@ -195,7 +199,32 @@ namespace LoadTestScene
 
 	void SetupAtrium(DDM3::Scene* scene)
 	{
-		DDM3::DDMModelLoader::GetInstance().LoadScene("Resources/Models/SponzaAtrium/Sponza.gltf", scene->GetSceneRoot());
+		DDM3::DDMModelLoader::GetInstance().LoadTexturedScene("Resources/Models/SponzaAtrium/Sponza.gltf", scene->GetSceneRoot());
+	}
+
+	void SetupAtrium2(DDM3::Scene* scene)
+	{
+		auto& modelLoader = DDM3::DDMModelLoader::GetInstance();
+
+		std::vector<std::unique_ptr<DDMML::Mesh>> pMeshes{};
+
+		modelLoader.LoadScene("Resources/Models/SponzaAtrium/Sponza.gltf", pMeshes);
+
+		auto sceneRoot = scene->GetSceneRoot();
+
+		for (auto& pMesh : pMeshes)
+		{
+			auto pGameObject = sceneRoot->CreateNewObject(pMesh->GetName());
+			auto renderComponent = pGameObject->AddComponent<DDM3::MeshRenderComponent>();
+			renderComponent->SetMesh(pMesh.get());
+			auto texturedMaterial = std::make_shared<DDM3::TexturedMaterial>("Diffuse");
+
+			for (auto& texture : pMesh->GetDiffuseTextureNames())
+			{
+				texturedMaterial->AddTexture(texture);
+			}
+			renderComponent->SetMaterial(texturedMaterial);
+		}
 	}
 
 	void SetupSkull(DDM3::Scene* scene)

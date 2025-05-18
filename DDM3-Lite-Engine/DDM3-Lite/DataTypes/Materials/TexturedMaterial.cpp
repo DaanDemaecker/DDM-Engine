@@ -19,8 +19,35 @@ DDM3::TexturedMaterial::TexturedMaterial(std::initializer_list<const std::string
 		m_pDescriptorObjects[index]->AddTexture(filePath);
 		++index;
 	}
+
+	m_ShouldUpdateDescriptorSets = true;
 }
 
+DDM3::TexturedMaterial::TexturedMaterial(const std::string& pipelineName)
+	:Material(pipelineName)
+{
+}
+
+DDM3::TexturedMaterial::TexturedMaterial(const std::string&& pipelineName)
+	:TexturedMaterial(pipelineName)
+{
+}
+
+
+void DDM3::TexturedMaterial::AddTexture(std::string& path)
+{
+	auto descriptorObject = std::make_unique<DDM3::TextureDescriptorObject>();
+	descriptorObject->AddTexture(path);
+	m_pDescriptorObjects.push_back(std::move(descriptorObject));
+
+	m_ShouldUpdateDescriptorSets = true;
+}
+
+void DDM3::TexturedMaterial::AddTexture(std::string&& path)
+{
+	// Pass function on
+	AddTexture(path);
+}
 
 void DDM3::TexturedMaterial::UpdateDescriptorSets(std::vector<VkDescriptorSet>& descriptorSets, std::vector<DescriptorObject*>& descriptorObjects)
 {
@@ -46,4 +73,6 @@ void DDM3::TexturedMaterial::UpdateDescriptorSets(std::vector<VkDescriptorSet>& 
 
 	// Update descriptorsets
 	descriptorPool->UpdateDescriptorSets(descriptorSets, descriptorObjectList);
+
+	m_ShouldUpdateDescriptorSets = false;
 }

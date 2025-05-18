@@ -40,15 +40,19 @@ DDM3::GameObject* DDM3::DDMModelLoader::LoadModel(const std::string& filename, G
 	return SetupModel(pDDMMLMesh.get(), pParent);
 }
 
-void DDM3::DDMModelLoader::LoadScene(const std::string& path, GameObject* pParent)
+void DDM3::DDMModelLoader::LoadTexturedScene(const std::string& path, GameObject* pParent)
 {
-	auto meshes = std::vector<std::unique_ptr<DDMML::Mesh>>{};
-	m_pModelLoader->LoadScene(path, meshes);
-	for (auto& mesh : meshes)
+	auto pMeshes = std::vector<std::unique_ptr<DDMML::Mesh>>{};
+	m_pModelLoader->LoadScene(path, pMeshes);
+	for (auto& mesh : pMeshes)
 	{
 		auto pObject = SetupModel(mesh.get(), pParent);
-		pObject->SetShowImGui(true);
 	}
+}
+
+void DDM3::DDMModelLoader::LoadScene(const std::string& path, std::vector<std::unique_ptr<DDMML::Mesh>>& pMeshes)
+{
+	m_pModelLoader->LoadScene(path, pMeshes);
 }
 
 void DDM3::DDMModelLoader::ConvertVertices(const std::vector<DDMML::Vertex>& ddmmlVertices, std::vector<Vertex>& vertices)

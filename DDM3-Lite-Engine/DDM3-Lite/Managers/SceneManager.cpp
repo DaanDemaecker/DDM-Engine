@@ -106,6 +106,11 @@ void DDM3::SceneManager::SetActiveScene(const std::string& name)
     }
 }
 
+std::shared_ptr<DDM3::Scene> DDM3::SceneManager::GetActiveScene()
+{
+    return m_ActiveScene;
+}
+
 void DDM3::SceneManager::StartFrame()
 {
     if (m_NextActiveScene != nullptr)
