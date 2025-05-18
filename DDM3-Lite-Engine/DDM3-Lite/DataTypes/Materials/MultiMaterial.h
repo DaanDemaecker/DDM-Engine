@@ -44,9 +44,9 @@ namespace DDM3
 
 		void AddDiffuseTexture(std::string&& filePath);
 
-		void AddNormalMap(std::initializer_list<const std::string>&& filePaths);
+		void AddNormalMap(std::string& filePath);
 
-		void AddNormalMap(std::initializer_list<const std::string>& filePaths);
+		void AddNormalMap(std::string&& filePath);
 
 		void AddGlossTextures(std::initializer_list<const std::string>&& filePaths);
 

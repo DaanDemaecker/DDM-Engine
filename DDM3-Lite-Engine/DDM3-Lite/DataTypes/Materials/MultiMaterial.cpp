@@ -105,14 +105,9 @@ void DDM3::MultiMaterial::AddDiffuseTexture(std::string&& filePath)
 	AddDiffuseTexture(filePath);
 }
 
-void DDM3::MultiMaterial::AddNormalMap(std::initializer_list<const std::string>&& filePaths)
+void DDM3::MultiMaterial::AddNormalMap(std::string& filePath)
 {
-	AddNormalMap(filePaths);
-}
-
-void DDM3::MultiMaterial::AddNormalMap(std::initializer_list<const std::string>& filePaths)
-{
-	m_pNormalTextureObject->AddTextures(filePaths);
+	m_pNormalTextureObject->AddTexture(filePath);
 
 	m_MultiShaderBuffer.normalAmount = m_pNormalTextureObject->GetTextureAmount();
 	m_MultiShaderBuffer.normalEnabled = true;
@@ -120,6 +115,11 @@ void DDM3::MultiMaterial::AddNormalMap(std::initializer_list<const std::string>&
 	m_ShouldUpdateDescriptorSets = true;
 
 	UpdateShaderBuffer();
+}
+
+void DDM3::MultiMaterial::AddNormalMap(std::string&& filePath)
+{
+	AddNormalMap(filePath);
 }
 
 void DDM3::MultiMaterial::AddGlossTextures(std::initializer_list<const std::string>&& filePaths)

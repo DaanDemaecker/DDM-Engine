@@ -28,6 +28,8 @@ namespace LoadTestScene
 
 	void SetupVehicle(DDM3::Scene* scene);
 
+	void SetupVehicle2(DDM3::Scene* scene);
+
 	void SetupVikingRoom(DDM3::Scene* scene);
 
 	void SetupGun(DDM3::Scene* scene);
@@ -35,6 +37,8 @@ namespace LoadTestScene
 	void SetupMario(DDM3::Scene* scene);
 
 	void SetupAtrium(DDM3::Scene* scene);
+
+	void SetupSkull(DDM3::Scene* scene);
 
 	void SetupCamera(DDM3::Scene* scen);
 
@@ -53,6 +57,8 @@ namespace LoadTestScene
 
 		//SetupVehicle(scene.get());
 
+		//SetupVehicle2(scene.get());
+
 		//SetupVikingRoom(scene.get());
 
 		//SetupGun(scene.get());
@@ -60,6 +66,8 @@ namespace LoadTestScene
 		//SetupMario(scene.get());
 
 		SetupAtrium(scene.get());
+
+		//SetupSkull(scene.get());
 
 		SetupCamera(scene.get());
 
@@ -87,7 +95,7 @@ namespace LoadTestScene
 
 		pVehicleMaterial->AddDiffuseTexture("resources/images/vehicle_diffuse.png");
 
-		pVehicleMaterial->AddNormalMap(std::initializer_list<const std::string>{"resources/images/vehicle_normal.png"});
+		pVehicleMaterial->AddNormalMap("resources/images/vehicle_normal.png");
 
 		pVehicleMaterial->AddGlossTextures(std::initializer_list<const std::string>{"resources/images/vehicle_gloss.png"});
 
@@ -107,6 +115,29 @@ namespace LoadTestScene
 		auto pVehicleTransform{ pVehicle->GetTransform() };
 		pVehicleTransform->SetShowImGui(true);
 		pVehicleTransform->SetLocalPosition(0, 3, 0);
+		pVehicleTransform->SetLocalRotation(0.f, glm::radians(75.0f), 0.f);
+		pVehicleTransform->SetLocalScale(0.05f, 0.05f, 0.05f);
+	}
+
+	void SetupVehicle2(DDM3::Scene* scene)
+	{
+		std::shared_ptr<DDM3::MultiMaterial> pVehicleMaterial{ std::make_shared<DDM3::MultiMaterial>() };
+
+		pVehicleMaterial->AddDiffuseTexture("resources/images/vehicle_diffuse.png");
+
+		pVehicleMaterial->AddNormalMap("resources/images/vehicle_normal.png");
+
+		auto pVehicle{ DDM3::DDMModelLoader::GetInstance().LoadModel("Resources/Models/vehicle.obj", scene->GetSceneRoot())};
+		pVehicle->SetShowImGui(true);
+		//pVehicle->AddComponent<D3D::RotatorComponent>();
+
+		auto pVehicleModel{ pVehicle->GetComponent<DDM3::MeshRenderComponent>() };
+		pVehicleModel->SetMaterial(pVehicleMaterial);
+
+
+		auto pVehicleTransform{ pVehicle->GetTransform() };
+		pVehicleTransform->SetShowImGui(true);
+		pVehicleTransform->SetLocalPosition(3, 3, 0);
 		pVehicleTransform->SetLocalRotation(0.f, glm::radians(75.0f), 0.f);
 		pVehicleTransform->SetLocalScale(0.05f, 0.05f, 0.05f);
 	}
@@ -135,7 +166,7 @@ namespace LoadTestScene
 
 		pGunMaterial->AddDiffuseTexture("resources/images/gun_BaseColor.png");
 
-		pGunMaterial->AddNormalMap(std::initializer_list<const std::string>{"resources/images/gun_Normal.png"});
+		pGunMaterial->AddNormalMap("resources/images/gun_Normal.png");
 
 		auto pGun{ scene->CreateGameObject("Gun") };
 
@@ -165,6 +196,11 @@ namespace LoadTestScene
 	void SetupAtrium(DDM3::Scene* scene)
 	{
 		DDM3::DDMModelLoader::GetInstance().LoadScene("Resources/Models/SponzaAtrium/Sponza.gltf", scene->GetSceneRoot());
+	}
+
+	void SetupSkull(DDM3::Scene* scene)
+	{
+		DDM3::DDMModelLoader::GetInstance().LoadModel("Resources/Models/Skull/Scene.gltf", scene->GetSceneRoot());
 	}
 
 	void SetupCamera(DDM3::Scene* scene)
