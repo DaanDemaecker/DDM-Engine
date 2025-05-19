@@ -55,17 +55,47 @@ void DDM3::GPUObject::PickPhysicalDevice(InstanceWrapper* pInstanceWrapper, VkSu
 	//use an ordered map to automatically sort candidates by increasing score
 	std::multimap<int, VkPhysicalDevice> candidates;
 
+	VkPhysicalDeviceMemoryProperties memoryProperties;
+
+	VkDeviceSize maxMemorySize = 0;
+	int maxMemorysizeIndex = -1;
+	
+
 	// Loop trough all available physical devices
-	for (const auto& device : devices)
+	for (int i = 0; i < deviceCount; ++i)
 	{
 		// Check if the device is suitable
-		if (IsDeviceSuitable(device, surface))
+		if (IsDeviceSuitable(devices[i], surface))
 		{
+			vkGetPhysicalDeviceMemoryProperties(devices[i], &memoryProperties);
 			// Set the physical device to the current one and break the loop
-			m_PhysicalDevice = device;
-			break;
+			VkDeviceSize memorySize = 0;
+			for (int j{}; j < memoryProperties.memoryHeapCount; ++j)
+			{
+				if (memoryProperties.memoryHeaps[j].flags & VK_MEMORY_HEAP_DEVICE_LOCAL_BIT)
+				{
+					memorySize += memoryProperties.memoryHeaps[j].size;
+				}
+			}
+
+			if (memorySize > maxMemorySize)
+			{
+				maxMemorySize = memorySize;
+				maxMemorysizeIndex = i;
+			}
 		}
 	}
+
+	if (maxMemorysizeIndex != -1)
+	{
+		m_PhysicalDevice = devices[maxMemorysizeIndex];
+	}
+	else
+	{
+		throw std::runtime_error("failed to find a suitable GPU!");
+	}
+
+
 
 
 	// Check if physical device is null handle

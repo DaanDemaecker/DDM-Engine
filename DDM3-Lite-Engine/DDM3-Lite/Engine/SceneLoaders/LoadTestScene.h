@@ -71,9 +71,9 @@ namespace LoadTestScene
 
 		//SetupAtrium(scene.get());
 
-		//SetupAtrium2(scene.get());
+		SetupAtrium2(scene.get());
 
-		SetupSkull(scene.get());
+		//SetupSkull(scene.get());
 
 		SetupCamera(scene.get());
 
@@ -206,6 +206,14 @@ namespace LoadTestScene
 
 	void SetupAtrium2(DDM3::Scene* scene)
 	{
+		auto switchManager = scene->GetSceneRoot()->CreateNewObject("Material switch manager");
+		switchManager->SetShowImGui(true);
+
+		auto switchManagerComponent = switchManager->AddComponent<DDM3::MaterialSwitchManager>();
+		switchManagerComponent->RegisterKey("Diffuse");
+		switchManagerComponent->RegisterKey("Default");
+
+
 		auto& modelLoader = DDM3::DDMModelLoader::GetInstance();
 
 		std::vector<std::unique_ptr<DDMML::Mesh>> pMeshes{};
@@ -216,16 +224,27 @@ namespace LoadTestScene
 
 		for (auto& pMesh : pMeshes)
 		{
-			auto pGameObject = sceneRoot->CreateNewObject(pMesh->GetName());
+			auto pGameObject = scene->GetSceneRoot()->CreateNewObject(pMesh->GetName());
 			auto renderComponent = pGameObject->AddComponent<DDM3::MeshRenderComponent>();
 			renderComponent->SetMesh(pMesh.get());
+
+
 			auto texturedMaterial = std::make_shared<DDM3::TexturedMaterial>("Diffuse");
 
 			for (auto& texture : pMesh->GetDiffuseTextureNames())
 			{
 				texturedMaterial->AddTexture(texture);
 			}
+
+			auto defaultMaterial = std::make_shared<DDM3::Material>();
+
 			renderComponent->SetMaterial(texturedMaterial);
+
+			auto pMaterialSwitcher = pGameObject->AddComponent<DDM3::MaterialSwitcher>();
+			pMaterialSwitcher->RegisterMaterial("Diffuse", texturedMaterial);
+			pMaterialSwitcher->RegisterMaterial("Default", defaultMaterial);
+
+			switchManagerComponent->RegisterMaterialSwitcher(pMaterialSwitcher);
 		}
 	}
 
