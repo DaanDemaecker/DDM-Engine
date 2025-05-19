@@ -49,7 +49,7 @@ add_executable(${EXECUTABLE_NAME}
 "Managers/Input/MouseImpl.cpp"
 "Engine/DDMModelLoader.cpp"
 "Components/MaterialSwitcher/MaterialSwitcher.cpp"
-"Components/MaterialSwitcher/MaterialSwitchManager.cpp")
+"Components/MaterialSwitcher/MaterialSwitchManager.cpp" "Components/InfoComponent.cpp")
 
 
 # Include directories specific to this target

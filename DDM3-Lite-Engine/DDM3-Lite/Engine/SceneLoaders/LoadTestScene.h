@@ -23,6 +23,7 @@
 
 #include "Components/MaterialSwitcher/MaterialSwitchManager.h"
 #include "Components/MaterialSwitcher/MaterialSwitcher.h"
+#include "Components/InfoComponent.h"
 
 namespace LoadTestScene
 {
@@ -43,6 +44,8 @@ namespace LoadTestScene
 	void SetupAtrium2(DDM3::Scene* scene);
 
 	void SetupSkull(DDM3::Scene* scene);
+
+	void SetupInfoComponent(DDM3::Scene* scene);
 
 	void SetupCamera(DDM3::Scene* scen);
 
@@ -74,6 +77,8 @@ namespace LoadTestScene
 		SetupAtrium2(scene.get());
 
 		//SetupSkull(scene.get());
+
+		SetupInfoComponent(scene.get());
 
 		SetupCamera(scene.get());
 
@@ -282,6 +287,15 @@ namespace LoadTestScene
 		pMaterialSwitcher->RegisterMaterial("Default", defaultMaterial);
 
 		switchManagerComponent->RegisterMaterialSwitcher(pMaterialSwitcher);
+	}
+
+	void SetupInfoComponent(DDM3::Scene* scene)
+	{
+		auto pInfoObject{ scene->CreateGameObject("InfoComponent") };
+		pInfoObject->SetShowImGui(true);
+
+		auto pInfoComponent{ pInfoObject->AddComponent<DDM3::InfoComponent>() };
+		pInfoComponent->SetShowImGui(true);
 	}
 
 	void SetupCamera(DDM3::Scene* scene)

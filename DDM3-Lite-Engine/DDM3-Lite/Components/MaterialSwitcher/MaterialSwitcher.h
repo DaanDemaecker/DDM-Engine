@@ -2,6 +2,9 @@
 // This component will be used to swap the material of MeshRenderComponent
 // from a list of given materials
 
+#ifndef _MATERIAL_SWITCHER_
+#define _MATERIAL_SWITCHER_
+
 // Parent include
 #include "BaseClasses/Component.h"
 
@@ -34,3 +37,5 @@ namespace DDM3
 		std::map<std::string, std::shared_ptr<Material>> m_pRegisteredMaterials{};
 	};
 }
+
+#endif // !_MATERIAL_SWITCHER_
