@@ -51,10 +51,14 @@ namespace DDM3
 		// Get eh object holding information about graphics- and present queues
 		const QueueObject& GetQueueObject() const { return m_QueueObject; }
 
+		// Get the device LUID
+		const uint8_t* GetDeviceLuid() const { return m_DeviceLuid; }
 
 	private:
 		// Handle of the VkPhysicalDevice
 		VkPhysicalDevice m_PhysicalDevice = VK_NULL_HANDLE;
+
+		uint8_t m_DeviceLuid[VK_LUID_SIZE];
 
 		// Vector of requested device extensions
 		const std::vector<const char*> m_DeviceExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME,

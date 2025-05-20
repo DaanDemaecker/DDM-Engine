@@ -8,12 +8,22 @@
 // Parent include
 #include "BaseClasses/Component.h"
 
+class IDXGIAdapter3;
+
 namespace DDM3
 {
 	class InfoComponent final : public Component
 	{
 	public:
+		/// <summary>
+		/// Default constructor, initializes the DXGI adapter
+		/// </summary>
 		InfoComponent();
+
+		/// <summary>
+		/// Destructor, releases the DXGI adapter
+		/// </summary>
+		~InfoComponent();
 
 		virtual void Update() override;
 
@@ -21,10 +31,36 @@ namespace DDM3
 
 	private:
 		std::string m_DeltaTimeLabel{ "" };
+		std::string m_VRamLabel{ "" };
+
+		IDXGIAdapter3* m_DxgiAdapter{ nullptr };
 	
 		const int m_FramesPerUpdate{ 5 };
 		int m_Frames{};
-		int m_DeltaTime{};
+		int m_DeltaTimeMS{};
+
+		void QueryStats();
+
+		int GetVRAMUsage();
+
+		// Measurement variables and methods
+		const int m_SampleSize{1000};
+
+		bool m_IsMeasuring{ false };
+
+		int m_CurrentMeasurement{};
+		int m_CurrentMeasurementFrame{};
+
+		std::vector<std::vector<float>> m_DeltaTimeMeasurements{};
+		std::vector<std::vector<float>> m_VRAMMeasurements{};
+
+		void StartMeasurement();
+
+		void EndMeasurement();
+
+		void AddMeasurement();
+
+		void RenderDeltaTimePlot();
 	};
 }
 

@@ -17,7 +17,7 @@ add_executable(${EXECUTABLE_NAME}
 "Engine/main.cpp"
 "Engine/Scene.cpp"
 "Engine/Window.cpp"
-"Includes/STBIncludes.cpp"
+
 "Managers/ConfigManager.cpp"
 "Managers/SceneManager.cpp"
 "Managers/TimeManager.cpp"
@@ -49,7 +49,7 @@ add_executable(${EXECUTABLE_NAME}
 "Managers/Input/MouseImpl.cpp"
 "Engine/DDMModelLoader.cpp"
 "Components/MaterialSwitcher/MaterialSwitcher.cpp"
-"Components/MaterialSwitcher/MaterialSwitchManager.cpp" "Components/InfoComponent.cpp")
+"Components/MaterialSwitcher/MaterialSwitchManager.cpp" "Components/InfoComponent.cpp" "Includes/DXGIIncludes.h" )
 
 
 # Include directories specific to this target

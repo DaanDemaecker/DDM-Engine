@@ -68,6 +68,7 @@ void DDM3::GPUObject::PickPhysicalDevice(InstanceWrapper* pInstanceWrapper, VkSu
 		if (IsDeviceSuitable(devices[i], surface))
 		{
 			vkGetPhysicalDeviceMemoryProperties(devices[i], &memoryProperties);
+
 			// Set the physical device to the current one and break the loop
 			VkDeviceSize memorySize = 0;
 			for (int j{}; j < memoryProperties.memoryHeapCount; ++j)
@@ -96,14 +97,22 @@ void DDM3::GPUObject::PickPhysicalDevice(InstanceWrapper* pInstanceWrapper, VkSu
 	}
 
 
-
-
 	// Check if physical device is null handle
 	if (m_PhysicalDevice == VK_NULL_HANDLE)
 	{
 		// If null handle, throw runtime error
 		throw std::runtime_error("failed to find a suitable GPU!");
 	}
+
+	// After obtaining VkPhysicalDevice, query deviceIDProperties
+	VkPhysicalDeviceIDProperties physDeviceIDProps = {
+		VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ID_PROPERTIES };
+	VkPhysicalDeviceProperties2 physDeviceProps = {
+		VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2 };
+	physDeviceProps.pNext = &physDeviceIDProps;
+	vkGetPhysicalDeviceProperties2(m_PhysicalDevice, &physDeviceProps);
+
+	std::memcpy(m_DeviceLuid, physDeviceIDProps.deviceLUID, VK_LUID_SIZE);
 }
 
 bool DDM3::GPUObject::IsDeviceSuitable(VkPhysicalDevice device, VkSurfaceKHR surface)

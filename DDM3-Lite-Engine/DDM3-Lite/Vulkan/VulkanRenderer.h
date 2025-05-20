@@ -118,6 +118,9 @@ namespace DDM3
 
 
         void AddDefaultPipeline();
+
+		GPUObject* GetGPUObject() const { return m_pGpuObject.get(); }
+
     private:
         // Constructor
         friend class Singleton<VulkanRenderer>;
