@@ -146,14 +146,12 @@ void DDM3::VulkanRenderer::InitImGui()
 	init_info.CheckVkResultFn = [](VkResult /*err*/) { /* error handling */ };
 	// Give the max amount of samples per mixel
 	init_info.MSAASamples = m_MsaaSamples;
-	// Set the renderpass
-	init_info.RenderPass = m_pRenderpassWrapper->GetRenderpass();
 
 	// Create a single time command buffer
 	auto commandBuffer{ BeginSingleTimeCommands() };
 	// Initialize ImGui
 	m_pImGuiWrapper = std::make_unique<DDM3::ImGuiWrapper>(init_info,
-		m_pGpuObject->GetDevice(), static_cast<uint32_t>(m_MaxFramesInFlight));
+		m_pGpuObject->GetDevice(), static_cast<uint32_t>(m_MaxFramesInFlight), m_pRenderpassWrapper->GetRenderpass(), commandBuffer);
 	// End the single time command buffer
 	EndSingleTimeCommands(commandBuffer);
 }
@@ -403,6 +401,11 @@ void DDM3::VulkanRenderer::AddDefaultPipeline()
 	m_pPipelineManager->AddDefaultPipeline(m_pGpuObject->GetDevice(), m_pRenderpassWrapper->GetRenderpass(),
 		m_MsaaSamples);
 
+}
+
+VkRenderPass DDM3::VulkanRenderer::GetRenderPass() const
+{
+	return m_pRenderpassWrapper->GetRenderpass();
 }
 
 void DDM3::VulkanRenderer::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory)

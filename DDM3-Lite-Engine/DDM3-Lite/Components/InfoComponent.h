@@ -7,6 +7,7 @@
 
 // Parent include
 #include "BaseClasses/Component.h"
+#include "Includes/ImGuiIncludes.h"
 
 class IDXGIAdapter3;
 
@@ -44,7 +45,7 @@ namespace DDM3
 		int GetVRAMUsage();
 
 		// Measurement variables and methods
-		const int m_SampleSize{1000};
+		const int m_SampleSize{200};
 
 		bool m_IsMeasuring{ false };
 
@@ -61,6 +62,11 @@ namespace DDM3
 		void AddMeasurement();
 
 		void RenderDeltaTimePlot();
+
+		void RenderPlot(const std::vector<std::vector<float>>& samples);
+
+		ImColor GetColorFromIndex(int index);
+
 	};
 }
 

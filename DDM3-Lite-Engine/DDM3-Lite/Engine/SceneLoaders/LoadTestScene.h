@@ -217,6 +217,7 @@ namespace LoadTestScene
 		auto switchManagerComponent = switchManager->AddComponent<DDM3::MaterialSwitchManager>();
 		switchManagerComponent->RegisterKey("Diffuse");
 		switchManagerComponent->RegisterKey("Default");
+		switchManagerComponent->RegisterKey("DiffuseUnshaded");
 
 
 		auto& modelLoader = DDM3::DDMModelLoader::GetInstance();
@@ -234,20 +235,29 @@ namespace LoadTestScene
 			renderComponent->SetMesh(pMesh.get());
 
 
-			auto texturedMaterial = std::make_shared<DDM3::TexturedMaterial>("Diffuse");
-
-			for (auto& texture : pMesh->GetDiffuseTextureNames())
-			{
-				texturedMaterial->AddTexture(texture);
-			}
+			//auto texturedMaterial = std::make_shared<DDM3::TexturedMaterial>("Diffuse");
+			//
+			//for (auto& texture : pMesh->GetDiffuseTextureNames())
+			//{
+			//	texturedMaterial->AddTexture(texture);
+			//}
+			//
+			//auto diffuseUnshadedMaterial = std::make_shared<DDM3::TexturedMaterial>("DiffuseUnshaded");
+			//
+			//for (auto& texture : pMesh->GetDiffuseTextureNames())
+			//{
+			//	diffuseUnshadedMaterial->AddTexture(texture);
+			//}
 
 			auto defaultMaterial = std::make_shared<DDM3::Material>();
 
-			renderComponent->SetMaterial(texturedMaterial);
+			renderComponent->SetMaterial(defaultMaterial);
 
 			auto pMaterialSwitcher = pGameObject->AddComponent<DDM3::MaterialSwitcher>();
-			pMaterialSwitcher->RegisterMaterial("Diffuse", texturedMaterial);
 			pMaterialSwitcher->RegisterMaterial("Default", defaultMaterial);
+			//pMaterialSwitcher->RegisterMaterial("Diffuse", texturedMaterial);
+			//pMaterialSwitcher->RegisterMaterial("DiffuseUnshaded", diffuseUnshadedMaterial);
+
 
 			switchManagerComponent->RegisterMaterialSwitcher(pMaterialSwitcher);
 		}

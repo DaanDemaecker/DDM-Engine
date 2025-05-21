@@ -7,12 +7,15 @@
 #include "Engine/DDM3Engine.h"
 #include "Engine/Window.h"
 #include "Managers/SceneManager.h"
+#include "Vulkan/VulkanRenderer.h"
+#include "Vulkan/VulkanWrappers/RenderpassWrapper.h"
 
 // Standard library includes
 #include <array>
 #include <stdexcept>
 
-DDM3::ImGuiWrapper::ImGuiWrapper(ImGui_ImplVulkan_InitInfo init_info, VkDevice device, uint32_t maxFrames)
+DDM3::ImGuiWrapper::ImGuiWrapper(ImGui_ImplVulkan_InitInfo init_info, VkDevice device, uint32_t maxFrames,
+	VkRenderPass renderPass, VkCommandBuffer commandBuffer)
 {	
 	// Initialize the descriptorPool
 	InitDescriptorPool(device, maxFrames);
@@ -30,10 +33,11 @@ DDM3::ImGuiWrapper::ImGuiWrapper(ImGui_ImplVulkan_InitInfo init_info, VkDevice d
 	init_info.DescriptorPool = m_DescriptorPool;
 
 	// Init ImGui with init info and the renderpass
-	ImGui_ImplVulkan_Init(& init_info);
+	// Set the renderpass
+	ImGui_ImplVulkan_Init(& init_info, renderPass);
 
 	// Create the fonts and textures with the commandbuffer
-	ImGui_ImplVulkan_CreateFontsTexture();
+	ImGui_ImplVulkan_CreateFontsTexture(commandBuffer);
 }
 
 void DDM3::ImGuiWrapper::Cleanup(VkDevice device)

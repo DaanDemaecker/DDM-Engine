@@ -121,6 +121,8 @@ namespace DDM3
 
 		GPUObject* GetGPUObject() const { return m_pGpuObject.get(); }
 
+        VkRenderPass GetRenderPass() const;
+
     private:
         // Constructor
         friend class Singleton<VulkanRenderer>;

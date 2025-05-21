@@ -4,11 +4,13 @@
 #include "InfoComponent.h"
 
 //File includes
-#include "Includes/ImGuiIncludes.h"
 #include "Managers/TimeManager.h"
 #include <Includes/DXGIIncludes.h>
 #include "Vulkan/VulkanRenderer.h"
 #include "Vulkan/VulkanWrappers/GPUObject.h"
+
+// Standard library includes
+#include <bitset>
 
 DDM3::InfoComponent::InfoComponent()
 	:Component()
@@ -148,6 +150,55 @@ void DDM3::InfoComponent::AddMeasurement()
 void DDM3::InfoComponent::RenderDeltaTimePlot()
 {
 	ImGui::Text("Delta time plot");
-	ImGui::PlotLines("Delta time", m_DeltaTimeMeasurements[0].data(), m_SampleSize, 0, nullptr, 0.0f, 100.0f, ImVec2(0, 10));
-	ImGui::PlotLines("VRAM usage", m_VRAMMeasurements[0].data(), m_SampleSize, 0, nullptr, 0.0f, 100.0f, ImVec2(0, 80));
+	RenderPlot(m_DeltaTimeMeasurements);
+}
+
+
+void DDM3::InfoComponent::RenderPlot(const std::vector<std::vector<float>>& samples)
+{
+	std::vector<const float*> values{};
+	std::vector<ImU32> colors{};
+
+	for (int i{}; i<samples.size(); ++i)
+	{
+		colors.push_back(GetColorFromIndex(i+1));
+		if (samples[i].size() > 0)
+		{
+			values.push_back(samples[i].data());
+		}
+	}
+
+	int maxElement{};
+
+	for (auto& sample : samples)
+	{
+		if (sample.size() > 0)
+		{
+			maxElement = std::max(maxElement, static_cast<int>(*std::max_element(sample.begin(), sample.end())));
+		}
+	}
+
+
+	ImGui::PlotConfig::Values plotValues{nullptr, nullptr, m_SampleSize, 0, 0, values.data(), values.size(), colors.data()};
+
+	ImGui::PlotConfig plot{};
+	plot.frame_size = ImVec2{ 400, 200 };
+	plot.values = plotValues;
+	plot.scale = ImGui::PlotConfig::Scale(0, maxElement);
+
+	plot.grid_y = ImGui::PlotConfig::Grid{ true, static_cast<float>(maxElement) / 10 };
+
+
+	ImGui::Plot("plotter", plot);
+}
+
+ImColor DDM3::InfoComponent::GetColorFromIndex(int index)
+{
+	std::bitset<3> colorBitset{ static_cast<uint64_t>(index) };
+
+	float r = colorBitset.test(0) ? 1.0f : 0.0f;
+	float g = colorBitset.test(1) ? 1.0f : 0.0f;
+	float b = colorBitset.test(2) ? 1.0f : 0.0f;
+
+	return ImColor(r, g, b);
 }

@@ -1,9 +1,10 @@
 #ifndef IMGUI_DEFINE_MATH_OPERATORS
 #define IMGUI_DEFINE_MATH_OPERATORS
 #endif
-#include <imgui_plot.h>
-#include <imgui.h>
-#include <imgui_internal.h>
+
+#include "imgui_plot.h"
+#include "imgui.h"
+#include "imgui_internal.h"
 
 #pragma warning(push)
 #pragma warning(disable: 4244)
@@ -70,7 +71,7 @@ PlotStatus Plot(const char* label, const PlotConfig& conf) {
     ItemSize(total_bb, style.FramePadding.y);
     if (!ItemAdd(total_bb, 0, &frame_bb))
         return status;
-    const bool hovered = ItemHoverable(frame_bb, id);
+    const bool hovered = ItemHoverable(frame_bb, id, 0);
 
     RenderFrame(
         frame_bb.Min,
