@@ -2,12 +2,12 @@
 
 //File includes
 #include "TextureDescriptorObject.h"
-#include "../../Vulkan/VulkanRenderer.h"
+#include "Vulkan/VulkanObject.h"
 
 DDM3::TextureDescriptorObject::TextureDescriptorObject()
 	:DescriptorObject(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER)
 {
-	auto& renderer{ VulkanRenderer::GetInstance() };
+	auto& renderer{ VulkanObject::GetInstance() };
 	m_PlaceholderImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 	m_PlaceholderImageInfo.imageView = renderer.GetDefaultImageView();
 	m_PlaceholderImageInfo.sampler = renderer.GetSampler();
@@ -34,7 +34,7 @@ void DDM3::TextureDescriptorObject::AddTextures(std::initializer_list<const std:
 	// Resize textures to textureAmount
 	m_Textures.resize(filePaths.size() + m_Textures.size());
 
-	auto& renderer{ VulkanRenderer::GetInstance() };
+	auto& renderer{ VulkanObject::GetInstance() };
 
 	// Loop trough all filePaths
 	for (const auto& path : filePaths)
@@ -51,7 +51,7 @@ void DDM3::TextureDescriptorObject::AddTextures(std::initializer_list<const std:
 
 void DDM3::TextureDescriptorObject::AddTexture(const std::string& filePath)
 {
-	auto& renderer{ VulkanRenderer::GetInstance() };
+	auto& renderer{ VulkanObject::GetInstance() };
 
 	m_Textures.resize(m_Textures.size() + 1);
 
@@ -77,7 +77,7 @@ DDM3::TextureDescriptorObject::~TextureDescriptorObject()
 {
 	// Get the device and clean up all the textures
 
-	auto device{ VulkanRenderer::GetInstance().GetDevice() };
+	auto device{ VulkanObject::GetInstance().GetDevice() };
 
 	for (auto& texture : m_Textures)
 	{
@@ -122,7 +122,7 @@ void DDM3::TextureDescriptorObject::SetupImageInfos()
 	m_ImageInfos.resize(m_Textures.size());
 
 	// Get the sampler
-	auto& sampler{ VulkanRenderer::GetInstance().GetSampler() };
+	auto& sampler{ VulkanObject::GetInstance().GetSampler() };
 
 	int index{};
 

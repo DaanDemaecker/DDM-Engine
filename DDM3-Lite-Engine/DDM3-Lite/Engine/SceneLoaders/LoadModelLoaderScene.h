@@ -1,4 +1,4 @@
-#include "../Vulkan/VulkanRenderer.h"
+#include "Vulkan/VulkanObject.h"
 #include "../Managers/SceneManager.h"
 #include "../Scene.h"
 #include "../../Components/SpectatorMovementComponent.h"
@@ -35,7 +35,7 @@ namespace LoadModelLoaderScene
 
 	void SetupPipelines()
 	{
-		auto& renderer{ DDM3::VulkanRenderer::GetInstance() };
+		auto& renderer{ DDM3::VulkanObject::GetInstance() };
 		
 		renderer.AddGraphicsPipeline("Diffuse", { "Resources/Shaders/Diffuse.Vert.spv", "Resources/Shaders/Diffuse.Frag.spv" });
 		renderer.AddGraphicsPipeline("NormalMap", { "Resources/Shaders/NormalMap.Vert.spv", "Resources/Shaders/NormalMap.Frag.spv" });
@@ -72,7 +72,7 @@ namespace LoadModelLoaderScene
 		const std::string fragShaderName{ configManager.GetString("SkyboxFragName") };
 
 		// Create the graphics pipeline for the skybox
-		DDM3::VulkanRenderer::GetInstance().AddGraphicsPipeline(configManager.GetString("SkyboxPipelineName"), { vertShaderName, fragShaderName }, false);
+		DDM3::VulkanObject::GetInstance().AddGraphicsPipeline(configManager.GetString("SkyboxPipelineName"), { vertShaderName, fragShaderName }, false);
 
 		auto pSkyBox{ pCamera->AddComponent<DDM3::SkyBoxComponent>() };
 

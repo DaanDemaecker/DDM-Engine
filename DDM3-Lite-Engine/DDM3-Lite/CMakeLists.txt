@@ -38,7 +38,7 @@ add_executable(${EXECUTABLE_NAME}
 "Vulkan/VulkanWrappers/ShaderModuleWrapper.cpp"
 "Vulkan/VulkanWrappers/SurfaceWrapper.cpp"
 "Vulkan/VulkanWrappers/SwapchainWrapper.cpp"
-"Vulkan/VulkanRenderer.cpp"
+"Vulkan/VulkanObject.cpp"
 "Vulkan/VulkanUtils.cpp"
 "DataTypes/Materials/MultiMaterial.cpp"
 "Components/ModelLoaderComponent.cpp"

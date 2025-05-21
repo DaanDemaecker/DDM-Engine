@@ -7,7 +7,7 @@
 #include "Engine/DDM3Engine.h"
 #include "Engine/Window.h"
 #include "Managers/SceneManager.h"
-#include "Vulkan/VulkanRenderer.h"
+#include "Vulkan/VulkanObject.h"
 #include "Vulkan/VulkanWrappers/RenderpassWrapper.h"
 
 // Standard library includes

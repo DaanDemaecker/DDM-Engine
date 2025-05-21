@@ -2,7 +2,7 @@
 
 // File includes
 #include "Mesh.h"
-#include "../Vulkan/VulkanRenderer.h"
+#include "Vulkan/VulkanObject.h"
 #include "../Vulkan/VulkanWrappers/PipelineWrapper.h"
 #include "Engine/DDMModelLoader.h"
 #include "DDMModelLoader/DDMModelLoader.h"
@@ -42,7 +42,7 @@ DDM3::Mesh::~Mesh()
 void DDM3::Mesh::Render(PipelineWrapper* pPipeline, VkDescriptorSet* descriptorSet)
 {
 	// Get current commandbuffer
-	auto commandBuffer{ VulkanRenderer::GetInstance().GetCurrentCommandBuffer() };
+	auto commandBuffer{ VulkanObject::GetInstance().GetCurrentCommandBuffer() };
 
 	// Bind pipeline
 	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pPipeline->GetPipeline());
@@ -65,7 +65,7 @@ void DDM3::Mesh::Render(PipelineWrapper* pPipeline, VkDescriptorSet* descriptorS
 void DDM3::Mesh::Cleanup()
 {
 	// Get reference to renderer
-	auto& renderer = DDM3::VulkanRenderer::GetInstance();
+	auto& renderer = DDM3::VulkanObject::GetInstance();
 	// Get reference to device
 	auto device = renderer.GetDevice();
 
@@ -86,7 +86,7 @@ void DDM3::Mesh::Cleanup()
 void DDM3::Mesh::SetupBuffers()
 {	
 	// Get reference to the renderer
-	auto& renderer{ VulkanRenderer::GetInstance() };
+	auto& renderer{ VulkanObject::GetInstance() };
 
 	// Create vertex and index buffer
 	renderer.CreateVertexBuffer(m_Vertices, m_VertexBuffer, m_VertexBufferMemory);

@@ -1,5 +1,5 @@
 #include "TexturedMaterial.h"
-#include "../../Vulkan/VulkanRenderer.h"
+#include "Vulkan/VulkanObject.h"
 #include "../../Utils/Utils.h"
 #include "../../Vulkan/VulkanWrappers/DescriptorPoolWrapper.h"
 #include "../../Components/MeshRenderComponent.h"
@@ -63,7 +63,7 @@ void DDM3::TexturedMaterial::UpdateDescriptorSets(std::vector<VkDescriptorSet>& 
 	}
 
 	// Add the descriptor object of the global light
-	descriptorObjectList.push_back(VulkanRenderer::GetInstance().GetLightDescriptor());
+	descriptorObjectList.push_back(VulkanObject::GetInstance().GetLightDescriptor());
 
 	for (auto& descriptorObject : m_pDescriptorObjects)
 	{

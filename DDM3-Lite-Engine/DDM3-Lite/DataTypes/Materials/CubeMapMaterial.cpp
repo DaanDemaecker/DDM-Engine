@@ -2,7 +2,7 @@
 
 // File includes
 #include "CubeMapMaterial.h"
-#include "../../Vulkan/VulkanRenderer.h"
+#include "Vulkan/VulkanObject.h"
 #include "../../Vulkan/VulkanWrappers/DescriptorPoolWrapper.h"
 #include "../../DataTypes/DescriptorObjects/TextureDescriptorObject.h"
 #include "../../Managers/ConfigManager.h"
@@ -22,7 +22,7 @@ DDM3::CubeMapMaterial::CubeMapMaterial(const std::initializer_list<const std::st
 	Texture cubeTexture{};
 
 	// Create the cube texture
-	VulkanRenderer::GetInstance().CreateCubeTexture(cubeTexture, filePaths);
+	VulkanObject::GetInstance().CreateCubeTexture(cubeTexture, filePaths);
 
 	// Create the descriptor object and give the cube texture by value
 	m_pDescriptorObject = std::make_unique<TextureDescriptorObject>();

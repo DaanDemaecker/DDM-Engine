@@ -6,7 +6,7 @@
 //File includes
 #include "Managers/TimeManager.h"
 #include <Includes/DXGIIncludes.h>
-#include "Vulkan/VulkanRenderer.h"
+#include "Vulkan/VulkanObject.h"
 #include "Vulkan/VulkanWrappers/GPUObject.h"
 
 // Standard library includes
@@ -27,7 +27,7 @@ DDM3::InfoComponent::InfoComponent()
 	{
 		DXGI_ADAPTER_DESC1 desc;
 		tmpDxgiAdapter->GetDesc1(&desc);
-		if (memcmp(&desc.AdapterLuid, VulkanRenderer::GetInstance().GetGPUObject()->GetDeviceLuid(), VK_LUID_SIZE) == 0)
+		if (memcmp(&desc.AdapterLuid, VulkanObject::GetInstance().GetGPUObject()->GetDeviceLuid(), VK_LUID_SIZE) == 0)
 		{
 			tmpDxgiAdapter->QueryInterface(IID_PPV_ARGS(&m_DxgiAdapter));
 		}

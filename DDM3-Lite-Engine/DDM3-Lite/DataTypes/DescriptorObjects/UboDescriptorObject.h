@@ -6,7 +6,7 @@
 
 // File includes
 #include "DescriptorObject.h"
-#include "../../Vulkan/VulkanRenderer.h"
+#include "Vulkan/VulkanObject.h"
 
 namespace DDM3
 {
@@ -109,7 +109,7 @@ namespace DDM3
 	inline void UboDescriptorObject<T>::SetupBuffers()
 	{
 		// Get reference to renderer
-		auto& renderer = VulkanRenderer::GetInstance();
+		auto& renderer = VulkanObject::GetInstance();
 		// Get amount of frames
 		auto frames = renderer.GetMaxFrames();
 
@@ -156,7 +156,7 @@ namespace DDM3
 	inline void UboDescriptorObject<T>::Cleanup()
 	{
 		// Get reference to renderer
-		auto& renderer = DDM3::VulkanRenderer::GetInstance();
+		auto& renderer = DDM3::VulkanObject::GetInstance();
 		// Get reference to device
 		auto device = renderer.GetDevice();
 

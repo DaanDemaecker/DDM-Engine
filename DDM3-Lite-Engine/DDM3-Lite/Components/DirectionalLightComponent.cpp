@@ -25,7 +25,7 @@ void DDM3::DirectionalLightComponent::OnGUI()
 
 void DDM3::DirectionalLightComponent::LateUpdate()
 {
-	UpdateBuffer(DDM3::VulkanRenderer::GetInstance().GetCurrentFrame());
+	UpdateBuffer(DDM3::VulkanObject::GetInstance().GetCurrentFrame());
 }
 
 void DDM3::DirectionalLightComponent::SetColor(glm::vec3& color)

@@ -1,5 +1,5 @@
 #include "MeshRenderComponent.h"
-#include "../Vulkan/VulkanRenderer.h"
+#include "Vulkan/VulkanObject.h"
 #include "../DataTypes/Materials/Material.h"
 #include "TransformComponent.h"
 #include "../Utils/Utils.h"
@@ -68,7 +68,7 @@ void DDM3::MeshRenderComponent::Render()
 		UpdateDescriptorSets();
 	}
 
-	auto frame{ VulkanRenderer::GetInstance().GetCurrentFrame() };
+	auto frame{ VulkanObject::GetInstance().GetCurrentFrame() };
 
 	UpdateUniformBuffer(frame);
 
@@ -83,7 +83,7 @@ void DDM3::MeshRenderComponent::OnGUI()
 void DDM3::MeshRenderComponent::CreateUniformBuffers()
 {
 	// Get reference to renderer
-	auto& renderer = VulkanRenderer::GetInstance();
+	auto& renderer = VulkanObject::GetInstance();
 	// Get amount of frames
 	auto frames = renderer.GetMaxFrames();
 
@@ -121,7 +121,7 @@ void DDM3::MeshRenderComponent::UpdateUniformBuffer(uint32_t frame)
 
 	m_Ubos[frame].model = translationMatrix * rotationMatrix * scalingMatrix;
 
-	VulkanRenderer::GetInstance().UpdateUniformBuffer(m_Ubos[frame]);
+	VulkanObject::GetInstance().UpdateUniformBuffer(m_Ubos[frame]);
 
 	m_pUboDescriptorObject->UpdateUboBuffer(m_Ubos[frame], frame);
 }
@@ -133,5 +133,5 @@ DDM3::PipelineWrapper* DDM3::MeshRenderComponent::GetPipeline()
 		return m_pMaterial->GetPipeline();
 	}
 
-	return VulkanRenderer::GetInstance().GetPipeline();
+	return VulkanObject::GetInstance().GetPipeline();
 }

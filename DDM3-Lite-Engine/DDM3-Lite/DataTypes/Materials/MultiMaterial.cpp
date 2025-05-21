@@ -70,7 +70,7 @@ void DDM3::MultiMaterial::UpdateDescriptorSets(std::vector<VkDescriptorSet>& des
 	}
 
 	// Add the descriptor object of the global light
-	descriptorObjectList.push_back(VulkanRenderer::GetInstance().GetLightDescriptor());
+	descriptorObjectList.push_back(VulkanObject::GetInstance().GetLightDescriptor());
 
 	descriptorObjectList.push_back(m_pMultiShaderBufferDescriptor.get());
 
@@ -158,7 +158,7 @@ void DDM3::MultiMaterial::AddSpecularTextures(std::initializer_list<const std::s
 
 void DDM3::MultiMaterial::UpdateShaderBuffer()
 {
-	auto& renderer{ DDM3::VulkanRenderer::GetInstance() };
+	auto& renderer{ DDM3::VulkanObject::GetInstance() };
 
 	for (int frame{}; frame < renderer.GetMaxFrames(); frame++)
 	{

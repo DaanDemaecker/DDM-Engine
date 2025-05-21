@@ -3,7 +3,7 @@
 // File includes
 #include "SkyBoxComponent.h"
 #include "../Utils/Utils.h"
-#include "../Vulkan/VulkanRenderer.h"
+#include "Vulkan/VulkanObject.h"
 #include "../DataTypes/Mesh.h"
 #include "../DataTypes/DescriptorObjects/TextureDescriptorObject.h"	
 #include "../DataTypes/Materials/CubeMapMaterial.h"
@@ -39,7 +39,7 @@ void DDM3::SkyBoxComponent::RenderSkyBox()
 	if (m_pMesh == nullptr)
 		return;
 
-	auto frame{ DDM3::VulkanRenderer::GetInstance().GetCurrentFrame()};
+	auto frame{ DDM3::VulkanObject::GetInstance().GetCurrentFrame()};
 
 	UpdateUniformBuffer(frame);
 

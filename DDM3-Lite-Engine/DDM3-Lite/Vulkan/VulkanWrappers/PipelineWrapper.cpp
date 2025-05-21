@@ -4,7 +4,7 @@
 #include "PipelineWrapper.h"
 
 // File includes
-#include "Vulkan/VulkanRenderer.h"
+#include "Vulkan/VulkanObject.h"
 
 #include "ShaderModuleWrapper.h"
 #include "DescriptorPoolWrapper.h"

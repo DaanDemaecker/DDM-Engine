@@ -33,16 +33,16 @@ namespace DDM3
     class DescriptorObject;
 
 
-    class VulkanRenderer final : public Singleton<VulkanRenderer>
+    class VulkanObject final : public Singleton<VulkanObject>
     {
     public:
-        ~VulkanRenderer();
+        ~VulkanObject();
 
-        VulkanRenderer(VulkanRenderer& other) = delete;
-        VulkanRenderer(VulkanRenderer&& other) = delete;
+        VulkanObject(VulkanObject& other) = delete;
+        VulkanObject(VulkanObject&& other) = delete;
 
-        VulkanRenderer& operator=(VulkanRenderer& other) = delete;
-        VulkanRenderer& operator=(VulkanRenderer&& other) = delete;
+        VulkanObject& operator=(VulkanObject& other) = delete;
+        VulkanObject& operator=(VulkanObject&& other) = delete;
 
         void Render();
 
@@ -125,8 +125,8 @@ namespace DDM3
 
     private:
         // Constructor
-        friend class Singleton<VulkanRenderer>;
-        VulkanRenderer();
+        friend class Singleton<VulkanObject>;
+        VulkanObject();
 
         const size_t m_MaxFramesInFlight{ 2 };
 

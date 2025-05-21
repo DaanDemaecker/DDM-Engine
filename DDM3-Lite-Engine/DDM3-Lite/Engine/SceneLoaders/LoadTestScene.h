@@ -1,4 +1,4 @@
-#include "../../Vulkan/VulkanRenderer.h"
+#include "Vulkan/VulkanObject.h"
 #include "../../Managers/SceneManager.h"
 
 #include "../../DataTypes/Materials/Material.h"
@@ -87,7 +87,7 @@ namespace LoadTestScene
 
 	void SetupPipelines()
 	{
-		auto& renderer{ DDM3::VulkanRenderer::GetInstance() };
+		auto& renderer{ DDM3::VulkanObject::GetInstance() };
 
 		renderer.AddGraphicsPipeline("Diffuse", { "Resources/Shaders/Diffuse.Vert.spv", "Resources/Shaders/Diffuse.Frag.spv" });
 		renderer.AddGraphicsPipeline("NormalMap", { "Resources/Shaders/NormalMap.Vert.spv", "Resources/Shaders/NormalMap.Frag.spv" });
@@ -235,19 +235,19 @@ namespace LoadTestScene
 			renderComponent->SetMesh(pMesh.get());
 
 
-			//auto texturedMaterial = std::make_shared<DDM3::TexturedMaterial>("Diffuse");
-			//
-			//for (auto& texture : pMesh->GetDiffuseTextureNames())
-			//{
-			//	texturedMaterial->AddTexture(texture);
-			//}
-			//
-			//auto diffuseUnshadedMaterial = std::make_shared<DDM3::TexturedMaterial>("DiffuseUnshaded");
-			//
-			//for (auto& texture : pMesh->GetDiffuseTextureNames())
-			//{
-			//	diffuseUnshadedMaterial->AddTexture(texture);
-			//}
+			auto texturedMaterial = std::make_shared<DDM3::TexturedMaterial>("Diffuse");
+			
+			for (auto& texture : pMesh->GetDiffuseTextureNames())
+			{
+				texturedMaterial->AddTexture(texture);
+			}
+			
+			auto diffuseUnshadedMaterial = std::make_shared<DDM3::TexturedMaterial>("DiffuseUnshaded");
+			
+			for (auto& texture : pMesh->GetDiffuseTextureNames())
+			{
+				diffuseUnshadedMaterial->AddTexture(texture);
+			}
 
 			auto defaultMaterial = std::make_shared<DDM3::Material>();
 
@@ -255,8 +255,8 @@ namespace LoadTestScene
 
 			auto pMaterialSwitcher = pGameObject->AddComponent<DDM3::MaterialSwitcher>();
 			pMaterialSwitcher->RegisterMaterial("Default", defaultMaterial);
-			//pMaterialSwitcher->RegisterMaterial("Diffuse", texturedMaterial);
-			//pMaterialSwitcher->RegisterMaterial("DiffuseUnshaded", diffuseUnshadedMaterial);
+			pMaterialSwitcher->RegisterMaterial("Diffuse", texturedMaterial);
+			pMaterialSwitcher->RegisterMaterial("DiffuseUnshaded", diffuseUnshadedMaterial);
 
 
 			switchManagerComponent->RegisterMaterialSwitcher(pMaterialSwitcher);
@@ -332,7 +332,7 @@ namespace LoadTestScene
 		const std::string fragShaderName{ configManager.GetString("SkyboxFragName") };
 
 		// Create the graphics pipeline for the skybox
-		DDM3::VulkanRenderer::GetInstance().AddGraphicsPipeline(configManager.GetString("SkyboxPipelineName"), {vertShaderName, fragShaderName}, false);
+		DDM3::VulkanObject::GetInstance().AddGraphicsPipeline(configManager.GetString("SkyboxPipelineName"), {vertShaderName, fragShaderName}, false);
 
 		auto pSkyBox{ pCamera->AddComponent<DDM3::SkyBoxComponent>() };
 

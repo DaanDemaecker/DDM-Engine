@@ -6,7 +6,7 @@
 // File includes
 #include "Managers/ConfigManager.h"
 
-#include "Vulkan/VulkanRenderer.h"
+#include "Vulkan/VulkanObject.h"
 
 std::shared_ptr<DDM3::Mesh> DDM3::ResourceManager::LoadMesh(std::string&& filePath)
 {

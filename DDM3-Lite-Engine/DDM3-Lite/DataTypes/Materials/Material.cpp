@@ -1,5 +1,5 @@
 #include "Material.h"
-#include "../../Vulkan/VulkanRenderer.h"
+#include "Vulkan/VulkanObject.h"
 #include "../../Utils/Utils.h"
 #include "../../Vulkan/VulkanWrappers/DescriptorPoolWrapper.h"
 #include "../../Includes/STBIncludes.h"
@@ -8,7 +8,7 @@
 DDM3::Material::Material(const std::string& pipelineName)
 {
 	// Get the requested pipeline from the renderer
-	m_pPipeline = VulkanRenderer::GetInstance().GetPipeline(pipelineName); 
+	m_pPipeline = VulkanObject::GetInstance().GetPipeline(pipelineName);
 }
 
 DDM3::PipelineWrapper* DDM3::Material::GetPipeline()
@@ -40,7 +40,7 @@ void DDM3::Material::UpdateDescriptorSets(std::vector<VkDescriptorSet>& descript
 	}
 
 	// Add the descriptor of the global light object
-	descriptorObjectList.push_back(VulkanRenderer::GetInstance().GetLightDescriptor());
+	descriptorObjectList.push_back(VulkanObject::GetInstance().GetLightDescriptor());
 
 	// Update descriptorsets
 	descriptorPool->UpdateDescriptorSets(descriptorSets, descriptorObjectList);
