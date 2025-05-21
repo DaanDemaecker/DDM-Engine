@@ -50,8 +50,7 @@ add_executable(${EXECUTABLE_NAME}
 "Engine/DDMModelLoader.cpp"
 "Components/MaterialSwitcher/MaterialSwitcher.cpp"
 "Components/MaterialSwitcher/MaterialSwitchManager.cpp"
-"Components/InfoComponent.cpp"
-"Vulkan/Renderers/SSAORenderer.cpp")
+"Components/InfoComponent.cpp")
 
 
 # Include directories specific to this target
