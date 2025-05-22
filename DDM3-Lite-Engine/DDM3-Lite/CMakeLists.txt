@@ -1,5 +1,6 @@
 # Create the executable
 add_executable(${EXECUTABLE_NAME}
+
 "BaseClasses/GameObject.cpp"
 "Components/CameraComponent.cpp"
 "Components/DirectionalLightComponent.cpp"
@@ -21,7 +22,9 @@ add_executable(${EXECUTABLE_NAME}
 "Managers/ConfigManager.cpp"
 "Managers/SceneManager.cpp"
 "Managers/TimeManager.cpp"
+
 "Utils/Utils.cpp"
+
 "Vulkan/SpirVReflect/spirv_reflect.cpp"
 "Vulkan/VulkanManagers/BufferManager.cpp"
 "Vulkan/VulkanManagers/CommandpoolManager.cpp"
@@ -40,6 +43,7 @@ add_executable(${EXECUTABLE_NAME}
 "Vulkan/VulkanWrappers/SwapchainWrapper.cpp"
 "Vulkan/VulkanObject.cpp"
 "Vulkan/VulkanUtils.cpp"
+"Vulkan/Renderers/DefaultRenderer.cpp"
 "DataTypes/Materials/MultiMaterial.cpp"
 "Components/ModelLoaderComponent.cpp"
 "Managers/ResourceManager.cpp"
@@ -50,7 +54,8 @@ add_executable(${EXECUTABLE_NAME}
 "Engine/DDMModelLoader.cpp"
 "Components/MaterialSwitcher/MaterialSwitcher.cpp"
 "Components/MaterialSwitcher/MaterialSwitchManager.cpp"
-"Components/InfoComponent.cpp")
+"Components/InfoComponent.cpp"
+)
 
 
 # Include directories specific to this target

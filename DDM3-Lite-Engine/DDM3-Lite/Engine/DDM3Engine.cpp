@@ -26,13 +26,13 @@ DDM3::DDM3Engine::DDM3Engine()
 	DDM3::Window::GetInstance();
 
 	auto& renderer{ DDM3::VulkanObject::GetInstance() };
-
-	renderer.AddDefaultPipeline();
+	
+	renderer.Init();
 }
 
 DDM3::DDM3Engine::~DDM3Engine()
 {
-
+	VulkanObject::GetInstance().Terminate();
 }
 
 void DDM3::DDM3Engine::Run(const std::function<void()>& load)

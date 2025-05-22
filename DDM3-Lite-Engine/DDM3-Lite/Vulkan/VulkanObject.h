@@ -8,12 +8,14 @@
 // File includes
 #include "Engine/Singleton.h"
 #include "DataTypes/Structs.h"
+#include "Vulkan/Renderers/DefaultRenderer.h"
 
 // Standard library includes
 #include <iostream>
 #include <tuple>
 #include <map>
 #include <memory>
+#include <vector>
 
 namespace DDM3
 {
@@ -44,6 +46,10 @@ namespace DDM3
         VulkanObject& operator=(VulkanObject& other) = delete;
         VulkanObject& operator=(VulkanObject&& other) = delete;
 
+        void Init();
+
+        void Terminate();
+
         void Render();
 
         // Add a new graphics pipeline
@@ -58,6 +64,8 @@ namespace DDM3
         size_t GetMaxFrames() const { return m_MaxFramesInFlight; }
 
         VkDevice GetDevice();
+        
+        VkPhysicalDevice GetPhysicalDevice();
 
         VkImageView& GetDefaultImageView();
 
@@ -116,12 +124,18 @@ namespace DDM3
         // Get a pointer to the DescriptorObject of the global light
         DescriptorObject* GetLightDescriptor();
 
-
-        void AddDefaultPipeline();
-
 		GPUObject* GetGPUObject() const { return m_pGpuObject.get(); }
 
         VkRenderPass GetRenderPass() const;
+
+        int GetCurrentFrame();
+
+        VkSurfaceKHR GetSurface();
+
+
+       const QueueObject& GetQueueObject();
+
+       VkInstance GetVulkanInstance();
 
     private:
         // Constructor
@@ -131,9 +145,8 @@ namespace DDM3
         const size_t m_MaxFramesInFlight{ 2 };
 
         //----Member variables----
-
-        // ImGui Wrapper
-        std::unique_ptr<ImGuiWrapper> m_pImGuiWrapper{};
+        // Renderer
+        std::unique_ptr<DefaultRenderer> m_pDefaultRenderer{};
 
         // Instance wrapper
         std::unique_ptr<InstanceWrapper> m_pInstanceWrapper{};
@@ -143,32 +156,6 @@ namespace DDM3
 
         // GPU object
         std::unique_ptr<GPUObject> m_pGpuObject{};
-
-        // Sync object manager
-        std::unique_ptr<SyncObjectManager> m_pSyncObjectManager{};
-
-        // CommandpoolManager
-        std::unique_ptr<CommandpoolManager> m_pCommandPoolManager{};
-
-        // BufferManager
-        std::unique_ptr<BufferManager> m_pBufferManager{};
-
-
-        // ImageManager
-        std::unique_ptr<ImageManager> m_pImageManager{};
-
-        // SwapchainWrapper
-        std::unique_ptr<SwapchainWrapper> m_pSwapchainWrapper{};
-        
-        // RenderpassWrapper
-        std::unique_ptr<RenderpassWrapper> m_pRenderpassWrapper{};
-
-        // Pipeline managar
-        std::unique_ptr<PipelineManager> m_pPipelineManager{};
-
-
-        //--MultiSampling--
-        VkSampleCountFlagBits m_MsaaSamples = VK_SAMPLE_COUNT_1_BIT;
 
 
         //--Current frame--
@@ -182,22 +169,10 @@ namespace DDM3
         //----Member Functions----
         //--- Cleanup ---
         void CleanupVulkan();
-        void CleanupImGui();
 
         //---Initialization---
         void InitVulkan();
-        void InitImGui();
 
-        //--Swapchain--
-        void RecreateSwapChain();
-
-        //--CommandBuffers--
-        void RecordCommandBuffer(VkCommandBuffer& commandBuffer, uint32_t imageIndex);
-
-
-        //--General helpers--
-        VkCommandBuffer BeginSingleTimeCommands();
-        void EndSingleTimeCommands(VkCommandBuffer comandBuffer);
     };
 }
 
