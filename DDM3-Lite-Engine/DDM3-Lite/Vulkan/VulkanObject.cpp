@@ -34,6 +34,8 @@
 #include "Components/TransformComponent.h"
 #include "Components/DirectionalLightComponent.h"
 
+#include "Vulkan/VulkanWrappers/VulkanCore.h"
+
 
 // Standard library includes
 #include <set>
@@ -46,18 +48,13 @@ DDM3::VulkanObject::VulkanObject()
 
 DDM3::VulkanObject::~VulkanObject()
 {
-	m_pGpuObject->WaitIdle();
-
-	m_pSurfaceWrapper->Cleanup(GetVulkanInstance());
+	
 }
 
 void DDM3::VulkanObject::InitVulkan()
 {
-	m_pInstanceWrapper = std::make_unique<InstanceWrapper>();
-
-	m_pSurfaceWrapper = std::make_unique<SurfaceWrapper>(m_pInstanceWrapper->GetInstance());
-
-	m_pGpuObject = std::make_unique<GPUObject>(m_pInstanceWrapper.get(), m_pSurfaceWrapper->GetSurface());
+	// Initialize vulkan core
+	m_pVulkanCore = std::make_unique<VulkanCore>();
 }
 
 void DDM3::VulkanObject::AddGraphicsPipeline(const std::string& pipelineName, std::initializer_list<const std::string>&& filePaths, bool hasDepthStencil)
@@ -68,12 +65,12 @@ void DDM3::VulkanObject::AddGraphicsPipeline(const std::string& pipelineName, st
 
 VkDevice DDM3::VulkanObject::GetDevice()
 {
-	return m_pGpuObject->GetDevice();
+	return m_pVulkanCore->GetDevice();
 }
 
 VkPhysicalDevice DDM3::VulkanObject::GetPhysicalDevice()
 {
-	return m_pGpuObject->GetPhysicalDevice();
+	return m_pVulkanCore->GetPhysicalDevice();
 }
 
 VkImageView& DDM3::VulkanObject::GetDefaultImageView()
@@ -98,7 +95,6 @@ void DDM3::VulkanObject::Init()
 
 void DDM3::VulkanObject::Terminate()
 {
-	m_pGpuObject->WaitIdle();
 	m_pDefaultRenderer = nullptr;
 }
 
@@ -142,6 +138,11 @@ DDM3::DescriptorObject* DDM3::VulkanObject::GetLightDescriptor()
 	return SceneManager::GetInstance().GetGlobalLight()->GetDescriptorObject();
 }
 
+DDM3::GPUObject* DDM3::VulkanObject::GetGPUObject() const
+{
+	return nullptr;
+}
+
 VkRenderPass DDM3::VulkanObject::GetRenderPass() const
 {
 	return m_pDefaultRenderer->GetRenderpass();
@@ -154,17 +155,17 @@ int DDM3::VulkanObject::GetCurrentFrame()
 
 VkSurfaceKHR DDM3::VulkanObject::GetSurface()
 {
-	return m_pSurfaceWrapper->GetSurface();
+	return m_pVulkanCore->GetSurface();
 }
 
 const DDM3::QueueObject& DDM3::VulkanObject::GetQueueObject()
 {
-	return m_pGpuObject->GetQueueObject();
+	return m_pVulkanCore->GetQueueObject();
 }
 
 VkInstance DDM3::VulkanObject::GetVulkanInstance()
 {
-	return m_pInstanceWrapper->GetInstance();
+	return m_pVulkanCore->GetVulkanInstance();
 }
 
 void DDM3::VulkanObject::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory)

@@ -9,13 +9,17 @@
 
 namespace DDM3
 {
+	// Class forward declarations
+	class InstanceWrapper;
+
 	class SurfaceWrapper final
 	{
 	public:
-		// Constructor
-		// Parameters:
-		//     instance: The handle of the Vulkan instance
-		SurfaceWrapper(VkInstance instance);
+		/// <summary>
+		/// Constructor
+		/// </summary>
+		/// <param name="instance: ">Pointer to an instance wrapper object</param>
+		SurfaceWrapper(InstanceWrapper* instance);
 
 		// Delete default constructor
 		SurfaceWrapper() = delete;
@@ -31,19 +35,21 @@ namespace DDM3
 
 		// Get the handle of the surface
 		VkSurfaceKHR GetSurface() const { return m_Surface; }
-
-		// Clean up allocated objects
-		// Parameters:
-		//     instance: The handle of the Vulkan instance
-		void Cleanup(VkInstance instance);
 	private:
 		// Handle of the VkSurfaceKHR
 		VkSurfaceKHR m_Surface{};
+
+		InstanceWrapper* m_Instance;
 
 		// Initialize the VkSurfaceKHR
 		// Parameters:
 		//     instance: The handle of the Vulkan instance
 		void CreateSurface(VkInstance instance);
+
+		// Clean up allocated objects
+		// Parameters:
+		//     instance: The handle of the Vulkan instance
+		void Cleanup(VkInstance instance);
 	};
 }
 

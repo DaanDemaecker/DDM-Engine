@@ -39,7 +39,7 @@ add_executable(${EXECUTABLE_NAME}
 "Vulkan/VulkanWrappers/PipelineWrapper"
 "Vulkan/VulkanWrappers/RenderpassWrapper.cpp"
 "Vulkan/VulkanWrappers/ShaderModuleWrapper.cpp"
-"Vulkan/VulkanWrappers/SurfaceWrapper.cpp"
+"Vulkan/VulkanWrappers/SurfaceWrapper.cpp" 
 "Vulkan/VulkanWrappers/SwapchainWrapper.cpp"
 "Vulkan/VulkanObject.cpp"
 "Vulkan/VulkanUtils.cpp"
@@ -55,7 +55,7 @@ add_executable(${EXECUTABLE_NAME}
 "Components/MaterialSwitcher/MaterialSwitcher.cpp"
 "Components/MaterialSwitcher/MaterialSwitchManager.cpp"
 "Components/InfoComponent.cpp"
-)
+ "Vulkan/VulkanWrappers/VulkanCore.cpp")
 
 
 # Include directories specific to this target

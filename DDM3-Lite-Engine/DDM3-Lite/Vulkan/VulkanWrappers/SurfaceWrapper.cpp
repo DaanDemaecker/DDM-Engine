@@ -2,23 +2,25 @@
 
 // Header include
 #include "SurfaceWrapper.h"
-#include "Vulkan/VulkanObject.h"
 
 // File includes
+#include "Vulkan/VulkanObject.h"
 #include "Engine/Window.h"
+#include "Vulkan/VulkanWrappers/InstanceWrapper.h"
 
 // Standard library includes
 #include <stdexcept>
 
-DDM3::SurfaceWrapper::SurfaceWrapper(VkInstance instance)
+DDM3::SurfaceWrapper::SurfaceWrapper(InstanceWrapper* instance)
 {
+	m_Instance = instance;
 	// Create the surface
-	CreateSurface(instance);
+	CreateSurface(instance->GetInstance());
 }
 
 DDM3::SurfaceWrapper::~SurfaceWrapper()
 {
-	Cleanup(VulkanObject::GetInstance().GetVulkanInstance());
+	Cleanup(m_Instance->GetInstance());
 }
 
 void DDM3::SurfaceWrapper::Cleanup(VkInstance instance)

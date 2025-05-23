@@ -34,6 +34,8 @@ namespace DDM3
     class PipelineWrapper;
     class DescriptorObject;
 
+    class VulkanCore;
+
 
     class VulkanObject final : public Singleton<VulkanObject>
     {
@@ -124,7 +126,7 @@ namespace DDM3
         // Get a pointer to the DescriptorObject of the global light
         DescriptorObject* GetLightDescriptor();
 
-		GPUObject* GetGPUObject() const { return m_pGpuObject.get(); }
+        GPUObject* GetGPUObject() const;
 
         VkRenderPass GetRenderPass() const;
 
@@ -148,14 +150,7 @@ namespace DDM3
         // Renderer
         std::unique_ptr<DefaultRenderer> m_pDefaultRenderer{};
 
-        // Instance wrapper
-        std::unique_ptr<InstanceWrapper> m_pInstanceWrapper{};
-
-        // GPU object
-        std::unique_ptr<GPUObject> m_pGpuObject{};
-
-        // Surface wrapper
-        std::unique_ptr<SurfaceWrapper> m_pSurfaceWrapper{};
+        std::unique_ptr<VulkanCore> m_pVulkanCore{};
 
 
         //--Current frame--
