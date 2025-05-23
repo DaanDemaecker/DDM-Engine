@@ -6,6 +6,7 @@
 // File includes
 #include "Vulkan/VulkanUtils.h"
 #include "Vulkan/VulkanWrappers/GPUObject.h"
+#include "Vulkan/VulkanObject.h"
 
 // Standard library includes
 #include <stdexcept>
@@ -16,6 +17,11 @@ DDM3::CommandpoolManager::CommandpoolManager(GPUObject* pGPUObject, VkSurfaceKHR
 	CreateCommandPool(pGPUObject, surface);
 	// Initialize the commandbuffers
 	CreateCommandBuffers(pGPUObject->GetDevice(), frames);
+}
+
+DDM3::CommandpoolManager::~CommandpoolManager()
+{
+	Cleanup(VulkanObject::GetInstance().GetDevice());
 }
 
 void DDM3::CommandpoolManager::Cleanup(VkDevice device)

@@ -30,7 +30,7 @@ namespace DDM3
 		CommandpoolManager(GPUObject* pGPUObject, VkSurfaceKHR surface, uint32_t frames);
 
 		// Default destructor
-		~CommandpoolManager() = default;
+		~CommandpoolManager();
 
 		// Delete the move and copy functions
 		CommandpoolManager(CommandpoolManager& other) = delete;

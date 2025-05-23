@@ -37,7 +37,7 @@ namespace DDM3
 			std::initializer_list<const std::string>& filePaths, bool hasDepthStencil = true);
 
 		// Default destructor
-		~PipelineWrapper() = default;
+		~PipelineWrapper();
 
 		// Delete copy and move functions
 		PipelineWrapper(PipelineWrapper& other) = delete;
@@ -45,10 +45,6 @@ namespace DDM3
 		PipelineWrapper& operator=(PipelineWrapper& other) = delete;
 		PipelineWrapper& operator=(PipelineWrapper&& other) = delete;
 
-		// Clean up all allocated objects
-		// Parameters:
-		//     device: handle of the logical device
-		void Cleanup(VkDevice device);
 
 		// Get a the handle of the pipeline
 		VkPipeline GetPipeline() const { return m_Pipeline; }
@@ -135,6 +131,11 @@ namespace DDM3
 		void SetPipelineLayoutCreateInfo(VkPipelineLayoutCreateInfo& pipelineLayoutInfo,
 			std::vector<VkPushConstantRange>& pushConstantRanges,
 			std::vector<std::unique_ptr<DDM3::ShaderModuleWrapper>>& shaderModules);
+		
+		// Clean up all allocated objects
+		// Parameters:
+		//     device: handle of the logical device
+		void Cleanup(VkDevice device);
 	};
 }
 

@@ -2,6 +2,7 @@
 
 // Header include
 #include "SurfaceWrapper.h"
+#include "Vulkan/VulkanObject.h"
 
 // File includes
 #include "Engine/Window.h"
@@ -15,10 +16,19 @@ DDM3::SurfaceWrapper::SurfaceWrapper(VkInstance instance)
 	CreateSurface(instance);
 }
 
+DDM3::SurfaceWrapper::~SurfaceWrapper()
+{
+	Cleanup(VulkanObject::GetInstance().GetVulkanInstance());
+}
+
 void DDM3::SurfaceWrapper::Cleanup(VkInstance instance)
 {
-	// Destroy the surface
-	vkDestroySurfaceKHR(instance, m_Surface, nullptr);
+	if (m_Surface != VK_NULL_HANDLE)
+	{
+		// Destroy the surface
+		vkDestroySurfaceKHR(instance, m_Surface, nullptr);
+		m_Surface = VK_NULL_HANDLE;
+	}
 }
 
 void DDM3::SurfaceWrapper::CreateSurface(VkInstance instance)

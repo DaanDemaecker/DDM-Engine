@@ -22,6 +22,10 @@ DDM3::GPUObject::GPUObject(InstanceWrapper* pInstanceWrapper, VkSurfaceKHR surfa
 	CreateLogicalDevice(pInstanceWrapper, surface);
 }
 
+DDM3::GPUObject::~GPUObject()
+{
+	CleanUp();
+}
 
 
 void DDM3::GPUObject::CleanUp()

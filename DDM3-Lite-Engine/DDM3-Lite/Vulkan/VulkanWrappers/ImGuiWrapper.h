@@ -22,7 +22,7 @@ namespace DDM3
 			VkRenderPass renderPass, VkCommandBuffer commandBuffer);
 
 		// Default destructor
-		~ImGuiWrapper() = default;
+		~ImGuiWrapper();
 
 		// Delete default constructor
 		ImGuiWrapper() = delete;

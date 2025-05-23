@@ -67,12 +67,26 @@ namespace DDM3
 		//     device: handle to VkDevice
 		virtual void Cleanup(VkDevice device)
 		{
-			// Destroy the image view
-			vkDestroyImageView(device, imageView, nullptr);
-			// Destroy the image
-			vkDestroyImage(device, image, nullptr);
-			// Free the memory
-			vkFreeMemory(device, imageMemory, nullptr);
+			if (imageView != VK_NULL_HANDLE)
+			{
+				// Destroy the image view
+				vkDestroyImageView(device, imageView, nullptr);
+				imageView = VK_NULL_HANDLE;
+			}
+
+			if (image != VK_NULL_HANDLE)
+			{
+				// Destroy the image
+				vkDestroyImage(device, image, nullptr);
+				image = VK_NULL_HANDLE;
+			}
+
+			if (imageMemory != VK_NULL_HANDLE)
+			{
+				// Free the memory
+				vkFreeMemory(device, imageMemory, nullptr);
+				imageMemory = VK_NULL_HANDLE;
+			}
 		}
 	};
 

@@ -28,16 +28,13 @@ namespace DDM3
 		GPUObject() = delete;
 
 		// Default destructor
-		~GPUObject() = default;
+		~GPUObject();
 
 		// Delete copy and move functions
 		GPUObject(GPUObject& other) = delete;
 		GPUObject(GPUObject&& other) = delete;
 		GPUObject& operator=(GPUObject& other) = delete;
 		GPUObject& operator=(GPUObject&& other) = delete;
-
-		// Clean up the devices
-		void CleanUp();
 
 		// Wait untile the device is idle
 		void WaitIdle();
@@ -86,6 +83,9 @@ namespace DDM3
 
 		// Initialize the logical device
 		void CreateLogicalDevice(InstanceWrapper* pInstanceWrapper, VkSurfaceKHR surface);
+
+		// Clean up the devices
+		void CleanUp();
 	};
 }
 

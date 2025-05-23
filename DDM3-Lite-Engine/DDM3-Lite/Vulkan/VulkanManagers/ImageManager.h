@@ -33,7 +33,7 @@ namespace DDM3
 		ImageManager() = delete;
 
 		// Default destructor
-		~ImageManager() = default;
+		~ImageManager();
 
 		// Delete move and copy functions
 		ImageManager(ImageManager& other) = delete;

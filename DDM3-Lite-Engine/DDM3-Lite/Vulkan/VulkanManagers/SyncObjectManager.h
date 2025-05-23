@@ -25,7 +25,7 @@ namespace DDM3
 		SyncObjectManager(VkDevice device, uint32_t maxFrames);
 
 		// Default destructor
-		~SyncObjectManager() = default;
+		~SyncObjectManager();
 
 		// Delete copy and move functions
 		SyncObjectManager(SyncObjectManager& other) = delete;

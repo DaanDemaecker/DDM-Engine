@@ -25,7 +25,7 @@ namespace DDM3
 		RenderpassWrapper() = delete;
 
 		// Default destructor
-		~RenderpassWrapper() = default;
+		~RenderpassWrapper();
 
 		// Delete copy and move functions
 		RenderpassWrapper(RenderpassWrapper& other) = delete;
@@ -36,7 +36,7 @@ namespace DDM3
 		// Clean up allocated objects
 		// Parameters:
 		//     device: handle of the VkDevice
-		void cleanup(VkDevice device);
+		void Cleanup(VkDevice device);
 
 		// Get the handle of the renderpass
 		VkRenderPass GetRenderpass() const { return m_RenderPass; }

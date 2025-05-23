@@ -7,6 +7,7 @@
 #include "Managers/ConfigManager.h"
 #include "Vulkan/VulkanWrappers/PipelineWrapper.h"
 #include "Vulkan/VulkanWrappers/DescriptorPoolWrapper.h"
+#include "Vulkan/VulkanObject.h"
 
 DDM3::PipelineManager::PipelineManager()
 {
@@ -14,16 +15,6 @@ DDM3::PipelineManager::PipelineManager()
 
 DDM3::PipelineManager::~PipelineManager()
 {
-}
-
-void DDM3::PipelineManager::Cleanup(VkDevice device)
-{
-	// Loop trough all the pipelines
-	for (auto& pipeline : m_GraphicPipelines)
-	{
-		// Call cleanup function
-		pipeline.second->Cleanup(device);
-	}
 }
 
 void DDM3::PipelineManager::AddDefaultPipeline(VkDevice device, VkRenderPass renderPass, VkSampleCountFlagBits sampleCount)
@@ -51,7 +42,7 @@ void DDM3::PipelineManager::AddGraphicsPipeline(VkDevice device, VkRenderPass re
 	// Check if pipeline already exists, if it does, delete it
 	if (m_GraphicPipelines.contains(pipelineName))
 	{
-		m_GraphicPipelines[pipelineName]->Cleanup(device);
+		m_GraphicPipelines[pipelineName] = nullptr;
 	}
 
 	// Create a new pipeline in the correct spot in the map

@@ -69,11 +69,6 @@ namespace DDM3
 		//     name: the name of the requested pipeline
 		PipelineWrapper* GetPipeline(const std::string& name);
 
-		// Clean up everything
-		// Parameters:
-		//     device: handle of the VkDevice
-		void Cleanup(VkDevice device);
-
 	private:
 		// A map of all the graphics pipelines
 		// A string is used to as key for the pipelines

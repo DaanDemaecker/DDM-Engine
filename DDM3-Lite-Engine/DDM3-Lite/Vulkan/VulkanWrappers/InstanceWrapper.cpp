@@ -92,9 +92,13 @@ DDM3::InstanceWrapper::~InstanceWrapper()
 	{
 		DestroyDebugUtilsMessegerEXT(m_Instance, m_DebugMessenger, nullptr);
 	}
-
-	// Destroy instance
-	vkDestroyInstance(m_Instance, nullptr);
+	
+	if (m_Instance != VK_NULL_HANDLE)
+	{
+		// Destroy instance
+		vkDestroyInstance(m_Instance, nullptr);
+		m_Instance = VK_NULL_HANDLE;
+	}
 }
 
 void DDM3::InstanceWrapper::SetupApplicationInfo(VkApplicationInfo& appInfo, std::string& applicationName, std::string& engineName)

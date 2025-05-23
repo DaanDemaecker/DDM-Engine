@@ -12,6 +12,7 @@
 #include "Vulkan/VulkanManagers//ImageManager.h"
 
 #include "Vulkan/VulkanUtils.h"
+#include "Vulkan/VulkanObject.h"
 
 // Standard library includes
 #include <stdexcept>
@@ -31,6 +32,7 @@ DDM3::SwapchainWrapper::SwapchainWrapper(GPUObject* pGPUObject, VkSurfaceKHR sur
 
 DDM3::SwapchainWrapper::~SwapchainWrapper()
 {
+	Cleanup(VulkanObject::GetInstance().GetDevice());
 }
 
 void DDM3::SwapchainWrapper::SetupImageViews(GPUObject* pGPUObject, DDM3::ImageManager* pImageManager,
@@ -183,8 +185,11 @@ void DDM3::SwapchainWrapper::Cleanup(VkDevice device)
 	// Loop trough the amount of image views
 	for (size_t i = 0; i < m_SwapChainImageViews.size(); ++i)
 	{
-		// Destroy the image view
-		vkDestroyImageView(device, m_SwapChainImageViews[i], nullptr);
+		if (m_SwapChainImageViews[i] != VK_NULL_HANDLE)
+		{
+			// Destroy the image view
+			vkDestroyImageView(device, m_SwapChainImageViews[i], nullptr);
+		}
 	}
 
 	// Destroy the swapchain

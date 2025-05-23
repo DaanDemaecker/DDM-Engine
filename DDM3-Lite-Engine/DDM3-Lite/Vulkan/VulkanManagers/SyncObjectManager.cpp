@@ -3,6 +3,9 @@
 // Header include
 #include "SyncObjectManager.h"
 
+// File includes
+#include "Vulkan/VulkanObject.h"
+
 // Standard library includes
 #include <stdexcept>
 
@@ -10,6 +13,11 @@ DDM3::SyncObjectManager::SyncObjectManager(VkDevice device, uint32_t maxFrames)
 {
 	// Initialize the sync objects
 	CreateSyncObjects(device, maxFrames);
+}
+
+DDM3::SyncObjectManager::~SyncObjectManager()
+{
+	Cleanup(VulkanObject::GetInstance().GetDevice());
 }
 
 void DDM3::SyncObjectManager::Cleanup(VkDevice device)

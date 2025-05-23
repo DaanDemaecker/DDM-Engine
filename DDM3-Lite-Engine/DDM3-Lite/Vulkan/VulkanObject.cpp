@@ -47,6 +47,8 @@ DDM3::VulkanObject::VulkanObject()
 DDM3::VulkanObject::~VulkanObject()
 {
 	m_pGpuObject->WaitIdle();
+
+	m_pSurfaceWrapper->Cleanup(GetVulkanInstance());
 }
 
 void DDM3::VulkanObject::InitVulkan()
@@ -96,6 +98,7 @@ void DDM3::VulkanObject::Init()
 
 void DDM3::VulkanObject::Terminate()
 {
+	m_pGpuObject->WaitIdle();
 	m_pDefaultRenderer = nullptr;
 }
 

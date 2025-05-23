@@ -25,14 +25,15 @@ DDM3::DDM3Engine::DDM3Engine()
 	// Create the window with the given width and height
 	DDM3::Window::GetInstance();
 
-	auto& renderer{ DDM3::VulkanObject::GetInstance() };
+	auto& vulkanObject{ DDM3::VulkanObject::GetInstance() };
 	
-	renderer.Init();
+	vulkanObject.Init();
 }
 
 DDM3::DDM3Engine::~DDM3Engine()
 {
 	VulkanObject::GetInstance().Terminate();
+
 }
 
 void DDM3::DDM3Engine::Run(const std::function<void()>& load)

@@ -23,7 +23,7 @@ namespace DDM3
 		ImageViewManager() = delete;
 
 		// Dafault destructor
-		~ImageViewManager() = default;
+		~ImageViewManager();
 
 		// Delete copy and move functions
 		ImageViewManager(ImageViewManager& other) = delete;

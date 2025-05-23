@@ -7,12 +7,18 @@
 #include "ImageManager.h"
 #include "Vulkan/VulkanUtils.h"
 #include "Vulkan/VulkanWrappers/GPUObject.h"
+#include "Vulkan/VulkanObject.h"
 
 
 DDM3::ImageViewManager::ImageViewManager(VkSampleCountFlagBits msaaSamples)
 // Initialize max amount of samples per pixel
 	:m_MsaaSamples{ msaaSamples }
 {
+}
+
+DDM3::ImageViewManager::~ImageViewManager()
+{
+	Cleanup(VulkanObject::GetInstance().GetDevice());
 }
 
 void DDM3::ImageViewManager::Cleanup(VkDevice device)

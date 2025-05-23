@@ -32,8 +32,8 @@ namespace DDM3
 		// Delete default constructor
 		DescriptorPoolWrapper() = delete;
 
-		// Standard descriptor
-		~DescriptorPoolWrapper() = default;
+		// Destructor
+		~DescriptorPoolWrapper();
 
 		// Delete copy and move functions
 		DescriptorPoolWrapper(DescriptorPoolWrapper& other) = delete;

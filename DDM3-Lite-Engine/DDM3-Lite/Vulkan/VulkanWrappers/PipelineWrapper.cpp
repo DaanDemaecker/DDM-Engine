@@ -20,16 +20,36 @@ DDM3::PipelineWrapper::PipelineWrapper(VkDevice device, VkRenderPass renderPass,
 	CreatePipeline(device, renderPass, sampleCount, filePaths, hasDepthStencil);
 }
 
+DDM3::PipelineWrapper::~PipelineWrapper()
+{
+	Cleanup(VulkanObject::GetInstance().GetDevice());
+}
+
 void DDM3::PipelineWrapper::Cleanup(VkDevice device)
 {
 	// Clean up the descriptor pool
 	m_pDescriptorPool->Cleanup(device);
-	// Destroy the pipeline
-	vkDestroyPipeline(device, m_Pipeline, nullptr);
-	//Destroy the pipeline layout
-	vkDestroyPipelineLayout(device, m_PipelineLayout, nullptr);
-	// Destroy the descriptor layout
-	vkDestroyDescriptorSetLayout(device, m_DescriptorSetLayout, nullptr);
+
+	if (m_Pipeline != VK_NULL_HANDLE)
+	{
+		// Destroy the pipeline
+		vkDestroyPipeline(device, m_Pipeline, nullptr);
+		m_Pipeline = VK_NULL_HANDLE;
+	}
+
+	if (m_PipelineLayout != VK_NULL_HANDLE)
+	{
+		//Destroy the pipeline layout
+		vkDestroyPipelineLayout(device, m_PipelineLayout, nullptr);
+		m_PipelineLayout = VK_NULL_HANDLE;
+	}
+
+	if (m_DescriptorSetLayout != VK_NULL_HANDLE)
+	{
+		// Destroy the descriptor layout
+		vkDestroyDescriptorSetLayout(device, m_DescriptorSetLayout, nullptr);
+		m_DescriptorSetLayout = VK_NULL_HANDLE;
+	}
 }
 
 DDM3::DescriptorPoolWrapper* DDM3::PipelineWrapper::GetDescriptorPool()

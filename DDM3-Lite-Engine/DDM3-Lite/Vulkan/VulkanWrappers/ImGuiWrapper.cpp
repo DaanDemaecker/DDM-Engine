@@ -40,6 +40,11 @@ DDM3::ImGuiWrapper::ImGuiWrapper(ImGui_ImplVulkan_InitInfo init_info, VkDevice d
 	ImGui_ImplVulkan_CreateFontsTexture(commandBuffer);
 }
 
+DDM3::ImGuiWrapper::~ImGuiWrapper()
+{
+	Cleanup(VulkanObject::GetInstance().GetDevice());
+}
+
 void DDM3::ImGuiWrapper::Cleanup(VkDevice device)
 {
 	// Shut down vulkan implementation

@@ -151,11 +151,11 @@ namespace DDM3
         // Instance wrapper
         std::unique_ptr<InstanceWrapper> m_pInstanceWrapper{};
 
-        // Surface wrapper
-        std::unique_ptr<SurfaceWrapper> m_pSurfaceWrapper{};
-
         // GPU object
         std::unique_ptr<GPUObject> m_pGpuObject{};
+
+        // Surface wrapper
+        std::unique_ptr<SurfaceWrapper> m_pSurfaceWrapper{};
 
 
         //--Current frame--
@@ -167,8 +167,6 @@ namespace DDM3
 
 
         //----Member Functions----
-        //--- Cleanup ---
-        void CleanupVulkan();
 
         //---Initialization---
         void InitVulkan();

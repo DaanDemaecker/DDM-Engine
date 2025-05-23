@@ -21,7 +21,7 @@ namespace DDM3
 		SurfaceWrapper() = delete;
 
 		// Default destructor
-		~SurfaceWrapper() = default;
+		~SurfaceWrapper();
 
 		// Delete copy and move functions
 		SurfaceWrapper(SurfaceWrapper& other) = delete;

@@ -119,9 +119,6 @@ namespace DDM3
 		// Pointer to the buffer manager
 		std::unique_ptr<BufferManager> m_pBufferManager{};
 
-		// Pointer to the ImGui wrapper
-		std::unique_ptr<ImGuiWrapper> m_pImGuiWrapper{};
-
 		// Pointer to thep pipeline manager
 		std::unique_ptr<PipelineManager> m_pPipelineManager{};
 
@@ -139,6 +136,9 @@ namespace DDM3
 
 		// Pointer to the sync object manager
 		std::unique_ptr<SyncObjectManager> m_pSyncObjectManager{};
+
+		// Pointer to the ImGui wrapper
+		std::unique_ptr<ImGuiWrapper> m_pImGuiWrapper{};
 
 		void InitImgui();
 

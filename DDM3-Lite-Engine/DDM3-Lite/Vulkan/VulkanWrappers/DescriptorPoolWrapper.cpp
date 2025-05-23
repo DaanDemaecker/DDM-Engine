@@ -22,14 +22,23 @@ DDM3::DescriptorPoolWrapper::DescriptorPoolWrapper(std::vector<std::unique_ptr<D
 	InitDescriptorPool();
 }
 
+DDM3::DescriptorPoolWrapper::~DescriptorPoolWrapper()
+{
+	Cleanup(VulkanObject::GetInstance().GetDevice());
+}
+
 
 void DDM3::DescriptorPoolWrapper::Cleanup(VkDevice device)
 {
-	// Destroy the descriptorPool
-	vkDestroyDescriptorPool(device, m_DescriptorPool, nullptr);
+	if (m_DescriptorPool != VK_NULL_HANDLE)
+	{
+		// Destroy the descriptorPool
+		vkDestroyDescriptorPool(device, m_DescriptorPool, nullptr);
+		m_DescriptorPool = VK_NULL_HANDLE;
 
-	// Clear the vector of moddels
-	m_pModels.clear();
+		// Clear the vector of moddels
+		m_pModels.clear();
+	}
 }
 
 void DDM3::DescriptorPoolWrapper::AddModel(MeshRenderComponent* pModel)

@@ -6,6 +6,7 @@
 // File includes
 #include "Includes/STBIncludes.h"
 #include "Vulkan/VulkanUtils.h"
+#include "Vulkan/VulkanObject.h"
 
 #include "Managers/ConfigManager.h"
 
@@ -23,6 +24,11 @@ DDM3::ImageManager::ImageManager(GPUObject* pGPUObject, DDM3::BufferManager* pBu
 {
 	// Initialize the default textures
 	CreateDefaultResources(pGPUObject, pBufferManager, pCommandPoolManager);
+}
+
+DDM3::ImageManager::~ImageManager()
+{
+	Cleanup(VulkanObject::GetInstance().GetDevice());
 }
 
 void DDM3::ImageManager::CreateDefaultResources(GPUObject* pGPUObject, DDM3::BufferManager* pBufferManager, CommandpoolManager* pCommandPoolManager)
