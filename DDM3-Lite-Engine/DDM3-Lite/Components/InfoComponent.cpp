@@ -170,11 +170,18 @@ void DDM3::InfoComponent::RenderPlot(const std::vector<std::vector<float>>& samp
 
 	int maxElement{};
 
+	int maxSamples{};
+
 	for (auto& sample : samples)
 	{
 		if (sample.size() > 0)
 		{
 			maxElement = std::max(maxElement, static_cast<int>(*std::max_element(sample.begin(), sample.end())));
+		}
+
+		if (sample.size() > maxSamples)
+		{
+			maxSamples = sample.size();
 		}
 	}
 
@@ -182,11 +189,15 @@ void DDM3::InfoComponent::RenderPlot(const std::vector<std::vector<float>>& samp
 	ImGui::PlotConfig::Values plotValues{nullptr, nullptr, m_SampleSize, 0, 0, values.data(), values.size(), colors.data()};
 
 	ImGui::PlotConfig plot{};
-	plot.frame_size = ImVec2{ 400, 200 };
+
+	float width{ 400 };
+	float height{ 200 };
+
+	plot.frame_size = ImVec2{ width, height };
 	plot.values = plotValues;
 	plot.scale = ImGui::PlotConfig::Scale(0, maxElement);
 
-	plot.grid_y = ImGui::PlotConfig::Grid{ true, static_cast<float>(maxElement) / 10 };
+	plot.grid_y = ImGui::PlotConfig::Grid{ true, 1};
 
 
 	ImGui::Plot("plotter", plot);

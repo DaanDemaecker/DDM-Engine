@@ -144,27 +144,20 @@ namespace DDM3
         friend class Singleton<VulkanObject>;
         VulkanObject();
 
-        const size_t m_MaxFramesInFlight{ 2 };
+        // Max amount of frames in flight
+        static size_t m_MaxFramesInFlight;
+
+        //--Current frame--
+        static uint32_t m_CurrentFrame;
 
         //----Member variables----
+        // Vulkan Core
+        std::unique_ptr<VulkanCore> m_pVulkanCore{};
+
         // Renderer
         std::unique_ptr<DefaultRenderer> m_pDefaultRenderer{};
 
-        std::unique_ptr<VulkanCore> m_pVulkanCore{};
-
-
-        //--Current frame--
-        uint32_t m_CurrentFrame = 0;
-
-
-        //DefaultTexture
         uint32_t m_MipLevels{};
-
-
-        //----Member Functions----
-
-        //---Initialization---
-        void InitVulkan();
 
     };
 }

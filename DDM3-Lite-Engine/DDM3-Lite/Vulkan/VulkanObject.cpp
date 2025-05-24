@@ -7,6 +7,7 @@
 #include "Engine/DDM3Engine.h"
 #include "Engine/Window.h"
 #include "Managers/SceneManager.h"
+#include "Managers/ConfigManager.h"
 
 #include "Includes/STBIncludes.h"
 #include "Includes/ImGuiIncludes.h"
@@ -41,20 +42,18 @@
 #include <set>
 #include <algorithm>
 
+size_t DDM3::VulkanObject::m_MaxFramesInFlight{ static_cast<size_t>(DDM3::ConfigManager::GetInstance().GetInt("MaxFrames"))};
+uint32_t DDM3::VulkanObject::m_CurrentFrame{ 0 };
+
 DDM3::VulkanObject::VulkanObject()
 {
-	InitVulkan();
+	// Initialize vulkan core
+	m_pVulkanCore = std::make_unique<VulkanCore>();
 }
 
 DDM3::VulkanObject::~VulkanObject()
 {
 	
-}
-
-void DDM3::VulkanObject::InitVulkan()
-{
-	// Initialize vulkan core
-	m_pVulkanCore = std::make_unique<VulkanCore>();
 }
 
 void DDM3::VulkanObject::AddGraphicsPipeline(const std::string& pipelineName, std::initializer_list<const std::string>&& filePaths, bool hasDepthStencil)
@@ -140,7 +139,7 @@ DDM3::DescriptorObject* DDM3::VulkanObject::GetLightDescriptor()
 
 DDM3::GPUObject* DDM3::VulkanObject::GetGPUObject() const
 {
-	return nullptr;
+	return m_pVulkanCore->GetGpuObject();
 }
 
 VkRenderPass DDM3::VulkanObject::GetRenderPass() const

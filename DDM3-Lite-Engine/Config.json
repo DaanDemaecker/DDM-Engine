@@ -5,6 +5,7 @@
   "FullScreen": false,
   "Maximized": false,
   "Monitor": 0,
+  "MaxFrames" : 2,
   "ApplicationName": "D3D-Lite-Engine",
   "ApplicationVersionMajor": 1,
   "ApplicationVersionMinor": 0,
