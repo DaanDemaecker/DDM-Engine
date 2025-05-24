@@ -43,26 +43,8 @@ namespace DDM3
 
 		void Render();
 
-		//Get the default image view
-		VkImageView& GetDefaultImageView();
-
-		// Get the image sampler
-		VkSampler& GetSampler();
-
 		// Get the commandbuffer currently in use
 		VkCommandBuffer& GetCurrentCommandBuffer();
-
-		// Create a texture
-		// Parameters:
-		//     texture: reference to the texture object that will hold the texture
-		//     textureName: textpath to the image
-		void CreateTexture(Texture& texture, const std::string& textureName);
-
-		// Create a cube texture
-		// Parameters:
-		//     cubeTexture: reference to the texture object
-		//     textureNames: a list of the file paths for the cube faces in order: right,left,up,down,front,back
-		void CreateCubeTexture(Texture& cubeTexture, const std::initializer_list<std::string const>& textureNames);
 
 		CommandpoolManager* GetCommandPoolManager();
 
@@ -70,9 +52,6 @@ namespace DDM3
 
 		VkRenderPass GetRenderpass();
 	private:
-		// Pointer to the image manager
-		std::unique_ptr<ImageManager> m_pImageManager{};
-
 		// Pointer to the commandpool manager
 		std::unique_ptr<CommandpoolManager> m_pCommandPoolManager{};
 
@@ -103,15 +82,6 @@ namespace DDM3
 		// Parameters:
 		//     commandBuffer: handle of the buffer to be ended
 		void EndSingleTimeCommands(VkCommandBuffer commandBuffer);
-
-		// Transition an image frome one layout to another
-	   // Parameters:
-	   //     image: the given image
-	   //     format: the format of the image
-	   //     oldLayout: the old layout of the image
-	   //     newLayout: the new layout of the image
-	   //     mipLevels: the amount of mipmaps in this image
-		void TransitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t mipLevels);
 	};
 }
 

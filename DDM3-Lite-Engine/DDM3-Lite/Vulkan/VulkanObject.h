@@ -26,6 +26,7 @@ namespace DDM3
     class DescriptorObject;
     class BufferCreator;
     class PipelineManager;
+    class ImageManager;
 
 
     class VulkanObject final : public Singleton<VulkanObject>
@@ -132,6 +133,8 @@ namespace DDM3
 
        VkSampleCountFlagBits GetMsaaSamples() { return m_MsaaSamples; }
 
+       ImageManager* GetImageManager() { return m_pImageManager.get(); }
+
     private:
         // Constructor
         friend class Singleton<VulkanObject>;
@@ -159,6 +162,10 @@ namespace DDM3
 
         // Pipeline manager
         std::unique_ptr<PipelineManager> m_pPipelineManager{};
+
+        // Pointer to the image manager
+        std::unique_ptr<ImageManager> m_pImageManager{};
+
 
         uint32_t m_MipLevels{};
 

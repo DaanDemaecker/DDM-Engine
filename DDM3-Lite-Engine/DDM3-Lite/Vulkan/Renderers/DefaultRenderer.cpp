@@ -37,12 +37,8 @@ DDM3::DefaultRenderer::DefaultRenderer()
 	// Initialize command pool manager
 	m_pCommandPoolManager = std::make_unique<CommandpoolManager>(pGPUObject, surface, VulkanObject::GetInstance().GetMaxFrames());
 
-	// Initialize the image manager
-	m_pImageManager = std::make_unique<ImageManager>(pGPUObject, m_pCommandPoolManager.get());
-	m_pImageManager->CreateDefaultResources(pGPUObject, m_pCommandPoolManager.get());
-
 	// Initialize the swapchain
-	m_pSwapchainWrapper = std::make_unique<SwapchainWrapper>(pGPUObject, surface, m_pImageManager.get(), VulkanObject::GetInstance().GetMsaaSamples());
+	m_pSwapchainWrapper = std::make_unique<SwapchainWrapper>(pGPUObject, surface, VulkanObject::GetInstance().GetImageManager(), VulkanObject::GetInstance().GetMsaaSamples());
 
 	// Initialize the renderpass
 	m_pRenderpassWrapper = std::make_unique<RenderpassWrapper>(pGPUObject->GetDevice(), m_pSwapchainWrapper->GetFormat(), VulkanUtils::FindDepthFormat(pGPUObject->GetPhysicalDevice()), VulkanObject::GetInstance().GetMsaaSamples());
@@ -50,7 +46,7 @@ DDM3::DefaultRenderer::DefaultRenderer()
 	// Create a single time command buffer
 	auto commandBuffer{ BeginSingleTimeCommands() };
 	// Initialize swapchain
-	m_pSwapchainWrapper->SetupImageViews(pGPUObject, m_pImageManager.get(), commandBuffer, m_pRenderpassWrapper->GetRenderpass());
+	m_pSwapchainWrapper->SetupImageViews(pGPUObject, VulkanObject::GetInstance().GetImageManager(), commandBuffer, m_pRenderpassWrapper->GetRenderpass());
 	// End the single time command buffer
 	EndSingleTimeCommands(commandBuffer);
 
@@ -228,7 +224,8 @@ void DDM3::DefaultRenderer::RecreateSwapChain()
 	auto commandBuffer{ BeginSingleTimeCommands() };
 
 	// Recreate the swapchain
-	m_pSwapchainWrapper->RecreateSwapChain(DDM3::VulkanObject::GetInstance().GetGPUObject(), DDM3::VulkanObject::GetInstance().GetSurface(), m_pImageManager.get(),
+	m_pSwapchainWrapper->RecreateSwapChain(DDM3::VulkanObject::GetInstance().GetGPUObject(), DDM3::VulkanObject::GetInstance().GetSurface(),
+		VulkanObject::GetInstance().GetImageManager(),
 		commandBuffer, m_pRenderpassWrapper->GetRenderpass());
 
 	// End single time command
@@ -288,48 +285,11 @@ void DDM3::DefaultRenderer::EndSingleTimeCommands(VkCommandBuffer commandBuffer)
 	m_pCommandPoolManager->EndSingleTimeCommands(DDM3::VulkanObject::GetInstance().GetGPUObject(), commandBuffer);
 }
 
-void DDM3::DefaultRenderer::TransitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t mipLevels)
-{
-	// Begin a single time command buffer
-	VkCommandBuffer commandBuffer = BeginSingleTimeCommands();
-
-	// Transition the image trough the image manager
-	m_pImageManager->TransitionImageLayout(image, commandBuffer, format, oldLayout, newLayout, mipLevels);
-
-	// End the single time command buffer
-	EndSingleTimeCommands(commandBuffer);
-}
-
-VkImageView& DDM3::DefaultRenderer::GetDefaultImageView()
-{
-	// Return the default image view trough the image manager
-	return m_pImageManager->GetDefaultImageView();
-}
-
-VkSampler& DDM3::DefaultRenderer::GetSampler()
-{
-	// Return the default sampler trough the image manager
-	return m_pImageManager->GetSampler();
-}
 
 VkCommandBuffer& DDM3::DefaultRenderer::GetCurrentCommandBuffer()
 {
 	// Return the requested command buffer trough the commandpool manager
 	return m_pCommandPoolManager->GetCommandBuffer(VulkanObject::GetInstance().GetCurrentFrame());
-}
-
-void DDM3::DefaultRenderer::CreateTexture(Texture& texture, const std::string& textureName)
-{
-	// Create the image trough the image manager
-	m_pImageManager->CreateTextureImage(DDM3::VulkanObject::GetInstance().GetGPUObject(), texture, textureName, m_pCommandPoolManager.get());
-	// Create the image view
-	texture.imageView = m_pImageManager->CreateImageView(DDM3::VulkanObject::GetInstance().GetDevice(), texture.image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, texture.mipLevels);
-}
-
-void DDM3::DefaultRenderer::CreateCubeTexture(Texture& cubeTexture, const std::initializer_list<const std::string>& textureNames)
-{
-	// Create a cube texture trough image manager
-	m_pImageManager->CreateCubeTexture(DDM3::VulkanObject::GetInstance().GetGPUObject(), cubeTexture, textureNames, m_pCommandPoolManager.get());
 }
 
 DDM3::CommandpoolManager* DDM3::DefaultRenderer::GetCommandPoolManager()

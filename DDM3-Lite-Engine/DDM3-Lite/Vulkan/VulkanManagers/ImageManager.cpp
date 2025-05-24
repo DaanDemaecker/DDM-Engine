@@ -22,6 +22,7 @@
 DDM3::ImageManager::ImageManager(GPUObject* pGPUObject, CommandpoolManager* pCommandPoolManager)
 	:m_DefaultTextureName{ ConfigManager::GetInstance().GetString("DefaultTextureName") }
 {
+	CreateDefaultResources(pGPUObject, pCommandPoolManager);
 }
 
 DDM3::ImageManager::~ImageManager()

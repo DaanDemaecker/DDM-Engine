@@ -80,12 +80,12 @@ VkPhysicalDevice DDM3::VulkanObject::GetPhysicalDevice()
 
 VkImageView& DDM3::VulkanObject::GetDefaultImageView()
 {
-	return m_pDefaultRenderer->GetDefaultImageView();
+	return m_pImageManager->GetDefaultImageView();
 }
 
 VkSampler& DDM3::VulkanObject::GetSampler()
 {
-	return m_pDefaultRenderer->GetSampler();
+	return m_pImageManager->GetSampler();
 }
 
 DDM3::PipelineWrapper* DDM3::VulkanObject::GetPipeline(const std::string& name)
@@ -98,6 +98,8 @@ void DDM3::VulkanObject::Init()
 	m_pDefaultRenderer = std::make_unique<DefaultRenderer>();
 
 	m_pPipelineManager->AddDefaultPipeline(m_pVulkanCore->GetDevice(), m_pDefaultRenderer->GetRenderpass(), m_MsaaSamples);
+
+	m_pImageManager = std::make_unique<ImageManager>(m_pVulkanCore->GetGpuObject(), m_pDefaultRenderer->GetCommandPoolManager());
 }
 
 void DDM3::VulkanObject::Terminate()
@@ -120,14 +122,17 @@ VkCommandBuffer& DDM3::VulkanObject::GetCurrentCommandBuffer()
 void DDM3::VulkanObject::CreateTexture(Texture& texture, const std::string& textureName)
 {
 	// Create the image trough the image manager
-	m_pDefaultRenderer->CreateTexture(texture, textureName);
+	m_pImageManager->CreateTextureImage(GetGPUObject(), texture, textureName, m_pDefaultRenderer->GetCommandPoolManager());
+	// Create the image view
+	texture.imageView = m_pImageManager->CreateImageView(DDM3::VulkanObject::GetInstance().GetDevice(), texture.image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, texture.mipLevels);
 }
 
 void DDM3::VulkanObject::CreateCubeTexture(Texture& cubeTexture, const std::initializer_list<const std::string>& textureNames)
 {
 	// Create a cube texture trough image manager
-	m_pDefaultRenderer->CreateCubeTexture(cubeTexture, textureNames);
+	m_pImageManager->CreateCubeTexture(GetGPUObject(), cubeTexture, textureNames, m_pDefaultRenderer->GetCommandPoolManager());
 }
+
 
 void DDM3::VulkanObject::UpdateUniformBuffer(UniformBufferObject& buffer)
 {
