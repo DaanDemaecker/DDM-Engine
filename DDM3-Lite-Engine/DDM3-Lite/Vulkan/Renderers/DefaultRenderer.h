@@ -43,18 +43,10 @@ namespace DDM3
 
 		void Render();
 
-		// Get the commandbuffer currently in use
-		VkCommandBuffer& GetCurrentCommandBuffer();
-
-		CommandpoolManager* GetCommandPoolManager();
-
 		VkExtent2D GetExtent();
 
 		VkRenderPass GetRenderpass();
 	private:
-		// Pointer to the commandpool manager
-		std::unique_ptr<CommandpoolManager> m_pCommandPoolManager{};
-
 		// Pointer to the renderpass wrapper
 		std::unique_ptr<RenderpassWrapper> m_pRenderpassWrapper{};
 
@@ -74,14 +66,6 @@ namespace DDM3
 		void RecordCommandBuffer(VkCommandBuffer& commandBuffer, uint32_t imageIndex);
 
 		void RecreateSwapChain();
-
-		// Begin a command buffer for a single command
-		VkCommandBuffer BeginSingleTimeCommands();
-
-		// End a command buffer after a single command
-		// Parameters:
-		//     commandBuffer: handle of the buffer to be ended
-		void EndSingleTimeCommands(VkCommandBuffer commandBuffer);
 	};
 }
 

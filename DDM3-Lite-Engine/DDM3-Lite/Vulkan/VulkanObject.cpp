@@ -42,7 +42,7 @@
 #include <set>
 #include <algorithm>
 
-size_t DDM3::VulkanObject::m_MaxFramesInFlight{ static_cast<size_t>(DDM3::ConfigManager::GetInstance().GetInt("MaxFrames"))};
+uint32_t DDM3::VulkanObject::m_MaxFramesInFlight{ static_cast<uint32_t>(DDM3::ConfigManager::GetInstance().GetInt("MaxFrames"))};
 uint32_t DDM3::VulkanObject::m_CurrentFrame{ 0 };
 
 DDM3::VulkanObject::VulkanObject()
@@ -55,6 +55,13 @@ DDM3::VulkanObject::VulkanObject()
 	m_MsaaSamples = VulkanUtils::GetMaxUsableSampleCount(m_pVulkanCore->GetPhysicalDevice());
 
 	m_pPipelineManager = std::make_unique<PipelineManager>();
+
+	m_pCommandPoolManager = std::make_unique<CommandpoolManager>(GetGPUObject(), GetSurface(), m_MaxFramesInFlight);
+}
+
+DDM3::CommandpoolManager* DDM3::VulkanObject::GetCommandPoolManager()
+{
+	return m_pCommandPoolManager.get();
 }
 
 DDM3::VulkanObject::~VulkanObject()
@@ -99,7 +106,7 @@ void DDM3::VulkanObject::Init()
 
 	m_pPipelineManager->AddDefaultPipeline(m_pVulkanCore->GetDevice(), m_pDefaultRenderer->GetRenderpass(), m_MsaaSamples);
 
-	m_pImageManager = std::make_unique<ImageManager>(m_pVulkanCore->GetGpuObject(), m_pDefaultRenderer->GetCommandPoolManager());
+	m_pImageManager = std::make_unique<ImageManager>(m_pVulkanCore->GetGpuObject(), GetCommandPoolManager());
 }
 
 void DDM3::VulkanObject::Terminate()
@@ -116,21 +123,21 @@ void DDM3::VulkanObject::Render()
 
 VkCommandBuffer& DDM3::VulkanObject::GetCurrentCommandBuffer()
 {
-	return m_pDefaultRenderer->GetCurrentCommandBuffer();
+	return m_pCommandPoolManager->GetCommandBuffer(m_CurrentFrame);
 }
 
 void DDM3::VulkanObject::CreateTexture(Texture& texture, const std::string& textureName)
 {
 	// Create the image trough the image manager
-	m_pImageManager->CreateTextureImage(GetGPUObject(), texture, textureName, m_pDefaultRenderer->GetCommandPoolManager());
+	m_pImageManager->CreateTextureImage(GetGPUObject(), texture, textureName, GetCommandPoolManager());
 	// Create the image view
-	texture.imageView = m_pImageManager->CreateImageView(DDM3::VulkanObject::GetInstance().GetDevice(), texture.image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, texture.mipLevels);
+	texture.imageView = m_pImageManager->CreateImageView(GetDevice(), texture.image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, texture.mipLevels);
 }
 
 void DDM3::VulkanObject::CreateCubeTexture(Texture& cubeTexture, const std::initializer_list<const std::string>& textureNames)
 {
 	// Create a cube texture trough image manager
-	m_pImageManager->CreateCubeTexture(GetGPUObject(), cubeTexture, textureNames, m_pDefaultRenderer->GetCommandPoolManager());
+	m_pImageManager->CreateCubeTexture(GetGPUObject(), cubeTexture, textureNames, GetCommandPoolManager());
 }
 
 
@@ -180,26 +187,38 @@ VkInstance DDM3::VulkanObject::GetVulkanInstance()
 	return m_pVulkanCore->GetVulkanInstance();
 }
 
+VkCommandBuffer DDM3::VulkanObject::BeginSingleTimeCommands()
+{
+	// Create a single time command buffer trough the command pool manager and return it
+	return m_pCommandPoolManager->BeginSingleTimeCommands(GetDevice());
+}
+
+void DDM3::VulkanObject::EndSingleTimeCommands(VkCommandBuffer commandBuffer)
+{
+	// End the single time command buffer trough the commandpool manager
+	m_pCommandPoolManager->EndSingleTimeCommands(GetGPUObject(), commandBuffer);
+}
+
 void DDM3::VulkanObject::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory)
 {
 	// Create the buffer trough vulkan utils
-	m_pBufferCreator->CreateBuffer(m_pVulkanCore->GetGpuObject(), size, usage, properties, buffer, bufferMemory);
+	m_pBufferCreator->CreateBuffer(GetGPUObject(), size, usage, properties, buffer, bufferMemory);
 }
 
 void DDM3::VulkanObject::CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size)
 {
 	// Copy a buffer trough the bufferManager
-	m_pBufferCreator->CopyBuffer(m_pVulkanCore->GetGpuObject(), m_pDefaultRenderer->GetCommandPoolManager(), srcBuffer, dstBuffer, size);
+	m_pBufferCreator->CopyBuffer(GetGPUObject(), m_pCommandPoolManager.get(), srcBuffer, dstBuffer, size);
 }
 
 void DDM3::VulkanObject::CreateVertexBuffer(std::vector<DDM3::Vertex>& vertices, VkBuffer& vertexBuffer, VkDeviceMemory& vertexBufferMemory)
 {
 	// Create a vertex buffer trough the buffer manager
-	m_pBufferCreator->CreateVertexBuffer(m_pVulkanCore->GetGpuObject(), m_pDefaultRenderer->GetCommandPoolManager(), vertices, vertexBuffer, vertexBufferMemory);
+	m_pBufferCreator->CreateVertexBuffer(GetGPUObject(), m_pCommandPoolManager.get(), vertices, vertexBuffer, vertexBufferMemory);
 }
 
 void DDM3::VulkanObject::CreateIndexBuffer(std::vector<uint32_t>& indices, VkBuffer& indexBuffer, VkDeviceMemory& indexBufferMemory)
 {
 	// Create an index buffer trough the buffer manager
-	m_pBufferCreator->CreateIndexBuffer(m_pVulkanCore->GetGpuObject(), m_pDefaultRenderer->GetCommandPoolManager(), indices, indexBuffer, indexBufferMemory);
+	m_pBufferCreator->CreateIndexBuffer(GetGPUObject(), m_pCommandPoolManager.get(), indices, indexBuffer, indexBufferMemory);
 }

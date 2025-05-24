@@ -34,9 +34,6 @@ DDM3::DefaultRenderer::DefaultRenderer()
 	// Get pointer to gpu object
 	GPUObject* pGPUObject{ VulkanObject::GetInstance().GetGPUObject() };
 
-	// Initialize command pool manager
-	m_pCommandPoolManager = std::make_unique<CommandpoolManager>(pGPUObject, surface, VulkanObject::GetInstance().GetMaxFrames());
-
 	// Initialize the swapchain
 	m_pSwapchainWrapper = std::make_unique<SwapchainWrapper>(pGPUObject, surface, VulkanObject::GetInstance().GetImageManager(), VulkanObject::GetInstance().GetMsaaSamples());
 
@@ -44,11 +41,11 @@ DDM3::DefaultRenderer::DefaultRenderer()
 	m_pRenderpassWrapper = std::make_unique<RenderpassWrapper>(pGPUObject->GetDevice(), m_pSwapchainWrapper->GetFormat(), VulkanUtils::FindDepthFormat(pGPUObject->GetPhysicalDevice()), VulkanObject::GetInstance().GetMsaaSamples());
 
 	// Create a single time command buffer
-	auto commandBuffer{ BeginSingleTimeCommands() };
+	auto commandBuffer{ VulkanObject::GetInstance().BeginSingleTimeCommands() };
 	// Initialize swapchain
 	m_pSwapchainWrapper->SetupImageViews(pGPUObject, VulkanObject::GetInstance().GetImageManager(), commandBuffer, m_pRenderpassWrapper->GetRenderpass());
 	// End the single time command buffer
-	EndSingleTimeCommands(commandBuffer);
+	VulkanObject::GetInstance().EndSingleTimeCommands(commandBuffer);
 
 	// Initialize the sync objects
 	m_pSyncObjectManager = std::make_unique<SyncObjectManager>(pGPUObject->GetDevice(),VulkanObject::GetInstance().GetMaxFrames() );
@@ -102,7 +99,7 @@ void DDM3::DefaultRenderer::Render()
 	submitInfo.pWaitDstStageMask = waitStages;
 
 	submitInfo.commandBufferCount = 1;
-	submitInfo.pCommandBuffers = &GetCurrentCommandBuffer();
+	submitInfo.pCommandBuffers = &VulkanObject::GetInstance().GetCurrentCommandBuffer();
 
 	VkSemaphore signalSemaphores[] = { m_pSyncObjectManager->GetRenderFinishedSemaphore(currentFrame) };
 	submitInfo.signalSemaphoreCount = 1;
@@ -221,7 +218,7 @@ void DDM3::DefaultRenderer::RecreateSwapChain()
 	vkDeviceWaitIdle(DDM3::VulkanObject::GetInstance().GetDevice());
 
 	// Create a single time command
-	auto commandBuffer{ BeginSingleTimeCommands() };
+	auto commandBuffer{ VulkanObject::GetInstance().BeginSingleTimeCommands() };
 
 	// Recreate the swapchain
 	m_pSwapchainWrapper->RecreateSwapChain(DDM3::VulkanObject::GetInstance().GetGPUObject(), DDM3::VulkanObject::GetInstance().GetSurface(),
@@ -229,7 +226,7 @@ void DDM3::DefaultRenderer::RecreateSwapChain()
 		commandBuffer, m_pRenderpassWrapper->GetRenderpass());
 
 	// End single time command
-	EndSingleTimeCommands(commandBuffer);
+	VulkanObject::GetInstance().EndSingleTimeCommands(commandBuffer);
 }
 
 void DDM3::DefaultRenderer::InitImgui()
@@ -260,41 +257,17 @@ void DDM3::DefaultRenderer::InitImgui()
 	init_info.MSAASamples = VulkanObject::GetInstance().GetMsaaSamples();
 
 	// Create a single time command buffer
-	auto commandBuffer{ BeginSingleTimeCommands() };
+	auto commandBuffer{ VulkanObject::GetInstance().BeginSingleTimeCommands() };
 	// Initialize ImGui
 	m_pImGuiWrapper = std::make_unique<DDM3::ImGuiWrapper>(init_info,
 		VulkanObject::GetInstance().GetDevice(), static_cast<uint32_t>(VulkanObject::GetInstance().GetMaxFrames()), m_pRenderpassWrapper->GetRenderpass(), commandBuffer);
 	// End the single time command buffer
-	EndSingleTimeCommands(commandBuffer);
+	VulkanObject::GetInstance().EndSingleTimeCommands(commandBuffer);
 }
 
 void DDM3::DefaultRenderer::CleanupImgui()
 {
 	m_pImGuiWrapper = nullptr;
-}
-
-VkCommandBuffer DDM3::DefaultRenderer::BeginSingleTimeCommands()
-{
-	// Create a single time command buffer trough the command pool manager and return it
-	return m_pCommandPoolManager->BeginSingleTimeCommands(DDM3::VulkanObject::GetInstance().GetDevice());
-}
-
-void DDM3::DefaultRenderer::EndSingleTimeCommands(VkCommandBuffer commandBuffer)
-{
-	// End the single time command buffer trough the commandpool manager
-	m_pCommandPoolManager->EndSingleTimeCommands(DDM3::VulkanObject::GetInstance().GetGPUObject(), commandBuffer);
-}
-
-
-VkCommandBuffer& DDM3::DefaultRenderer::GetCurrentCommandBuffer()
-{
-	// Return the requested command buffer trough the commandpool manager
-	return m_pCommandPoolManager->GetCommandBuffer(VulkanObject::GetInstance().GetCurrentFrame());
-}
-
-DDM3::CommandpoolManager* DDM3::DefaultRenderer::GetCommandPoolManager()
-{
-	return m_pCommandPoolManager.get();
 }
 
 VkExtent2D DDM3::DefaultRenderer::GetExtent()

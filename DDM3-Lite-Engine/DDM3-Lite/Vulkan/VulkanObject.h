@@ -27,6 +27,7 @@ namespace DDM3
     class BufferCreator;
     class PipelineManager;
     class ImageManager;
+    class CommandpoolManager;
 
 
     class VulkanObject final : public Singleton<VulkanObject>
@@ -135,13 +136,21 @@ namespace DDM3
 
        ImageManager* GetImageManager() { return m_pImageManager.get(); }
 
+       // Begin a command buffer for a single command
+       VkCommandBuffer BeginSingleTimeCommands();
+
+       // End a command buffer after a single command
+       // Parameters:
+       //     commandBuffer: handle of the buffer to be ended
+       void EndSingleTimeCommands(VkCommandBuffer commandBuffer);
+
     private:
         // Constructor
         friend class Singleton<VulkanObject>;
         VulkanObject();
 
         // Max amount of frames in flight
-        static size_t m_MaxFramesInFlight;
+        static uint32_t m_MaxFramesInFlight;
 
         //--Current frame--
         static uint32_t m_CurrentFrame;
@@ -166,8 +175,13 @@ namespace DDM3
         // Pointer to the image manager
         std::unique_ptr<ImageManager> m_pImageManager{};
 
+        // Pointer to the commandpool manager
+        std::unique_ptr<CommandpoolManager> m_pCommandPoolManager{};
+
 
         uint32_t m_MipLevels{};
+
+        CommandpoolManager* GetCommandPoolManager();
 
     };
 }
