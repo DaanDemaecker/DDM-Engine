@@ -43,24 +43,11 @@ namespace DDM3
 
 		void Render();
 
-		// Add a new graphics pipeline
-		// Parameters:
-		//     pipelineName: the name of the new pipeline
-		//     filePaths: a list of shader file names for this pipeline
-		//     hasDepthStencil: boolean that indicates if this pipeline needs a depth stencil, true by default
-		void AddGraphicsPipeline(const std::string& pipelineName, std::initializer_list<const std::string>& filePaths,
-			bool hasDepthStencil = true);
-
 		//Get the default image view
 		VkImageView& GetDefaultImageView();
 
 		// Get the image sampler
 		VkSampler& GetSampler();
-
-		// Get the pipeline with the given name
-		// Parameters:
-		//     name: the name of the requested pipeline, "Default" by default
-		PipelineWrapper* GetPipeline(const std::string & name = "Default");
 
 		// Get the commandbuffer currently in use
 		VkCommandBuffer& GetCurrentCommandBuffer();
@@ -83,9 +70,6 @@ namespace DDM3
 
 		VkRenderPass GetRenderpass();
 	private:
-		// Pointer to thep pipeline manager
-		std::unique_ptr<PipelineManager> m_pPipelineManager{};
-
 		// Pointer to the image manager
 		std::unique_ptr<ImageManager> m_pImageManager{};
 
@@ -128,9 +112,6 @@ namespace DDM3
 	   //     newLayout: the new layout of the image
 	   //     mipLevels: the amount of mipmaps in this image
 		void TransitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t mipLevels);
-
-		void AddDefaultPipeline();
-
 	};
 }
 

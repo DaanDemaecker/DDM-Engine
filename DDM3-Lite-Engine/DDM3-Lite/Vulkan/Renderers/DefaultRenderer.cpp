@@ -54,13 +54,8 @@ DDM3::DefaultRenderer::DefaultRenderer()
 	// End the single time command buffer
 	EndSingleTimeCommands(commandBuffer);
 
-	// Initialize graphics pipeline manager
-	m_pPipelineManager = std::make_unique<PipelineManager>();
-
 	// Initialize the sync objects
 	m_pSyncObjectManager = std::make_unique<SyncObjectManager>(pGPUObject->GetDevice(),VulkanObject::GetInstance().GetMaxFrames() );
-
-	AddDefaultPipeline();
 
 	InitImgui();
 }
@@ -305,14 +300,6 @@ void DDM3::DefaultRenderer::TransitionImageLayout(VkImage image, VkFormat format
 	EndSingleTimeCommands(commandBuffer);
 }
 
-void DDM3::DefaultRenderer::AddDefaultPipeline()
-{
-	auto device{ VulkanObject::GetInstance().GetDevice() };
-
-	m_pPipelineManager->AddDefaultPipeline(device, m_pRenderpassWrapper->GetRenderpass(), m_pSwapchainWrapper->GetMsaaSamples());
-
-}
-
 VkImageView& DDM3::DefaultRenderer::GetDefaultImageView()
 {
 	// Return the default image view trough the image manager
@@ -325,23 +312,10 @@ VkSampler& DDM3::DefaultRenderer::GetSampler()
 	return m_pImageManager->GetSampler();
 }
 
-DDM3::PipelineWrapper* DDM3::DefaultRenderer::GetPipeline(const std::string& name)
-{
-	// Return the requested pipeline trough the pipeline manager
-	return m_pPipelineManager->GetPipeline(name);
-}
-
 VkCommandBuffer& DDM3::DefaultRenderer::GetCurrentCommandBuffer()
 {
 	// Return the requested command buffer trough the commandpool manager
 	return m_pCommandPoolManager->GetCommandBuffer(VulkanObject::GetInstance().GetCurrentFrame());
-}
-
-void DDM3::DefaultRenderer::AddGraphicsPipeline(const std::string& pipelineName, std::initializer_list<const std::string>& filePaths, bool hasDepthStencil)
-{
-	// Add a graphics pipeline trough the pipeline manager
-	m_pPipelineManager->AddGraphicsPipeline(DDM3::VulkanObject::GetInstance().GetDevice(), m_pRenderpassWrapper->GetRenderpass(), VulkanObject::GetInstance().GetMsaaSamples(),
-		pipelineName, filePaths, hasDepthStencil);
 }
 
 void DDM3::DefaultRenderer::CreateTexture(Texture& texture, const std::string& textureName)

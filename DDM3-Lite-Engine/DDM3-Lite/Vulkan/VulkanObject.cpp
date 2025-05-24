@@ -53,6 +53,8 @@ DDM3::VulkanObject::VulkanObject()
 	m_pBufferCreator = std::make_unique<BufferCreator>();
 
 	m_MsaaSamples = VulkanUtils::GetMaxUsableSampleCount(m_pVulkanCore->GetPhysicalDevice());
+
+	m_pPipelineManager = std::make_unique<PipelineManager>();
 }
 
 DDM3::VulkanObject::~VulkanObject()
@@ -63,7 +65,7 @@ DDM3::VulkanObject::~VulkanObject()
 void DDM3::VulkanObject::AddGraphicsPipeline(const std::string& pipelineName, std::initializer_list<const std::string>&& filePaths, bool hasDepthStencil)
 {
 	// Add a graphics pipeline trough the pipeline manager
-	m_pDefaultRenderer->AddGraphicsPipeline(pipelineName, filePaths, hasDepthStencil);
+	m_pPipelineManager->AddGraphicsPipeline(m_pVulkanCore->GetDevice(), m_pDefaultRenderer->GetRenderpass(), m_MsaaSamples, pipelineName, filePaths, hasDepthStencil);
 }
 
 VkDevice DDM3::VulkanObject::GetDevice()
@@ -88,12 +90,14 @@ VkSampler& DDM3::VulkanObject::GetSampler()
 
 DDM3::PipelineWrapper* DDM3::VulkanObject::GetPipeline(const std::string& name)
 {
-	return m_pDefaultRenderer->GetPipeline(name);
+	return m_pPipelineManager->GetPipeline(name);
 }
 
 void DDM3::VulkanObject::Init()
 {
 	m_pDefaultRenderer = std::make_unique<DefaultRenderer>();
+
+	m_pPipelineManager->AddDefaultPipeline(m_pVulkanCore->GetDevice(), m_pDefaultRenderer->GetRenderpass(), m_MsaaSamples);
 }
 
 void DDM3::VulkanObject::Terminate()

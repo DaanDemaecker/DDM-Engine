@@ -25,6 +25,7 @@ namespace DDM3
     class DefaultRenderer;
     class DescriptorObject;
     class BufferCreator;
+    class PipelineManager;
 
 
     class VulkanObject final : public Singleton<VulkanObject>
@@ -155,6 +156,9 @@ namespace DDM3
 
         // Buffer creator
         std::unique_ptr<BufferCreator> m_pBufferCreator{};
+
+        // Pipeline manager
+        std::unique_ptr<PipelineManager> m_pPipelineManager{};
 
         uint32_t m_MipLevels{};
 
