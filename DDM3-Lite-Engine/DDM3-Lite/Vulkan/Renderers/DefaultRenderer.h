@@ -19,7 +19,7 @@ namespace DDM3
 	class SwapchainWrapper;
 	class RenderpassWrapper;
 	class Viewport;
-	class BufferManager;
+	class BufferCreator;
 	class ImGuiWrapper;
 	class PipelineManager;
 	class PipelineWrapper;
@@ -65,36 +65,6 @@ namespace DDM3
 		// Get the commandbuffer currently in use
 		VkCommandBuffer& GetCurrentCommandBuffer();
 
-		// Create a buffer
-		// Parameters:
-		//     size: the size of the buffer
-		//     usage: the usage flags for the buffer
-		//     properties: the property flags for the buffer
-		//     buffer: reference to the buffer to be made
-		//     bufferMemory: reference to the memory of the buffer that will be made
-		void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
-
-		// Copy a buffer to another buffer
-		// Parameters:
-		//     srcBuffer: the source buffer
-		//     dstBuffer: the destination buffer
-		//     size: the size of the buffers
-		void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
-
-		// Create a vertex buffer
-		// Parameters:
-		//     vertices: reference to vector of vertices 
-		//     vertexBuffer: handle to the vertex buffer to be created
-		//     vertexBufferMemory: handle of the vertex buffer memory
-		void CreateVertexBuffer(std::vector<DDM3::Vertex>& vertices, VkBuffer& vertexBuffer, VkDeviceMemory& vertexBufferMemory);
-
-		// Create a vertex buffer
-		// Parameters:
-		//     indices: reference to vector of indices 
-		//     indexBuffer: handle to the index buffer to be created
-		//     indexBufferMemory: handle of the index buffer memory
-		void CreateIndexBuffer(std::vector<uint32_t>& indices, VkBuffer& indexBuffer, VkDeviceMemory& indexBufferMemory);
-
 		// Create a texture
 		// Parameters:
 		//     texture: reference to the texture object that will hold the texture
@@ -107,6 +77,7 @@ namespace DDM3
 		//     textureNames: a list of the file paths for the cube faces in order: right,left,up,down,front,back
 		void CreateCubeTexture(Texture& cubeTexture, const std::initializer_list<std::string const>& textureNames);
 
+		CommandpoolManager* GetCommandPoolManager();
 
 		VkExtent2D GetExtent();
 
@@ -115,9 +86,6 @@ namespace DDM3
 
 		//--MultiSampling--
 		VkSampleCountFlagBits m_MsaaSamples = VK_SAMPLE_COUNT_1_BIT;
-
-		// Pointer to the buffer manager
-		std::unique_ptr<BufferManager> m_pBufferManager{};
 
 		// Pointer to thep pipeline manager
 		std::unique_ptr<PipelineManager> m_pPipelineManager{};

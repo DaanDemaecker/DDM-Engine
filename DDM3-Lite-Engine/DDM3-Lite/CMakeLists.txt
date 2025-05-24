@@ -26,7 +26,7 @@ add_executable(${EXECUTABLE_NAME}
 "Utils/Utils.cpp"
 
 "Vulkan/SpirVReflect/spirv_reflect.cpp"
-"Vulkan/VulkanManagers/BufferManager.cpp"
+"Vulkan/VulkanManagers/BufferCreator.cpp"
 "Vulkan/VulkanManagers/CommandpoolManager.cpp"
 "Vulkan/VulkanManagers/ImageManager.cpp"
 "Vulkan/VulkanManagers/ImageViewManager.cpp"

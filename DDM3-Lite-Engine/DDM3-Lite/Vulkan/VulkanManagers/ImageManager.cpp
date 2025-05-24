@@ -10,7 +10,7 @@
 
 #include "Managers/ConfigManager.h"
 
-#include "BufferManager.h"
+#include "BufferCreator.h"
 #include "CommandpoolManager.h"
 
 #include "Vulkan/VulkanWrappers/GPUObject.h"
@@ -19,11 +19,9 @@
 #include <stdexcept>
 #include <cmath>
 
-DDM3::ImageManager::ImageManager(GPUObject* pGPUObject, DDM3::BufferManager* pBufferManager, CommandpoolManager* pCommandPoolManager)
+DDM3::ImageManager::ImageManager(GPUObject* pGPUObject, CommandpoolManager* pCommandPoolManager)
 	:m_DefaultTextureName{ ConfigManager::GetInstance().GetString("DefaultTextureName") }
 {
-	// Initialize the default textures
-	CreateDefaultResources(pGPUObject, pBufferManager, pCommandPoolManager);
 }
 
 DDM3::ImageManager::~ImageManager()
@@ -31,12 +29,12 @@ DDM3::ImageManager::~ImageManager()
 	Cleanup(VulkanObject::GetInstance().GetDevice());
 }
 
-void DDM3::ImageManager::CreateDefaultResources(GPUObject* pGPUObject, DDM3::BufferManager* pBufferManager, CommandpoolManager* pCommandPoolManager)
+void DDM3::ImageManager::CreateDefaultResources(GPUObject* pGPUObject, CommandpoolManager* pCommandPoolManager)
 {
 	// Create the default texture sampler
 	CreateTextureSampler(pGPUObject, m_TextureSampler, m_DefaultTexture.mipLevels);
 	// Create the default texture image
-	CreateTextureImage(pGPUObject, pBufferManager, m_DefaultTexture, m_DefaultTextureName, pCommandPoolManager);
+	CreateTextureImage(pGPUObject, m_DefaultTexture, m_DefaultTextureName, pCommandPoolManager);
 	// Create the default texture image view
 	m_DefaultTexture.imageView = CreateImageView(pGPUObject->GetDevice(), m_DefaultTexture.image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, m_DefaultTexture.mipLevels);
 }
@@ -77,7 +75,7 @@ VkImageView DDM3::ImageManager::CreateImageView(VkDevice device, VkImage image, 
 	return imageView;
 }
 
-void DDM3::ImageManager::CreateCubeTexture(GPUObject* pGPUObject, DDM3::BufferManager* pBufferManager, Texture& cubeTexture, const std::initializer_list<const std::string>& textureNames, CommandpoolManager* pCommandPoolManager)
+void DDM3::ImageManager::CreateCubeTexture(GPUObject* pGPUObject, Texture& cubeTexture, const std::initializer_list<const std::string>& textureNames, CommandpoolManager* pCommandPoolManager)
 {
 	// Get device
 	auto device{ pGPUObject->GetDevice() };
@@ -119,7 +117,7 @@ void DDM3::ImageManager::CreateCubeTexture(GPUObject* pGPUObject, DDM3::BufferMa
 	VkDeviceMemory stagingBufferMemory{};
 
 	// Create the staging buffer, make it the size of the entire cube
-	pBufferManager->CreateBuffer(pGPUObject, cubeSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+	VulkanObject::GetInstance().CreateBuffer(cubeSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
 		stagingBuffer, stagingBufferMemory);
 
 	// Create void pointer to hold data
@@ -508,7 +506,7 @@ void DDM3::ImageManager::GenerateMipmaps(VkPhysicalDevice physicalDevice, VkComm
 		1, &barrier);
 }
 
-void DDM3::ImageManager::CreateTextureImage(GPUObject* pGPUObject, DDM3::BufferManager* pBufferManager, DDM3::Texture& texture, const std::string& textureName, DDM3::CommandpoolManager* pCommandPoolManager)
+void DDM3::ImageManager::CreateTextureImage(GPUObject* pGPUObject, DDM3::Texture& texture, const std::string& textureName, DDM3::CommandpoolManager* pCommandPoolManager)
 {
 	// Get device
 	auto device{ pGPUObject->GetDevice() };
@@ -537,7 +535,7 @@ void DDM3::ImageManager::CreateTextureImage(GPUObject* pGPUObject, DDM3::BufferM
 	VkDeviceMemory stagingBufferMemory{};
 
 	// Create the staging buffer
-	pBufferManager->CreateBuffer(pGPUObject, imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+	VulkanObject::GetInstance().CreateBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
 		stagingBuffer, stagingBufferMemory);
 
 	// Create void pointer to hold data

@@ -15,7 +15,7 @@ namespace DDM3
 {
 	// Class forward declarations
 	class GPUObject;
-	class BufferManager;
+	class BufferCreator;
 	class CommandpoolManager;
 
 
@@ -25,9 +25,8 @@ namespace DDM3
 		// Constructor
 		// Parameter:
 		//     pGPUObject : a pointer to the GPU object
-		//     pBufferManager: a poienter to the buffer manager
 		//     pCommandPoolManager: a pointer to the commandpool manager
-		ImageManager(GPUObject* pGPUObject, DDM3::BufferManager* pBufferManager, CommandpoolManager* pCommandPoolManager);
+		ImageManager(GPUObject* pGPUObject, CommandpoolManager* pCommandPoolManager);
 
 		// Delete default constructor
 		ImageManager() = delete;
@@ -77,21 +76,19 @@ namespace DDM3
 		// Create a given texture image
 		// Parameters:
 		//     pGPUObject : a pointer to the GPU object 
-		//     pBufferManager: a poitner to the buffer manager object
 		//     texture: reference to the texture that will be created
 		//     textureName: filepath to the texture
 		//     pCommandPoolManager: pointer to the commandpool manager
-		void CreateTextureImage(GPUObject* pGPUObject, DDM3::BufferManager* pBufferManager, Texture& texture,
+		void CreateTextureImage(GPUObject* pGPUObject, Texture& texture,
 			const std::string& textureName, CommandpoolManager* pCommandPoolManager);
 
 		// Create a given cube texture image
 		// Parameters:
 		//     pGPUObject : a pointer to the GPU object 
-		//     pBufferManager: pointer to the Buffermanager object
 		//     cubeTexture: reference to the texture that will be created
 		//     textureNames: filepaths to the texture that make up the faces of the cube
 		//     pCommandPoolManager: pointer to the commandpool manager
-		void CreateCubeTexture(GPUObject* pGPUObject, DDM3::BufferManager* pBufferManager, Texture& cubeTexture,
+		void CreateCubeTexture(GPUObject* pGPUObject, Texture& cubeTexture,
 			const std::initializer_list<const std::string>& textureNames, CommandpoolManager* pCommandPoolManager);
 
 		// Create a texture sampler
@@ -140,6 +137,11 @@ namespace DDM3
 			VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling,
 			VkImageUsageFlags usage, VkMemoryPropertyFlags properties, Texture& texture);
 
+		// Create the default textures
+		// Parameters:
+		//     pGPUObject: a pointer to the GPU object 
+		//     pCommandPoolManager: a pointer to the commandpool manager
+		void CreateDefaultResources(GPUObject* pGPUObject, CommandpoolManager* pCommandPoolManager);
 	private:
 		// The default texture
 		Texture m_DefaultTexture{};
@@ -154,13 +156,6 @@ namespace DDM3
 		// Parameters:
 		//     format: the format to be checked
 		bool HasStencilComponent(VkFormat format);
-
-		// Create the default textures
-		// Parameters:
-		//     pGPUObject: a pointer to the GPU object 
-		//     pBufferManager: a pointer to the buffer manager
-		//     pCommandPoolManager: a pointer to the commandpool manager
-		void CreateDefaultResources(GPUObject* pGPUObject, DDM3::BufferManager* pBufferManager, CommandpoolManager* pCommandPoolManager);
 	};
 }
 #endif // !ImageManagerIncluded

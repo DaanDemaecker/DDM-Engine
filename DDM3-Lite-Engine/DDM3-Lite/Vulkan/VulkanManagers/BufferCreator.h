@@ -1,8 +1,8 @@
-// BufferManager.h
+// BufferCreator.h
 // This file wil handle buffer creation, buffer copying and everything else to do with buffers
 
-#ifndef BufferManagerIncluded
-#define BufferManagerIncluded
+#ifndef _BUFFER_CREATOR_
+#define _BUFFER_CREATOR_
 
 // File includes
 #include "Includes/VulkanIncludes.h"
@@ -17,20 +17,20 @@ namespace DDM3
 	class GPUObject;
 	class CommandpoolManager;
 
-	class BufferManager final
+	class BufferCreator final
 	{
 	public:
 		// Default constructor
-		BufferManager() = default;
+		BufferCreator() = default;
 
 		// Default destructor
-		~BufferManager() = default;
+		~BufferCreator() = default;
 
 		// Delete copy and move functions
-		BufferManager(BufferManager& other) = delete;
-		BufferManager(BufferManager&& other) = delete;
-		BufferManager& operator=(BufferManager& other) = delete;
-		BufferManager& operator=(BufferManager&& other) = delete;
+		BufferCreator(BufferCreator& other) = delete;
+		BufferCreator(BufferCreator&& other) = delete;
+		BufferCreator& operator=(BufferCreator& other) = delete;
+		BufferCreator& operator=(BufferCreator&& other) = delete;
 
 		// Create a VkBuffer
 		// Parameters:
@@ -77,4 +77,4 @@ namespace DDM3
 			std::vector<uint32_t>& indices, VkBuffer& indexBuffer, VkDeviceMemory& indexBufferMemory);
 	};
 }
-#endif // !BufferManagerIncluded
+#endif // !_BUFFER_CREATOR_

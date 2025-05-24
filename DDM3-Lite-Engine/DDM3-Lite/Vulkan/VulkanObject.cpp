@@ -18,7 +18,7 @@
 
 #include "Vulkan/VulkanWrappers/SurfaceWrapper.h"
 #include "Vulkan/VulkanManagers/CommandpoolManager.h"
-#include "Vulkan/VulkanManagers/BufferManager.h"
+#include "Vulkan/VulkanManagers/BufferCreator.h"
 #include "Vulkan/VulkanManagers/ImageManager.h"
 #include "Vulkan/VulkanWrappers/SwapchainWrapper.h"
 #include "Vulkan/VulkanWrappers/RenderpassWrapper.h"
@@ -49,6 +49,8 @@ DDM3::VulkanObject::VulkanObject()
 {
 	// Initialize vulkan core
 	m_pVulkanCore = std::make_unique<VulkanCore>();
+
+	m_pBufferCreator = std::make_unique<BufferCreator>();
 }
 
 DDM3::VulkanObject::~VulkanObject()
@@ -170,23 +172,23 @@ VkInstance DDM3::VulkanObject::GetVulkanInstance()
 void DDM3::VulkanObject::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory)
 {
 	// Create the buffer trough vulkan utils
-	m_pDefaultRenderer->CreateBuffer(size, usage, properties, buffer, bufferMemory);
+	m_pBufferCreator->CreateBuffer(m_pVulkanCore->GetGpuObject(), size, usage, properties, buffer, bufferMemory);
 }
 
 void DDM3::VulkanObject::CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size)
 {
 	// Copy a buffer trough the bufferManager
-	m_pDefaultRenderer->CopyBuffer(srcBuffer, dstBuffer, size);
+	m_pBufferCreator->CopyBuffer(m_pVulkanCore->GetGpuObject(), m_pDefaultRenderer->GetCommandPoolManager(), srcBuffer, dstBuffer, size);
 }
 
 void DDM3::VulkanObject::CreateVertexBuffer(std::vector<DDM3::Vertex>& vertices, VkBuffer& vertexBuffer, VkDeviceMemory& vertexBufferMemory)
 {
 	// Create a vertex buffer trough the buffer manager
-	m_pDefaultRenderer->CreateVertexBuffer(vertices, vertexBuffer, vertexBufferMemory);
+	m_pBufferCreator->CreateVertexBuffer(m_pVulkanCore->GetGpuObject(), m_pDefaultRenderer->GetCommandPoolManager(), vertices, vertexBuffer, vertexBufferMemory);
 }
 
 void DDM3::VulkanObject::CreateIndexBuffer(std::vector<uint32_t>& indices, VkBuffer& indexBuffer, VkDeviceMemory& indexBufferMemory)
 {
 	// Create an index buffer trough the buffer manager
-	m_pDefaultRenderer->CreateIndexBuffer(indices, indexBuffer, indexBufferMemory);
+	m_pBufferCreator->CreateIndexBuffer(m_pVulkanCore->GetGpuObject(), m_pDefaultRenderer->GetCommandPoolManager(), indices, indexBuffer, indexBufferMemory);
 }

@@ -22,16 +22,13 @@
 #include "Vulkan/VulkanManagers/ImageManager.h"
 #include "Vulkan/VulkanManagers/CommandpoolManager.h"
 #include "Vulkan/VulkanManagers/PipelineManager.h"
-#include "Vulkan/VulkanManagers/BufferManager.h"
+#include "Vulkan/VulkanManagers/BufferCreator.h"
 #include "Vulkan/VulkanWrappers/GPUObject.h"
 
 #include "Engine/Window.h"
 
 DDM3::DefaultRenderer::DefaultRenderer()
 {
-	// Create buffer manager
-	m_pBufferManager = std::make_unique<BufferManager>();
-
 	auto surface{ VulkanObject::GetInstance().GetSurface() };
 
 	// Get pointer to gpu object
@@ -41,7 +38,8 @@ DDM3::DefaultRenderer::DefaultRenderer()
 	m_pCommandPoolManager = std::make_unique<CommandpoolManager>(pGPUObject, surface, VulkanObject::GetInstance().GetMaxFrames());
 
 	// Initialize the image manager
-	m_pImageManager = std::make_unique<ImageManager>(pGPUObject, m_pBufferManager.get(), m_pCommandPoolManager.get());
+	m_pImageManager = std::make_unique<ImageManager>(pGPUObject, m_pCommandPoolManager.get());
+	m_pImageManager->CreateDefaultResources(pGPUObject, m_pCommandPoolManager.get());
 
 	// Get the max amount of samples per pixel
 	m_MsaaSamples = VulkanUtils::GetMaxUsableSampleCount(pGPUObject->GetPhysicalDevice());
@@ -349,34 +347,10 @@ void DDM3::DefaultRenderer::AddGraphicsPipeline(const std::string& pipelineName,
 		m_MsaaSamples, pipelineName, filePaths, hasDepthStencil);
 }
 
-void DDM3::DefaultRenderer::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory)
-{
-	// Create the buffer trough vulkan utils
-	m_pBufferManager->CreateBuffer(DDM3::VulkanObject::GetInstance().GetGPUObject(), size, usage, properties, buffer, bufferMemory);
-}
-
-void DDM3::DefaultRenderer::CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size)
-{
-	// Copy a buffer trough the bufferManager
-	m_pBufferManager->CopyBuffer(DDM3::VulkanObject::GetInstance().GetGPUObject(), m_pCommandPoolManager.get(), srcBuffer, dstBuffer, size);
-}
-
-void DDM3::DefaultRenderer::CreateVertexBuffer(std::vector<DDM3::Vertex>& vertices, VkBuffer& vertexBuffer, VkDeviceMemory& vertexBufferMemory)
-{
-	// Create a vertex buffer trough the buffer manager
-	m_pBufferManager->CreateVertexBuffer(DDM3::VulkanObject::GetInstance().GetGPUObject(), m_pCommandPoolManager.get(), vertices, vertexBuffer, vertexBufferMemory);
-}
-
-void DDM3::DefaultRenderer::CreateIndexBuffer(std::vector<uint32_t>& indices, VkBuffer& indexBuffer, VkDeviceMemory& indexBufferMemory)
-{
-	// Create an index buffer trough the buffer manager
-	m_pBufferManager->CreateIndexBuffer(DDM3::VulkanObject::GetInstance().GetGPUObject(), m_pCommandPoolManager.get(), indices, indexBuffer, indexBufferMemory);
-}
-
 void DDM3::DefaultRenderer::CreateTexture(Texture& texture, const std::string& textureName)
 {
 	// Create the image trough the image manager
-	m_pImageManager->CreateTextureImage(DDM3::VulkanObject::GetInstance().GetGPUObject(), m_pBufferManager.get(), texture, textureName, m_pCommandPoolManager.get());
+	m_pImageManager->CreateTextureImage(DDM3::VulkanObject::GetInstance().GetGPUObject(), texture, textureName, m_pCommandPoolManager.get());
 	// Create the image view
 	texture.imageView = m_pImageManager->CreateImageView(DDM3::VulkanObject::GetInstance().GetDevice(), texture.image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, texture.mipLevels);
 }
@@ -384,7 +358,12 @@ void DDM3::DefaultRenderer::CreateTexture(Texture& texture, const std::string& t
 void DDM3::DefaultRenderer::CreateCubeTexture(Texture& cubeTexture, const std::initializer_list<const std::string>& textureNames)
 {
 	// Create a cube texture trough image manager
-	m_pImageManager->CreateCubeTexture(DDM3::VulkanObject::GetInstance().GetGPUObject(), m_pBufferManager.get(), cubeTexture, textureNames, m_pCommandPoolManager.get());
+	m_pImageManager->CreateCubeTexture(DDM3::VulkanObject::GetInstance().GetGPUObject(), cubeTexture, textureNames, m_pCommandPoolManager.get());
+}
+
+DDM3::CommandpoolManager* DDM3::DefaultRenderer::GetCommandPoolManager()
+{
+	return m_pCommandPoolManager.get();
 }
 
 VkExtent2D DDM3::DefaultRenderer::GetExtent()

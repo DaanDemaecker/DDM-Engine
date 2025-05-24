@@ -20,21 +20,11 @@
 namespace DDM3
 {
     // Class forward declarations
-    class ImGuiWrapper;
-    class InstanceWrapper;
-    class SurfaceWrapper;
-    class GPUObject;
-    class SyncObjectManager;
-    class CommandpoolManager;
-    class BufferManager;
-    class ImageManager;
-    class SwapchainWrapper;
-    class RenderpassWrapper;
-    class PipelineManager;
-    class PipelineWrapper;
-    class DescriptorObject;
-
     class VulkanCore;
+    class GPUObject;
+    class DefaultRenderer;
+    class DescriptorObject;
+    class BufferCreator;
 
 
     class VulkanObject final : public Singleton<VulkanObject>
@@ -156,6 +146,9 @@ namespace DDM3
 
         // Renderer
         std::unique_ptr<DefaultRenderer> m_pDefaultRenderer{};
+
+        // Buffer creator
+        std::unique_ptr<BufferCreator> m_pBufferCreator{};
 
         uint32_t m_MipLevels{};
 
