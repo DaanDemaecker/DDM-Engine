@@ -41,14 +41,11 @@ DDM3::DefaultRenderer::DefaultRenderer()
 	m_pImageManager = std::make_unique<ImageManager>(pGPUObject, m_pCommandPoolManager.get());
 	m_pImageManager->CreateDefaultResources(pGPUObject, m_pCommandPoolManager.get());
 
-	// Get the max amount of samples per pixel
-	m_MsaaSamples = VulkanUtils::GetMaxUsableSampleCount(pGPUObject->GetPhysicalDevice());
-
 	// Initialize the swapchain
-	m_pSwapchainWrapper = std::make_unique<SwapchainWrapper>(pGPUObject, surface, m_pImageManager.get(), m_MsaaSamples);
+	m_pSwapchainWrapper = std::make_unique<SwapchainWrapper>(pGPUObject, surface, m_pImageManager.get(), VulkanObject::GetInstance().GetMsaaSamples());
 
 	// Initialize the renderpass
-	m_pRenderpassWrapper = std::make_unique<RenderpassWrapper>(pGPUObject->GetDevice(), m_pSwapchainWrapper->GetFormat(), VulkanUtils::FindDepthFormat(pGPUObject->GetPhysicalDevice()), m_MsaaSamples);
+	m_pRenderpassWrapper = std::make_unique<RenderpassWrapper>(pGPUObject->GetDevice(), m_pSwapchainWrapper->GetFormat(), VulkanUtils::FindDepthFormat(pGPUObject->GetPhysicalDevice()), VulkanObject::GetInstance().GetMsaaSamples());
 
 	// Create a single time command buffer
 	auto commandBuffer{ BeginSingleTimeCommands() };
@@ -268,7 +265,7 @@ void DDM3::DefaultRenderer::InitImgui()
 	// Give functoin for error handling
 	init_info.CheckVkResultFn = [](VkResult /*err*/) { /* error handling */ };
 	// Give the max amount of samples per mixel
-	init_info.MSAASamples = m_MsaaSamples;
+	init_info.MSAASamples = VulkanObject::GetInstance().GetMsaaSamples();
 
 	// Create a single time command buffer
 	auto commandBuffer{ BeginSingleTimeCommands() };
@@ -343,8 +340,8 @@ VkCommandBuffer& DDM3::DefaultRenderer::GetCurrentCommandBuffer()
 void DDM3::DefaultRenderer::AddGraphicsPipeline(const std::string& pipelineName, std::initializer_list<const std::string>& filePaths, bool hasDepthStencil)
 {
 	// Add a graphics pipeline trough the pipeline manager
-	m_pPipelineManager->AddGraphicsPipeline(DDM3::VulkanObject::GetInstance().GetDevice(), m_pRenderpassWrapper->GetRenderpass(),
-		m_MsaaSamples, pipelineName, filePaths, hasDepthStencil);
+	m_pPipelineManager->AddGraphicsPipeline(DDM3::VulkanObject::GetInstance().GetDevice(), m_pRenderpassWrapper->GetRenderpass(), VulkanObject::GetInstance().GetMsaaSamples(),
+		pipelineName, filePaths, hasDepthStencil);
 }
 
 void DDM3::DefaultRenderer::CreateTexture(Texture& texture, const std::string& textureName)

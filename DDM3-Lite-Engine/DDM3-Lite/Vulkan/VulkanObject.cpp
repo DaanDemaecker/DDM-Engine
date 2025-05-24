@@ -51,6 +51,8 @@ DDM3::VulkanObject::VulkanObject()
 	m_pVulkanCore = std::make_unique<VulkanCore>();
 
 	m_pBufferCreator = std::make_unique<BufferCreator>();
+
+	m_MsaaSamples = VulkanUtils::GetMaxUsableSampleCount(m_pVulkanCore->GetPhysicalDevice());
 }
 
 DDM3::VulkanObject::~VulkanObject()

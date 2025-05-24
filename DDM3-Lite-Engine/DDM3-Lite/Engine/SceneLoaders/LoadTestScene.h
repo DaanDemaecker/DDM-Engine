@@ -251,11 +251,11 @@ namespace LoadTestScene
 
 			auto defaultMaterial = std::make_shared<DDM3::Material>();
 
-			renderComponent->SetMaterial(defaultMaterial);
+			renderComponent->SetMaterial(texturedMaterial);
 
 			auto pMaterialSwitcher = pGameObject->AddComponent<DDM3::MaterialSwitcher>();
-			pMaterialSwitcher->RegisterMaterial("Default", defaultMaterial);
 			pMaterialSwitcher->RegisterMaterial("Diffuse", texturedMaterial);
+			pMaterialSwitcher->RegisterMaterial("Default", defaultMaterial);
 			pMaterialSwitcher->RegisterMaterial("DiffuseUnshaded", diffuseUnshadedMaterial);
 
 

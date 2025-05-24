@@ -129,6 +129,8 @@ namespace DDM3
 
        VkInstance GetVulkanInstance();
 
+       VkSampleCountFlagBits GetMsaaSamples() { return m_MsaaSamples; }
+
     private:
         // Constructor
         friend class Singleton<VulkanObject>;
@@ -139,6 +141,10 @@ namespace DDM3
 
         //--Current frame--
         static uint32_t m_CurrentFrame;
+
+
+        //--MultiSampling--
+        VkSampleCountFlagBits m_MsaaSamples = VK_SAMPLE_COUNT_1_BIT;
 
         //----Member variables----
         // Vulkan Core

@@ -83,10 +83,6 @@ namespace DDM3
 
 		VkRenderPass GetRenderpass();
 	private:
-
-		//--MultiSampling--
-		VkSampleCountFlagBits m_MsaaSamples = VK_SAMPLE_COUNT_1_BIT;
-
 		// Pointer to thep pipeline manager
 		std::unique_ptr<PipelineManager> m_pPipelineManager{};
 
