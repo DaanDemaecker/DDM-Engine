@@ -55,7 +55,7 @@ add_executable(${EXECUTABLE_NAME}
 "Components/MaterialSwitcher/MaterialSwitcher.cpp"
 "Components/MaterialSwitcher/MaterialSwitchManager.cpp"
 "Components/InfoComponent.cpp"
- "Vulkan/VulkanWrappers/VulkanCore.cpp")
+ "Vulkan/VulkanWrappers/VulkanCore.cpp" "Vulkan/Renderers/SSAORenderer.h")
 
 
 # Include directories specific to this target

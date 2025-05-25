@@ -1,7 +1,7 @@
-// DefaultRenderer.cpp
+// SSAORenderer.cpp
 
 // Header include
-#include "DefaultRenderer.h"
+#include "SSAORenderer.h"
 
 // File includes
 #include "Managers/SceneManager.h"
@@ -20,7 +20,7 @@
 
 #include "Engine/Window.h"
 
-DDM3::DefaultRenderer::DefaultRenderer()
+DDM3::SSAORenderer::SSAORenderer()
 {
 	auto surface{ VulkanObject::GetInstance().GetSurface() };
 
@@ -41,16 +41,16 @@ DDM3::DefaultRenderer::DefaultRenderer()
 	VulkanObject::GetInstance().EndSingleTimeCommands(commandBuffer);
 
 	// Initialize the sync objects
-	m_pSyncObjectManager = std::make_unique<SyncObjectManager>(pGPUObject->GetDevice(),VulkanObject::GetInstance().GetMaxFrames() );
+	m_pSyncObjectManager = std::make_unique<SyncObjectManager>(pGPUObject->GetDevice(), VulkanObject::GetInstance().GetMaxFrames());
 
 	InitImgui();
 }
 
-DDM3::DefaultRenderer::~DefaultRenderer()
+DDM3::SSAORenderer::~SSAORenderer()
 {
 }
 
-void DDM3::DefaultRenderer::Render()
+void DDM3::SSAORenderer::Render()
 {
 	auto& vulkanObject{ DDM3::VulkanObject::GetInstance() };
 
@@ -77,7 +77,7 @@ void DDM3::DefaultRenderer::Render()
 
 	vkResetFences(device, 1, &m_pSyncObjectManager->GetInFlightFence(currentFrame));
 
-	auto commandBuffer{ vulkanObject.GetCurrentCommandBuffer()};
+	auto commandBuffer{ vulkanObject.GetCurrentCommandBuffer() };
 	vkResetCommandBuffer(commandBuffer, 0);
 	RecordCommandBuffer(commandBuffer, imageIndex);
 
@@ -132,7 +132,7 @@ void DDM3::DefaultRenderer::Render()
 	}
 }
 
-void DDM3::DefaultRenderer::RecordCommandBuffer(VkCommandBuffer& commandBuffer, uint32_t imageIndex)
+void DDM3::SSAORenderer::RecordCommandBuffer(VkCommandBuffer& commandBuffer, uint32_t imageIndex)
 {
 	VkCommandBufferBeginInfo beginInfo{};
 	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -192,7 +192,7 @@ void DDM3::DefaultRenderer::RecordCommandBuffer(VkCommandBuffer& commandBuffer, 
 	}
 }
 
-void DDM3::DefaultRenderer::RecreateSwapChain()
+void DDM3::SSAORenderer::RecreateSwapChain()
 {
 	// Get a reference to the window struct
 	auto& windowStruct{ DDM3::Window::GetInstance().GetWindowStruct() };
@@ -222,7 +222,7 @@ void DDM3::DefaultRenderer::RecreateSwapChain()
 	VulkanObject::GetInstance().EndSingleTimeCommands(commandBuffer);
 }
 
-void DDM3::DefaultRenderer::InitImgui()
+void DDM3::SSAORenderer::InitImgui()
 {
 	// Create ImGui vulkan init info
 	ImGui_ImplVulkan_InitInfo init_info = {};
@@ -258,17 +258,17 @@ void DDM3::DefaultRenderer::InitImgui()
 	VulkanObject::GetInstance().EndSingleTimeCommands(commandBuffer);
 }
 
-void DDM3::DefaultRenderer::CleanupImgui()
+void DDM3::SSAORenderer::CleanupImgui()
 {
 	m_pImGuiWrapper = nullptr;
 }
 
-VkExtent2D DDM3::DefaultRenderer::GetExtent()
+VkExtent2D DDM3::SSAORenderer::GetExtent()
 {
 	return m_pSwapchainWrapper->GetExtent();
 }
 
-VkRenderPass DDM3::DefaultRenderer::GetRenderpass()
+VkRenderPass DDM3::SSAORenderer::GetRenderpass()
 {
 	return m_pRenderpassWrapper->GetRenderpass();
 }

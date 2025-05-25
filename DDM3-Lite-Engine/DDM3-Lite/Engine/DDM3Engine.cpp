@@ -12,9 +12,12 @@
 #include "Managers/ConfigManager.h"
 #include "Managers/TimeManager.h"
 
+
 #include "Vulkan/VulkanObject.h"
 
 #include "Managers/InputManager.h"
+
+#include "Vulkan/Renderers/DefaultRenderer.h"
 
 // Standard library includes
 #include <chrono>
@@ -22,12 +25,6 @@
 
 DDM3::DDM3Engine::DDM3Engine()
 {
-	// Create the window with the given width and height
-	DDM3::Window::GetInstance();
-
-	auto& vulkanObject{ DDM3::VulkanObject::GetInstance() };
-	
-	vulkanObject.Init();
 }
 
 DDM3::DDM3Engine::~DDM3Engine()
@@ -38,6 +35,12 @@ DDM3::DDM3Engine::~DDM3Engine()
 
 void DDM3::DDM3Engine::Run(const std::function<void()>& load)
 {
+	if (!m_Initialized)
+	{
+		std::cout << "Engine not initialized \n";
+		return;
+	}
+
 	load();
 
 	auto& renderer{ VulkanObject::GetInstance() };

@@ -68,7 +68,7 @@ void DDM3::TextureDescriptorObject::Clear()
 	SetupImageInfos();
 }
 
-int DDM3::TextureDescriptorObject::GetTextureAmount() const
+size_t DDM3::TextureDescriptorObject::GetTextureAmount() const
 {
 	return m_Textures.size();
 }

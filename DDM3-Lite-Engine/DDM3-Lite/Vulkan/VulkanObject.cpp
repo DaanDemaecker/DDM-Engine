@@ -64,6 +64,15 @@ DDM3::CommandpoolManager* DDM3::VulkanObject::GetCommandPoolManager()
 	return m_pCommandPoolManager.get();
 }
 
+void DDM3::VulkanObject::Setup(std::unique_ptr<Renderer> pRenderer)
+{
+	m_pRenderer = std::move(pRenderer);
+
+	m_pPipelineManager->AddDefaultPipeline(m_pVulkanCore->GetDevice(), m_pRenderer->GetRenderpass(), m_MsaaSamples);
+
+	m_pImageManager = std::make_unique<ImageManager>(m_pVulkanCore->GetGpuObject(), GetCommandPoolManager());
+}
+
 DDM3::VulkanObject::~VulkanObject()
 {
 	
@@ -98,15 +107,6 @@ VkSampler& DDM3::VulkanObject::GetSampler()
 DDM3::PipelineWrapper* DDM3::VulkanObject::GetPipeline(const std::string& name)
 {
 	return m_pPipelineManager->GetPipeline(name);
-}
-
-void DDM3::VulkanObject::Init()
-{
-	m_pRenderer = std::make_unique<DefaultRenderer>();
-
-	m_pPipelineManager->AddDefaultPipeline(m_pVulkanCore->GetDevice(), m_pRenderer->GetRenderpass(), m_MsaaSamples);
-
-	m_pImageManager = std::make_unique<ImageManager>(m_pVulkanCore->GetGpuObject(), GetCommandPoolManager());
 }
 
 void DDM3::VulkanObject::Terminate()

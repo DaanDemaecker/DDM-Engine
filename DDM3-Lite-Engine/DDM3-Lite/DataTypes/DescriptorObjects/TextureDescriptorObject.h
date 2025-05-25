@@ -29,7 +29,7 @@ namespace DDM3
          
         void Clear();
 
-        int GetTextureAmount() const;
+        size_t GetTextureAmount() const;
 
         // Destructor
         virtual ~TextureDescriptorObject();

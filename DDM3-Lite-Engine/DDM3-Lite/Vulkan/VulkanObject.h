@@ -16,6 +16,7 @@
 #include <map>
 #include <memory>
 #include <vector>
+#include <stdexcept>
 
 namespace DDM3
 {
@@ -40,6 +41,7 @@ namespace DDM3
         VulkanObject& operator=(VulkanObject& other) = delete;
         VulkanObject& operator=(VulkanObject&& other) = delete;
 
+        template <class T>
         void Init();
 
         void Terminate();
@@ -182,7 +184,19 @@ namespace DDM3
 
         CommandpoolManager* GetCommandPoolManager();
 
+        void Setup(std::unique_ptr<Renderer> pRenderer);
     };
+
+    template<class T>
+    inline void VulkanObject::Init()
+    {
+        if (!std::is_base_of<Renderer, T>())
+        {
+            throw std::runtime_error("Class is not derived from");
+        }
+
+        Setup(std::make_unique<T>());
+    }
 }
 
 #endif // !_VULKAN_OBJECT_
