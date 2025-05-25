@@ -4,6 +4,9 @@
 #ifndef _DEFAULT_RENDERER_
 #define _DEFAULT_RENDERER_
 
+// Parent include
+#include "Vulkan/Renderers/Renderer.h"
+
 // File includes
 #include "Includes/VulkanIncludes.h"
 #include "Vulkan/VulkanManagers/SyncObjectManager.h"
@@ -27,7 +30,7 @@ namespace DDM3
 	class CommandpoolManager;
 	class SyncObjectManager;
 
-	class DefaultRenderer final
+	class DefaultRenderer final : public Renderer
 	{
 	public:
 		DefaultRenderer();
@@ -41,11 +44,11 @@ namespace DDM3
 		DefaultRenderer& operator=(DefaultRenderer&) = delete;
 		DefaultRenderer& operator=(DefaultRenderer&& other) = delete;
 
-		void Render();
-
-		VkExtent2D GetExtent();
-
-		VkRenderPass GetRenderpass();
+		virtual void Render() override;
+		  
+		virtual VkExtent2D GetExtent() override;
+		  
+		virtual VkRenderPass GetRenderpass() override;
 	private:
 		// Pointer to the renderpass wrapper
 		std::unique_ptr<RenderpassWrapper> m_pRenderpassWrapper{};

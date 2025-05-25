@@ -1,14 +1,14 @@
-// VulkanRenderer.h
+// VulkanObject.h
 
 // This class will hold and manage most vulkan objects and  handle rendering
 
-#ifndef VulkanRendererIncluded
-#define VulkanRendererIncluded
+#ifndef _VULKAN_OBJECT_
+#define _VULKAN_OBJECT_
 
 // File includes
 #include "Engine/Singleton.h"
 #include "DataTypes/Structs.h"
-#include "Vulkan/Renderers/DefaultRenderer.h"
+#include "Vulkan/Renderers/Renderer.h"
 
 // Standard library includes
 #include <iostream>
@@ -22,13 +22,12 @@ namespace DDM3
     // Class forward declarations
     class VulkanCore;
     class GPUObject;
-    class DefaultRenderer;
     class DescriptorObject;
     class BufferCreator;
     class PipelineManager;
+    class PipelineWrapper;
     class ImageManager;
     class CommandpoolManager;
-
 
     class VulkanObject final : public Singleton<VulkanObject>
     {
@@ -66,7 +65,7 @@ namespace DDM3
 
         VkSampler& GetSampler();
 
-        DDM3::PipelineWrapper* GetPipeline(const std::string& name = "Default");
+        PipelineWrapper* GetPipeline(const std::string& name = "Default");
 
         VkCommandBuffer& GetCurrentCommandBuffer();
 
@@ -164,7 +163,7 @@ namespace DDM3
         std::unique_ptr<VulkanCore> m_pVulkanCore{};
 
         // Renderer
-        std::unique_ptr<DefaultRenderer> m_pDefaultRenderer{};
+        std::unique_ptr<Renderer> m_pRenderer;
 
         // Buffer creator
         std::unique_ptr<BufferCreator> m_pBufferCreator{};
@@ -186,4 +185,4 @@ namespace DDM3
     };
 }
 
-#endif // !VulkanRendererIncluded
+#endif // !_VULKAN_OBJECT_

@@ -1,4 +1,4 @@
-// VulkanRenderer.cpp
+// VulkanObject.cpp
 
 // Header include
 #include "VulkanObject.h"
@@ -72,7 +72,7 @@ DDM3::VulkanObject::~VulkanObject()
 void DDM3::VulkanObject::AddGraphicsPipeline(const std::string& pipelineName, std::initializer_list<const std::string>&& filePaths, bool hasDepthStencil)
 {
 	// Add a graphics pipeline trough the pipeline manager
-	m_pPipelineManager->AddGraphicsPipeline(m_pVulkanCore->GetDevice(), m_pDefaultRenderer->GetRenderpass(), m_MsaaSamples, pipelineName, filePaths, hasDepthStencil);
+	m_pPipelineManager->AddGraphicsPipeline(m_pVulkanCore->GetDevice(), m_pRenderer->GetRenderpass(), m_MsaaSamples, pipelineName, filePaths, hasDepthStencil);
 }
 
 VkDevice DDM3::VulkanObject::GetDevice()
@@ -102,21 +102,21 @@ DDM3::PipelineWrapper* DDM3::VulkanObject::GetPipeline(const std::string& name)
 
 void DDM3::VulkanObject::Init()
 {
-	m_pDefaultRenderer = std::make_unique<DefaultRenderer>();
+	m_pRenderer = std::make_unique<DefaultRenderer>();
 
-	m_pPipelineManager->AddDefaultPipeline(m_pVulkanCore->GetDevice(), m_pDefaultRenderer->GetRenderpass(), m_MsaaSamples);
+	m_pPipelineManager->AddDefaultPipeline(m_pVulkanCore->GetDevice(), m_pRenderer->GetRenderpass(), m_MsaaSamples);
 
 	m_pImageManager = std::make_unique<ImageManager>(m_pVulkanCore->GetGpuObject(), GetCommandPoolManager());
 }
 
 void DDM3::VulkanObject::Terminate()
 {
-	m_pDefaultRenderer = nullptr;
+	m_pRenderer = nullptr;
 }
 
 void DDM3::VulkanObject::Render()
 {
-	m_pDefaultRenderer->Render();
+	m_pRenderer->Render();
 
 	++m_CurrentFrame %= m_MaxFramesInFlight;
 }
@@ -148,7 +148,7 @@ void DDM3::VulkanObject::UpdateUniformBuffer(UniformBufferObject& buffer)
 	if (pCamera == nullptr)
 		return;
 
-	pCamera->UpdateUniformBuffer(buffer, m_pDefaultRenderer->GetExtent());
+	pCamera->UpdateUniformBuffer(buffer, m_pRenderer->GetExtent());
 }
 
 DDM3::DescriptorObject* DDM3::VulkanObject::GetLightDescriptor()
@@ -164,7 +164,7 @@ DDM3::GPUObject* DDM3::VulkanObject::GetGPUObject() const
 
 VkRenderPass DDM3::VulkanObject::GetRenderPass() const
 {
-	return m_pDefaultRenderer->GetRenderpass();
+	return m_pRenderer->GetRenderpass();
 }
 
 int DDM3::VulkanObject::GetCurrentFrame()

@@ -67,7 +67,7 @@ namespace DDM3
 		void UpdateUniformBuffer(uint32_t frame);
 
 		//Texture functions
-		DDM3::PipelineWrapper* GetPipeline();
+		PipelineWrapper* GetPipeline();
 	};
 }
 #endif // !MeshRenderComponentIncluded
