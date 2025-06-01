@@ -1,8 +1,8 @@
-// ForwardRenderer.h
-// Renderer that will use the forward rendering technique
+// DefferedRenderer.h
+// Renderer that will use the deferred rendering technique
 
-#ifndef _FORWARD_RENDERER_
-#define _FORWARD_RENDERER_
+#ifndef _DEFERRED_RENDERER_
+#define _DEFERRED_RENDERER_
 
 // Parent include
 #include "Vulkan/Renderers/Renderer.h"
@@ -24,24 +24,24 @@ namespace DDM3
 	class ImGuiWrapper;
 	class SyncObjectManager;
 
-	class ForwardRenderer final : public Renderer
+	class DeferredRenderer final : public Renderer
 	{
 	public:
-		ForwardRenderer();
+		DeferredRenderer();
 
-		~ForwardRenderer();
+		~DeferredRenderer();
 
 		// Delete copy and move operations
-		ForwardRenderer(ForwardRenderer&) = delete;
-		ForwardRenderer(ForwardRenderer&&) = delete;
+		DeferredRenderer(DeferredRenderer&) = delete;
+		DeferredRenderer(DeferredRenderer&&) = delete;
 
-		ForwardRenderer& operator=(ForwardRenderer&) = delete;
-		ForwardRenderer& operator=(ForwardRenderer&& other) = delete;
+		DeferredRenderer& operator=(DeferredRenderer&) = delete;
+		DeferredRenderer& operator=(DeferredRenderer&& other) = delete;
 
 		virtual void Render() override;
-		  
+
 		virtual VkExtent2D GetExtent() override;
-		  
+
 		virtual VkRenderPass GetRenderpass() override;
 	private:
 		// Pointer to the renderpass wrapper
@@ -66,4 +66,4 @@ namespace DDM3
 	};
 }
 
-#endif // !_FORWARD_RENDERER_
+#endif // !_DEFERRED_RENDERER_
