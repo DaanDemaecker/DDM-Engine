@@ -19,7 +19,7 @@ namespace DDM3
 		//     depthFormat: the format that the swapchain depth image is in
 		//     msaaSamples: the max amount of samples per pixels
 		RenderpassWrapper(VkDevice device, VkFormat swapchainImageFormat, VkFormat depthFormat,
-			VkSampleCountFlagBits msaaSamples);
+			VkSampleCountFlagBits msaaSamples, int attachmentCount);
 
 		// Delete default constructor
 		RenderpassWrapper() = delete;
@@ -56,7 +56,7 @@ namespace DDM3
 		//     depthFormat: the format that the swapchain depth image is in
 		//     msaaSamples: the max amount of samples per pixels
 		void CreateRenderPass(VkDevice device, VkFormat swapchainImageFormat, VkFormat depthFormat,
-			VkSampleCountFlagBits msaaSamples);
+			VkSampleCountFlagBits msaaSamples, int attachmentCount);
 
 	};
 }

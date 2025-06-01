@@ -63,8 +63,8 @@ void DDM3::SpectatorMovementComponent::Update()
 		auto& mouseDelta = input.GetMouseDelta();
 
 
-		m_TotalPitch += static_cast<float>(mouseDelta.y * deltaTime * m_AngularSpeed);
-		m_TotalYaw += static_cast<float>(mouseDelta.x * deltaTime * m_AngularSpeed);
+		m_TotalPitch += static_cast<float>(mouseDelta.y * m_AngularSpeed);
+		m_TotalYaw += static_cast<float>(mouseDelta.x * m_AngularSpeed);
 
 		// Rotate the camera based on mouse movement
 		transform->SetWorldRotation(m_TotalPitch, m_TotalYaw, 0);

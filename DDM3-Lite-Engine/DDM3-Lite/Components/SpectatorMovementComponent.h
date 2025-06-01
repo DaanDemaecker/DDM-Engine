@@ -15,7 +15,7 @@ namespace DDM3
 
 	private:
 		const float m_Speed{5.f};
-		const float m_AngularSpeed{ 0.5f };
+		const float m_AngularSpeed{ 0.01f };
 
 		float m_TotalPitch{};
 		float m_TotalYaw{};

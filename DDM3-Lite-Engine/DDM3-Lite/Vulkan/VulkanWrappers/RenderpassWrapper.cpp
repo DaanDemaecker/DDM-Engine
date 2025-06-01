@@ -8,10 +8,10 @@
 #include <array>
 #include <stdexcept>
 
-DDM3::RenderpassWrapper::RenderpassWrapper(VkDevice device, VkFormat swapchainImageFormat, VkFormat depthFormat, VkSampleCountFlagBits msaaSamples)
+DDM3::RenderpassWrapper::RenderpassWrapper(VkDevice device, VkFormat swapchainImageFormat, VkFormat depthFormat, VkSampleCountFlagBits msaaSamples, int attachmentCount)
 {
 	// Initialize renderpass
-	CreateRenderPass(device, swapchainImageFormat, depthFormat, msaaSamples);
+	CreateRenderPass(device, swapchainImageFormat, depthFormat, msaaSamples, attachmentCount);
 }
 
 DDM3::RenderpassWrapper::~RenderpassWrapper()
@@ -25,29 +25,42 @@ void DDM3::RenderpassWrapper::Cleanup(VkDevice device)
 	vkDestroyRenderPass(device, m_RenderPass, nullptr);
 }
 
-void DDM3::RenderpassWrapper::CreateRenderPass(VkDevice device, VkFormat swapchainImageFormat, VkFormat depthFormat, VkSampleCountFlagBits msaaSamples)
+void DDM3::RenderpassWrapper::CreateRenderPass(VkDevice device, VkFormat swapchainImageFormat, VkFormat depthFormat, VkSampleCountFlagBits msaaSamples, int attachmentCount)
 {
-	// Create attachment description
-	VkAttachmentDescription colorAttachment{};
-	// et format to color format 
-	colorAttachment.format = swapchainImageFormat;
-	// Give max amount of samplples
-	colorAttachment.samples = msaaSamples;
-	// Set loadOp function to load op clear
-	colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-	// Set storeOp functoin to store op store
-	colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-	// Set initial layout to undefined
-	colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	// Set final layout to color attachment optimal
-	colorAttachment.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;;
+	std::vector<VkAttachmentDescription> colorAttachments(attachmentCount);
+	std::vector<VkAttachmentReference> colorAttachmentRefs(attachmentCount);
 
-	// Create attachment reference
-	VkAttachmentReference colorAttachmentRef{};
-	// Set attachment to 0
-	colorAttachmentRef.attachment = 0;
-	// Set layout to color attachment optimal
-	colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+	for (int i{}; i < attachmentCount; ++i)
+	{
+		// Create attachment description
+		VkAttachmentDescription colorAttachment{};
+		// et format to color format 
+		colorAttachment.format = swapchainImageFormat;
+		// Give max amount of samplples
+		colorAttachment.samples = msaaSamples;
+		// Set loadOp function to load op clear
+		colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+		// Set storeOp functoin to store op store
+		colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+		// Set initial layout to undefined
+		colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+		// Set final layout to color attachment optimal
+		colorAttachment.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;;
+
+		// Create attachment reference
+		VkAttachmentReference colorAttachmentRef{};
+		// Set attachment to 0
+		colorAttachmentRef.attachment = 0;
+		// Set layout to color attachment optimal
+		colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+		colorAttachments[i] = colorAttachment;
+		colorAttachmentRefs[i] = colorAttachmentRef;
+	}
+
+
+	
 
 	// Create attachment description
 	VkAttachmentDescription depthAttachment{};
@@ -71,7 +84,7 @@ void DDM3::RenderpassWrapper::CreateRenderPass(VkDevice device, VkFormat swapcha
 	// Create attachment reference
 	VkAttachmentReference depthAttachmentRef{};
 	// Set attachmen to 1
-	depthAttachmentRef.attachment = 1;
+	depthAttachmentRef.attachment = attachmentCount;
 	// Set layout to depth stencil attachment optimal
 	depthAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
@@ -97,7 +110,7 @@ void DDM3::RenderpassWrapper::CreateRenderPass(VkDevice device, VkFormat swapcha
 	// Create attachment reference
 	VkAttachmentReference colorAttachmentResolveRef{};
 	// Set attachment to 2
-	colorAttachmentResolveRef.attachment = 2;
+	colorAttachmentResolveRef.attachment = attachmentCount + 1;
 	// Set layout to color attachment optimal
 	colorAttachmentResolveRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
@@ -106,9 +119,9 @@ void DDM3::RenderpassWrapper::CreateRenderPass(VkDevice device, VkFormat swapcha
 	// Set pipelinje bind point to graphics
 	subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
 	// Set color attachment count to 1
-	subpass.colorAttachmentCount = 1;
+	subpass.colorAttachmentCount = colorAttachments.size();
 	// Give pointer to color attachment reference
-	subpass.pColorAttachments = &colorAttachmentRef;
+	subpass.pColorAttachments = colorAttachmentRefs.data();
 	// Give pointer to depth attachment reference
 	subpass.pDepthStencilAttachment = &depthAttachmentRef;
 	// Give pointer to color attachment resole reference
@@ -130,7 +143,15 @@ void DDM3::RenderpassWrapper::CreateRenderPass(VkDevice device, VkFormat swapcha
 	dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
 
 	// Create array the size of all attachments
-	std::array<VkAttachmentDescription, 3> attachments = { colorAttachment, depthAttachment, colorAttachmentResolve };
+	std::vector<VkAttachmentDescription> attachments(attachmentCount + 2);
+
+	for (int i{}; i < colorAttachments.size(); ++i)
+	{
+		attachments[i] = colorAttachments[i];
+	}
+	attachments[attachmentCount] = depthAttachment;
+	attachments[attachmentCount + 1] = colorAttachmentResolve;
+
 	// Create rander pass create info
 	VkRenderPassCreateInfo renderPassInfo{};
 	// Set type to render pass create info

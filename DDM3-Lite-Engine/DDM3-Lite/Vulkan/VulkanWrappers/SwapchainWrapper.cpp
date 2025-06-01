@@ -178,8 +178,11 @@ void DDM3::SwapchainWrapper::Cleanup(VkDevice device)
 	// Loop trough the amount of swapchain framebuffers
 	for (size_t i = 0; i < m_SwapChainFramebuffers.size(); ++i)
 	{
-		// Delete the framebuffer
-		vkDestroyFramebuffer(device, m_SwapChainFramebuffers[i], nullptr);
+		if (m_SwapChainFramebuffers[i] != VK_NULL_HANDLE)
+		{
+			// Delete the framebuffer
+			vkDestroyFramebuffer(device, m_SwapChainFramebuffers[i], nullptr);
+		}
 	}
 
 	// Loop trough the amount of image views
