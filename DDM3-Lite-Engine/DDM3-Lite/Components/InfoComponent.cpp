@@ -87,7 +87,7 @@ void DDM3::InfoComponent::OnGUI()
 
 void DDM3::InfoComponent::QueryStats()
 {
-	m_DeltaTimeLabel = std::string("Delta time: " + std::to_string(static_cast<int>(m_DeltaTimeMS / m_Frames)) + " ms");
+	m_DeltaTimeLabel = std::string("Delta time: " + std::to_string(m_DeltaTimeMS / m_Frames) + " ms");
 	m_Frames = 0;
 	m_DeltaTimeMS = 0;
 

@@ -28,7 +28,6 @@
 #include "VulkanWrappers/GPUObject.h"
 #include "VulkanWrappers/ImGuiWrapper.h"
 #include "VulkanManagers/SyncObjectManager.h"
-#include "Renderers/DefaultRenderer.h"
 
 #include "Components/MeshRenderComponent.h"
 #include "Components/CameraComponent.h"

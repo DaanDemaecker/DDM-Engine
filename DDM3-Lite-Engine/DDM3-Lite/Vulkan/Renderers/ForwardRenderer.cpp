@@ -1,7 +1,7 @@
 // DefaultRenderer.cpp
 
 // Header include
-#include "DefaultRenderer.h"
+#include "ForwardRenderer.h"
 
 // File includes
 #include "Managers/SceneManager.h"
@@ -20,7 +20,7 @@
 
 #include "Engine/Window.h"
 
-DDM3::DefaultRenderer::DefaultRenderer()
+DDM3::ForwardRenderer::ForwardRenderer()
 {
 	auto surface{ VulkanObject::GetInstance().GetSurface() };
 
@@ -46,11 +46,11 @@ DDM3::DefaultRenderer::DefaultRenderer()
 	InitImgui();
 }
 
-DDM3::DefaultRenderer::~DefaultRenderer()
+DDM3::ForwardRenderer::~ForwardRenderer()
 {
 }
 
-void DDM3::DefaultRenderer::Render()
+void DDM3::ForwardRenderer::Render()
 {
 	auto& vulkanObject{ DDM3::VulkanObject::GetInstance() };
 
@@ -92,7 +92,7 @@ void DDM3::DefaultRenderer::Render()
 	submitInfo.pWaitDstStageMask = waitStages;
 
 	submitInfo.commandBufferCount = 1;
-	submitInfo.pCommandBuffers = &VulkanObject::GetInstance().GetCurrentCommandBuffer();
+	submitInfo.pCommandBuffers = &commandBuffer;
 
 	VkSemaphore signalSemaphores[] = { m_pSyncObjectManager->GetRenderFinishedSemaphore(currentFrame) };
 	submitInfo.signalSemaphoreCount = 1;
@@ -132,7 +132,7 @@ void DDM3::DefaultRenderer::Render()
 	}
 }
 
-void DDM3::DefaultRenderer::RecordCommandBuffer(VkCommandBuffer& commandBuffer, uint32_t imageIndex)
+void DDM3::ForwardRenderer::RecordCommandBuffer(VkCommandBuffer& commandBuffer, uint32_t imageIndex)
 {
 	VkCommandBufferBeginInfo beginInfo{};
 	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -149,9 +149,12 @@ void DDM3::DefaultRenderer::RecordCommandBuffer(VkCommandBuffer& commandBuffer, 
 	renderPassInfo.renderPass = m_pRenderpassWrapper->GetRenderpass();
 	renderPassInfo.framebuffer = m_pSwapchainWrapper->GetFrameBuffer(imageIndex);
 
-	renderPassInfo.renderArea.offset = { 0, 0 };
-	renderPassInfo.renderArea.extent = m_pSwapchainWrapper->GetExtent();
 
+	auto extent{ m_pSwapchainWrapper->GetExtent() };
+
+	renderPassInfo.renderArea.offset = { 0, 0 };
+	renderPassInfo.renderArea.extent = extent;
+	
 	std::array<VkClearValue, 2> clearValues{};
 	clearValues[0].color = { {0.388f, 0.588f, 0.929f, 1.0f} };
 	clearValues[1].depthStencil = { 1.0f, 0 };
@@ -161,7 +164,6 @@ void DDM3::DefaultRenderer::RecordCommandBuffer(VkCommandBuffer& commandBuffer, 
 
 	vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
-	auto extent{ m_pSwapchainWrapper->GetExtent() };
 
 	VkViewport viewport{};
 	viewport.x = 0.0f;
@@ -192,7 +194,7 @@ void DDM3::DefaultRenderer::RecordCommandBuffer(VkCommandBuffer& commandBuffer, 
 	}
 }
 
-void DDM3::DefaultRenderer::RecreateSwapChain()
+void DDM3::ForwardRenderer::RecreateSwapChain()
 {
 	// Get a reference to the window struct
 	auto& windowStruct{ DDM3::Window::GetInstance().GetWindowStruct() };
@@ -222,7 +224,7 @@ void DDM3::DefaultRenderer::RecreateSwapChain()
 	VulkanObject::GetInstance().EndSingleTimeCommands(commandBuffer);
 }
 
-void DDM3::DefaultRenderer::InitImgui()
+void DDM3::ForwardRenderer::InitImgui()
 {
 	// Create ImGui vulkan init info
 	ImGui_ImplVulkan_InitInfo init_info = {};
@@ -258,17 +260,17 @@ void DDM3::DefaultRenderer::InitImgui()
 	VulkanObject::GetInstance().EndSingleTimeCommands(commandBuffer);
 }
 
-void DDM3::DefaultRenderer::CleanupImgui()
+void DDM3::ForwardRenderer::CleanupImgui()
 {
 	m_pImGuiWrapper = nullptr;
 }
 
-VkExtent2D DDM3::DefaultRenderer::GetExtent()
+VkExtent2D DDM3::ForwardRenderer::GetExtent()
 {
 	return m_pSwapchainWrapper->GetExtent();
 }
 
-VkRenderPass DDM3::DefaultRenderer::GetRenderpass()
+VkRenderPass DDM3::ForwardRenderer::GetRenderpass()
 {
 	return m_pRenderpassWrapper->GetRenderpass();
 }

@@ -20,7 +20,7 @@ namespace DDM3
 		// Get the current delta time
 		float GetDeltaTime() const { return m_DeltaTime; }
 
-		int GetDeltaTimeMS() const { return static_cast<int>(m_DeltaTime * 1000); }
+		float GetDeltaTimeMS() const { return m_DeltaTime * 1000; }
 
 		// Get the current amount of frames per second
 		int GetFps() const { return m_Fps; }

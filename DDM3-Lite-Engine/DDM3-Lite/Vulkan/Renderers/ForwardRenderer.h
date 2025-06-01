@@ -24,19 +24,19 @@ namespace DDM3
 	class ImGuiWrapper;
 	class SyncObjectManager;
 
-	class DefaultRenderer final : public Renderer
+	class ForwardRenderer final : public Renderer
 	{
 	public:
-		DefaultRenderer();
+		ForwardRenderer();
 
-		~DefaultRenderer();
+		~ForwardRenderer();
 
 		// Delete copy and move operations
-		DefaultRenderer(DefaultRenderer&) = delete;
-		DefaultRenderer(DefaultRenderer&&) = delete;
+		ForwardRenderer(ForwardRenderer&) = delete;
+		ForwardRenderer(ForwardRenderer&&) = delete;
 
-		DefaultRenderer& operator=(DefaultRenderer&) = delete;
-		DefaultRenderer& operator=(DefaultRenderer&& other) = delete;
+		ForwardRenderer& operator=(ForwardRenderer&) = delete;
+		ForwardRenderer& operator=(ForwardRenderer&& other) = delete;
 
 		virtual void Render() override;
 		  

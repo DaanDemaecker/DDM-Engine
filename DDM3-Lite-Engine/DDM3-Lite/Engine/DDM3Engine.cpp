@@ -17,8 +17,6 @@
 
 #include "Managers/InputManager.h"
 
-#include "Vulkan/Renderers/DefaultRenderer.h"
-
 // Standard library includes
 #include <chrono>
 #include <thread>
@@ -58,6 +56,7 @@ void DDM3::DDM3Engine::Run(const std::function<void()>& load)
 
 	time.SetFixedTime(fixedTimeStep);
 
+	constexpr bool followDesiredFramerate = false;
 	constexpr float desiredFrameRate = 144.f;
 	constexpr float desiredFrameDuration = 1000.f / desiredFrameRate;
 
@@ -110,7 +109,7 @@ void DDM3::DDM3Engine::Run(const std::function<void()>& load)
 		const auto frameDuration = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - currentTime);
 		const auto sleepTime = std::chrono::milliseconds(static_cast<int>(desiredFrameDuration)) - frameDuration;
 
-		if (sleepTime > std::chrono::milliseconds(0))
+		if (followDesiredFramerate && sleepTime > std::chrono::milliseconds(0))
 		{
 			std::this_thread::sleep_for(sleepTime);
 		}

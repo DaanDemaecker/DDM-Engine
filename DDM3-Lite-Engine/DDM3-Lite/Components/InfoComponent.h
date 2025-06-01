@@ -38,7 +38,7 @@ namespace DDM3
 	
 		const int m_FramesPerUpdate{ 5 };
 		int m_Frames{};
-		int m_DeltaTimeMS{};
+		float m_DeltaTimeMS{};
 
 		void QueryStats();
 
