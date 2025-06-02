@@ -62,6 +62,8 @@ void DDM3::PipelineWrapper::CreatePipeline(VkDevice device, VkRenderPass renderP
 	VkSampleCountFlagBits sampleCount,
 	std::initializer_list<const std::string>& filePaths, bool hasDepthStencil)
 {
+	int attachmentCount = 0;
+
 	// Create a vector of shader modules the size of the filepaths list
 	std::vector<std::unique_ptr<DDM3::ShaderModuleWrapper>> shaderModuleWrappers(filePaths.size());
 
@@ -71,6 +73,12 @@ void DDM3::PipelineWrapper::CreatePipeline(VkDevice device, VkRenderPass renderP
 	for (auto& filePath : filePaths)
 	{
 		shaderModuleWrappers[index] = std::make_unique<DDM3::ShaderModuleWrapper>(device, filePath);
+
+		if (shaderModuleWrappers[index]->GetShaderStage() == VK_SHADER_STAGE_FRAGMENT_BIT)
+		{
+			// If the shader stage is a fragment shader, increase the attachment count
+			attachmentCount = shaderModuleWrappers[index]->GetOutputAmount();
+		}
 
 		index++;
 	}
@@ -148,13 +156,21 @@ void DDM3::PipelineWrapper::CreatePipeline(VkDevice device, VkRenderPass renderP
 
 	// Create color blend attachment state
 	VkPipelineColorBlendAttachmentState colorBlendAttachment{};
+	std::vector<VkPipelineColorBlendAttachmentState> colorBlendAttachments{};
 	// Set color blend attachment state
 	SetColorBlendAttachmentState(colorBlendAttachment);
+
+	for (int i{}; i < attachmentCount; i++)
+	{
+		// Add color blend attachment to the vector
+		colorBlendAttachments.push_back(colorBlendAttachment);
+	}
 
 	// Create color blending create info
 	VkPipelineColorBlendStateCreateInfo colorBlending{};
 	// Set color blend state create info
-	SetColorblendStateCreateInfo(colorBlending, &colorBlendAttachment);
+	SetColorblendStateCreateInfo(colorBlending, &colorBlendAttachment, attachmentCount);
+
 
 	// Create pipeline layout info
 	VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
@@ -363,7 +379,7 @@ void DDM3::PipelineWrapper::SetColorBlendAttachmentState(VkPipelineColorBlendAtt
 	colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
 }
 
-void DDM3::PipelineWrapper::SetColorblendStateCreateInfo(VkPipelineColorBlendStateCreateInfo& colorBlending, VkPipelineColorBlendAttachmentState* colorBlendAttachment)
+void DDM3::PipelineWrapper::SetColorblendStateCreateInfo(VkPipelineColorBlendStateCreateInfo& colorBlending, VkPipelineColorBlendAttachmentState* colorBlendAttachment, int attachmentCount)
 {
 	// Set type to pipeline color blend state create info
 	colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
@@ -372,7 +388,7 @@ void DDM3::PipelineWrapper::SetColorblendStateCreateInfo(VkPipelineColorBlendSta
 	// Set logic op to copy
 	colorBlending.logicOp = VK_LOGIC_OP_COPY;
 	// Set attachment count to 1
-	colorBlending.attachmentCount = 1;
+	colorBlending.attachmentCount = attachmentCount;
 	// Give pointer to color blend attachment
 	colorBlending.pAttachments = colorBlendAttachment;
 	// Set all blend constants to 0

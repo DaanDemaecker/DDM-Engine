@@ -2,8 +2,10 @@
 #include "DDM3Engine.h"
 #include "SceneLoaders/LoadModelLoaderScene.h"
 #include "SceneLoaders/LoadTestScene.h"
+#include "SceneLoaders/LoadDeferredScene.h"
 
 #include "Vulkan/Renderers/ForwardRenderer.h"
+#include "Vulkan/Renderers/DeferredRenderer.h"
 
 int main()
 {
@@ -11,7 +13,10 @@ int main()
 	DDM3::DDM3Engine engine{};
 
 	engine.Init<DDM3::ForwardRenderer>();
+	//engine.Init<DDM3::DeferredRenderer>();
 
+
+	//engine.Run(LoadDeferredScene::LoadScene);
 	engine.Run(LoadTestScene::loadTestScene);
 	//engine.Run(LoadModelLoaderScene::LoadModelLoaderScene);
 	

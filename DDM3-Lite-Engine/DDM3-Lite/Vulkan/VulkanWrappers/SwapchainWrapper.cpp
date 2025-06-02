@@ -19,8 +19,10 @@
 #include <algorithm>
 
 DDM3::SwapchainWrapper::SwapchainWrapper(GPUObject* pGPUObject, VkSurfaceKHR surface,
-	DDM3::ImageManager* pImageManager, VkSampleCountFlagBits msaaSamples)
+	DDM3::ImageManager* pImageManager, VkSampleCountFlagBits msaaSamples, int attachmentCount)
 {
+	m_AttachmentCount = attachmentCount;
+
 	// Create image view manager
 	m_pImageViewManager = std::make_unique<ImageViewManager>(msaaSamples);
 

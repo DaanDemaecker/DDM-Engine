@@ -123,7 +123,7 @@ namespace DDM3
 		//     colorblendStateCreateInfo: a reference to the color blend state info to avoid creating a new one in the function
 		//     colorBlendAttachment: a pointer to the color blend attachment needed in the color blend state create info
 		void SetColorblendStateCreateInfo(VkPipelineColorBlendStateCreateInfo& colorBlending,
-			VkPipelineColorBlendAttachmentState* colorBlendAttachment);
+			VkPipelineColorBlendAttachmentState* colorBlendAttachment, int attachmentCount);
 
 		// Create pipeline layout create info
 		// Parameters:

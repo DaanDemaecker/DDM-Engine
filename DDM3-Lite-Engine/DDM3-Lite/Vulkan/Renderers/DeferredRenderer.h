@@ -56,6 +56,8 @@ namespace DDM3
 		// Pointer to the ImGui wrapper
 		std::unique_ptr<ImGuiWrapper> m_pImGuiWrapper{};
 
+		int m_AttachmentCount{ 3 };
+
 		void InitImgui();
 
 		void CleanupImgui();

@@ -28,10 +28,10 @@ DDM3::ForwardRenderer::ForwardRenderer()
 	GPUObject* pGPUObject{ VulkanObject::GetInstance().GetGPUObject() };
 
 	// Initialize the swapchain
-	m_pSwapchainWrapper = std::make_unique<SwapchainWrapper>(pGPUObject, surface, VulkanObject::GetInstance().GetImageManager(), VulkanObject::GetInstance().GetMsaaSamples());
+	m_pSwapchainWrapper = std::make_unique<SwapchainWrapper>(pGPUObject, surface, VulkanObject::GetInstance().GetImageManager(), VulkanObject::GetInstance().GetMsaaSamples(), m_AttachmentCount);
 
 	// Initialize the renderpass
-	m_pRenderpassWrapper = std::make_unique<RenderpassWrapper>(pGPUObject->GetDevice(), m_pSwapchainWrapper->GetFormat(), VulkanUtils::FindDepthFormat(pGPUObject->GetPhysicalDevice()), VulkanObject::GetInstance().GetMsaaSamples(), 1);
+	CreateRenderpass(m_pSwapchainWrapper->GetFormat());
 
 	// Create a single time command buffer
 	auto commandBuffer{ VulkanObject::GetInstance().BeginSingleTimeCommands() };
@@ -222,6 +222,41 @@ void DDM3::ForwardRenderer::RecreateSwapChain()
 
 	// End single time command
 	VulkanObject::GetInstance().EndSingleTimeCommands(commandBuffer);
+}
+
+void DDM3::ForwardRenderer::CreateRenderpass(VkFormat swapchainFormat)
+{
+	m_pRenderpassWrapper = std::make_unique<RenderpassWrapper>();
+
+	VkSampleCountFlagBits msaaSamples = VulkanObject::GetInstance().GetMsaaSamples();
+
+	// Create attachment description
+	VkAttachmentDescription colorAttachment{};
+	// et format to color format 
+	colorAttachment.format = swapchainFormat;
+	// Give max amount of samplples
+	colorAttachment.samples = msaaSamples;
+	// Set loadOp function to load op clear
+	colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+	// Set storeOp functoin to store op store
+	colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+	// Set initial layout to undefined
+	colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+	// Set final layout to color attachment optimal
+	colorAttachment.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;;
+
+	// Create attachment reference
+	VkAttachmentReference colorAttachmentRef{};
+	// Set layout to color attachment optimal
+	colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+	m_pRenderpassWrapper->AddAttachment(colorAttachment, colorAttachmentRef);
+
+	m_pRenderpassWrapper->AddDepthAttachment();
+
+	m_pRenderpassWrapper->AddColorResolve(swapchainFormat);
+
+	m_pRenderpassWrapper->CreateRenderPass();
 }
 
 void DDM3::ForwardRenderer::InitImgui()

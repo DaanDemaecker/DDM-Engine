@@ -54,6 +54,10 @@ namespace DDM3
 		void AddDescriptorInfo(std::map<VkDescriptorType, int>& typeCount, std::map<int, int>& descriptorsPerBinding);
 
 		void AddPushConstantRanges(std::vector<VkPushConstantRange>& pushConstantRanges);
+
+		int GetShaderStage() const { return m_ReflectShaderModule.shader_stage; }
+		int GetOutputAmount() const { return m_ReflectShaderModule.output_variable_count; }
+
 	private:
 		// The binary code from the shader
 		std::vector<char> m_ShaderCode{};

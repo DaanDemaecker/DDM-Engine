@@ -7,6 +7,9 @@
 // File includdes
 #include "Includes/VulkanIncludes.h"
 
+// Standard library includes
+#include <vector>
+
 namespace DDM3
 {
 	class RenderpassWrapper final
@@ -18,11 +21,7 @@ namespace DDM3
 		//     swapchainImageFormat: the format that the swapchain color image is in
 		//     depthFormat: the format that the swapchain depth image is in
 		//     msaaSamples: the max amount of samples per pixels
-		RenderpassWrapper(VkDevice device, VkFormat swapchainImageFormat, VkFormat depthFormat,
-			VkSampleCountFlagBits msaaSamples, int attachmentCount);
-
-		// Delete default constructor
-		RenderpassWrapper() = delete;
+		RenderpassWrapper();
 
 		// Default destructor
 		~RenderpassWrapper();
@@ -41,7 +40,27 @@ namespace DDM3
 		// Get the handle of the renderpass
 		VkRenderPass GetRenderpass() const { return m_RenderPass; }
 
+		void AddAttachment(VkAttachmentDescription description, VkAttachmentReference reference);
+
+		void AddAttachmentDescription(VkAttachmentDescription description);
+
+		void AddDepthAttachment();
+
+		void AddColorResolve(VkFormat swapchainFormat);
+
+		void CreateRenderPass();
 	private:
+		std::vector<VkAttachmentDescription> m_Attachments{};
+
+		VkAttachmentReference m_DepthAttachmentRef{};
+
+		VkAttachmentReference m_ColorResolveAttachmentRef{};
+
+		std::vector<VkAttachmentReference> m_ColorAttachmentRefs{};
+
+		bool m_DepthAttachmentSet{false};
+
+		bool m_ColorResolveSet{ false };
 
 		//Renderpass
 		VkRenderPass m_RenderPass{};

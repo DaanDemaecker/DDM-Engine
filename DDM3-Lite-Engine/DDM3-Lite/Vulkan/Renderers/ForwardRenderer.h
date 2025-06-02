@@ -56,6 +56,8 @@ namespace DDM3
 		// Pointer to the ImGui wrapper
 		std::unique_ptr<ImGuiWrapper> m_pImGuiWrapper{};
 
+		int m_AttachmentCount{ 1 };
+
 		void InitImgui();
 
 		void CleanupImgui();
@@ -63,6 +65,8 @@ namespace DDM3
 		void RecordCommandBuffer(VkCommandBuffer& commandBuffer, uint32_t imageIndex);
 
 		void RecreateSwapChain();
+
+		void CreateRenderpass(VkFormat swapchainFormat);
 	};
 }
 

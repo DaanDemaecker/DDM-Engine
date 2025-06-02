@@ -27,7 +27,7 @@ namespace DDM3
 		//     surface: handle of the VkSurfaceKHR
 		//     pImageManager: pointer to the image manager
 		//     msaaSamples: max amount of samples per pixel
-		SwapchainWrapper(GPUObject* pGPUObject, VkSurfaceKHR surface, DDM3::ImageManager* pImageManager, VkSampleCountFlagBits msaaSamples);
+		SwapchainWrapper(GPUObject* pGPUObject, VkSurfaceKHR surface, DDM3::ImageManager* pImageManager, VkSampleCountFlagBits msaaSamples, int attachmentCount);
 
 		// Delete default constructor
 		SwapchainWrapper() = delete;
@@ -108,6 +108,8 @@ namespace DDM3
 
 		// Vector of frameBuffers
 		std::vector<VkFramebuffer> m_SwapChainFramebuffers{};
+
+		int m_AttachmentCount{ 0 };
 
 		// Initialize the swapchain and other components
 		// Parameters:
