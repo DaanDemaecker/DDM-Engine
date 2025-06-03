@@ -43,6 +43,8 @@ namespace DDM3
 		virtual VkExtent2D GetExtent() override;
 		  
 		virtual VkRenderPass GetRenderpass() override;
+
+		virtual void AddDefaultPipelines();
 	private:
 		// Pointer to the renderpass wrapper
 		std::unique_ptr<RenderpassWrapper> m_pRenderpassWrapper{};

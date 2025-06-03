@@ -43,6 +43,8 @@ namespace DDM3
 		virtual VkExtent2D GetExtent() override;
 
 		virtual VkRenderPass GetRenderpass() override;
+
+		virtual void AddDefaultPipelines();
 	private:
 		// Pointer to the renderpass wrapper
 		std::unique_ptr<RenderpassWrapper> m_pRenderpassWrapper{};
@@ -56,8 +58,6 @@ namespace DDM3
 		// Pointer to the ImGui wrapper
 		std::unique_ptr<ImGuiWrapper> m_pImGuiWrapper{};
 
-		int m_AttachmentCount{ 3 };
-
 		void InitImgui();
 
 		void CleanupImgui();
@@ -65,6 +65,8 @@ namespace DDM3
 		void RecordCommandBuffer(VkCommandBuffer& commandBuffer, uint32_t imageIndex);
 
 		void RecreateSwapChain();
+
+		void CreateRenderpass();
 	};
 }
 

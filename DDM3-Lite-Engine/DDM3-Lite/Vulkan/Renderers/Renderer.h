@@ -32,6 +32,8 @@ namespace DDM3
 		virtual VkExtent2D GetExtent() = 0;
 
 		virtual VkRenderPass GetRenderpass() = 0;
+
+		virtual void AddDefaultPipelines() = 0;
 	};
 }
 

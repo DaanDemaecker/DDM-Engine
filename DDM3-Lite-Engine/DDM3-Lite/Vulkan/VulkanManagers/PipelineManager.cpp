@@ -11,6 +11,11 @@
 
 DDM3::PipelineManager::PipelineManager()
 {
+	// Get config manager
+	auto& configManager{ ConfigManager::GetInstance() };
+
+	// Initialize default pipeline name 
+	m_DefaultPipelineName = configManager.GetString("DefaultPipelineName");
 }
 
 DDM3::PipelineManager::~PipelineManager()
@@ -19,16 +24,7 @@ DDM3::PipelineManager::~PipelineManager()
 
 void DDM3::PipelineManager::AddDefaultPipeline(VkDevice device, VkRenderPass renderPass, VkSampleCountFlagBits sampleCount)
 {
-	// Get config manager
-	auto& configManager{ ConfigManager::GetInstance() };
-
-	// Initialize default pipeline name 
-	m_DefaultPipelineName = configManager.GetString("DefaultPipelineName");
-
-	// Add default pipeline
-	AddGraphicsPipeline(device, renderPass, sampleCount, m_DefaultPipelineName, {
-		configManager.GetString("DefaultVertName"),
-		configManager.GetString("DefaultFragName") });
+	
 
 }
 

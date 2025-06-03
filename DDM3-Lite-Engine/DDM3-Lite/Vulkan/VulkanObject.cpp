@@ -67,7 +67,7 @@ void DDM3::VulkanObject::Setup(std::unique_ptr<Renderer> pRenderer)
 {
 	m_pRenderer = std::move(pRenderer);
 
-	m_pPipelineManager->AddDefaultPipeline(m_pVulkanCore->GetDevice(), m_pRenderer->GetRenderpass(), m_MsaaSamples);
+	m_pRenderer->AddDefaultPipelines();
 
 	m_pImageManager = std::make_unique<ImageManager>(m_pVulkanCore->GetGpuObject(), GetCommandPoolManager());
 }
@@ -110,7 +110,7 @@ DDM3::PipelineWrapper* DDM3::VulkanObject::GetPipeline(const std::string& name)
 
 void DDM3::VulkanObject::Terminate()
 {
-	m_pRenderer = nullptr;
+	m_pRenderer.reset();
 }
 
 void DDM3::VulkanObject::Render()

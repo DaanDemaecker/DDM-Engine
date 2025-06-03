@@ -18,6 +18,8 @@
 #include "Vulkan/VulkanManagers/BufferCreator.h"
 #include "Vulkan/VulkanWrappers/GPUObject.h"
 
+#include "Managers/ConfigManager.h"
+
 #include "Engine/Window.h"
 
 DDM3::ForwardRenderer::ForwardRenderer()
@@ -308,4 +310,26 @@ VkExtent2D DDM3::ForwardRenderer::GetExtent()
 VkRenderPass DDM3::ForwardRenderer::GetRenderpass()
 {
 	return m_pRenderpassWrapper->GetRenderpass();
+}
+
+void DDM3::ForwardRenderer::AddDefaultPipelines()
+{
+	// Get config manager
+	auto& configManager{ ConfigManager::GetInstance() };
+
+	// Initialize default pipeline name 
+	auto defaultPipelineName = configManager.GetString("DefaultPipelineName");
+
+	// Add default pipeline
+	VulkanObject::GetInstance().AddGraphicsPipeline(defaultPipelineName, {
+		configManager.GetString("DefaultVertName"),
+		configManager.GetString("DefaultFragName") });
+
+	// Initialize default pipeline name 
+	auto skyboxPipelineName = configManager.GetString("SkyboxPipelineName");
+
+	// Add default pipeline
+	VulkanObject::GetInstance().AddGraphicsPipeline(skyboxPipelineName, {
+		configManager.GetString("SkyboxVertName"),
+		configManager.GetString("SkyboxFragName") });
 }
