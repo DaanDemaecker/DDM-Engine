@@ -30,7 +30,7 @@ DDM3::ForwardRenderer::ForwardRenderer()
 	GPUObject* pGPUObject{ VulkanObject::GetInstance().GetGPUObject() };
 
 	// Initialize the swapchain
-	m_pSwapchainWrapper = std::make_unique<SwapchainWrapper>(pGPUObject, surface, VulkanObject::GetInstance().GetImageManager(), VulkanObject::GetInstance().GetMsaaSamples(), m_AttachmentCount);
+	m_pSwapchainWrapper = std::make_unique<SwapchainWrapper>(pGPUObject, surface, VulkanObject::GetInstance().GetImageManager(), VulkanObject::GetInstance().GetMsaaSamples());
 
 	// Initialize the renderpass
 	CreateRenderpass(m_pSwapchainWrapper->GetFormat());
@@ -38,7 +38,7 @@ DDM3::ForwardRenderer::ForwardRenderer()
 	// Create a single time command buffer
 	auto commandBuffer{ VulkanObject::GetInstance().BeginSingleTimeCommands() };
 	// Initialize swapchain
-	m_pSwapchainWrapper->SetupImageViews(pGPUObject, VulkanObject::GetInstance().GetImageManager(), commandBuffer, GetRenderpass());
+	m_pSwapchainWrapper->SetupImageViews(pGPUObject, VulkanObject::GetInstance().GetImageManager(), commandBuffer, m_pRenderpassWrapper.get());
 	// End the single time command buffer
 	VulkanObject::GetInstance().EndSingleTimeCommands(commandBuffer);
 
@@ -220,7 +220,7 @@ void DDM3::ForwardRenderer::RecreateSwapChain()
 	// Recreate the swapchain
 	m_pSwapchainWrapper->RecreateSwapChain(DDM3::VulkanObject::GetInstance().GetGPUObject(), DDM3::VulkanObject::GetInstance().GetSurface(),
 		VulkanObject::GetInstance().GetImageManager(),
-		commandBuffer, m_pRenderpassWrapper->GetRenderpass());
+		commandBuffer, m_pRenderpassWrapper.get());
 
 	// End single time command
 	VulkanObject::GetInstance().EndSingleTimeCommands(commandBuffer);
@@ -230,7 +230,13 @@ void DDM3::ForwardRenderer::CreateRenderpass(VkFormat swapchainFormat)
 {
 	m_pRenderpassWrapper = std::make_unique<RenderpassWrapper>();
 
-	VkSampleCountFlagBits msaaSamples = VulkanObject::GetInstance().GetMsaaSamples();
+	auto& vulkanObject = VulkanObject::GetInstance();
+
+	VkSampleCountFlagBits msaaSamples = vulkanObject.GetMsaaSamples();
+
+	std::unique_ptr<Attachment> attachment = std::make_unique<Attachment>();
+
+	attachment->SetFormat(swapchainFormat);
 
 	// Create attachment description
 	VkAttachmentDescription colorAttachment{};
@@ -252,11 +258,78 @@ void DDM3::ForwardRenderer::CreateRenderpass(VkFormat swapchainFormat)
 	// Set layout to color attachment optimal
 	colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
-	m_pRenderpassWrapper->AddAttachment(colorAttachment, colorAttachmentRef);
+	attachment->SetAttachmentDesc(colorAttachment);
+	attachment->SetAttachmentRef(colorAttachmentRef);
 
-	m_pRenderpassWrapper->AddDepthAttachment();
+	m_pRenderpassWrapper->AddAttachment(std::move(attachment));
 
-	m_pRenderpassWrapper->AddColorResolve(swapchainFormat);
+
+	auto depthAttachment = std::make_unique<Attachment>();
+
+	depthAttachment->SetFormat(VulkanUtils::FindDepthFormat(vulkanObject.GetPhysicalDevice()));
+
+	VkAttachmentDescription depthAttachmentDesc;
+	depthAttachmentDesc.flags = VK_ATTACHMENT_DESCRIPTION_MAY_ALIAS_BIT;
+	// Set format to depth format
+	depthAttachmentDesc.format = VulkanUtils::FindDepthFormat(vulkanObject.GetPhysicalDevice());
+	// Give max amount of samples
+	depthAttachmentDesc.samples = vulkanObject.GetMsaaSamples();
+	// Set loadOp function to load op clear
+	depthAttachmentDesc.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+	// Set storeOp function to store op don't care
+	depthAttachmentDesc.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+	// Set stencilLoadOp function to load op don't care
+	depthAttachmentDesc.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+	// Set store op function to store op don't care
+	depthAttachmentDesc.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+	// Set initial layout to undefined
+	depthAttachmentDesc.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+	// Set final layout to depth stencil attachment optimal
+	depthAttachmentDesc.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+	VkAttachmentReference depthAttachmentRef{};
+	// Set layout to depth stencil attachment optimal
+	depthAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+	depthAttachment->SetAttachmentDesc(depthAttachmentDesc);
+
+	depthAttachment->SetAttachmentRef(depthAttachmentRef);
+
+	m_pRenderpassWrapper->AddDepthAttachment(std::move(depthAttachment));
+
+
+
+	auto colorResolveAttachment = std::make_unique<Attachment>();
+
+	// Create attachment description
+	VkAttachmentDescription colorResolveDesc{};
+	// Set format to swapchain format
+	colorResolveDesc.format = swapchainFormat;
+	// Set samples to 1
+	colorResolveDesc.samples = VK_SAMPLE_COUNT_1_BIT;
+	// Set loadOp function to load op don't care
+	colorResolveDesc.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+	// Set storeOp function to store op store
+	colorResolveDesc.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+	// Set sentilLoadOp to load op don't care
+	colorResolveDesc.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+	// Set stencilStoreOp to store op don't care
+	colorResolveDesc.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+	// Set initial layout to undefined
+	colorResolveDesc.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+	// Set final layout to present src khr
+	colorResolveDesc.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+
+
+	VkAttachmentReference colorResolveRef;
+	// Set layout to color attachment optimal
+	colorResolveRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+	colorResolveAttachment->SetAttachmentDesc(colorResolveDesc);
+
+	colorResolveAttachment->SetAttachmentRef(colorResolveRef);
+
+	m_pRenderpassWrapper->AddColorResolveAttachment(std::move(colorResolveAttachment));
 
 	m_pRenderpassWrapper->CreateRenderPass();
 }

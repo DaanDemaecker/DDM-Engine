@@ -9,7 +9,10 @@
 #include "GPUObject.h"
 
 #include "Vulkan/VulkanManagers/ImageViewManager.h"
-#include "Vulkan/VulkanManagers//ImageManager.h"
+#include "Vulkan/VulkanManagers/ImageManager.h"
+
+#include "Vulkan/VulkanWrappers/FrameBuffer.h"
+#include "Vulkan/VulkanWrappers/RenderpassWrapper.h"
 
 #include "Vulkan/VulkanUtils.h"
 #include "Vulkan/VulkanObject.h"
@@ -19,17 +22,21 @@
 #include <algorithm>
 
 DDM3::SwapchainWrapper::SwapchainWrapper(GPUObject* pGPUObject, VkSurfaceKHR surface,
-	DDM3::ImageManager* pImageManager, VkSampleCountFlagBits msaaSamples, int attachmentCount)
+	DDM3::ImageManager* pImageManager, VkSampleCountFlagBits msaaSamples)
 {
-	m_AttachmentCount = attachmentCount;
-
-	// Create image view manager
-	m_pImageViewManager = std::make_unique<ImageViewManager>(msaaSamples);
-
 	// Initialize the swapchain
 	CreateSwapChain(pGPUObject, surface);
 	// Initialize the image views
 	CreateSwapchainImageViews(pGPUObject->GetDevice(), pImageManager);
+
+
+	// Resize framebuffers to size of imageviews
+	m_Framebuffers.resize(m_SwapChainImageViews.size());
+
+	for (int i{}; i < m_Framebuffers.size(); ++i)
+	{
+		m_Framebuffers[i] = std::make_unique<FrameBuffer>();
+	}
 }
 
 DDM3::SwapchainWrapper::~SwapchainWrapper()
@@ -38,18 +45,22 @@ DDM3::SwapchainWrapper::~SwapchainWrapper()
 }
 
 void DDM3::SwapchainWrapper::SetupImageViews(GPUObject* pGPUObject, DDM3::ImageManager* pImageManager,
-	VkCommandBuffer commandBuffer, VkRenderPass renderPass)
+	VkCommandBuffer commandBuffer, RenderpassWrapper* renderPass)
 {
-	// Creat the color image
-	m_pImageViewManager->CreateColorResources(pGPUObject, m_SwapChainImageFormat, m_SwapChainExtent, pImageManager);
-	// Create depth image
-	m_pImageViewManager->CreateDepthResources(pGPUObject, m_SwapChainExtent, pImageManager, commandBuffer);
+	for (auto& attachment : renderPass->GetAttachmentList())
+	{
+		attachment->SetupColorTexture(m_SwapChainExtent);
+	}
+
+	renderPass->GetDepthAttachment()->SetupDepthImage(m_SwapChainExtent);
+
+
 	// Initialize frame buffers
 	CreateFramebuffers(pGPUObject->GetDevice(), renderPass);
 }
 
 void DDM3::SwapchainWrapper::SetupSwapchain(GPUObject* pGPUObject, VkSurfaceKHR surface,
-	DDM3::ImageManager* pImageManager, VkCommandBuffer commandBuffer, VkRenderPass renderpass)
+	DDM3::ImageManager* pImageManager, VkCommandBuffer commandBuffer, RenderpassWrapper* renderpass)
 {
 	// Initalize the swapchain
 	CreateSwapChain(pGPUObject, surface);
@@ -177,16 +188,6 @@ void DDM3::SwapchainWrapper::CreateSwapchainImageViews(VkDevice device, DDM3::Im
 
 void DDM3::SwapchainWrapper::Cleanup(VkDevice device)
 {
-	// Loop trough the amount of swapchain framebuffers
-	for (size_t i = 0; i < m_SwapChainFramebuffers.size(); ++i)
-	{
-		if (m_SwapChainFramebuffers[i] != VK_NULL_HANDLE)
-		{
-			// Delete the framebuffer
-			vkDestroyFramebuffer(device, m_SwapChainFramebuffers[i], nullptr);
-		}
-	}
-
 	// Loop trough the amount of image views
 	for (size_t i = 0; i < m_SwapChainImageViews.size(); ++i)
 	{
@@ -200,12 +201,10 @@ void DDM3::SwapchainWrapper::Cleanup(VkDevice device)
 	// Destroy the swapchain
 	vkDestroySwapchainKHR(device, m_SwapChain, nullptr);
 
-	// Clean up image view manager
-	m_pImageViewManager->Cleanup(device);
 }
 
 void DDM3::SwapchainWrapper::RecreateSwapChain(GPUObject* pGPUObject, VkSurfaceKHR surface,
-	DDM3::ImageManager* pImageManager, VkCommandBuffer commandBuffer, VkRenderPass renderpass)
+	DDM3::ImageManager* pImageManager, VkCommandBuffer commandBuffer, RenderpassWrapper* renderpass)
 {
 	// Call cleanup function to destroy all allocated objects
 	Cleanup(pGPUObject->GetDevice());
@@ -214,9 +213,9 @@ void DDM3::SwapchainWrapper::RecreateSwapChain(GPUObject* pGPUObject, VkSurfaceK
 	SetupSwapchain(pGPUObject, surface, pImageManager, commandBuffer, renderpass);
 }
 
-VkSampleCountFlagBits DDM3::SwapchainWrapper::GetMsaaSamples() const
+VkFramebuffer DDM3::SwapchainWrapper::GetFrameBuffer(uint32_t index) const
 {
-	return m_pImageViewManager->GetMsaaSamples();
+	return m_Framebuffers[index]->GetFrameBuffer();
 }
 
 
@@ -251,45 +250,12 @@ VkExtent2D DDM3::SwapchainWrapper::ChooseSwapExtent(const VkSurfaceCapabilitiesK
 	}
 }
 
-void DDM3::SwapchainWrapper::CreateFramebuffers(VkDevice device, VkRenderPass renderpass)
+void DDM3::SwapchainWrapper::CreateFramebuffers(VkDevice device, RenderpassWrapper* renderpass)
 {
-	// Resize framebuffers to size of imageviews
-	m_SwapChainFramebuffers.resize(m_SwapChainImageViews.size());
-
 	// Loop trough the amount of imageViews
 	for (size_t i = 0; i < m_SwapChainImageViews.size(); ++i)
 	{
-		// Create array for image views
-		std::array<VkImageView, 3> attachments =
-		{
-			m_pImageViewManager->GetColorImageView(),
-			m_pImageViewManager->GetDepthImageView(),
-			m_SwapChainImageViews[i]
-		};
-
-		// Create framebuffer create info
-		VkFramebufferCreateInfo framebufferInfo{};
-		// Set type to framebuffer create info
-		framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-		// Give handle of renderpass
-		framebufferInfo.renderPass = renderpass;
-		// Set attachment count to size of attachments
-		framebufferInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
-		// Give pointer to data of attachments
-		framebufferInfo.pAttachments = attachments.data();
-		// Set width to swapchainextent width
-		framebufferInfo.width = m_SwapChainExtent.width;
-		// Set height to swapchain extent height
-		framebufferInfo.height = m_SwapChainExtent.height;
-		// Set amount of layers to 1
-		framebufferInfo.layers = 1;
-
-		// Create framebuffers
-		if (vkCreateFramebuffer(device, &framebufferInfo, nullptr, &m_SwapChainFramebuffers[i]) != VK_SUCCESS)
-		{
-			// If unsuccessful, throw runtime error
-			throw std::runtime_error("failed to create framebuffer!");
-		}
+		m_Framebuffers[i]->CreateFrameBuffer(renderpass, m_SwapChainExtent, m_SwapChainImageViews[i]);
 	}
 }
 

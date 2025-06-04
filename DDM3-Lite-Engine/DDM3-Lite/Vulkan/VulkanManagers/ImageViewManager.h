@@ -44,6 +44,7 @@ namespace DDM3
 		//     pImageManager: pointer to the image manager
 		void CreateColorResources(GPUObject* pGPUObject, VkFormat format,
 			VkExtent2D swapchainExtent, DDM3::ImageManager* pImageManager);
+
 		// Initialize the depth image for the swapchain
 		// Parameters:
 		//     pGPUObject: pointer to the GPU Object
@@ -58,9 +59,13 @@ namespace DDM3
 		// Get the max amount of samples per pixel
 		VkSampleCountFlagBits GetMsaaSamples() const { return m_MsaaSamples; }
 
+		const std::vector<Texture>& GetColorImages() const { return m_ColorImages; }
+
 	private:
 		// Max amount of samples per pixel, initialize as 1
 		VkSampleCountFlagBits m_MsaaSamples = VK_SAMPLE_COUNT_1_BIT;
+
+		std::vector<Texture> m_ColorImages{};
 
 		// Texture struct for the color image
 		Texture m_ColorImage{};

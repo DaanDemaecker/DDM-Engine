@@ -6,9 +6,11 @@
 
 // File includdes
 #include "Includes/VulkanIncludes.h"
+#include "Vulkan/VulkanWrappers/Attachment.h"
 
 // Standard library includes
 #include <vector>
+#include <memory>
 
 namespace DDM3
 {
@@ -40,23 +42,26 @@ namespace DDM3
 		// Get the handle of the renderpass
 		VkRenderPass GetRenderpass() const { return m_RenderPass; }
 
-		void AddAttachment(VkAttachmentDescription description, VkAttachmentReference reference);
+		void AddAttachment(std::unique_ptr<Attachment> attachment);
 
-		void AddAttachmentDescription(VkAttachmentDescription description);
+		void AddDepthAttachment(std::unique_ptr<Attachment> attachment);
 
-		void AddDepthAttachment();
-
-		void AddColorResolve(VkFormat swapchainFormat);
+		void AddColorResolveAttachment(std::unique_ptr<Attachment> attachment);
 
 		void CreateRenderPass();
+
+		std::vector<std::unique_ptr<Attachment>>& GetAttachmentList() { return m_AttachmentList; }
+
+		std::unique_ptr<Attachment>& GetDepthAttachment() { return m_DepthAttachment; }
+
+		std::unique_ptr<Attachment>& GetColorResolveAttachment() { return m_ColorResolveAttachment; }
+
 	private:
-		std::vector<VkAttachmentDescription> m_Attachments{};
+		std::vector<std::unique_ptr<Attachment>> m_AttachmentList{};
 
-		VkAttachmentReference m_DepthAttachmentRef{};
+		std::unique_ptr<Attachment> m_DepthAttachment{};
 
-		VkAttachmentReference m_ColorResolveAttachmentRef{};
-
-		std::vector<VkAttachmentReference> m_ColorAttachmentRefs{};
+		std::unique_ptr<Attachment> m_ColorResolveAttachment{};
 
 		bool m_DepthAttachmentSet{false};
 

@@ -8,6 +8,8 @@
 #include "Includes/VulkanIncludes.h"
 #include "DataTypes/Structs.h"
 
+#include "Vulkan/VulkanWrappers/FrameBuffer.h"
+
 // Standard library includes
 #include <memory>
 
@@ -17,6 +19,8 @@ namespace DDM3
 	class ImageManager;
 	class ImageViewManager;
 	class GPUObject;
+	//class FrameBuffer;
+	class RenderpassWrapper;
 
 	class SwapchainWrapper final
 	{
@@ -27,7 +31,7 @@ namespace DDM3
 		//     surface: handle of the VkSurfaceKHR
 		//     pImageManager: pointer to the image manager
 		//     msaaSamples: max amount of samples per pixel
-		SwapchainWrapper(GPUObject* pGPUObject, VkSurfaceKHR surface, DDM3::ImageManager* pImageManager, VkSampleCountFlagBits msaaSamples, int attachmentCount);
+		SwapchainWrapper(GPUObject* pGPUObject, VkSurfaceKHR surface, DDM3::ImageManager* pImageManager, VkSampleCountFlagBits msaaSamples);
 
 		// Delete default constructor
 		SwapchainWrapper() = delete;
@@ -48,7 +52,7 @@ namespace DDM3
 		//     commandBuffer: commandbuffer that will be used to create depth image
 		//     renderPass: the renderpass that will be used with this swapchain
 		void SetupImageViews(GPUObject* pGPUObject, DDM3::ImageManager* pImageManager,
-			VkCommandBuffer commandBuffer, VkRenderPass renderPass);
+			VkCommandBuffer commandBuffer, RenderpassWrapper* renderPass);
 
 		// Clean up allocated objects
 		// Parameters:
@@ -63,7 +67,7 @@ namespace DDM3
 		//     commandBuffer: commandbuffer that will be used to create depth image
 		//     renderpass: the renderpass that will be used with this swapchain
 		void RecreateSwapChain(GPUObject* pGPUObject, VkSurfaceKHR surface,
-			DDM3::ImageManager* pImageManager, VkCommandBuffer commandBuffer, VkRenderPass renderpass);
+			DDM3::ImageManager* pImageManager, VkCommandBuffer commandBuffer, RenderpassWrapper* renderpass);
 
 		// Get the swapchain
 		VkSwapchainKHR GetSwapchain() const { return m_SwapChain; }
@@ -80,14 +84,8 @@ namespace DDM3
 		// Get the requested frame buffer
 		// Parameters:
 		//     index: the index of the frame buffer
-		VkFramebuffer GetFrameBuffer(uint32_t index) const { return m_SwapChainFramebuffers[index]; }
-
-		// Get the amound of samples per pixel
-		VkSampleCountFlagBits GetMsaaSamples() const;
+		VkFramebuffer GetFrameBuffer(uint32_t index) const;
 	private:
-		// The image view manager that hold the color and depth image
-		std::unique_ptr<ImageViewManager> m_pImageViewManager{};
-
 		// Handle of the swapchaint
 		VkSwapchainKHR m_SwapChain = VK_NULL_HANDLE;
 
@@ -107,9 +105,7 @@ namespace DDM3
 		VkExtent2D m_SwapChainExtent{};
 
 		// Vector of frameBuffers
-		std::vector<VkFramebuffer> m_SwapChainFramebuffers{};
-
-		int m_AttachmentCount{ 0 };
+		std::vector<std::unique_ptr<FrameBuffer>> m_Framebuffers{};
 
 		// Initialize the swapchain and other components
 		// Parameters:
@@ -119,7 +115,7 @@ namespace DDM3
 		//     commandBuffer: commandbuffer needed for creation of depth image
 		//     renderpass: the renderpass used with this swapchain
 		void SetupSwapchain(GPUObject* pGPUObject, VkSurfaceKHR surface,
-			DDM3::ImageManager* pImageManager, VkCommandBuffer commandBuffer, VkRenderPass renderpass);
+			DDM3::ImageManager* pImageManager, VkCommandBuffer commandBuffer, RenderpassWrapper* renderpass);
 
 		// Create the swapchain
 		// Parameters:
@@ -136,7 +132,7 @@ namespace DDM3
 		// Create the frame buffers
 		// Parameters:
 		//     device: handle of the VkDevice
-		void CreateFramebuffers(VkDevice device, VkRenderPass renderpass);
+		void CreateFramebuffers(VkDevice device, RenderpassWrapper* renderpass);
 
 		// Get the format for the swapchain surface
 		// Parameters:

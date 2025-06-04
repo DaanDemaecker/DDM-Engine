@@ -4,6 +4,7 @@
 #include "RenderpassWrapper.h"
 #include "Vulkan/VulkanObject.h"
 #include "Vulkan/VulkanUtils.h"
+#include "Vulkan/VulkanWrappers/Attachment.h"
 
 // Standard library includes
 #include <array>
@@ -24,104 +25,63 @@ void DDM3::RenderpassWrapper::Cleanup(VkDevice device)
 	vkDestroyRenderPass(device, m_RenderPass, nullptr);
 }
 
-void DDM3::RenderpassWrapper::AddAttachment(VkAttachmentDescription description, VkAttachmentReference reference)
+
+void DDM3::RenderpassWrapper::AddAttachment(std::unique_ptr<Attachment> attachment)
 {
-	reference.attachment = m_ColorAttachmentRefs.size();
+	attachment->SetAttachmentRefIndex(m_AttachmentList.size());
 
-	m_Attachments.push_back(description);
-
-	m_ColorAttachmentRefs.push_back(reference);
+	m_AttachmentList.push_back(std::move(attachment));
 }
 
-void DDM3::RenderpassWrapper::AddAttachmentDescription(VkAttachmentDescription description)
+void DDM3::RenderpassWrapper::AddDepthAttachment(std::unique_ptr<Attachment> attachment)
 {
-	m_Attachments.push_back(description);
-}
-
-void DDM3::RenderpassWrapper::AddDepthAttachment()
-{
-	auto& vulkanObject{ VulkanObject::GetInstance() };
-
-	VkAttachmentDescription depthAttachment;
-	depthAttachment.flags = VK_ATTACHMENT_DESCRIPTION_MAY_ALIAS_BIT;
-	// Set format to depth format
-	depthAttachment.format = VulkanUtils::FindDepthFormat(vulkanObject.GetPhysicalDevice());
-	// Give max amount of samples
-	depthAttachment.samples = vulkanObject.GetMsaaSamples();
-	// Set loadOp function to load op clear
-	depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-	// Set storeOp function to store op don't care
-	depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	// Set stencilLoadOp function to load op don't care
-	depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-	// Set store op function to store op don't care
-	depthAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	// Set initial layout to undefined
-	depthAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	// Set final layout to depth stencil attachment optimal
-	depthAttachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-
-	m_DepthAttachmentRef.attachment = m_ColorAttachmentRefs.size();
-	// Set layout to depth stencil attachment optimal
-	m_DepthAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-
 	m_DepthAttachmentSet = true;
 
-	AddAttachmentDescription(depthAttachment);
+	attachment->SetAttachmentRefIndex(m_AttachmentList.size());
+
+	m_DepthAttachment = std::move(attachment);
 }
 
-void DDM3::RenderpassWrapper::AddColorResolve(VkFormat swapchainFormat)
+void DDM3::RenderpassWrapper::AddColorResolveAttachment(std::unique_ptr<Attachment> attachment)
 {
-	// Create attachment description
-	VkAttachmentDescription colorAttachmentResolve{};
-	// Set format to swapchain format
-	colorAttachmentResolve.format = swapchainFormat;
-	// Set samples to 1
-	colorAttachmentResolve.samples = VK_SAMPLE_COUNT_1_BIT;
-	// Set loadOp function to load op don't care
-	colorAttachmentResolve.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-	// Set storeOp function to store op store
-	colorAttachmentResolve.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-	// Set sentilLoadOp to load op don't care
-	colorAttachmentResolve.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-	// Set stencilStoreOp to store op don't care
-	colorAttachmentResolve.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	// Set initial layout to undefined
-	colorAttachmentResolve.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	// Set final layout to present src khr
-	colorAttachmentResolve.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-
-
-	m_ColorResolveAttachmentRef.attachment = m_Attachments.size();
-	// Set layout to color attachment optimal
-	m_ColorResolveAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-
 	m_ColorResolveSet = true;
 
-	AddAttachmentDescription(colorAttachmentResolve);
+	attachment->SetAttachmentRefIndex(m_AttachmentList.size() + (m_DepthAttachmentSet ? 1 : 0));
+
+	m_ColorResolveAttachment = std::move(attachment);
 }
 
 void DDM3::RenderpassWrapper::CreateRenderPass()
 {
+	std::vector<VkAttachmentReference>attachmentRefs{};
+	attachmentRefs.reserve(m_AttachmentList.size());
+
+	for (auto& attachment : m_AttachmentList)
+	{
+		attachmentRefs.emplace_back(attachment->GetAttachmentRef());
+	}
+
+
 	// Create subpass description
 	VkSubpassDescription subpass{};
 	// Set pipelinje bind point to graphics
 	subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
 	// Set color attachment count to 1
-	subpass.colorAttachmentCount = m_ColorAttachmentRefs.size();
+	subpass.colorAttachmentCount = static_cast<uint32_t>(m_AttachmentList.size());
 	// Give pointer to color attachment reference
-	subpass.pColorAttachments = m_ColorAttachmentRefs.data();
+	subpass.pColorAttachments = attachmentRefs.data();
 
 	if (m_DepthAttachmentSet)
 	{
+		auto attachment = 
 		// Give pointer to depth attachment reference
-		subpass.pDepthStencilAttachment = &m_DepthAttachmentRef;
+		subpass.pDepthStencilAttachment = &m_DepthAttachment->GetAttachmentRef();
 	}
 
 	if (m_ColorResolveSet)
 	{
 		// Give pointer to color attachment resole reference
-		subpass.pResolveAttachments = &m_ColorResolveAttachmentRef;
+		subpass.pResolveAttachments = &m_ColorResolveAttachment->GetAttachmentRef();
 	}
 
 	// Create subpass dependency
@@ -139,14 +99,36 @@ void DDM3::RenderpassWrapper::CreateRenderPass()
 	// Set destination access mask to color attachment write and depth stencil attachment write
 	dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
 
+
+	std::vector<VkAttachmentDescription> attachments{};
+	attachments.reserve(m_AttachmentList.size() +
+		(m_DepthAttachmentSet ? 1 : 0) +
+		(m_ColorResolveSet ? 1 : 0));
+
+	for (auto& attachment : m_AttachmentList)
+	{
+		attachments.emplace_back(attachment->GetAttachmentDesc());
+	}
+
+	if (m_DepthAttachmentSet)
+	{
+		attachments.push_back(m_DepthAttachment->GetAttachmentDesc());
+	}
+
+	if (m_ColorResolveSet)
+	{
+		attachments.push_back(m_ColorResolveAttachment->GetAttachmentDesc());
+	}
+
+
 	// Create rander pass create info
 	VkRenderPassCreateInfo renderPassInfo{};
 	// Set type to render pass create info
 	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
 	// Set attachment count to the size of attachments
-	renderPassInfo.attachmentCount = static_cast<uint32_t>(m_Attachments.size());
+	renderPassInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
 	// Set pAttachments as pointer to date of attachments
-	renderPassInfo.pAttachments = m_Attachments.data();
+	renderPassInfo.pAttachments = attachments.data();
 	// Set subpasscount to 1
 	renderPassInfo.subpassCount = 1;
 	// Give pointer to subpass count
@@ -258,7 +240,7 @@ void DDM3::RenderpassWrapper::CreateRenderPass(VkDevice device, VkFormat swapcha
 	// Set pipelinje bind point to graphics
 	subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
 	// Set color attachment count to 1
-	subpass.colorAttachmentCount = colorAttachments.size();
+	subpass.colorAttachmentCount = static_cast<uint32_t>(colorAttachments.size());
 	// Give pointer to color attachment reference
 	subpass.pColorAttachments = colorAttachmentRefs.data();
 	// Give pointer to depth attachment reference
