@@ -154,14 +154,15 @@ void DDM3::PipelineWrapper::CreatePipeline(VkDevice device, VkRenderPass renderP
 	// Set depth stencil state create info
 	SetDepthStencilStateCreateInfo(depthStencil, hasDepthStencil);
 
-	// Create color blend attachment state
-	VkPipelineColorBlendAttachmentState colorBlendAttachment{};
+	
 	std::vector<VkPipelineColorBlendAttachmentState> colorBlendAttachments{};
-	// Set color blend attachment state
-	SetColorBlendAttachmentState(colorBlendAttachment);
 
 	for (int i{}; i < attachmentCount; i++)
 	{
+		// Create color blend attachment state
+		VkPipelineColorBlendAttachmentState colorBlendAttachment{};
+		// Set color blend attachment state
+		SetColorBlendAttachmentState(colorBlendAttachment);
 		// Add color blend attachment to the vector
 		colorBlendAttachments.push_back(colorBlendAttachment);
 	}
@@ -169,7 +170,7 @@ void DDM3::PipelineWrapper::CreatePipeline(VkDevice device, VkRenderPass renderP
 	// Create color blending create info
 	VkPipelineColorBlendStateCreateInfo colorBlending{};
 	// Set color blend state create info
-	SetColorblendStateCreateInfo(colorBlending, &colorBlendAttachment, attachmentCount);
+	SetColorblendStateCreateInfo(colorBlending, colorBlendAttachments.data(), attachmentCount);
 
 
 	// Create pipeline layout info

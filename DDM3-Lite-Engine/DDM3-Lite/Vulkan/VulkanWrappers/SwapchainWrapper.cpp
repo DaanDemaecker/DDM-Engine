@@ -255,7 +255,7 @@ void DDM3::SwapchainWrapper::CreateFramebuffers(VkDevice device, RenderpassWrapp
 	// Loop trough the amount of imageViews
 	for (size_t i = 0; i < m_SwapChainImageViews.size(); ++i)
 	{
-		m_Framebuffers[i]->CreateFrameBuffer(renderpass, m_SwapChainExtent, m_SwapChainImageViews[i]);
+		m_Framebuffers[i]->CreateFrameBuffer(renderpass, m_SwapChainExtent, renderpass->IsColorResolveSet() ? m_SwapChainImageViews[i] : VK_NULL_HANDLE);
 	}
 }
 

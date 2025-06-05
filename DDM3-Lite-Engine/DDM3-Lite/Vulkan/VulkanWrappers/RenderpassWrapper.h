@@ -56,6 +56,10 @@ namespace DDM3
 
 		std::unique_ptr<Attachment>& GetColorResolveAttachment() { return m_ColorResolveAttachment; }
 
+		bool IsColorResolveSet() const { return m_ColorResolveSet;}
+
+		void BeginRenderPass(VkCommandBuffer commandBuffer, VkFramebuffer frameBuffer, VkExtent2D extent);
+
 	private:
 		std::vector<std::unique_ptr<Attachment>> m_AttachmentList{};
 

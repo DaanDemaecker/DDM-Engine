@@ -33,7 +33,11 @@ void DDM3::FrameBuffer::CreateFrameBuffer(RenderpassWrapper* renderpass, VkExten
 
 	attachments.push_back(renderpass->GetDepthAttachment()->GetTexture().imageView);
 
-	attachments.push_back(swapchainImage);
+	if (swapchainImage != VK_NULL_HANDLE)
+	{
+		attachments.push_back(swapchainImage);
+	}
+
 
 	// Create framebuffer create info
 	VkFramebufferCreateInfo framebufferInfo{};

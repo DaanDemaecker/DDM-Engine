@@ -146,26 +146,7 @@ void DDM3::ForwardRenderer::RecordCommandBuffer(VkCommandBuffer& commandBuffer, 
 		throw std::runtime_error("failed to begin recording command buffer!");
 	}
 
-	VkRenderPassBeginInfo renderPassInfo{};
-	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-	renderPassInfo.renderPass = m_pRenderpassWrapper->GetRenderpass();
-	renderPassInfo.framebuffer = m_pSwapchainWrapper->GetFrameBuffer(imageIndex);
-
-
 	auto extent{ m_pSwapchainWrapper->GetExtent() };
-
-	renderPassInfo.renderArea.offset = { 0, 0 };
-	renderPassInfo.renderArea.extent = extent;
-	
-	std::array<VkClearValue, 2> clearValues{};
-	clearValues[0].color = { {0.388f, 0.588f, 0.929f, 1.0f} };
-	clearValues[1].depthStencil = { 1.0f, 0 };
-
-	renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
-	renderPassInfo.pClearValues = clearValues.data();
-
-	vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-
 
 	VkViewport viewport{};
 	viewport.x = 0.0f;
@@ -180,6 +161,8 @@ void DDM3::ForwardRenderer::RecordCommandBuffer(VkCommandBuffer& commandBuffer, 
 	scissor.offset = { 0, 0 };
 	scissor.extent = extent;
 	vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
+
+	m_pRenderpassWrapper->BeginRenderPass(commandBuffer, m_pSwapchainWrapper->GetFrameBuffer(imageIndex), extent);
 
 	SceneManager::GetInstance().RenderSkybox();
 
@@ -237,6 +220,7 @@ void DDM3::ForwardRenderer::CreateRenderpass(VkFormat swapchainFormat)
 	std::unique_ptr<Attachment> attachment = std::make_unique<Attachment>();
 
 	attachment->SetFormat(swapchainFormat);
+	attachment->SetClearColorValue({ 0.388f, 0.588f, 0.929f, 1.0f });
 
 	// Create attachment description
 	VkAttachmentDescription colorAttachment{};

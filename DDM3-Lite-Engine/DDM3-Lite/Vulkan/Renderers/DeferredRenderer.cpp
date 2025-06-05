@@ -39,7 +39,7 @@ DDM3::DeferredRenderer::DeferredRenderer()
 	// Initialize the sync objects
 	m_pSyncObjectManager = std::make_unique<SyncObjectManager>(pGPUObject->GetDevice(), VulkanObject::GetInstance().GetMaxFrames());
 
-	InitImgui();
+	//InitImgui();
 }
 
 DDM3::DeferredRenderer::~DeferredRenderer()
@@ -153,12 +153,12 @@ void DDM3::DeferredRenderer::AddDefaultPipelines()
 		configManager.GetString("DefaultDeferredFrag") });
 
 	// Initialize default pipeline name 
-	auto lightingPipelineName = configManager.GetString("DeferredLighting");
-
-	// Add default pipeline
-	VulkanObject::GetInstance().AddGraphicsPipeline(lightingPipelineName, {
-		configManager.GetString("DeferredLightingVert"),
-		configManager.GetString("DeferredLightingFrag") });
+	//auto lightingPipelineName = configManager.GetString("DeferredLighting");
+	//
+	//// Add default pipeline
+	//VulkanObject::GetInstance().AddGraphicsPipeline(lightingPipelineName, {
+	//	configManager.GetString("DeferredLightingVert"),
+	//	configManager.GetString("DeferredLightingFrag") });
 }
 
 void DDM3::DeferredRenderer::InitImgui()
@@ -213,27 +213,7 @@ void DDM3::DeferredRenderer::RecordCommandBuffer(VkCommandBuffer& commandBuffer,
 	{
 		throw std::runtime_error("failed to begin recording command buffer!");
 	}
-
-	VkRenderPassBeginInfo renderPassInfo{};
-	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-	renderPassInfo.renderPass = m_pRenderpassWrapper->GetRenderpass();
-	renderPassInfo.framebuffer = m_pSwapchainWrapper->GetFrameBuffer(imageIndex);
-
-
 	auto extent{ m_pSwapchainWrapper->GetExtent() };
-
-	renderPassInfo.renderArea.offset = { 0, 0 };
-	renderPassInfo.renderArea.extent = extent;
-
-	std::array<VkClearValue, 2> clearValues{};
-	clearValues[0].color = { {0.388f, 0.588f, 0.929f, 1.0f} };
-	clearValues[1].depthStencil = { 1.0f, 0 };
-
-	renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
-	renderPassInfo.pClearValues = clearValues.data();
-
-	vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-
 
 	VkViewport viewport{};
 	viewport.x = 0.0f;
@@ -249,12 +229,14 @@ void DDM3::DeferredRenderer::RecordCommandBuffer(VkCommandBuffer& commandBuffer,
 	scissor.extent = extent;
 	vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
-	DDM3::SceneManager::GetInstance().RenderSkybox();
+	m_pRenderpassWrapper->BeginRenderPass(commandBuffer, m_pSwapchainWrapper->GetFrameBuffer(imageIndex), extent);
+
+	//DDM3::SceneManager::GetInstance().RenderSkybox();
 
 	SceneManager::GetInstance().Render();
 
 	// Render the ImGui
-	m_pImGuiWrapper->Render(commandBuffer);
+	//m_pImGuiWrapper->Render(commandBuffer);
 
 	vkCmdEndRenderPass(commandBuffer);
 
@@ -270,77 +252,137 @@ void DDM3::DeferredRenderer::RecreateSwapChain()
 
 void DDM3::DeferredRenderer::CreateRenderpass()
 {
-	//m_pRenderpassWrapper = std::make_unique<RenderpassWrapper>();
-	//
-	//VkSampleCountFlagBits msaaSamples = VulkanObject::GetInstance().GetMsaaSamples();
-	//
-	//// Create attachment description
-	//VkAttachmentDescription albedoAttachment{};
-	//// et format to color format 
-	//albedoAttachment.format = VK_FORMAT_R8G8B8A8_UNORM;
-	//// Give max amount of samplples
-	//albedoAttachment.samples = msaaSamples;
-	//// Set loadOp function to load op clear
-	//albedoAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-	//// Set storeOp functoin to store op store
-	//albedoAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-	//// Set initial layout to undefined
-	//albedoAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	//// Set final layout to color attachment optimal
-	//albedoAttachment.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;;
-	//
-	//// Create attachment reference
-	//VkAttachmentReference albedoAttachmentRef{};
-	//// Set layout to color attachment optimal
-	//albedoAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-	//
-	//m_pRenderpassWrapper->AddAttachment(albedoAttachment, albedoAttachmentRef);
-	//
-	//// Create attachment description
-	//VkAttachmentDescription normalAttachment{};
-	//// et format to color format 
-	//normalAttachment.format = VK_FORMAT_R16G16B16A16_SFLOAT;
-	//// Give max amount of samplples
-	//normalAttachment.samples = msaaSamples;
-	//// Set loadOp function to load op clear
-	//normalAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-	//// Set storeOp functoin to store op store
-	//normalAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-	//// Set initial layout to undefined
-	//normalAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	//// Set final layout to color attachment optimal
-	//normalAttachment.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;;
-	//
-	//// Create attachment reference
-	//VkAttachmentReference normalAttachmentRef{};
-	//// Set layout to color attachment optimal
-	//normalAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-	//
-	//m_pRenderpassWrapper->AddAttachment(normalAttachment, normalAttachmentRef);
-	//
-	//// Create attachment description
-	//VkAttachmentDescription positionAttachment{};
-	//// et format to color format 
-	//positionAttachment.format = VK_FORMAT_R16G16B16A16_SFLOAT;
-	//// Give max amount of samplples
-	//positionAttachment.samples = msaaSamples;
-	//// Set loadOp function to load op clear
-	//positionAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-	//// Set storeOp functoin to store op store
-	//positionAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-	//// Set initial layout to undefined
-	//positionAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	//// Set final layout to color attachment optimal
-	//positionAttachment.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;;
-	//
-	//// Create attachment reference
-	//VkAttachmentReference positionAttachmentRef{};
-	//// Set layout to color attachment optimal
-	//positionAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-	//
-	//m_pRenderpassWrapper->AddAttachment(positionAttachment, positionAttachmentRef);
-	//
-	//m_pRenderpassWrapper->AddDepthAttachment();
-	//
-	//m_pRenderpassWrapper->CreateRenderPass();
+	m_pRenderpassWrapper = std::make_unique<RenderpassWrapper>();
+
+	VkSampleCountFlagBits msaaSamples = VulkanObject::GetInstance().GetMsaaSamples();
+
+	auto albedoAttachment = std::make_unique<Attachment>();
+
+	albedoAttachment->SetClearColorValue({ 0.388f, 0.588f, 0.929f, 1.0f });
+	albedoAttachment->SetFormat(VK_FORMAT_R8G8B8A8_UNORM);
+
+	// Create attachment description
+	VkAttachmentDescription albedoAttachmentDesc{};
+	// et format to color format 
+	albedoAttachmentDesc.format = VK_FORMAT_R8G8B8A8_UNORM;
+	// Give max amount of samplples
+	albedoAttachmentDesc.samples = msaaSamples;
+	// Set loadOp function to load op clear
+	albedoAttachmentDesc.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+	// Set storeOp functoin to store op store
+	albedoAttachmentDesc.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+	// Set initial layout to undefined
+	albedoAttachmentDesc.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+	// Set final layout to color attachment optimal
+	albedoAttachmentDesc.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;;
+
+	// Create attachment reference
+	VkAttachmentReference albedoAttachmentRef{};
+	// Set layout to color attachment optimal
+	albedoAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+	albedoAttachment->SetAttachmentDesc(albedoAttachmentDesc);
+
+	albedoAttachment->SetAttachmentRef(albedoAttachmentRef);
+
+	m_pRenderpassWrapper->AddAttachment(std::move(albedoAttachment));
+
+
+	auto normalAttachment = std::make_unique<Attachment>();
+
+	normalAttachment->SetFormat(VK_FORMAT_R16G16B16A16_SFLOAT);
+
+	// Create attachment description
+	VkAttachmentDescription normalAttachmentDesc{};
+	// et format to color format 
+	normalAttachmentDesc.format = VK_FORMAT_R16G16B16A16_SFLOAT;
+	// Give max amount of samplples
+	normalAttachmentDesc.samples = msaaSamples;
+	// Set loadOp function to load op clear
+	normalAttachmentDesc.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+	// Set storeOp functoin to store op store
+	normalAttachmentDesc.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+	// Set initial layout to undefined
+	normalAttachmentDesc.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+	// Set final layout to color attachment optimal
+	normalAttachmentDesc.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;;
+
+	// Create attachment reference
+	VkAttachmentReference normalAttachmentRef{};
+	// Set layout to color attachment optimal
+	normalAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+
+	normalAttachment->SetAttachmentDesc(normalAttachmentDesc);
+
+	normalAttachment->SetAttachmentRef(normalAttachmentRef);
+
+	m_pRenderpassWrapper->AddAttachment(std::move(normalAttachment));
+
+
+	auto positionAttachment = std::make_unique<Attachment>();
+
+	positionAttachment->SetFormat(VK_FORMAT_R16G16B16A16_SFLOAT);
+	
+	// Create attachment description
+	VkAttachmentDescription positionAttachmentDesc{};
+	// et format to color format 
+	positionAttachmentDesc.format = VK_FORMAT_R16G16B16A16_SFLOAT;
+	// Give max amount of samplples
+	positionAttachmentDesc.samples = msaaSamples;
+	// Set loadOp function to load op clear
+	positionAttachmentDesc.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+	// Set storeOp functoin to store op store
+	positionAttachmentDesc.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+	// Set initial layout to undefined
+	positionAttachmentDesc.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+	// Set final layout to color attachment optimal
+	positionAttachmentDesc.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;;
+	
+	// Create attachment reference
+	VkAttachmentReference positionAttachmentRef{};
+	// Set layout to color attachment optimal
+	positionAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+	
+	positionAttachment->SetAttachmentDesc(positionAttachmentDesc);
+
+	positionAttachment->SetAttachmentRef(positionAttachmentRef);
+
+	m_pRenderpassWrapper->AddAttachment(std::move(positionAttachment));
+
+
+	auto depthAttachment = std::make_unique<Attachment>();
+
+	depthAttachment->SetFormat(VulkanUtils::FindDepthFormat(VulkanObject::GetInstance().GetPhysicalDevice()));
+
+	VkAttachmentDescription depthAttachmentDesc;
+	depthAttachmentDesc.flags = VK_ATTACHMENT_DESCRIPTION_MAY_ALIAS_BIT;
+	// Set format to depth format
+	depthAttachmentDesc.format = VulkanUtils::FindDepthFormat(VulkanObject::GetInstance().GetPhysicalDevice());
+	// Give max amount of samples
+	depthAttachmentDesc.samples = VulkanObject::GetInstance().GetMsaaSamples();
+	// Set loadOp function to load op clear
+	depthAttachmentDesc.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+	// Set storeOp function to store op don't care
+	depthAttachmentDesc.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+	// Set stencilLoadOp function to load op don't care
+	depthAttachmentDesc.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+	// Set store op function to store op don't care
+	depthAttachmentDesc.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+	// Set initial layout to undefined
+	depthAttachmentDesc.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+	// Set final layout to depth stencil attachment optimal
+	depthAttachmentDesc.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+	VkAttachmentReference depthAttachmentRef{};
+	// Set layout to depth stencil attachment optimal
+	depthAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+	depthAttachment->SetAttachmentDesc(depthAttachmentDesc);
+
+	depthAttachment->SetAttachmentRef(depthAttachmentRef);
+
+	m_pRenderpassWrapper->AddDepthAttachment(std::move(depthAttachment));
+	
+	m_pRenderpassWrapper->CreateRenderPass();
 }

@@ -146,6 +146,38 @@ void DDM3::RenderpassWrapper::CreateRenderPass()
 	}
 }
 
+void DDM3::RenderpassWrapper::BeginRenderPass(VkCommandBuffer commandBuffer, VkFramebuffer frameBuffer, VkExtent2D extent)
+{
+
+	VkRenderPassBeginInfo renderPassInfo{};
+	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+	renderPassInfo.renderPass = GetRenderpass();
+	renderPassInfo.framebuffer = frameBuffer;
+
+	renderPassInfo.renderArea.offset = { 0, 0 };
+	renderPassInfo.renderArea.extent = extent;
+
+	const int clearAmount = m_AttachmentList.size() + (m_DepthAttachmentSet ? 1 : 0);
+
+	std::vector<VkClearValue> clearValues(clearAmount);
+
+	for (int i{}; i < m_AttachmentList.size(); ++i)
+	{
+		clearValues[i].color = m_AttachmentList[i]->GetClearColorValue();
+	}
+
+
+	if (m_DepthAttachmentSet)
+	{
+		clearValues[clearAmount-1].depthStencil = { 1.0f, 0 };
+	}
+
+	renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
+	renderPassInfo.pClearValues = clearValues.data();
+
+	vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+}
+
 void DDM3::RenderpassWrapper::CreateRenderPass(VkDevice device, VkFormat swapchainImageFormat, VkFormat depthFormat, VkSampleCountFlagBits msaaSamples, int attachmentCount)
 {
 	std::vector<VkAttachmentDescription> colorAttachments(attachmentCount);

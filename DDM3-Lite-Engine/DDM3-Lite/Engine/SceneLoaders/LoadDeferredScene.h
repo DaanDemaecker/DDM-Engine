@@ -89,7 +89,7 @@ namespace LoadDeferredScene
 	{
 		auto& vulkanObject{ DDM3::VulkanObject::GetInstance() };
 
-		vulkanObject.AddGraphicsPipeline("Deferred", { "Resources/Shaders/Deffered.Vert.spv", "Resources/Shaders/Deffered.Frag.spv" });
+		//vulkanObject.AddGraphicsPipeline("Deferred", { "Resources/Shaders/Deffered.Vert.spv", "Resources/Shaders/Deffered.Frag.spv" });
 	}
 
 	void SetupVehicle(DDM3::Scene* scene)
@@ -124,7 +124,7 @@ namespace LoadDeferredScene
 
 	void SetupVehicle2(DDM3::Scene* scene)
 	{
-		std::shared_ptr<DDM3::TexturedMaterial> pVehicleMaterial{ std::make_shared<DDM3::TexturedMaterial>("Deferred")};
+		std::shared_ptr<DDM3::TexturedMaterial> pVehicleMaterial{ std::make_shared<DDM3::TexturedMaterial>("Default")};
 
 		auto pVehicle{ DDM3::DDMModelLoader::GetInstance().LoadModel("Resources/Models/vehicle.obj", scene->GetSceneRoot()) };
 		pVehicle->SetShowImGui(true);
@@ -311,25 +311,25 @@ namespace LoadDeferredScene
 		//pCamera->AddComponent<D3D::RotatorComponent>();
 
 		scene->SetCamera(pCameraComponent);
-
-		auto& configManager{ DDM3::ConfigManager::GetInstance() };
-
-		// Set the vertex shader name
-		const std::string vertShaderName{ configManager.GetString("SkyboxVertName") };
-		// Set the fragment shader name
-		const std::string fragShaderName{ configManager.GetString("SkyboxFragName") };
-
-		// Create the graphics pipeline for the skybox
-		DDM3::VulkanObject::GetInstance().AddGraphicsPipeline(configManager.GetString("SkyboxPipelineName"), { vertShaderName, fragShaderName }, false);
-
-		auto pSkyBox{ pCamera->AddComponent<DDM3::SkyBoxComponent>() };
-
-		pSkyBox->LoadSkybox(std::initializer_list<const std::string>{"resources/images/CubeMap/Sky_Right.png",
-			"resources/images/CubeMap/Sky_Left.png",
-			"resources/images/CubeMap/Sky_Up.png",
-			"resources/images/CubeMap/Sky_Down.png",
-			"resources/images/CubeMap/Sky_Front.png",
-			"resources/images/CubeMap/Sky_Back.png"});
+		
+		//auto& configManager{ DDM3::ConfigManager::GetInstance() };
+		//
+		//// Set the vertex shader name
+		//const std::string vertShaderName{ configManager.GetString("SkyboxVertName") };
+		//// Set the fragment shader name
+		//const std::string fragShaderName{ configManager.GetString("SkyboxFragName") };
+		//
+		//// Create the graphics pipeline for the skybox
+		//DDM3::VulkanObject::GetInstance().AddGraphicsPipeline(configManager.GetString("SkyboxPipelineName"), { vertShaderName, fragShaderName }, false);
+		//
+		//auto pSkyBox{ pCamera->AddComponent<DDM3::SkyBoxComponent>() };
+		//
+		//pSkyBox->LoadSkybox(std::initializer_list<const std::string>{"resources/images/CubeMap/Sky_Right.png",
+		//	"resources/images/CubeMap/Sky_Left.png",
+		//	"resources/images/CubeMap/Sky_Up.png",
+		//	"resources/images/CubeMap/Sky_Down.png",
+		//	"resources/images/CubeMap/Sky_Front.png",
+		//	"resources/images/CubeMap/Sky_Back.png"});
 	}
 
 	void SetupLight(DDM3::Scene* scene)

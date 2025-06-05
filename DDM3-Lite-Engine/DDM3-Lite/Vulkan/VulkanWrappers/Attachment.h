@@ -41,6 +41,10 @@ namespace DDM3
 		void SetupColorTexture(VkExtent2D extent);
 
 		void SetupDepthImage(VkExtent2D extent);
+
+		void SetClearColorValue(VkClearColorValue value) { m_ClearColorValue = value; }
+		VkClearColorValue GetClearColorValue() const { return m_ClearColorValue; }
+
 	private:
 		VkAttachmentDescription m_AttachmentDesc{};
 		VkAttachmentReference m_AttachmentRef{};
@@ -48,6 +52,8 @@ namespace DDM3
 		Texture m_Texture{};
 
 		VkFormat m_Format{};
+
+		VkClearColorValue m_ClearColorValue{0,0,0,1};
 
 	};
 }
