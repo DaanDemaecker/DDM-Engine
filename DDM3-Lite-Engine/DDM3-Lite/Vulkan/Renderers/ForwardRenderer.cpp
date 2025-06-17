@@ -162,7 +162,7 @@ void DDM3::ForwardRenderer::RecordCommandBuffer(VkCommandBuffer& commandBuffer, 
 	scissor.extent = extent;
 	vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
-	m_pRenderpassWrapper->BeginRenderPass(commandBuffer, m_pSwapchainWrapper->GetFrameBuffer(imageIndex), extent);
+	m_pRenderpassWrapper->BeginRenderPass(commandBuffer, m_pSwapchainWrapper->GetFrameBuffer(imageIndex, m_pRenderpassWrapper.get()), extent);
 
 	SceneManager::GetInstance().RenderSkybox();
 
@@ -216,6 +216,8 @@ void DDM3::ForwardRenderer::CreateRenderpass(VkFormat swapchainFormat)
 	auto& vulkanObject = VulkanObject::GetInstance();
 
 	VkSampleCountFlagBits msaaSamples = vulkanObject.GetMsaaSamples();
+
+	m_pRenderpassWrapper->SetSampleCount(msaaSamples);
 
 	std::unique_ptr<Attachment> attachment = std::make_unique<Attachment>();
 
@@ -285,6 +287,8 @@ void DDM3::ForwardRenderer::CreateRenderpass(VkFormat swapchainFormat)
 
 	auto colorResolveAttachment = std::make_unique<Attachment>();
 
+	colorResolveAttachment->SetFormat(swapchainFormat);
+
 	// Create attachment description
 	VkAttachmentDescription colorResolveDesc{};
 	// Set format to swapchain format
@@ -316,6 +320,8 @@ void DDM3::ForwardRenderer::CreateRenderpass(VkFormat swapchainFormat)
 	m_pRenderpassWrapper->AddColorResolveAttachment(std::move(colorResolveAttachment));
 
 	m_pRenderpassWrapper->CreateRenderPass();
+
+	m_pSwapchainWrapper->AddFrameBuffers(m_pRenderpassWrapper.get());
 }
 
 void DDM3::ForwardRenderer::InitImgui()
@@ -364,9 +370,9 @@ VkExtent2D DDM3::ForwardRenderer::GetExtent()
 	return m_pSwapchainWrapper->GetExtent();
 }
 
-VkRenderPass DDM3::ForwardRenderer::GetRenderpass()
+DDM3::RenderpassWrapper* DDM3::ForwardRenderer::GetDefaultRenderpass()
 {
-	return m_pRenderpassWrapper->GetRenderpass();
+	return m_pRenderpassWrapper.get();
 }
 
 void DDM3::ForwardRenderer::AddDefaultPipelines()

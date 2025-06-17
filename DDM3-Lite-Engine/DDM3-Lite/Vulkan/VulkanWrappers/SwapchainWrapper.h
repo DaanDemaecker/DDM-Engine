@@ -12,6 +12,7 @@
 
 // Standard library includes
 #include <memory>
+#include <unordered_map>
 
 namespace DDM3
 {
@@ -54,6 +55,9 @@ namespace DDM3
 		void SetupImageViews(GPUObject* pGPUObject, DDM3::ImageManager* pImageManager,
 			VkCommandBuffer commandBuffer, RenderpassWrapper* renderPass);
 
+		void AddFrameBuffers(RenderpassWrapper* renderpass);
+
+
 		// Clean up allocated objects
 		// Parameters:
 		//     device: handle of the VkDevice
@@ -84,7 +88,7 @@ namespace DDM3
 		// Get the requested frame buffer
 		// Parameters:
 		//     index: the index of the frame buffer
-		VkFramebuffer GetFrameBuffer(uint32_t index) const;
+		VkFramebuffer GetFrameBuffer(uint32_t index, RenderpassWrapper* renderpass);
 	private:
 		// Handle of the swapchaint
 		VkSwapchainKHR m_SwapChain = VK_NULL_HANDLE;
@@ -105,7 +109,7 @@ namespace DDM3
 		VkExtent2D m_SwapChainExtent{};
 
 		// Vector of frameBuffers
-		std::vector<std::unique_ptr<FrameBuffer>> m_Framebuffers{};
+		std::unordered_map<RenderpassWrapper*, std::vector<std::unique_ptr<FrameBuffer>>> m_Framebuffers{};
 
 		// Initialize the swapchain and other components
 		// Parameters:

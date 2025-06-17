@@ -9,6 +9,8 @@
 #include "Engine/Singleton.h"
 #include "DataTypes/Structs.h"
 #include "Vulkan/Renderers/Renderer.h"
+#include "Vulkan/VulkanManagers/ImageManager.h"
+#include "Vulkan/VulkanWrappers/VulkanCore.h"
 
 // Standard library includes
 #include <iostream>
@@ -54,7 +56,7 @@ namespace DDM3
          //     filePaths: a list of shader file names for this pipeline
          //     hasDepthStencil: boolean that indicates if this pipeline needs a depth stencil, true by default
         void AddGraphicsPipeline(const std::string& pipelineName, std::initializer_list<const std::string>&& filePaths,
-            bool hasDepthStencil = true);
+            bool hasDepthStencil = true, RenderpassWrapper* renderpass = nullptr);
 
         //Public getters
         size_t GetMaxFrames() const { return m_MaxFramesInFlight; }
@@ -192,8 +194,10 @@ namespace DDM3
     {
         if (!std::is_base_of<Renderer, T>())
         {
-            throw std::runtime_error("Class is not derived from");
+            throw std::runtime_error("Class is not derived from renderer base class");
         }
+
+        m_pImageManager = std::make_unique<ImageManager>(m_pVulkanCore->GetGpuObject(), GetCommandPoolManager());
 
         Setup(std::make_unique<T>());
     }

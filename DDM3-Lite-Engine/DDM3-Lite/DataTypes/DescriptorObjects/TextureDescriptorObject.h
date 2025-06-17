@@ -21,7 +21,7 @@ namespace DDM3
         // Default constructor
         TextureDescriptorObject();
 
-        void AddTextures(Texture& texture);
+        void AddTextures(const Texture& texture);
 
         void AddTextures(std::initializer_list<const std::string>& filePaths);
 
@@ -34,6 +34,8 @@ namespace DDM3
         // Destructor
         virtual ~TextureDescriptorObject();
 
+        void SetCleanupTextures(bool cleanupTextures) { m_CleanupTextures = cleanupTextures; }
+
         // Add the descriptor write objects to the list of descriptorWrites
         // Parameters:
         //     descriptorSet: the current descriptorset connected to this descriptor object
@@ -43,6 +45,8 @@ namespace DDM3
         //     index: the current frame index of the renderer
         virtual void AddDescriptorWrite(VkDescriptorSet descriptorSet, std::vector<VkWriteDescriptorSet>& descriptorWrites, int& binding, int amount, int index) override;
     private:
+        bool m_CleanupTextures{ true };
+
         // List of the textures
         std::vector<Texture> m_Textures{};
         // List of image info per texture

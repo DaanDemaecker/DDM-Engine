@@ -60,6 +60,9 @@ namespace DDM3
 
 		void BeginRenderPass(VkCommandBuffer commandBuffer, VkFramebuffer frameBuffer, VkExtent2D extent);
 
+		void SetSampleCount(VkSampleCountFlagBits sampleCount) { m_SampleCount = sampleCount; }
+		VkSampleCountFlagBits GetSampleCount() const { return m_SampleCount; }
+
 	private:
 		std::vector<std::unique_ptr<Attachment>> m_AttachmentList{};
 
@@ -76,6 +79,8 @@ namespace DDM3
 
 		//RenderpassInfo
 		VkRenderPassBeginInfo m_RenderpassInfo{};
+
+		VkSampleCountFlagBits m_SampleCount{ VK_SAMPLE_COUNT_1_BIT };
 
 		// Initialize the renderpass
 		// Parameters:

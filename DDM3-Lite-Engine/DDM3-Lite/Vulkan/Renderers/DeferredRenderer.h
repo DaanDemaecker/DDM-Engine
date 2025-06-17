@@ -23,6 +23,7 @@ namespace DDM3
 	class RenderpassWrapper;
 	class ImGuiWrapper;
 	class SyncObjectManager;
+	class TextureDescriptorObject;
 
 	class DeferredRenderer final : public Renderer
 	{
@@ -42,12 +43,15 @@ namespace DDM3
 
 		virtual VkExtent2D GetExtent() override;
 
-		virtual VkRenderPass GetRenderpass() override;
+		virtual RenderpassWrapper* GetDefaultRenderpass() override;
 
 		virtual void AddDefaultPipelines();
 	private:
 		// Pointer to the renderpass wrapper
-		std::unique_ptr<RenderpassWrapper> m_pRenderpassWrapper{};
+		std::unique_ptr<RenderpassWrapper> m_pGeometryRenderpass{};
+
+		// Pointer to the renderpass wrapper
+		std::unique_ptr<RenderpassWrapper> m_pLightingRenderpass{};
 
 		// Pointer to the swapchain wrapper
 		std::unique_ptr<SwapchainWrapper> m_pSwapchainWrapper{};
@@ -58,6 +62,20 @@ namespace DDM3
 		// Pointer to the ImGui wrapper
 		std::unique_ptr<ImGuiWrapper> m_pImGuiWrapper{};
 
+		std::vector<std::unique_ptr<TextureDescriptorObject>> m_TextureDescriptorObjects{};
+
+		// Descriptor sets
+		VkPipelineLayout m_PipelineLayout{};
+
+		std::vector<VkDescriptorSet> m_DescriptorSets{};
+
+		VkDescriptorSetLayout m_DescriptorSetLayout{};
+
+		VkDescriptorPool m_DescriptorPool{};
+
+
+
+
 		void InitImgui();
 
 		void CleanupImgui();
@@ -66,7 +84,26 @@ namespace DDM3
 
 		void RecreateSwapChain();
 
-		void CreateRenderpass();
+		void CreateGeometryRenderpass();
+
+		void CreateLightingRendepass(VkFormat swapchainFormat);
+
+
+
+		void CreateDescriptorSetLayout();
+
+		void CreateDescriptorPool();
+
+		void CreateDescriptorSets();
+
+		void SetupDescriptorSets();
+
+		void UpdateDescriptorSets();
+
+		void BindDescriptorSets(VkCommandBuffer commandBuffer);
+
+		
+		void TransitionImages(VkCommandBuffer commandBuffer, VkImageLayout oldLayout, VkImageLayout newLayout);
 	};
 }
 

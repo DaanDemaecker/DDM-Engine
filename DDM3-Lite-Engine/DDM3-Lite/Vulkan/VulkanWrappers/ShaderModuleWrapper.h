@@ -48,7 +48,7 @@ namespace DDM3
 		// Add the descriptor set layout bindings
 		// Parameters:
 		//     bindings: vector of bindings that this function will add to
-		void AddDescriptorSetLayoutBindings(std::vector<VkDescriptorSetLayoutBinding>& bindings);
+		void AddDescriptorSetLayoutBindings(std::vector<VkDescriptorSetLayoutBinding>& bindings, uint32_t& bindingIndex);
 
 		// Add the amount of each descriptor type and the amount of descriptors per binding
 		void AddDescriptorInfo(std::map<VkDescriptorType, int>& typeCount, std::map<int, int>& descriptorsPerBinding);

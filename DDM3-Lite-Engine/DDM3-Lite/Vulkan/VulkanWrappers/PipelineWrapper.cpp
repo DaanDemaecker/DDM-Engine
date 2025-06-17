@@ -239,10 +239,12 @@ void DDM3::PipelineWrapper::CreateDescriptorSetLayout(VkDevice device, std::vect
 	// Create vector of descriptorsetlayoutbindings the size of the sum of vertexUbos, fragmentUbos and textureamount;
 	std::vector<VkDescriptorSetLayoutBinding> bindings{};
 
+	uint32_t bindingIndex{};
+
 	// Add the descriptor layout bindings for each shader module
 	for (auto& module : shaderModules)
 	{
-		module->AddDescriptorSetLayoutBindings(bindings);
+		module->AddDescriptorSetLayoutBindings(bindings, bindingIndex);
 	}
 
 	// Create layout info

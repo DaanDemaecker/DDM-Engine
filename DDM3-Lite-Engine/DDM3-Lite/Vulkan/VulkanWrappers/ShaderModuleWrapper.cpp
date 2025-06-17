@@ -30,7 +30,7 @@ void DDM3::ShaderModuleWrapper::Cleanup(VkDevice device)
 	vkDestroyShaderModule(device, m_ShaderModule, nullptr);
 }
 
-void DDM3::ShaderModuleWrapper::AddDescriptorSetLayoutBindings(std::vector<VkDescriptorSetLayoutBinding>& bindings)
+void DDM3::ShaderModuleWrapper::AddDescriptorSetLayoutBindings(std::vector<VkDescriptorSetLayoutBinding>& bindings, uint32_t& bindingIndex)
 {
 	// Read the shader stage from the shader module
 	auto stage{ static_cast<VkShaderStageFlagBits>(m_ReflectShaderModule.shader_stage) };
@@ -51,16 +51,20 @@ void DDM3::ShaderModuleWrapper::AddDescriptorSetLayoutBindings(std::vector<VkDes
 			// numTextures now contains the number of textures in the array
 		}
 
+		auto descriptorBinding = descriptorBindings[i];
+
 		// Create ubolayoutbinding and get the information from the reflect shader module
 		VkDescriptorSetLayoutBinding binding{};
-		binding.binding = descriptorBindings[i].binding;
-		binding.descriptorType = static_cast<VkDescriptorType>(descriptorBindings[i].descriptor_type);
+		binding.binding = bindingIndex;
+		binding.descriptorType = static_cast<VkDescriptorType>(descriptorBinding.descriptor_type);
 		binding.descriptorCount = descriptorCount;
 		binding.stageFlags = stage; 
 		binding.pImmutableSamplers = nullptr;
 
 		// Place binding in the vector of bindings
 		bindings.push_back(binding);
+
+		++bindingIndex;
 	}
 }
 

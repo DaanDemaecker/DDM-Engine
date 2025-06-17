@@ -30,7 +30,7 @@ namespace DDM3
 
 		void SetAttachmentRefIndex(int index) { m_AttachmentRef.attachment = index; }
 
-		const Texture& GetTexture() const { return m_Texture; }
+		const Texture& GetTexture() const { return m_Texture; };
 
 		VkAttachmentDescription& GetAttachmentDesc() { return m_AttachmentDesc; }
 
@@ -39,6 +39,8 @@ namespace DDM3
 		void SetFormat(VkFormat format) { m_Format = format; }
 
 		void SetupColorTexture(VkExtent2D extent);
+
+		void SetupColorResolveTexture(VkExtent2D extent);
 
 		void SetupDepthImage(VkExtent2D extent);
 

@@ -68,8 +68,6 @@ void DDM3::VulkanObject::Setup(std::unique_ptr<Renderer> pRenderer)
 	m_pRenderer = std::move(pRenderer);
 
 	m_pRenderer->AddDefaultPipelines();
-
-	m_pImageManager = std::make_unique<ImageManager>(m_pVulkanCore->GetGpuObject(), GetCommandPoolManager());
 }
 
 DDM3::VulkanObject::~VulkanObject()
@@ -77,10 +75,13 @@ DDM3::VulkanObject::~VulkanObject()
 	
 }
 
-void DDM3::VulkanObject::AddGraphicsPipeline(const std::string& pipelineName, std::initializer_list<const std::string>&& filePaths, bool hasDepthStencil)
+void DDM3::VulkanObject::AddGraphicsPipeline(const std::string& pipelineName, std::initializer_list<const std::string>&& filePaths, bool hasDepthStencil, RenderpassWrapper* renderpass)
 {
 	// Add a graphics pipeline trough the pipeline manager
-	m_pPipelineManager->AddGraphicsPipeline(m_pVulkanCore->GetDevice(), m_pRenderer->GetRenderpass(), m_MsaaSamples, pipelineName, filePaths, hasDepthStencil);
+	m_pPipelineManager->AddGraphicsPipeline(m_pVulkanCore->GetDevice(), 
+		renderpass == nullptr ? m_pRenderer->GetDefaultRenderpass()->GetRenderpass() : renderpass->GetRenderpass(),
+		renderpass == nullptr ? m_pRenderer->GetDefaultRenderpass()->GetSampleCount() : renderpass->GetSampleCount(),
+		pipelineName, filePaths, hasDepthStencil);
 }
 
 VkDevice DDM3::VulkanObject::GetDevice()
@@ -163,7 +164,7 @@ DDM3::GPUObject* DDM3::VulkanObject::GetGPUObject() const
 
 VkRenderPass DDM3::VulkanObject::GetRenderPass() const
 {
-	return m_pRenderer->GetRenderpass();
+	return m_pRenderer->GetDefaultRenderpass()->GetRenderpass();
 }
 
 int DDM3::VulkanObject::GetCurrentFrame()

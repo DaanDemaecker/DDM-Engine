@@ -42,7 +42,7 @@ namespace DDM3
 		  
 		virtual VkExtent2D GetExtent() override;
 		  
-		virtual VkRenderPass GetRenderpass() override;
+		virtual RenderpassWrapper* GetDefaultRenderpass() override;
 
 		virtual void AddDefaultPipelines();
 	private:

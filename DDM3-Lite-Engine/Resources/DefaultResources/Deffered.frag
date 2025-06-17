@@ -6,8 +6,6 @@ layout(binding = 1) uniform UniformLightObject {
     float intensity;
 } light;
 
-layout(binding = 2) uniform sampler2D texSampler;
-
 layout(location = 0) in vec3 fragColor;
 layout(location = 1) in vec2 fragTexCoord;
 layout(location = 2) in float uvSetIndex;
@@ -22,7 +20,7 @@ layout(location = 2) out vec4 outNormal;
 
 void main()
 {
-	vec3 finalColor = texture(texSampler, fragTexCoord).rgb;
+	vec3 finalColor = fragColor;
 
 
     outPos = fragpos;

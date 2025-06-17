@@ -28,15 +28,6 @@ DDM3::SwapchainWrapper::SwapchainWrapper(GPUObject* pGPUObject, VkSurfaceKHR sur
 	CreateSwapChain(pGPUObject, surface);
 	// Initialize the image views
 	CreateSwapchainImageViews(pGPUObject->GetDevice(), pImageManager);
-
-
-	// Resize framebuffers to size of imageviews
-	m_Framebuffers.resize(m_SwapChainImageViews.size());
-
-	for (int i{}; i < m_Framebuffers.size(); ++i)
-	{
-		m_Framebuffers[i] = std::make_unique<FrameBuffer>();
-	}
 }
 
 DDM3::SwapchainWrapper::~SwapchainWrapper()
@@ -54,9 +45,27 @@ void DDM3::SwapchainWrapper::SetupImageViews(GPUObject* pGPUObject, DDM3::ImageM
 
 	renderPass->GetDepthAttachment()->SetupDepthImage(m_SwapChainExtent);
 
+	if (renderPass->IsColorResolveSet())
+	{
+		renderPass->GetColorResolveAttachment()->SetupColorResolveTexture(m_SwapChainExtent);
+	}
 
 	// Initialize frame buffers
 	CreateFramebuffers(pGPUObject->GetDevice(), renderPass);
+}
+
+void DDM3::SwapchainWrapper::AddFrameBuffers(RenderpassWrapper* renderpass)
+{
+	m_Framebuffers[renderpass] = std::vector<std::unique_ptr<FrameBuffer>>();
+
+	// Resize framebuffers to size of imageviews
+	m_Framebuffers[renderpass].resize(m_SwapChainImages.size());
+
+
+	for (int i{}; i < m_Framebuffers[renderpass].size(); ++i)
+	{
+		m_Framebuffers[renderpass][i] = std::make_unique<FrameBuffer>();
+	}
 }
 
 void DDM3::SwapchainWrapper::SetupSwapchain(GPUObject* pGPUObject, VkSurfaceKHR surface,
@@ -188,6 +197,14 @@ void DDM3::SwapchainWrapper::CreateSwapchainImageViews(VkDevice device, DDM3::Im
 
 void DDM3::SwapchainWrapper::Cleanup(VkDevice device)
 {
+	for (auto& framebufferList : m_Framebuffers)
+	{
+		for (auto& framebuffer : framebufferList.second)
+		{
+			framebuffer.reset();
+		}
+	}
+
 	// Loop trough the amount of image views
 	for (size_t i = 0; i < m_SwapChainImageViews.size(); ++i)
 	{
@@ -213,9 +230,9 @@ void DDM3::SwapchainWrapper::RecreateSwapChain(GPUObject* pGPUObject, VkSurfaceK
 	SetupSwapchain(pGPUObject, surface, pImageManager, commandBuffer, renderpass);
 }
 
-VkFramebuffer DDM3::SwapchainWrapper::GetFrameBuffer(uint32_t index) const
+VkFramebuffer DDM3::SwapchainWrapper::GetFrameBuffer(uint32_t index, RenderpassWrapper* renderpass)
 {
-	return m_Framebuffers[index]->GetFrameBuffer();
+	return m_Framebuffers[renderpass][index]->GetFrameBuffer();
 }
 
 
@@ -252,10 +269,13 @@ VkExtent2D DDM3::SwapchainWrapper::ChooseSwapExtent(const VkSurfaceCapabilitiesK
 
 void DDM3::SwapchainWrapper::CreateFramebuffers(VkDevice device, RenderpassWrapper* renderpass)
 {
+	if (!m_Framebuffers.contains(renderpass))
+		return;
+
 	// Loop trough the amount of imageViews
 	for (size_t i = 0; i < m_SwapChainImageViews.size(); ++i)
 	{
-		m_Framebuffers[i]->CreateFrameBuffer(renderpass, m_SwapChainExtent, renderpass->IsColorResolveSet() ? m_SwapChainImageViews[i] : VK_NULL_HANDLE);
+		m_Framebuffers[renderpass][i]->CreateFrameBuffer(renderpass, m_SwapChainExtent, renderpass->IsColorResolveSet() ? m_SwapChainImageViews[i] : VK_NULL_HANDLE);
 	}
 }
 

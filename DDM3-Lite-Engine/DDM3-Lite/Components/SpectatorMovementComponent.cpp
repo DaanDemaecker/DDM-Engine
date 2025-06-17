@@ -55,18 +55,23 @@ void DDM3::SpectatorMovementComponent::Update()
 	// Translate the object based on the rotated movement direction
 	transform->Translate(direction);
 
-	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) &&
-		!ImGui::IsAnyItemActive() &&
-		!ImGui::IsAnyItemHovered() &&
-		!ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow))
+	//if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) &&
+	//	!ImGui::IsAnyItemActive() &&
+	//	!ImGui::IsAnyItemHovered() &&
+	//	!ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow))
+	//{
+
+	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
 	{
 		auto& mouseDelta = input.GetMouseDelta();
-
-
+	
+	
 		m_TotalPitch += static_cast<float>(mouseDelta.y * m_AngularSpeed);
 		m_TotalYaw += static_cast<float>(mouseDelta.x * m_AngularSpeed);
-
+	
 		// Rotate the camera based on mouse movement
 		transform->SetWorldRotation(m_TotalPitch, m_TotalYaw, 0);
 	}
+
+	//}
 }

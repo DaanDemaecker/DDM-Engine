@@ -7,13 +7,13 @@
 DDM3::TextureDescriptorObject::TextureDescriptorObject()
 	:DescriptorObject(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER)
 {
-	auto& renderer{ VulkanObject::GetInstance() };
+	auto& vulkanObject{ VulkanObject::GetInstance() };
 	m_PlaceholderImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-	m_PlaceholderImageInfo.imageView = renderer.GetDefaultImageView();
-	m_PlaceholderImageInfo.sampler = renderer.GetSampler();
+	m_PlaceholderImageInfo.imageView = vulkanObject.GetDefaultImageView();
+	m_PlaceholderImageInfo.sampler = vulkanObject.GetSampler();
 }
 
-void DDM3::TextureDescriptorObject::AddTextures(Texture& texture)
+void DDM3::TextureDescriptorObject::AddTextures(const Texture& texture)
 {
 	// Add the texture to the list of textures
 	m_Textures.push_back(texture);
@@ -75,13 +75,15 @@ size_t DDM3::TextureDescriptorObject::GetTextureAmount() const
 
 DDM3::TextureDescriptorObject::~TextureDescriptorObject()
 {
-	// Get the device and clean up all the textures
-
-	auto device{ VulkanObject::GetInstance().GetDevice() };
-
-	for (auto& texture : m_Textures)
+	if (m_CleanupTextures)
 	{
-		texture.Cleanup(device);
+		// Get the device and clean up all the textures
+		auto device{ VulkanObject::GetInstance().GetDevice() };
+
+		for (auto& texture : m_Textures)
+		{
+			texture.Cleanup(device);
+		}
 	}
 }
 

@@ -13,6 +13,8 @@
 
 namespace DDM3
 {
+	class RenderpassWrapper;
+
 	class Renderer
 	{
 	public:
@@ -31,7 +33,7 @@ namespace DDM3
 
 		virtual VkExtent2D GetExtent() = 0;
 
-		virtual VkRenderPass GetRenderpass() = 0;
+		virtual RenderpassWrapper* GetDefaultRenderpass() = 0;
 
 		virtual void AddDefaultPipelines() = 0;
 	};
