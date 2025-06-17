@@ -89,7 +89,7 @@ namespace LoadDeferredScene
 	{
 		auto& vulkanObject{ DDM3::VulkanObject::GetInstance() };
 
-		//vulkanObject.AddGraphicsPipeline("Deferred", { "Resources/Shaders/Deffered.Vert.spv", "Resources/Shaders/Deffered.Frag.spv" });
+		vulkanObject.AddGraphicsPipeline("DeferredDiffuse", { "Resources/DefaultResources/Deffered.Vert.spv", "Resources/Shaders/DefferedDiffuse.frag.spv" });
 	}
 
 	void SetupVehicle(DDM3::Scene* scene)
@@ -124,7 +124,9 @@ namespace LoadDeferredScene
 
 	void SetupVehicle2(DDM3::Scene* scene)
 	{
-		std::shared_ptr<DDM3::TexturedMaterial> pVehicleMaterial{ std::make_shared<DDM3::TexturedMaterial>("Default")};
+		std::shared_ptr<DDM3::TexturedMaterial> pVehicleMaterial{ std::make_shared<DDM3::TexturedMaterial>("DeferredDiffuse")};
+
+		pVehicleMaterial->AddTexture("resources/images/vehicle_diffuse.png");
 
 		auto pVehicle{ DDM3::DDMModelLoader::GetInstance().LoadModel("Resources/Models/vehicle.obj", scene->GetSceneRoot()) };
 		pVehicle->SetShowImGui(true);
