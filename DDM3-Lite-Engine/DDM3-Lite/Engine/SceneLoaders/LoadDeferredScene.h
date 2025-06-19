@@ -64,7 +64,7 @@ namespace LoadDeferredScene
 
 		//SetupVehicle(scene.get());
 
-		SetupVehicle2(scene.get());
+		//SetupVehicle2(scene.get());
 
 		//SetupVikingRoom(scene.get());
 
@@ -74,7 +74,7 @@ namespace LoadDeferredScene
 
 		//SetupAtrium(scene.get());
 
-		//SetupAtrium2(scene.get());
+		SetupAtrium2(scene.get());
 
 		//SetupSkull(scene.get());
 
@@ -201,15 +201,6 @@ namespace LoadDeferredScene
 
 	void SetupAtrium2(DDM3::Scene* scene)
 	{
-		auto switchManager = scene->GetSceneRoot()->CreateNewObject("Material switch manager");
-		switchManager->SetShowImGui(true);
-
-		auto switchManagerComponent = switchManager->AddComponent<DDM3::MaterialSwitchManager>();
-		switchManagerComponent->RegisterKey("Diffuse");
-		switchManagerComponent->RegisterKey("Default");
-		switchManagerComponent->RegisterKey("DiffuseUnshaded");
-
-
 		auto& modelLoader = DDM3::DDMModelLoader::GetInstance();
 
 		std::vector<std::unique_ptr<DDMML::Mesh>> pMeshes{};
@@ -225,31 +216,14 @@ namespace LoadDeferredScene
 			renderComponent->SetMesh(pMesh.get());
 
 
-			auto texturedMaterial = std::make_shared<DDM3::TexturedMaterial>("Diffuse");
+			auto texturedMaterial = std::make_shared<DDM3::TexturedMaterial>("DeferredDiffuse");
 
 			for (auto& texture : pMesh->GetDiffuseTextureNames())
 			{
 				texturedMaterial->AddTexture(texture);
 			}
 
-			auto diffuseUnshadedMaterial = std::make_shared<DDM3::TexturedMaterial>("DiffuseUnshaded");
-
-			for (auto& texture : pMesh->GetDiffuseTextureNames())
-			{
-				diffuseUnshadedMaterial->AddTexture(texture);
-			}
-
-			auto defaultMaterial = std::make_shared<DDM3::Material>();
-
 			renderComponent->SetMaterial(texturedMaterial);
-
-			auto pMaterialSwitcher = pGameObject->AddComponent<DDM3::MaterialSwitcher>();
-			pMaterialSwitcher->RegisterMaterial("Diffuse", texturedMaterial);
-			pMaterialSwitcher->RegisterMaterial("Default", defaultMaterial);
-			pMaterialSwitcher->RegisterMaterial("DiffuseUnshaded", diffuseUnshadedMaterial);
-
-
-			switchManagerComponent->RegisterMaterialSwitcher(pMaterialSwitcher);
 		}
 	}
 

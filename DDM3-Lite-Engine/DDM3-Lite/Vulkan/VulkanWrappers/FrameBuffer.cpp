@@ -22,6 +22,13 @@ DDM3::FrameBuffer::~FrameBuffer()
 
 void DDM3::FrameBuffer::CreateFrameBuffer(RenderpassWrapper* renderpass, VkExtent2D extent, VkImageView swapchainImage)
 {
+	if (m_FrameBuffer != VK_NULL_HANDLE)
+	{
+		// If the framebuffer already exists, destroy it
+		vkDestroyFramebuffer(VulkanObject::GetInstance().GetDevice(), m_FrameBuffer, nullptr);
+		m_FrameBuffer = VK_NULL_HANDLE;
+	}
+
 	auto& attachmentList{ renderpass->GetAttachmentList() };
 
 	std::vector<VkImageView> attachments{};

@@ -200,10 +200,13 @@ void DDM3::ForwardRenderer::RecreateSwapChain()
 	// Create a single time command
 	auto commandBuffer{ VulkanObject::GetInstance().BeginSingleTimeCommands() };
 
+
+	std::vector<RenderpassWrapper*> renderpasses{ m_pRenderpassWrapper.get()};
+
 	// Recreate the swapchain
 	m_pSwapchainWrapper->RecreateSwapChain(DDM3::VulkanObject::GetInstance().GetGPUObject(), DDM3::VulkanObject::GetInstance().GetSurface(),
 		VulkanObject::GetInstance().GetImageManager(),
-		commandBuffer, m_pRenderpassWrapper.get());
+		commandBuffer, renderpasses);
 
 	// End single time command
 	VulkanObject::GetInstance().EndSingleTimeCommands(commandBuffer);

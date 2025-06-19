@@ -71,7 +71,7 @@ namespace DDM3
 		//     commandBuffer: commandbuffer that will be used to create depth image
 		//     renderpass: the renderpass that will be used with this swapchain
 		void RecreateSwapChain(GPUObject* pGPUObject, VkSurfaceKHR surface,
-			DDM3::ImageManager* pImageManager, VkCommandBuffer commandBuffer, RenderpassWrapper* renderpass);
+			DDM3::ImageManager* pImageManager, VkCommandBuffer commandBuffer, std::vector<RenderpassWrapper*>& renderpasses);
 
 		// Get the swapchain
 		VkSwapchainKHR GetSwapchain() const { return m_SwapChain; }
@@ -119,7 +119,7 @@ namespace DDM3
 		//     commandBuffer: commandbuffer needed for creation of depth image
 		//     renderpass: the renderpass used with this swapchain
 		void SetupSwapchain(GPUObject* pGPUObject, VkSurfaceKHR surface,
-			DDM3::ImageManager* pImageManager, VkCommandBuffer commandBuffer, RenderpassWrapper* renderpass);
+			DDM3::ImageManager* pImageManager, VkCommandBuffer commandBuffer, std::vector<RenderpassWrapper*>& renderpasses);
 
 		// Create the swapchain
 		// Parameters:

@@ -57,6 +57,8 @@ namespace DDM3
 
 		VkClearColorValue m_ClearColorValue{0,0,0,1};
 
+		void Cleanup();
+
 	};
 }
 

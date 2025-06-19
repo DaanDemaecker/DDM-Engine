@@ -32,6 +32,14 @@ DDM3::SwapchainWrapper::SwapchainWrapper(GPUObject* pGPUObject, VkSurfaceKHR sur
 
 DDM3::SwapchainWrapper::~SwapchainWrapper()
 {
+	for (auto& framebufferList : m_Framebuffers)
+	{
+		for (auto& framebuffer : framebufferList.second)
+		{
+			framebuffer.reset();
+		}
+	}
+
 	Cleanup(VulkanObject::GetInstance().GetDevice());
 }
 
@@ -69,14 +77,18 @@ void DDM3::SwapchainWrapper::AddFrameBuffers(RenderpassWrapper* renderpass)
 }
 
 void DDM3::SwapchainWrapper::SetupSwapchain(GPUObject* pGPUObject, VkSurfaceKHR surface,
-	DDM3::ImageManager* pImageManager, VkCommandBuffer commandBuffer, RenderpassWrapper* renderpass)
+	DDM3::ImageManager* pImageManager, VkCommandBuffer commandBuffer, std::vector<RenderpassWrapper*>& renderpasses)
 {
 	// Initalize the swapchain
 	CreateSwapChain(pGPUObject, surface);
 	// Initialize swapchain image views
 	CreateSwapchainImageViews(pGPUObject->GetDevice(), pImageManager);
 	// Setup color and depth resources
-	SetupImageViews(pGPUObject, pImageManager, commandBuffer, renderpass);
+
+	for (auto& renderpass : renderpasses)
+	{
+		SetupImageViews(pGPUObject, pImageManager, commandBuffer, renderpass);
+	}
 }
 
 void DDM3::SwapchainWrapper::CreateSwapChain(GPUObject* pGPUObject, VkSurfaceKHR surface)
@@ -197,14 +209,6 @@ void DDM3::SwapchainWrapper::CreateSwapchainImageViews(VkDevice device, DDM3::Im
 
 void DDM3::SwapchainWrapper::Cleanup(VkDevice device)
 {
-	for (auto& framebufferList : m_Framebuffers)
-	{
-		for (auto& framebuffer : framebufferList.second)
-		{
-			framebuffer.reset();
-		}
-	}
-
 	// Loop trough the amount of image views
 	for (size_t i = 0; i < m_SwapChainImageViews.size(); ++i)
 	{
@@ -221,13 +225,13 @@ void DDM3::SwapchainWrapper::Cleanup(VkDevice device)
 }
 
 void DDM3::SwapchainWrapper::RecreateSwapChain(GPUObject* pGPUObject, VkSurfaceKHR surface,
-	DDM3::ImageManager* pImageManager, VkCommandBuffer commandBuffer, RenderpassWrapper* renderpass)
+	DDM3::ImageManager* pImageManager, VkCommandBuffer commandBuffer, std::vector<RenderpassWrapper*>& renderpasses)
 {
 	// Call cleanup function to destroy all allocated objects
 	Cleanup(pGPUObject->GetDevice());
 
 	// Set swapchain again
-	SetupSwapchain(pGPUObject, surface, pImageManager, commandBuffer, renderpass);
+	SetupSwapchain(pGPUObject, surface, pImageManager, commandBuffer, renderpasses);
 }
 
 VkFramebuffer DDM3::SwapchainWrapper::GetFrameBuffer(uint32_t index, RenderpassWrapper* renderpass)

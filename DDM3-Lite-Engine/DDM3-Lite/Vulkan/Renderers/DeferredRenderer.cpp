@@ -286,6 +286,37 @@ void DDM3::DeferredRenderer::RecordCommandBuffer(VkCommandBuffer& commandBuffer,
 
 void DDM3::DeferredRenderer::RecreateSwapChain()
 {
+	// Get a reference to the window struct
+	auto& windowStruct{ DDM3::Window::GetInstance().GetWindowStruct() };
+
+	//Get the width and the height of the window
+	glfwGetFramebufferSize(windowStruct.pWindow, &windowStruct.Width, &windowStruct.Height);
+
+	// While width and height are 0, wait before continuing
+	while (windowStruct.Width == 0 || windowStruct.Height == 0)
+	{
+		glfwGetFramebufferSize(windowStruct.pWindow, &windowStruct.Width, &windowStruct.Height);
+		glfwWaitEvents();
+	}
+
+	// Wait until the device is idle
+	vkDeviceWaitIdle(DDM3::VulkanObject::GetInstance().GetDevice());
+
+	// Create a single time command
+	auto commandBuffer{ VulkanObject::GetInstance().BeginSingleTimeCommands() };
+
+
+	std::vector<RenderpassWrapper*> renderpasses{ m_pGeometryRenderpass.get(), m_pLightingRenderpass.get()};
+
+	// Recreate the swapchain
+	m_pSwapchainWrapper->RecreateSwapChain(DDM3::VulkanObject::GetInstance().GetGPUObject(), DDM3::VulkanObject::GetInstance().GetSurface(),
+		VulkanObject::GetInstance().GetImageManager(),
+		commandBuffer, renderpasses);
+
+	// End single time command
+	VulkanObject::GetInstance().EndSingleTimeCommands(commandBuffer);
+
+	CreateDescriptorSets();
 }
 
 void DDM3::DeferredRenderer::CreateGeometryRenderpass()
@@ -615,6 +646,7 @@ void DDM3::DeferredRenderer::CreateDescriptorPool()
 	poolInfo.pPoolSizes = poolSizes.data();
 	// Give max sets
 	poolInfo.maxSets = static_cast<uint32_t>(frames);
+	poolInfo.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
 
 	// Created descriptorpool, if not successful, throw runtime error
 	if (vkCreateDescriptorPool(vulkanObject.GetDevice(), &poolInfo, nullptr, &m_DescriptorPool) != VK_SUCCESS) {
@@ -625,6 +657,11 @@ void DDM3::DeferredRenderer::CreateDescriptorPool()
 void DDM3::DeferredRenderer::CreateDescriptorSets()
 {
 	m_TextureDescriptorObjects.clear();
+
+	if (m_DescriptorSets.size() > 0)
+	{
+		vkFreeDescriptorSets(VulkanObject::GetInstance().GetDevice(), m_DescriptorPool, m_DescriptorSets.size(), m_DescriptorSets.data());
+	}
 
 	m_DescriptorSets.clear();
 	m_DescriptorSets.resize(VulkanObject::GetInstance().GetMaxFrames());

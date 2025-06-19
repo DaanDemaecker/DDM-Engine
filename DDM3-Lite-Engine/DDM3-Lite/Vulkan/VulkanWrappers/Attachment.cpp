@@ -13,11 +13,13 @@ DDM3::Attachment::Attachment()
 
 DDM3::Attachment::~Attachment()
 {
-	m_Texture.Cleanup(VulkanObject::GetInstance().GetDevice());
+	Cleanup();
 }
 
 void DDM3::Attachment::SetupColorTexture(VkExtent2D extent)
 {
+	Cleanup();
+
 	auto& vulkanObject{ VulkanObject::GetInstance() };
 
 	auto pImageManager = vulkanObject.GetImageManager();
@@ -35,6 +37,8 @@ void DDM3::Attachment::SetupColorTexture(VkExtent2D extent)
 
 void DDM3::Attachment::SetupColorResolveTexture(VkExtent2D extent)
 {
+	Cleanup();
+
 	auto& vulkanObject{ VulkanObject::GetInstance() };
 
 	auto pImageManager = vulkanObject.GetImageManager();
@@ -52,6 +56,8 @@ void DDM3::Attachment::SetupColorResolveTexture(VkExtent2D extent)
 
 void DDM3::Attachment::SetupDepthImage(VkExtent2D extent)
 {
+	Cleanup();
+
 	auto& vulkanObject{ VulkanObject::GetInstance() };
 
 	auto pImageManager = vulkanObject.GetImageManager();
@@ -76,4 +82,9 @@ void DDM3::Attachment::SetupDepthImage(VkExtent2D extent)
 	pImageManager->TransitionImageLayout(m_Texture.image, commandBuffer, m_Format, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, 1);
 
 	vulkanObject.EndSingleTimeCommands(commandBuffer);
+}
+
+void DDM3::Attachment::Cleanup()
+{
+	m_Texture.Cleanup(VulkanObject::GetInstance().GetDevice());
 }
