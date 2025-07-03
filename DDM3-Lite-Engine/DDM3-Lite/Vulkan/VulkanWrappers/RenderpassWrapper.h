@@ -58,7 +58,7 @@ namespace DDM3
 
 		bool IsColorResolveSet() const { return m_ColorResolveSet;}
 
-		void BeginRenderPass(VkCommandBuffer commandBuffer, VkFramebuffer frameBuffer, VkExtent2D extent);
+		void BeginRenderPass(VkCommandBuffer commandBuffer, VkFramebuffer frameBuffer, VkExtent2D extent, bool clearDepth = true);
 
 		void SetSampleCount(VkSampleCountFlagBits sampleCount) { m_SampleCount = sampleCount; }
 		VkSampleCountFlagBits GetSampleCount() const { return m_SampleCount; }

@@ -47,6 +47,8 @@ namespace DDM3
 
 		virtual void AddDefaultPipelines();
 	private:
+		std::unique_ptr<RenderpassWrapper> m_pDepthRenderpass{};
+
 		// Pointer to the renderpass wrapper
 		std::unique_ptr<RenderpassWrapper> m_pGeometryRenderpass{};
 
@@ -73,7 +75,7 @@ namespace DDM3
 
 		VkDescriptorPool m_DescriptorPool{};
 
-
+		std::shared_ptr<Texture> m_pDepthTexture{};
 
 
 		void InitImgui();
@@ -83,6 +85,8 @@ namespace DDM3
 		void RecordCommandBuffer(VkCommandBuffer& commandBuffer, uint32_t imageIndex);
 
 		void RecreateSwapChain();
+
+		void CreateDepthRenderpass();
 
 		void CreateGeometryRenderpass();
 

@@ -17,6 +17,10 @@ layout(location = 0) out vec4 outColor;
 
 float GetObservedArea(vec3 normal);
 
+float minOA = 0.02;
+float maxOA = 1;
+float alphaThreshold = 0.1;
+
 void main()
 {
 	float observedArea = GetObservedArea(normalize(fragNormal));
@@ -29,7 +33,6 @@ void main()
 
 	outColor = vec4(finalColor, sampledColor.w);
 
-    float alphaThreshold = 0.1;
     if(outColor.w < alphaThreshold)
     {
         discard;
@@ -39,6 +42,6 @@ void main()
 float GetObservedArea(vec3 normal)
 {
 	float dotProduct = dot(normal, -light.direction);
-    float observedArea = clamp(dotProduct, 0, 1);
+    float observedArea = clamp(dotProduct, minOA, maxOA);
     return observedArea;
 }

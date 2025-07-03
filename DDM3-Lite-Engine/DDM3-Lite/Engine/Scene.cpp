@@ -82,6 +82,11 @@ void DDM3::Scene::RenderSkyBox()
 		m_pActiveCamera->RenderSkybox();
 }
 
+void DDM3::Scene::RenderDepth() const
+{
+	m_pSceneRoot->RenderDepth();
+}
+
 void DDM3::Scene::Render() const
 {
 	m_pSceneRoot->Render();

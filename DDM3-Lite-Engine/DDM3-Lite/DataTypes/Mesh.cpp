@@ -44,8 +44,11 @@ void DDM3::Mesh::Render(PipelineWrapper* pPipeline, VkDescriptorSet* descriptorS
 	// Get current commandbuffer
 	auto commandBuffer{ VulkanObject::GetInstance().GetCurrentCommandBuffer() };
 
-	// Bind pipeline
-	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pPipeline->GetPipeline());
+	if (pPipeline != nullptr)
+	{
+		// Bind pipeline
+		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pPipeline->GetPipeline());
+	}
 
 	// Set and bind vertex buffer
 	VkBuffer vertexBuffers[] = { m_VertexBuffer };
@@ -55,8 +58,11 @@ void DDM3::Mesh::Render(PipelineWrapper* pPipeline, VkDescriptorSet* descriptorS
 	// Bind index buffer
 	vkCmdBindIndexBuffer(commandBuffer, m_IndexBuffer, 0, VK_INDEX_TYPE_UINT32);
 
-	// Bind descriptor sets
-	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pPipeline->GetPipelineLayout(), 0, 1, descriptorSet, 0, nullptr);
+	if (pPipeline != nullptr && descriptorSet != nullptr)
+	{
+		// Bind descriptor sets
+		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pPipeline->GetPipelineLayout(), 0, 1, descriptorSet, 0, nullptr);
+	}
 
 	// Draw
 	vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(m_Indices.size()), 1, 0, 0, 0);

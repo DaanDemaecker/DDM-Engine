@@ -89,7 +89,7 @@ namespace LoadDeferredScene
 	{
 		auto& vulkanObject{ DDM3::VulkanObject::GetInstance() };
 
-		vulkanObject.AddGraphicsPipeline("DeferredDiffuse", { "Resources/DefaultResources/Deffered.Vert.spv", "Resources/Shaders/DefferedDiffuse.frag.spv" });
+		vulkanObject.AddGraphicsPipeline("DeferredDiffuse", { "Resources/DefaultResources/Deffered.Vert.spv", "Resources/Shaders/DefferedDiffuse.frag.spv" }, true, false);
 	}
 
 	void SetupVehicle(DDM3::Scene* scene)

@@ -28,12 +28,12 @@ void DDM3::PipelineManager::AddDefaultPipeline(VkDevice device, VkRenderPass ren
 
 }
 
-void DDM3::PipelineManager::AddGraphicsPipeline(VkDevice device, VkRenderPass renderPass, VkSampleCountFlagBits sampleCount, const std::string& pipelineName, std::initializer_list<const std::string>&& filePaths, bool hasDepthStencil)
+void DDM3::PipelineManager::AddGraphicsPipeline(VkDevice device, VkRenderPass renderPass, VkSampleCountFlagBits sampleCount, const std::string& pipelineName, std::initializer_list<const std::string>&& filePaths, bool hasDepthStencil, bool writesToDepth)
 {
-	AddGraphicsPipeline(device, renderPass, sampleCount, pipelineName, filePaths, hasDepthStencil);
+	AddGraphicsPipeline(device, renderPass, sampleCount, pipelineName, filePaths, hasDepthStencil, writesToDepth);
 }
 
-void DDM3::PipelineManager::AddGraphicsPipeline(VkDevice device, VkRenderPass renderPass, VkSampleCountFlagBits sampleCount, const std::string& pipelineName, std::initializer_list<const std::string>& filePaths, bool hasDepthStencil)
+void DDM3::PipelineManager::AddGraphicsPipeline(VkDevice device, VkRenderPass renderPass, VkSampleCountFlagBits sampleCount, const std::string& pipelineName, std::initializer_list<const std::string>& filePaths, bool hasDepthStencil, bool writesToDepth)
 {
 	// Check if pipeline already exists, if it does, delete it
 	if (m_GraphicPipelines.contains(pipelineName))
@@ -43,7 +43,7 @@ void DDM3::PipelineManager::AddGraphicsPipeline(VkDevice device, VkRenderPass re
 
 	// Create a new pipeline in the correct spot in the map
 	m_GraphicPipelines[pipelineName] = std::make_unique<DDM3::PipelineWrapper>
-		(device, renderPass, sampleCount, filePaths, hasDepthStencil);
+		(device, renderPass, sampleCount, filePaths, hasDepthStencil, writesToDepth);
 
 }
 

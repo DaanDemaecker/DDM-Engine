@@ -221,6 +221,22 @@ void DDM3::GameObject::PrepareRender()
 	}
 }
 
+void DDM3::GameObject::RenderDepth() const
+{
+	for (auto& component : m_pComponents)
+	{
+		component->RenderDepth();
+	}
+
+	for (auto& pChild : m_pChildren)
+	{
+		if (pChild->m_IsActive)
+		{
+			pChild->RenderDepth();
+		}
+	}
+}
+
 void DDM3::GameObject::Render() const
 {
 	for (auto& component : m_pComponents)

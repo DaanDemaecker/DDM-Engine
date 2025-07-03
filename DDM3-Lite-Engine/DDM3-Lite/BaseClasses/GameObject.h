@@ -46,6 +46,8 @@ namespace DDM3
 
 		void PrepareRender();
 
+		void RenderDepth() const;
+
 		void Render() const;
 
 		void OnGUI();

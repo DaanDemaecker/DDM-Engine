@@ -32,11 +32,17 @@ DDM3::DeferredRenderer::DeferredRenderer()
 	// Initialize the swapchain
 	m_pSwapchainWrapper = std::make_unique<SwapchainWrapper>(pGPUObject, surface, VulkanObject::GetInstance().GetImageManager(), VulkanObject::GetInstance().GetMsaaSamples());
 
+	CreateDepthRenderpass();
+
 	CreateGeometryRenderpass();
 
 	CreateLightingRendepass(m_pSwapchainWrapper->GetFormat());
 
 	auto commandBuffer = VulkanObject::GetInstance().BeginSingleTimeCommands();
+	m_pSwapchainWrapper->SetupImageViews(pGPUObject, VulkanObject::GetInstance().GetImageManager(), commandBuffer, m_pDepthRenderpass.get());
+	VulkanObject::GetInstance().EndSingleTimeCommands(commandBuffer);
+
+	commandBuffer = VulkanObject::GetInstance().BeginSingleTimeCommands();
 	m_pSwapchainWrapper->SetupImageViews(pGPUObject, VulkanObject::GetInstance().GetImageManager(), commandBuffer, m_pGeometryRenderpass.get());
 	VulkanObject::GetInstance().EndSingleTimeCommands(commandBuffer);
 
@@ -165,7 +171,7 @@ void DDM3::DeferredRenderer::AddDefaultPipelines()
 	VulkanObject::GetInstance().AddGraphicsPipeline(defaultPipelineName, {
 		configManager.GetString("DefaultDeferredVert"),
 		configManager.GetString("DefaultDeferredFrag") },
-		true, m_pGeometryRenderpass.get());
+		true, false, m_pGeometryRenderpass.get());
 
 	// Initialize default pipeline name 
 	auto lightingPipelineName = configManager.GetString("DeferredLightingPipelineName");
@@ -174,9 +180,13 @@ void DDM3::DeferredRenderer::AddDefaultPipelines()
 	VulkanObject::GetInstance().AddGraphicsPipeline(lightingPipelineName, {
 		configManager.GetString("DeferredLightingVert"),
 		configManager.GetString("DeferredLightingFrag") },
-		false, m_pLightingRenderpass.get());
+		false, true, m_pLightingRenderpass.get());
 
 	m_PipelineLayout = VulkanObject::GetInstance().GetPipeline(lightingPipelineName)->GetPipelineLayout();
+
+	VulkanObject::GetInstance().AddGraphicsPipeline("Depth", {
+		"Resources/DefaultResources/Depth.Vert.spv"},
+		true, true, m_pDepthRenderpass.get());
 }
 
 void DDM3::DeferredRenderer::InitImgui()
@@ -247,14 +257,44 @@ void DDM3::DeferredRenderer::RecordCommandBuffer(VkCommandBuffer& commandBuffer,
 	scissor.extent = extent;
 	vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
-	m_pGeometryRenderpass->BeginRenderPass(commandBuffer, m_pSwapchainWrapper->GetFrameBuffer(imageIndex, m_pGeometryRenderpass.get()), extent);
+	m_pDepthRenderpass->BeginRenderPass(commandBuffer, m_pSwapchainWrapper->GetFrameBuffer(imageIndex, m_pDepthRenderpass.get()), extent);
+
+	SceneManager::GetInstance().RenderDepth();
+
+	vkCmdEndRenderPass(commandBuffer);
+
+
+
+	VkImageMemoryBarrier barrier{};
+	barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+	barrier.oldLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+	barrier.newLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+	barrier.srcAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+	barrier.dstAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT;
+	barrier.image = m_pDepthTexture->image; // Your actual VkImage
+	barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
+	barrier.subresourceRange.baseMipLevel = 0;
+	barrier.subresourceRange.levelCount = 1;
+	barrier.subresourceRange.baseArrayLayer = 0;
+	barrier.subresourceRange.layerCount = 1;
+
+	vkCmdPipelineBarrier(
+		commandBuffer,
+		VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT,   // When depth write completes
+		VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,  // Before depth read starts
+		0,
+		0, nullptr,
+		0, nullptr,
+		1, &barrier
+	);
+
+
+
+	m_pGeometryRenderpass->BeginRenderPass(commandBuffer, m_pSwapchainWrapper->GetFrameBuffer(imageIndex, m_pGeometryRenderpass.get()), extent, false);
 
 	//DDM3::SceneManager::GetInstance().RenderSkybox();
 
 	SceneManager::GetInstance().Render();
-
-	// Render the ImGui
-	//m_pImGuiWrapper->Render(commandBuffer);
 
 	vkCmdEndRenderPass(commandBuffer);
 
@@ -317,6 +357,55 @@ void DDM3::DeferredRenderer::RecreateSwapChain()
 	VulkanObject::GetInstance().EndSingleTimeCommands(commandBuffer);
 
 	CreateDescriptorSets();
+}
+
+void DDM3::DeferredRenderer::CreateDepthRenderpass()
+{
+	m_pDepthRenderpass = std::make_unique<RenderpassWrapper>();
+
+	m_pDepthRenderpass->SetSampleCount(VK_SAMPLE_COUNT_1_BIT);
+
+	VkSampleCountFlagBits msaaSamples = VulkanObject::GetInstance().GetMsaaSamples();
+
+	auto depthAttachment = std::make_unique<Attachment>();
+
+	depthAttachment->SetFormat(VulkanUtils::FindDepthFormat(VulkanObject::GetInstance().GetPhysicalDevice()));
+
+	VkAttachmentDescription depthAttachmentDesc;
+	depthAttachmentDesc.flags = VK_ATTACHMENT_DESCRIPTION_MAY_ALIAS_BIT;
+	// Set format to depth format
+	depthAttachmentDesc.format = VulkanUtils::FindDepthFormat(VulkanObject::GetInstance().GetPhysicalDevice());
+	// Give max amount of samples
+	depthAttachmentDesc.samples = VK_SAMPLE_COUNT_1_BIT;
+	// Set loadOp function to load op clear
+	depthAttachmentDesc.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+	// Set storeOp function to store op don't care
+	depthAttachmentDesc.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+	// Set stencilLoadOp function to load op don't care
+	depthAttachmentDesc.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+	// Set store op function to store op don't care
+	depthAttachmentDesc.stencilStoreOp = VK_ATTACHMENT_STORE_OP_STORE;
+	// Set initial layout to undefined
+	depthAttachmentDesc.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+	// Set final layout to depth stencil attachment optimal
+	depthAttachmentDesc.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+	VkAttachmentReference depthAttachmentRef{};
+	// Set layout to depth stencil attachment optimal
+	depthAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+	depthAttachment->SetAttachmentDesc(depthAttachmentDesc);
+
+	depthAttachment->SetAttachmentRef(depthAttachmentRef);
+
+	m_pDepthTexture = depthAttachment->GetTextureSharedPtr();
+
+	m_pDepthRenderpass->AddDepthAttachment(std::move(depthAttachment));
+
+	m_pDepthRenderpass->CreateRenderPass();
+
+	m_pSwapchainWrapper->AddFrameBuffers(m_pDepthRenderpass.get());
+
 }
 
 void DDM3::DeferredRenderer::CreateGeometryRenderpass()
@@ -433,15 +522,15 @@ void DDM3::DeferredRenderer::CreateGeometryRenderpass()
 	// Give max amount of samples
 	depthAttachmentDesc.samples = VK_SAMPLE_COUNT_1_BIT;
 	// Set loadOp function to load op clear
-	depthAttachmentDesc.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+	depthAttachmentDesc.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
 	// Set storeOp function to store op don't care
 	depthAttachmentDesc.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
 	// Set stencilLoadOp function to load op don't care
-	depthAttachmentDesc.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+	depthAttachmentDesc.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
 	// Set store op function to store op don't care
 	depthAttachmentDesc.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
 	// Set initial layout to undefined
-	depthAttachmentDesc.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+	depthAttachmentDesc.initialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 	// Set final layout to depth stencil attachment optimal
 	depthAttachmentDesc.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
@@ -452,6 +541,8 @@ void DDM3::DeferredRenderer::CreateGeometryRenderpass()
 	depthAttachment->SetAttachmentDesc(depthAttachmentDesc);
 
 	depthAttachment->SetAttachmentRef(depthAttachmentRef);
+
+	depthAttachment->SetTexture(m_pDepthTexture);
 
 	m_pGeometryRenderpass->AddDepthAttachment(std::move(depthAttachment));
 	
@@ -671,7 +762,7 @@ void DDM3::DeferredRenderer::CreateDescriptorSets()
 	for (auto& attachment : attachmentList)
 	{
 		auto descriptorObject = std::make_unique<TextureDescriptorObject>();
-		descriptorObject->AddTextures(attachment->GetTexture());
+		descriptorObject->AddTextures(*attachment->GetTexture());
 		descriptorObject->SetCleanupTextures(false);
 
 		m_TextureDescriptorObjects.push_back(std::move(descriptorObject));
@@ -764,7 +855,7 @@ void DDM3::DeferredRenderer::TransitionImages(VkCommandBuffer commandBuffer, VkI
 		barrier.newLayout = newLayout;
 		barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
 		barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-		barrier.image = attachment->GetTexture().image;
+		barrier.image = attachment->GetTexture()->image;
 		barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 		barrier.subresourceRange.baseMipLevel = 0;
 		barrier.subresourceRange.levelCount = 1;

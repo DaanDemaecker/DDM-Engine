@@ -73,7 +73,6 @@ void DDM3::RenderpassWrapper::CreateRenderPass()
 
 	if (m_DepthAttachmentSet)
 	{
-		auto attachment = 
 		// Give pointer to depth attachment reference
 		subpass.pDepthStencilAttachment = &m_DepthAttachment->GetAttachmentRef();
 	}
@@ -146,7 +145,7 @@ void DDM3::RenderpassWrapper::CreateRenderPass()
 	}
 }
 
-void DDM3::RenderpassWrapper::BeginRenderPass(VkCommandBuffer commandBuffer, VkFramebuffer frameBuffer, VkExtent2D extent)
+void DDM3::RenderpassWrapper::BeginRenderPass(VkCommandBuffer commandBuffer, VkFramebuffer frameBuffer, VkExtent2D extent, bool clearDepth)
 {
 
 	VkRenderPassBeginInfo renderPassInfo{};
@@ -157,7 +156,7 @@ void DDM3::RenderpassWrapper::BeginRenderPass(VkCommandBuffer commandBuffer, VkF
 	renderPassInfo.renderArea.offset = { 0, 0 };
 	renderPassInfo.renderArea.extent = extent;
 
-	const int clearAmount = m_AttachmentList.size() + (m_DepthAttachmentSet ? 1 : 0);
+	const int clearAmount = m_AttachmentList.size() + (m_DepthAttachmentSet && clearDepth ? 1 : 0);
 
 	std::vector<VkClearValue> clearValues(clearAmount);
 
@@ -167,7 +166,7 @@ void DDM3::RenderpassWrapper::BeginRenderPass(VkCommandBuffer commandBuffer, VkF
 	}
 
 
-	if (m_DepthAttachmentSet)
+	if (m_DepthAttachmentSet && clearDepth)
 	{
 		clearValues[clearAmount-1].depthStencil = { 1.0f, 0 };
 	}

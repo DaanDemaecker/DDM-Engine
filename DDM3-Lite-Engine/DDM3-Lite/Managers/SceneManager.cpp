@@ -195,6 +195,14 @@ void DDM3::SceneManager::RenderSkybox()
     }
 }
 
+void DDM3::SceneManager::RenderDepth() const
+{
+    if (m_ActiveScene != nullptr)
+    {
+        m_ActiveScene->RenderDepth();
+    }
+}
+
 void DDM3::SceneManager::Render() const
 {
     if (m_ActiveScene != nullptr)

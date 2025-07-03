@@ -14,10 +14,10 @@
 
 DDM3::PipelineWrapper::PipelineWrapper(VkDevice device, VkRenderPass renderPass,
 	VkSampleCountFlagBits sampleCount,
-	std::initializer_list<const std::string>& filePaths, bool hasDepthStencil)
+	std::initializer_list<const std::string>& filePaths, bool hasDepthStencil, bool writesToDepth)
 {
 	// Create the pipeline
-	CreatePipeline(device, renderPass, sampleCount, filePaths, hasDepthStencil);
+	CreatePipeline(device, renderPass, sampleCount, filePaths, hasDepthStencil, writesToDepth);
 }
 
 DDM3::PipelineWrapper::~PipelineWrapper()
@@ -60,7 +60,7 @@ DDM3::DescriptorPoolWrapper* DDM3::PipelineWrapper::GetDescriptorPool()
 
 void DDM3::PipelineWrapper::CreatePipeline(VkDevice device, VkRenderPass renderPass,
 	VkSampleCountFlagBits sampleCount,
-	std::initializer_list<const std::string>& filePaths, bool hasDepthStencil)
+	std::initializer_list<const std::string>& filePaths, bool hasDepthStencil, bool writesToDepth)
 {
 	int attachmentCount = 0;
 
@@ -152,7 +152,7 @@ void DDM3::PipelineWrapper::CreatePipeline(VkDevice device, VkRenderPass renderP
 	// Create depth stencil state create info
 	VkPipelineDepthStencilStateCreateInfo depthStencil{};
 	// Set depth stencil state create info
-	SetDepthStencilStateCreateInfo(depthStencil, hasDepthStencil);
+	SetDepthStencilStateCreateInfo(depthStencil, hasDepthStencil, writesToDepth);
 
 	
 	std::vector<VkPipelineColorBlendAttachmentState> colorBlendAttachments{};
@@ -323,31 +323,16 @@ void DDM3::PipelineWrapper::SetMultisampleStateCreateInfo(VkPipelineMultisampleS
 }
 
 void DDM3::PipelineWrapper::SetDepthStencilStateCreateInfo(VkPipelineDepthStencilStateCreateInfo& depthStencil,
-	bool hasDepthStencil)
+	bool hasDepthStencil, bool writesToDepth)
 {
 	// Set type to depth stencil state create info
 	depthStencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
 
-	// Check if this pipeline needs the depth stencil
-	if (hasDepthStencil)
-	{
-		// If it is not:
-		// Set depth test enable to true
-		depthStencil.depthTestEnable = VK_TRUE;
-		// Set depth write enable to true
-		depthStencil.depthWriteEnable = VK_TRUE;
-	}
-	else
-	{
-		// If it is:
-		// Set depth test enable to false
-		depthStencil.depthTestEnable = VK_FALSE;
-		// Set depth write enable to false
-		depthStencil.depthWriteEnable = VK_FALSE;
-	}
 
-	// Set compare op to compare op less
-	depthStencil.depthCompareOp = VK_COMPARE_OP_LESS;
+	depthStencil.depthTestEnable = hasDepthStencil ? VK_TRUE : VK_FALSE;
+	depthStencil.depthWriteEnable = writesToDepth ? VK_TRUE : VK_FALSE;
+	depthStencil.depthCompareOp = writesToDepth ? VK_COMPARE_OP_LESS : VK_COMPARE_OP_LESS_OR_EQUAL;
+
 	// Set depth bounds test enable to false
 	depthStencil.depthBoundsTestEnable = VK_FALSE;
 	// Set min depth bounds to 0

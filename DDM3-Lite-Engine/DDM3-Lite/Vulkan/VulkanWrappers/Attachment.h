@@ -10,6 +10,7 @@
 #include "DataTypes/Structs.h"
 
 // Standard library includes
+#include <memory>
 
 namespace DDM3
 {
@@ -30,7 +31,11 @@ namespace DDM3
 
 		void SetAttachmentRefIndex(int index) { m_AttachmentRef.attachment = index; }
 
-		const Texture& GetTexture() const { return m_Texture; };
+		std::shared_ptr<Texture> GetTextureSharedPtr() const { return m_Texture; }
+
+		const Texture* GetTexture() const { return m_Texture.get(); };
+
+		void SetTexture(std::shared_ptr<Texture> texture) { m_Texture = texture; }
 
 		VkAttachmentDescription& GetAttachmentDesc() { return m_AttachmentDesc; }
 
@@ -47,11 +52,13 @@ namespace DDM3
 		void SetClearColorValue(VkClearColorValue value) { m_ClearColorValue = value; }
 		VkClearColorValue GetClearColorValue() const { return m_ClearColorValue; }
 
+
+
 	private:
 		VkAttachmentDescription m_AttachmentDesc{};
 		VkAttachmentReference m_AttachmentRef{};
 
-		Texture m_Texture{};
+		std::shared_ptr<Texture> m_Texture{};
 
 		VkFormat m_Format{};
 

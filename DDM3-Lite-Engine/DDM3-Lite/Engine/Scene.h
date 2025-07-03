@@ -44,6 +44,8 @@ namespace DDM3
 
 		void RenderSkyBox();
 
+		void RenderDepth() const;
+
 		void Render() const;
 
 		void OngGUI() const;

@@ -5,6 +5,7 @@
 #include "../Utils/Utils.h"
 #include "../Vulkan/VulkanWrappers/DescriptorPoolWrapper.h"
 #include "../DataTypes/Mesh.h"
+#include "Vulkan/VulkanWrappers/PipelineWrapper.h"
 
 DDM3::MeshRenderComponent::MeshRenderComponent()
 {
@@ -20,6 +21,13 @@ void DDM3::MeshRenderComponent::EarlyUpdate()
 		CreateDescriptorSets();
 		m_ShouldCreateDescriptorSets = false;
 	}
+
+	if (m_pMaterial->ShouldUpdateDescriptorSets())
+	{
+		UpdateDescriptorSets();
+	}
+
+	UpdateUniformBuffer(VulkanObject::GetInstance().GetCurrentFrame());
 }
 
 void DDM3::MeshRenderComponent::SetMesh(std::shared_ptr<Mesh> pMesh)
@@ -58,19 +66,26 @@ void DDM3::MeshRenderComponent::SetMaterial(std::shared_ptr<Material> pMaterial)
 	m_ShouldCreateDescriptorSets = true;
 }
 
+void DDM3::MeshRenderComponent::RenderDepth()
+{
+	if (m_pMesh == nullptr)
+		return;
+
+	auto frame{ VulkanObject::GetInstance().GetCurrentFrame() };
+
+	//vkCmdPushConstants(VulkanObject::GetInstance().GetCurrentCommandBuffer(),
+	//	VulkanObject::GetInstance().GetPipeline("Depth")->GetPipelineLayout(),
+	//	VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(UniformBufferObject), &m_Ubos[frame]);
+
+	m_pMesh->Render(VulkanObject::GetInstance().GetPipeline("Depth"), &m_DepthDescriptorSets[frame]);
+}
+
 void DDM3::MeshRenderComponent::Render()
 {
 	if (m_pMesh == nullptr)
 		return;
 
-	if (m_pMaterial->ShouldUpdateDescriptorSets())
-	{
-		UpdateDescriptorSets();
-	}
-
 	auto frame{ VulkanObject::GetInstance().GetCurrentFrame() };
-
-	UpdateUniformBuffer(frame);
 
 	m_pMesh->Render(GetPipeline(), &m_DescriptorSets[frame]);
 }
@@ -97,6 +112,9 @@ void DDM3::MeshRenderComponent::CreateDescriptorSets()
 {
 	// Create descriptorsets
 	m_pMaterial->CreateDescriptorSets(this, m_DescriptorSets);
+
+	CreateDepthDescriptorSets();
+
 	// Update descriptors
 	UpdateDescriptorSets();
 }
@@ -107,6 +125,8 @@ void DDM3::MeshRenderComponent::UpdateDescriptorSets()
 
 	// Update descriptorsets
 	m_pMaterial->UpdateDescriptorSets(m_DescriptorSets, descriptors);
+
+	UpdateDepthDescriptorSets();
 }
 
 void DDM3::MeshRenderComponent::UpdateUniformBuffer(uint32_t frame)
@@ -123,6 +143,7 @@ void DDM3::MeshRenderComponent::UpdateUniformBuffer(uint32_t frame)
 
 	VulkanObject::GetInstance().UpdateUniformBuffer(m_Ubos[frame]);
 
+
 	m_pUboDescriptorObject->UpdateUboBuffer(m_Ubos[frame], frame);
 }
 
@@ -134,4 +155,32 @@ DDM3::PipelineWrapper* DDM3::MeshRenderComponent::GetPipeline()
 	}
 
 	return VulkanObject::GetInstance().GetPipeline();
+}
+
+void DDM3::MeshRenderComponent::CreateDepthDescriptorSets()
+{
+	// Get pointer to the descriptorpool wrapper
+	auto descriptorPool = VulkanObject::GetInstance().GetPipeline("Depth")->GetDescriptorPool();
+
+
+	// Add model to descriptorpool wrapper
+	descriptorPool->AddModel(this);
+	// Create descriptorpools
+	descriptorPool->CreateDescriptorSets(VulkanObject::GetInstance().GetPipeline("Depth")->GetDescriptorSetLayout(), m_DepthDescriptorSets);
+}
+
+void DDM3::MeshRenderComponent::UpdateDepthDescriptorSets()
+{
+	// Get pointer to the descriptorpool wrapper
+	auto descriptorPool = VulkanObject::GetInstance().GetPipeline("Depth")->GetDescriptorPool();
+
+	// Create list of descriptor objects and add the objects of the model to it
+	std::vector<DescriptorObject*> descriptorObjectList{};
+
+
+	std::vector<DescriptorObject*> descriptors{ m_pUboDescriptorObject.get() };
+
+
+	// Update descriptorsets
+	descriptorPool->UpdateDescriptorSets(m_DepthDescriptorSets, descriptors);
 }

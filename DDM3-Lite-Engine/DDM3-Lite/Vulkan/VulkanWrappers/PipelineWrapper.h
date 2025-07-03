@@ -34,7 +34,7 @@ namespace DDM3
 		//     filePaths: the filepaths to the shader objects
 		//     hasDepthStencil: boolean that indicates if this pipeline needs a depth stencil
 		PipelineWrapper(VkDevice device, VkRenderPass renderPass, VkSampleCountFlagBits sampleCount,
-			std::initializer_list<const std::string>& filePaths, bool hasDepthStencil = true);
+			std::initializer_list<const std::string>& filePaths, bool hasDepthStencil, bool writesToDepth);
 
 		// Default destructor
 		~PipelineWrapper();
@@ -79,7 +79,7 @@ namespace DDM3
 		void CreatePipeline(VkDevice device, VkRenderPass renderPass,
 			VkSampleCountFlagBits sampleCount,
 			std::initializer_list<const std::string>& filePaths,
-			bool hasDepthStencil = true);
+			bool hasDepthStencil, bool writesToDepth);
 
 		// Create a new descriptor layout
 		// Parameters:
@@ -111,7 +111,7 @@ namespace DDM3
 		//     depthStencil: a reference to the septh stencil state create info to avoid creating a new one in the function
 		//     hasDepthStencil: boolean that indicates is this pipeline needs a depthStencil or not
 		void SetDepthStencilStateCreateInfo(VkPipelineDepthStencilStateCreateInfo& depthStencil,
-			bool hasDepthStencil);
+			bool hasDepthStencil, bool writesToDepth);
 
 		// Set the values of the color blend attachment state
 		// Parameters:

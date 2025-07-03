@@ -91,6 +91,8 @@ namespace DDM3
 		// Render the skybox
 		void RenderSkybox();
 
+		void RenderDepth() const;
+
 		// Render everything
 		void Render() const;
 

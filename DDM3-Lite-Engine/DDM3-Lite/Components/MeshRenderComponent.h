@@ -30,6 +30,8 @@ namespace DDM3
 		void SetMesh(DDMML::Mesh* pMesh);
 		void SetMaterial(std::shared_ptr<Material> pMaterial);
 
+		virtual void RenderDepth() override;
+
 		virtual void Render() override;
 
 		virtual void OnGUI() override;
@@ -55,12 +57,15 @@ namespace DDM3
 		//Material
 		std::shared_ptr<Material> m_pMaterial{};
 
-
 		// Vector of descriptorsets
 		std::vector<VkDescriptorSet> m_DescriptorSets{};
 
+
+		std::vector<VkDescriptorSet> m_DepthDescriptorSets{};
+
 		//Initialization functions
 		void CreateUniformBuffers();
+
 
 		void UpdateDescriptorSets();
 
@@ -68,6 +73,10 @@ namespace DDM3
 
 		//Texture functions
 		PipelineWrapper* GetPipeline();
+
+		void CreateDepthDescriptorSets();
+
+		void UpdateDepthDescriptorSets();
 	};
 }
 #endif // !MeshRenderComponentIncluded

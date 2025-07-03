@@ -33,6 +33,8 @@ namespace DDM3
 
 		virtual void PrepareRender() {}
 
+		virtual void RenderDepth() {}
+
 		virtual void Render() {}
 
 		virtual void OnGUI() {}
