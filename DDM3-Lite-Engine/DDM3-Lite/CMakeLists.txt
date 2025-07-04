@@ -58,7 +58,8 @@ add_executable(${EXECUTABLE_NAME}
  "Vulkan/VulkanWrappers/VulkanCore.cpp"
  "Vulkan/Renderers/DeferredRenderer.cpp"
  "Vulkan/VulkanWrappers/Attachment.cpp"
- "Vulkan/VulkanWrappers/FrameBuffer.cpp")
+ "Vulkan/VulkanWrappers/FrameBuffer.cpp"
+ "Vulkan/Renderers/DeferredRenderer2.cpp")
 
 
 # Include directories specific to this target
