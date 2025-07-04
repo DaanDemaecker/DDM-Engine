@@ -19,7 +19,7 @@ DDM3::Attachment::~Attachment()
 
 void DDM3::Attachment::SetupColorTexture(VkExtent2D extent)
 {
-	if (m_Texture->image != VK_NULL_HANDLE)
+	if (!m_ResetOnSetup)
 	{
 		return;
 	}
@@ -43,7 +43,7 @@ void DDM3::Attachment::SetupColorTexture(VkExtent2D extent)
 
 void DDM3::Attachment::SetupColorResolveTexture(VkExtent2D extent)
 {
-	if (m_Texture->image != VK_NULL_HANDLE)
+	if (!m_ResetOnSetup)
 	{
 		return;
 	}
@@ -67,7 +67,7 @@ void DDM3::Attachment::SetupColorResolveTexture(VkExtent2D extent)
 
 void DDM3::Attachment::SetupDepthImage(VkExtent2D extent)
 {
-	if (m_Texture->image != VK_NULL_HANDLE)
+	if (!m_ResetOnSetup)
 	{
 		return;
 	}

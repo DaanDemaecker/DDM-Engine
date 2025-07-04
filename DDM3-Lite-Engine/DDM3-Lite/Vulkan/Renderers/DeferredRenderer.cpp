@@ -346,7 +346,7 @@ void DDM3::DeferredRenderer::RecreateSwapChain()
 	auto commandBuffer{ VulkanObject::GetInstance().BeginSingleTimeCommands() };
 
 
-	std::vector<RenderpassWrapper*> renderpasses{ m_pGeometryRenderpass.get(), m_pLightingRenderpass.get()};
+	std::vector<RenderpassWrapper*> renderpasses{ m_pDepthRenderpass.get(), m_pGeometryRenderpass.get(), m_pLightingRenderpass.get()};
 
 	// Recreate the swapchain
 	m_pSwapchainWrapper->RecreateSwapChain(DDM3::VulkanObject::GetInstance().GetGPUObject(), DDM3::VulkanObject::GetInstance().GetSurface(),

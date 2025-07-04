@@ -35,7 +35,7 @@ namespace DDM3
 
 		const Texture* GetTexture() const { return m_Texture.get(); };
 
-		void SetTexture(std::shared_ptr<Texture> texture) { m_Texture = texture; }
+		void SetTexture(std::shared_ptr<Texture> texture) { m_Texture = texture; m_ResetOnSetup = false; }
 
 		VkAttachmentDescription& GetAttachmentDesc() { return m_AttachmentDesc; }
 
@@ -63,6 +63,8 @@ namespace DDM3
 		VkFormat m_Format{};
 
 		VkClearColorValue m_ClearColorValue{0,0,0,1};
+
+		bool m_ResetOnSetup{ true };
 
 		void Cleanup();
 
