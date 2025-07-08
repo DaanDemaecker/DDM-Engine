@@ -32,11 +32,8 @@ DDM3::DeferredRenderer2::DeferredRenderer2()
 	// Initialize the swapchain
 	m_pSwapchainWrapper = std::make_unique<SwapchainWrapper>(pGPUObject, surface, VulkanObject::GetInstance().GetImageManager(), VulkanObject::GetInstance().GetMsaaSamples());
 
-	CreateDepthRenderpass();
+	CreateRenderpass();
 
-	CreateGeometryRenderpass();
-
-	CreateLightingRendepass(m_pSwapchainWrapper->GetFormat());
 
 	auto commandBuffer = VulkanObject::GetInstance().BeginSingleTimeCommands();
 	m_pSwapchainWrapper->SetupImageViews(pGPUObject, VulkanObject::GetInstance().GetImageManager(), commandBuffer, m_pDepthRenderpass.get());
@@ -74,7 +71,7 @@ void DDM3::DeferredRenderer2::Render()
 	auto currentFrame{ vulkanObject.GetCurrentFrame() };
 
 	auto device{ vulkanObject.GetDevice() };
-	auto queueObject{ vulkanObject.GetQueueObject() };
+	auto& queueObject{ vulkanObject.GetQueueObject() };
 
 	vkWaitForFences(device, 1, &m_pSyncObjectManager->GetInFlightFence(currentFrame), VK_TRUE, UINT64_MAX);
 
@@ -169,8 +166,8 @@ void DDM3::DeferredRenderer2::AddDefaultPipelines()
 
 	// Add default pipeline
 	VulkanObject::GetInstance().AddGraphicsPipeline(defaultPipelineName, {
-		configManager.GetString("DefaultDeferredVert"),
-		configManager.GetString("DefaultDeferredFrag") },
+		"Resources/DefaultResources/Deferred2.vert",
+		"Resources/DefaultResources/Deferred2.vert" },
 		true, false, m_pGeometryRenderpass.get());
 
 	// Initialize default pipeline name 
@@ -178,8 +175,8 @@ void DDM3::DeferredRenderer2::AddDefaultPipelines()
 	
 	// Add default pipeline
 	VulkanObject::GetInstance().AddGraphicsPipeline(lightingPipelineName, {
-		configManager.GetString("DeferredLightingVert"),
-		configManager.GetString("DeferredLightingFrag") },
+		"Resources/DefaultResources/DeferredLighting2.vert",
+		"Resources/DefaultResources/DeferredLighting2.vert" },
 		false, true, m_pLightingRenderpass.get());
 
 	m_PipelineLayout = VulkanObject::GetInstance().GetPipeline(lightingPipelineName)->GetPipelineLayout();
@@ -187,6 +184,176 @@ void DDM3::DeferredRenderer2::AddDefaultPipelines()
 	VulkanObject::GetInstance().AddGraphicsPipeline("Depth", {
 		"Resources/DefaultResources/Depth.Vert.spv"},
 		true, true, m_pDepthRenderpass.get());
+}
+
+void DDM3::DeferredRenderer2::CreateRenderpass()
+{
+	const VkAttachmentDescription attachments[] =
+	{
+		// Back buffer
+		{
+			0,									// flags
+			VK_FORMAT_R8G8B8A8_UNORM,			// format
+			VK_SAMPLE_COUNT_1_BIT,				// samples
+			VK_ATTACHMENT_LOAD_OP_DONT_CARE,	// loadOp
+			VK_ATTACHMENT_STORE_OP_DONT_CARE,	// storeOp
+			VK_ATTACHMENT_LOAD_OP_DONT_CARE,	// stencilLoadOp
+			VK_ATTACHMENT_STORE_OP_DONT_CARE,	// stencilStoreOp
+			VK_IMAGE_LAYOUT_UNDEFINED,			// initialLayout
+			VK_IMAGE_LAYOUT_PRESENT_SRC_KHR		// finalLayout
+		},
+		// Depth buffer
+		{
+			0,									// flags
+			VK_FORMAT_D32_SFLOAT,				// format
+			VK_SAMPLE_COUNT_1_BIT,				// samples
+			VK_ATTACHMENT_LOAD_OP_DONT_CARE,	// loadOp
+			VK_ATTACHMENT_STORE_OP_DONT_CARE,	// storeOp
+			VK_ATTACHMENT_LOAD_OP_DONT_CARE,	// stencilLoadOp
+			VK_ATTACHMENT_STORE_OP_DONT_CARE,	// stencilStoreO
+			VK_IMAGE_LAYOUT_UNDEFINED,			// initialLayout
+			VK_IMAGE_LAYOUT_UNDEFINED			// finalLayout
+		},
+		// G-buffer 1
+		{
+			0,									// flags
+			VK_FORMAT_R8G8B8A8_UNORM,			// format
+			VK_SAMPLE_COUNT_1_BIT,				// samples
+			VK_ATTACHMENT_LOAD_OP_DONT_CARE,	// loadOp
+			VK_ATTACHMENT_STORE_OP_DONT_CARE,	// storeOp
+			VK_ATTACHMENT_LOAD_OP_DONT_CARE,	// stencilLoadOp
+			VK_ATTACHMENT_STORE_OP_DONT_CARE,	// stencilStoreOp
+			VK_IMAGE_LAYOUT_UNDEFINED,			// initialLayout
+			VK_IMAGE_LAYOUT_UNDEFINED			// finalLayout
+		}
+	};
+
+	// Depth prepass depth buffer reference (read/write)
+	const VkAttachmentReference depthAttachmentReference
+	{
+		kAttachment_DEPTH,									// attachment
+		VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL	// layout
+	};
+
+	// G-buffer attachment references (render)
+	const VkAttachmentReference gBufferOutputs[] =
+	{
+		{
+			kAtttachment_GBUFFER,							// attachment
+			VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL		// layout
+		}
+	};
+
+	// Lighting input attachment reference
+	const VkAttachmentReference gBufferReadRef[] =
+	{
+		/// Read from g-buffer
+		{
+			kAtttachment_GBUFFER,							// attachment
+			VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL		// layout
+		},
+		// Read depth as texture
+		{
+			kAttachment_DEPTH,								// attachment
+			VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL	// layout
+		}
+	};
+
+	// Final pass-back buffer render reference
+	const VkAttachmentReference backBufferRenderRef[] =
+	{
+		{
+			kAttachment_BACK,								// attachmnet
+			VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL		// layout
+		}
+	};
+
+
+	const VkSubpassDescription subpasses[] =
+	{
+		// Subpass 1 - depth prepass
+		{
+			0,									// flags
+			VK_PIPELINE_BIND_POINT_GRAPHICS,	// pipelineBindPoint
+			0,									// inputAttachmentCount
+			nullptr,							// pInputAttachments
+			0,									// colorAttachmentCount
+			nullptr,							// pColorAttachments
+			nullptr,							// pResollveAttachmentCount
+			&depthAttachmentReference,			// pDepthStencilAttachment
+			0,									// preserveAttachmentCount
+			nullptr								// pPreserveAttachments
+		},
+		// Subpass 2 - g-buffer generation
+		{
+			0,									// flags
+			VK_PIPELINE_BIND_POINT_GRAPHICS,	// pipelineBindPoint
+			0,									// inputAttachmentCount
+			nullptr,							// pInputAttachments
+			2,									// colorAttachmentCount
+			gBufferOutputs,						// pColorAttachments
+			nullptr,							// pResollveAttachmentCount
+			&depthAttachmentReference,			// pDepthStencilAttachment
+			0,									// preserveAttachmentCount
+			nullptr								// pPreserveAttachments
+		},
+		// Subppass 3 - lighting
+		{
+			0,									// flags
+			VK_PIPELINE_BIND_POINT_GRAPHICS,	// pipelineBindPoint
+			2,									// inputAttachmentCount
+			gBufferReadRef,						// pInputAttachments
+			1,									// colorAttachmentCount
+			backBufferRenderRef,				// pColorAttachments
+			nullptr,							// pResollveAttachmentCoun
+			nullptr,							// pDepthStencilAttachment
+			0,									// preserveAttachmentCount
+			nullptr								// pPreserveAttachments
+		}
+	};
+
+	const VkSubpassDependency dependencies[] =
+	{
+		// G-buffer pass depends on depth prepass
+		{
+			kSubpass_DEPTH,									// srcSubpass
+			kSubpass_GBUFFER,								// dstSubpass
+			VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,	// srcStageMask
+			VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,			// dstStageMask
+			VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,			// srcAccessMask
+			VK_ACCESS_SHADER_READ_BIT,						// dstAccessMask
+			VK_DEPENDENCY_BY_REGION_BIT						// dependencyFlags
+		},
+		// Lighting pass depends on g-buffer
+		{
+			kSubpass_GBUFFER,									// srcSubpass
+			kSubpass_GBUFFER,								// dstSubpass
+			VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,	// srcStageMask
+			VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,			// dstStageMask
+			VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,			// srcAccessMask
+			VK_ACCESS_SHADER_READ_BIT,						// dstAccessMask
+			VK_DEPENDENCY_BY_REGION_BIT						// dependencyFlags
+		}
+	};
+
+
+	const VkRenderPassCreateInfo renderPassCreateInfo =
+	{
+		VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
+		nullptr,
+		0,
+		3,
+		attachments,
+		3,
+		subpasses,
+		2,
+		dependencies
+	};
+
+	vkCreateRenderPass(VulkanObject::GetInstance().GetDevice(),
+		&renderPassCreateInfo,
+		nullptr,
+		&m_MasterRenderpass);
 }
 
 void DDM3::DeferredRenderer2::InitImgui()
@@ -257,64 +424,99 @@ void DDM3::DeferredRenderer2::RecordCommandBuffer(VkCommandBuffer& commandBuffer
 	scissor.extent = extent;
 	vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
-	m_pDepthRenderpass->BeginRenderPass(commandBuffer, m_pSwapchainWrapper->GetFrameBuffer(imageIndex, m_pDepthRenderpass.get()), extent);
+	VkRenderPassBeginInfo renderPassInfo{};
+	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+	renderPassInfo.renderPass = m_MasterRenderpass;
+	renderPassInfo.framebuffer = m_pSwapchainWrapper->GetFrameBuffer(imageIndex, m_pDepthRenderpass.get());
 
-	SceneManager::GetInstance().RenderDepth();
+	renderPassInfo.renderArea.offset = { 0, 0 };
+	renderPassInfo.renderArea.extent = extent;
+
+	const int clearAmount = 3;
+
+	std::vector<VkClearValue> clearValues(clearAmount);
+
+	clearValues[0] = {};
+	clearValues[1].depthStencil = { 1.0f, 0 };
+	clearValues[2] = { 0,0,1 };
+
+	renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
+	renderPassInfo.pClearValues = clearValues.data();
+
+	vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+
+
+
+	vkCmdNextSubpass(commandBuffer, VK_SUBPASS_CONTENTS_INLINE);
+
+
+
+
+	vkCmdNextSubpass(commandBuffer, VK_SUBPASS_CONTENTS_INLINE);
+
+
+
 
 	vkCmdEndRenderPass(commandBuffer);
-
-
-
-	VkImageMemoryBarrier barrier{};
-	barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-	barrier.oldLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-	barrier.newLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-	barrier.srcAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
-	barrier.dstAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT;
-	barrier.image = m_pDepthTexture->image; // Your actual VkImage
-	barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
-	barrier.subresourceRange.baseMipLevel = 0;
-	barrier.subresourceRange.levelCount = 1;
-	barrier.subresourceRange.baseArrayLayer = 0;
-	barrier.subresourceRange.layerCount = 1;
-
-	vkCmdPipelineBarrier(
-		commandBuffer,
-		VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT,   // When depth write completes
-		VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,  // Before depth read starts
-		0,
-		0, nullptr,
-		0, nullptr,
-		1, &barrier
-	);
-
-
-
-	m_pGeometryRenderpass->BeginRenderPass(commandBuffer, m_pSwapchainWrapper->GetFrameBuffer(imageIndex, m_pGeometryRenderpass.get()), extent, false);
-
-	//DDM3::SceneManager::GetInstance().RenderSkybox();
-
-	SceneManager::GetInstance().Render();
-
-	vkCmdEndRenderPass(commandBuffer);
-
-	TransitionImages(commandBuffer, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-	
-	auto frameBuffer = m_pSwapchainWrapper->GetFrameBuffer(imageIndex, m_pLightingRenderpass.get());
-
-	m_pLightingRenderpass->BeginRenderPass(commandBuffer, frameBuffer, extent);
-
-
-	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
-		VulkanObject::GetInstance().GetPipeline(ConfigManager::GetInstance().GetString("DeferredLightingPipelineName"))->GetPipeline());
-
-	BindDescriptorSets(commandBuffer);
-
-	vkCmdDraw(commandBuffer, 3, 1, 0, 0);
-
-	vkCmdEndRenderPass(commandBuffer);
-
-	TransitionImages(commandBuffer, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+	//m_pDepthRenderpass->BeginRenderPass(commandBuffer, m_pSwapchainWrapper->GetFrameBuffer(imageIndex, m_pDepthRenderpass.get()), extent);
+	//
+	//SceneManager::GetInstance().RenderDepth();
+	//
+	//vkCmdEndRenderPass(commandBuffer);
+	//
+	//
+	//
+	//VkImageMemoryBarrier barrier{};
+	//barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+	//barrier.oldLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+	//barrier.newLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+	//barrier.srcAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+	//barrier.dstAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT;
+	//barrier.image = m_pDepthTexture->image; // Your actual VkImage
+	//barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
+	//barrier.subresourceRange.baseMipLevel = 0;
+	//barrier.subresourceRange.levelCount = 1;
+	//barrier.subresourceRange.baseArrayLayer = 0;
+	//barrier.subresourceRange.layerCount = 1;
+	//
+	//vkCmdPipelineBarrier(
+	//	commandBuffer,
+	//	VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT,   // When depth write completes
+	//	VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,  // Before depth read starts
+	//	0,
+	//	0, nullptr,
+	//	0, nullptr,
+	//	1, &barrier
+	//);
+	//
+	//
+	//
+	//m_pGeometryRenderpass->BeginRenderPass(commandBuffer, m_pSwapchainWrapper->GetFrameBuffer(imageIndex, m_pGeometryRenderpass.get()), extent, false);
+	//
+	////DDM3::SceneManager::GetInstance().RenderSkybox();
+	//
+	//SceneManager::GetInstance().Render();
+	//
+	//vkCmdEndRenderPass(commandBuffer);
+	//
+	//TransitionImages(commandBuffer, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+	//
+	//auto frameBuffer = m_pSwapchainWrapper->GetFrameBuffer(imageIndex, m_pLightingRenderpass.get());
+	//
+	//m_pLightingRenderpass->BeginRenderPass(commandBuffer, frameBuffer, extent);
+	//
+	//
+	//vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
+	//	VulkanObject::GetInstance().GetPipeline(ConfigManager::GetInstance().GetString("DeferredLightingPipelineName"))->GetPipeline());
+	//
+	//BindDescriptorSets(commandBuffer);
+	//
+	//vkCmdDraw(commandBuffer, 3, 1, 0, 0);
+	//
+	//vkCmdEndRenderPass(commandBuffer);
+	//
+	//TransitionImages(commandBuffer, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
 
 
 
@@ -357,314 +559,6 @@ void DDM3::DeferredRenderer2::RecreateSwapChain()
 	VulkanObject::GetInstance().EndSingleTimeCommands(commandBuffer);
 
 	CreateDescriptorSets();
-}
-
-void DDM3::DeferredRenderer2::CreateDepthRenderpass()
-{
-	m_pDepthRenderpass = std::make_unique<RenderpassWrapper>();
-
-	m_pDepthRenderpass->SetSampleCount(VK_SAMPLE_COUNT_1_BIT);
-
-	VkSampleCountFlagBits msaaSamples = VulkanObject::GetInstance().GetMsaaSamples();
-
-	auto depthAttachment = std::make_unique<Attachment>();
-
-	depthAttachment->SetFormat(VulkanUtils::FindDepthFormat(VulkanObject::GetInstance().GetPhysicalDevice()));
-
-	VkAttachmentDescription depthAttachmentDesc;
-	depthAttachmentDesc.flags = VK_ATTACHMENT_DESCRIPTION_MAY_ALIAS_BIT;
-	// Set format to depth format
-	depthAttachmentDesc.format = VulkanUtils::FindDepthFormat(VulkanObject::GetInstance().GetPhysicalDevice());
-	// Give max amount of samples
-	depthAttachmentDesc.samples = VK_SAMPLE_COUNT_1_BIT;
-	// Set loadOp function to load op clear
-	depthAttachmentDesc.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-	// Set storeOp function to store op don't care
-	depthAttachmentDesc.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-	// Set stencilLoadOp function to load op don't care
-	depthAttachmentDesc.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-	// Set store op function to store op don't care
-	depthAttachmentDesc.stencilStoreOp = VK_ATTACHMENT_STORE_OP_STORE;
-	// Set initial layout to undefined
-	depthAttachmentDesc.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	// Set final layout to depth stencil attachment optimal
-	depthAttachmentDesc.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-
-	VkAttachmentReference depthAttachmentRef{};
-	// Set layout to depth stencil attachment optimal
-	depthAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-
-	depthAttachment->SetAttachmentDesc(depthAttachmentDesc);
-
-	depthAttachment->SetAttachmentRef(depthAttachmentRef);
-
-	m_pDepthTexture = depthAttachment->GetTextureSharedPtr();
-
-	m_pDepthRenderpass->AddDepthAttachment(std::move(depthAttachment));
-
-	m_pDepthRenderpass->CreateRenderPass();
-
-	m_pSwapchainWrapper->AddFrameBuffers(m_pDepthRenderpass.get());
-
-}
-
-void DDM3::DeferredRenderer2::CreateGeometryRenderpass()
-{
-	m_pGeometryRenderpass = std::make_unique<RenderpassWrapper>();
-
-	m_pGeometryRenderpass->SetSampleCount(VK_SAMPLE_COUNT_1_BIT);
-
-	VkSampleCountFlagBits msaaSamples = VulkanObject::GetInstance().GetMsaaSamples();
-
-	auto albedoAttachment = std::make_unique<Attachment>();
-
-	albedoAttachment->SetClearColorValue({ 0.388f, 0.588f, 0.929f, 1.0f });
-	albedoAttachment->SetFormat(VK_FORMAT_R8G8B8A8_UNORM);
-
-	// Create attachment description
-	VkAttachmentDescription albedoAttachmentDesc{};
-	// et format to color format 
-	albedoAttachmentDesc.format = VK_FORMAT_R8G8B8A8_UNORM;
-	// Give max amount of samplples
-	albedoAttachmentDesc.samples = VK_SAMPLE_COUNT_1_BIT;
-	// Set loadOp function to load op clear
-	albedoAttachmentDesc.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-	// Set storeOp functoin to store op store
-	albedoAttachmentDesc.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-	// Set initial layout to undefined
-	albedoAttachmentDesc.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	// Set final layout to color attachment optimal
-	albedoAttachmentDesc.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;;
-
-	// Create attachment reference
-	VkAttachmentReference albedoAttachmentRef{};
-	// Set layout to color attachment optimal
-	albedoAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-
-	albedoAttachment->SetAttachmentDesc(albedoAttachmentDesc);
-
-	albedoAttachment->SetAttachmentRef(albedoAttachmentRef);
-
-	m_pGeometryRenderpass->AddAttachment(std::move(albedoAttachment));
-
-
-	auto normalAttachment = std::make_unique<Attachment>();
-
-	normalAttachment->SetFormat(VK_FORMAT_R16G16B16A16_SFLOAT);
-
-	// Create attachment description
-	VkAttachmentDescription normalAttachmentDesc{};
-	// et format to color format 
-	normalAttachmentDesc.format = VK_FORMAT_R16G16B16A16_SFLOAT;
-	// Give max amount of samplples
-	normalAttachmentDesc.samples = VK_SAMPLE_COUNT_1_BIT;
-	// Set loadOp function to load op clear
-	normalAttachmentDesc.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-	// Set storeOp functoin to store op store
-	normalAttachmentDesc.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-	// Set initial layout to undefined
-	normalAttachmentDesc.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	// Set final layout to color attachment optimal
-	normalAttachmentDesc.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;;
-
-	// Create attachment reference
-	VkAttachmentReference normalAttachmentRef{};
-	// Set layout to color attachment optimal
-	normalAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-
-
-	normalAttachment->SetAttachmentDesc(normalAttachmentDesc);
-
-	normalAttachment->SetAttachmentRef(normalAttachmentRef);
-
-	m_pGeometryRenderpass->AddAttachment(std::move(normalAttachment));
-
-
-	auto positionAttachment = std::make_unique<Attachment>();
-
-	positionAttachment->SetFormat(VK_FORMAT_R16G16B16A16_SFLOAT);
-	
-	// Create attachment description
-	VkAttachmentDescription positionAttachmentDesc{};
-	// et format to color format 
-	positionAttachmentDesc.format = VK_FORMAT_R16G16B16A16_SFLOAT;
-	// Give max amount of samplples
-	positionAttachmentDesc.samples = VK_SAMPLE_COUNT_1_BIT;
-	// Set loadOp function to load op clear
-	positionAttachmentDesc.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-	// Set storeOp functoin to store op store
-	positionAttachmentDesc.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-	// Set initial layout to undefined
-	positionAttachmentDesc.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	// Set final layout to color attachment optimal
-	positionAttachmentDesc.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;;
-	
-	// Create attachment reference
-	VkAttachmentReference positionAttachmentRef{};
-	// Set layout to color attachment optimal
-	positionAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-	
-	positionAttachment->SetAttachmentDesc(positionAttachmentDesc);
-
-	positionAttachment->SetAttachmentRef(positionAttachmentRef);
-
-	m_pGeometryRenderpass->AddAttachment(std::move(positionAttachment));
-
-
-	auto depthAttachment = std::make_unique<Attachment>();
-
-	depthAttachment->SetFormat(VulkanUtils::FindDepthFormat(VulkanObject::GetInstance().GetPhysicalDevice()));
-
-	VkAttachmentDescription depthAttachmentDesc;
-	depthAttachmentDesc.flags = VK_ATTACHMENT_DESCRIPTION_MAY_ALIAS_BIT;
-	// Set format to depth format
-	depthAttachmentDesc.format = VulkanUtils::FindDepthFormat(VulkanObject::GetInstance().GetPhysicalDevice());
-	// Give max amount of samples
-	depthAttachmentDesc.samples = VK_SAMPLE_COUNT_1_BIT;
-	// Set loadOp function to load op clear
-	depthAttachmentDesc.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
-	// Set storeOp function to store op don't care
-	depthAttachmentDesc.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	// Set stencilLoadOp function to load op don't care
-	depthAttachmentDesc.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
-	// Set store op function to store op don't care
-	depthAttachmentDesc.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	// Set initial layout to undefined
-	depthAttachmentDesc.initialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-	// Set final layout to depth stencil attachment optimal
-	depthAttachmentDesc.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-
-	VkAttachmentReference depthAttachmentRef{};
-	// Set layout to depth stencil attachment optimal
-	depthAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-
-	depthAttachment->SetAttachmentDesc(depthAttachmentDesc);
-
-	depthAttachment->SetAttachmentRef(depthAttachmentRef);
-
-	depthAttachment->SetTexture(m_pDepthTexture);
-
-	m_pGeometryRenderpass->AddDepthAttachment(std::move(depthAttachment));
-	
-	m_pGeometryRenderpass->CreateRenderPass();
-
-	m_pSwapchainWrapper->AddFrameBuffers(m_pGeometryRenderpass.get());
-}
-
-void DDM3::DeferredRenderer2::CreateLightingRendepass(VkFormat swapchainFormat)
-{
-	m_pLightingRenderpass = std::make_unique<RenderpassWrapper>();
-
-	auto& vulkanObject = VulkanObject::GetInstance();
-
-	VkSampleCountFlagBits msaaSamples = vulkanObject.GetMsaaSamples(); //VK_SAMPLE_COUNT_1_BIT;
-
-
-	m_pLightingRenderpass->SetSampleCount(msaaSamples);
-
-	std::unique_ptr<Attachment> attachment = std::make_unique<Attachment>();
-
-	attachment->SetFormat(swapchainFormat);
-	attachment->SetClearColorValue({ 0.388f, 0.588f, 0.929f, 1.0f });
-
-	// Create attachment description
-	VkAttachmentDescription colorAttachment{};
-	// et format to color format 
-	colorAttachment.format = swapchainFormat;
-	// Give max amount of samplples
-	colorAttachment.samples = msaaSamples;
-	// Set loadOp function to load op clear
-	colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-	// Set storeOp functoin to store op store
-	colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-	// Set initial layout to undefined
-	colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	// Set final layout to color attachment optimal
-	colorAttachment.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;;
-
-	// Create attachment reference
-	VkAttachmentReference colorAttachmentRef{};
-	// Set layout to color attachment optimal
-	colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-
-	attachment->SetAttachmentDesc(colorAttachment);
-	attachment->SetAttachmentRef(colorAttachmentRef);
-
-	m_pLightingRenderpass->AddAttachment(std::move(attachment));
-
-
-	auto depthAttachment = std::make_unique<Attachment>();
-
-	depthAttachment->SetFormat(VulkanUtils::FindDepthFormat(vulkanObject.GetPhysicalDevice()));
-
-	VkAttachmentDescription depthAttachmentDesc;
-	depthAttachmentDesc.flags = VK_ATTACHMENT_DESCRIPTION_MAY_ALIAS_BIT;
-	// Set format to depth format
-	depthAttachmentDesc.format = VulkanUtils::FindDepthFormat(vulkanObject.GetPhysicalDevice());
-	// Give max amount of samples
-	depthAttachmentDesc.samples = msaaSamples;
-	// Set loadOp function to load op clear
-	depthAttachmentDesc.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-	// Set storeOp function to store op don't care
-	depthAttachmentDesc.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	// Set stencilLoadOp function to load op don't care
-	depthAttachmentDesc.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-	// Set store op function to store op don't care
-	depthAttachmentDesc.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	// Set initial layout to undefined
-	depthAttachmentDesc.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	// Set final layout to depth stencil attachment optimal
-	depthAttachmentDesc.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-
-	VkAttachmentReference depthAttachmentRef{};
-	// Set layout to depth stencil attachment optimal
-	depthAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-
-	depthAttachment->SetAttachmentDesc(depthAttachmentDesc);
-
-	depthAttachment->SetAttachmentRef(depthAttachmentRef);
-
-	m_pLightingRenderpass->AddDepthAttachment(std::move(depthAttachment));
-
-
-
-	auto colorResolveAttachment = std::make_unique<Attachment>();
-
-	colorResolveAttachment->SetFormat(swapchainFormat);
-
-	// Create attachment description
-	VkAttachmentDescription colorResolveDesc{};
-	// Set format to swapchain format
-	colorResolveDesc.format = swapchainFormat;
-	// Set samples to 1
-	colorResolveDesc.samples = VK_SAMPLE_COUNT_1_BIT;
-	// Set loadOp function to load op don't care
-	colorResolveDesc.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-	// Set storeOp function to store op store
-	colorResolveDesc.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-	// Set sentilLoadOp to load op don't care
-	colorResolveDesc.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-	// Set stencilStoreOp to store op don't care
-	colorResolveDesc.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	// Set initial layout to undefined
-	colorResolveDesc.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	// Set final layout to present src khr
-	colorResolveDesc.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-
-
-	VkAttachmentReference colorResolveRef;
-	// Set layout to color attachment optimal
-	colorResolveRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-
-	colorResolveAttachment->SetAttachmentDesc(colorResolveDesc);
-
-	colorResolveAttachment->SetAttachmentRef(colorResolveRef);
-
-	m_pLightingRenderpass->AddColorResolveAttachment(std::move(colorResolveAttachment));
-
-	m_pLightingRenderpass->CreateRenderPass();
-
-	m_pSwapchainWrapper->AddFrameBuffers(m_pLightingRenderpass.get());
 }
 
 void DDM3::DeferredRenderer2::CreateDescriptorSetLayout()

@@ -46,8 +46,16 @@ namespace DDM3
 
 		virtual void AddDefaultPipelines();
 	private:
+		enum
+		{
+			kAttachment_COLOR = 0,
+			kAttachemnt_DEPTH = 1,
+			kAttachment_COLORRESOLVE = 2
+		};
+
+
 		// Pointer to the renderpass wrapper
-		std::unique_ptr<RenderpassWrapper> m_pRenderpassWrapper{};
+		std::unique_ptr<RenderpassWrapper> m_pRenderpass{};
 
 		// Pointer to the swapchain wrapper
 		std::unique_ptr<SwapchainWrapper> m_pSwapchainWrapper{};

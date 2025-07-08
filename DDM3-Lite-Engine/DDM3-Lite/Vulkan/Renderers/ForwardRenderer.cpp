@@ -38,7 +38,7 @@ DDM3::ForwardRenderer::ForwardRenderer()
 	// Create a single time command buffer
 	auto commandBuffer{ VulkanObject::GetInstance().BeginSingleTimeCommands() };
 	// Initialize swapchain
-	m_pSwapchainWrapper->SetupImageViews(pGPUObject, VulkanObject::GetInstance().GetImageManager(), commandBuffer, m_pRenderpassWrapper.get());
+	m_pSwapchainWrapper->SetupImageViews(pGPUObject, VulkanObject::GetInstance().GetImageManager(), commandBuffer, m_pRenderpass.get());
 	// End the single time command buffer
 	VulkanObject::GetInstance().EndSingleTimeCommands(commandBuffer);
 
@@ -59,7 +59,7 @@ void DDM3::ForwardRenderer::Render()
 	auto currentFrame{ vulkanObject.GetCurrentFrame() };
 
 	auto device{ vulkanObject.GetDevice() };
-	auto queueObject{ vulkanObject.GetQueueObject() };
+	auto& queueObject{ vulkanObject.GetQueueObject() };
 
 	vkWaitForFences(device, 1, &m_pSyncObjectManager->GetInFlightFence(currentFrame), VK_TRUE, UINT64_MAX);
 
@@ -162,7 +162,7 @@ void DDM3::ForwardRenderer::RecordCommandBuffer(VkCommandBuffer& commandBuffer, 
 	scissor.extent = extent;
 	vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
-	m_pRenderpassWrapper->BeginRenderPass(commandBuffer, m_pSwapchainWrapper->GetFrameBuffer(imageIndex, m_pRenderpassWrapper.get()), extent);
+	m_pRenderpass->BeginRenderPass(commandBuffer, m_pSwapchainWrapper->GetFrameBuffer(imageIndex, m_pRenderpass.get()), extent);
 
 	SceneManager::GetInstance().RenderSkybox();
 
@@ -201,7 +201,7 @@ void DDM3::ForwardRenderer::RecreateSwapChain()
 	auto commandBuffer{ VulkanObject::GetInstance().BeginSingleTimeCommands() };
 
 
-	std::vector<RenderpassWrapper*> renderpasses{ m_pRenderpassWrapper.get()};
+	std::vector<RenderpassWrapper*> renderpasses{ m_pRenderpass.get()};
 
 	// Recreate the swapchain
 	m_pSwapchainWrapper->RecreateSwapChain(DDM3::VulkanObject::GetInstance().GetGPUObject(), DDM3::VulkanObject::GetInstance().GetSurface(),
@@ -214,13 +214,15 @@ void DDM3::ForwardRenderer::RecreateSwapChain()
 
 void DDM3::ForwardRenderer::CreateRenderpass(VkFormat swapchainFormat)
 {
-	m_pRenderpassWrapper = std::make_unique<RenderpassWrapper>();
+	m_pRenderpass = std::make_unique<RenderpassWrapper>();
 
 	auto& vulkanObject = VulkanObject::GetInstance();
 
 	VkSampleCountFlagBits msaaSamples = vulkanObject.GetMsaaSamples();
 
-	m_pRenderpassWrapper->SetSampleCount(msaaSamples);
+	m_pRenderpass->SetSampleCount(msaaSamples);
+
+	std::vector<VkAttachmentReference> attachmentRefs{};
 
 	std::unique_ptr<Attachment> attachment = std::make_unique<Attachment>();
 
@@ -242,22 +244,19 @@ void DDM3::ForwardRenderer::CreateRenderpass(VkFormat swapchainFormat)
 	// Set final layout to color attachment optimal
 	colorAttachment.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;;
 
-	// Create attachment reference
-	VkAttachmentReference colorAttachmentRef{};
-	// Set layout to color attachment optimal
-	colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
 	attachment->SetAttachmentDesc(colorAttachment);
-	attachment->SetAttachmentRef(colorAttachmentRef);
 
-	m_pRenderpassWrapper->AddAttachment(std::move(attachment));
+	m_pRenderpass->AddAttachment(std::move(attachment));
 
 
 	auto depthAttachment = std::make_unique<Attachment>();
 
+	depthAttachment->SetAttachmentType(Attachment::kAttachmentType_DepthStencil);
+
 	depthAttachment->SetFormat(VulkanUtils::FindDepthFormat(vulkanObject.GetPhysicalDevice()));
 
-	VkAttachmentDescription depthAttachmentDesc;
+	VkAttachmentDescription depthAttachmentDesc{};
 	depthAttachmentDesc.flags = VK_ATTACHMENT_DESCRIPTION_MAY_ALIAS_BIT;
 	// Set format to depth format
 	depthAttachmentDesc.format = VulkanUtils::FindDepthFormat(vulkanObject.GetPhysicalDevice());
@@ -277,20 +276,21 @@ void DDM3::ForwardRenderer::CreateRenderpass(VkFormat swapchainFormat)
 	depthAttachmentDesc.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
 	VkAttachmentReference depthAttachmentRef{};
+	depthAttachmentRef.attachment = kAttachemnt_DEPTH;
 	// Set layout to depth stencil attachment optimal
 	depthAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
 	depthAttachment->SetAttachmentDesc(depthAttachmentDesc);
 
-	depthAttachment->SetAttachmentRef(depthAttachmentRef);
-
-	m_pRenderpassWrapper->AddDepthAttachment(std::move(depthAttachment));
+	m_pRenderpass->AddAttachment(std::move(depthAttachment));
 
 
 
 	auto colorResolveAttachment = std::make_unique<Attachment>();
 
 	colorResolveAttachment->SetFormat(swapchainFormat);
+
+	colorResolveAttachment->SetAttachmentType(Attachment::kAttachmentType_ColorResolve);
 
 	// Create attachment description
 	VkAttachmentDescription colorResolveDesc{};
@@ -312,19 +312,54 @@ void DDM3::ForwardRenderer::CreateRenderpass(VkFormat swapchainFormat)
 	colorResolveDesc.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 
 
-	VkAttachmentReference colorResolveRef;
+	VkAttachmentReference colorResolveRef{};
+	colorResolveRef.attachment = kAttachment_COLORRESOLVE;
 	// Set layout to color attachment optimal
 	colorResolveRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
 	colorResolveAttachment->SetAttachmentDesc(colorResolveDesc);
 
-	colorResolveAttachment->SetAttachmentRef(colorResolveRef);
+	m_pRenderpass->AddAttachment(std::move(colorResolveAttachment));
+	
+	// Create attachment reference
+	VkAttachmentReference colorAttachmentRef{};
+	colorAttachmentRef.attachment = kAttachment_COLOR;
+	// Set layout to color attachment optimal
+	colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
-	m_pRenderpassWrapper->AddColorResolveAttachment(std::move(colorResolveAttachment));
+	attachmentRefs.push_back(colorAttachmentRef);
 
-	m_pRenderpassWrapper->CreateRenderPass();
+	// Create subpass description
+	VkSubpassDescription subpass{};
+	// Set pipelinje bind point to graphics
+	subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+	// Set color attachment count to 1
+	subpass.colorAttachmentCount = 1;
+	// Give pointer to color attachment reference
+	subpass.pColorAttachments = &colorAttachmentRef;
+	// Give pointer to depth attachment reference
+	subpass.pDepthStencilAttachment = &depthAttachmentRef;
+	// Give pointer to color attachment resole reference
+	subpass.pResolveAttachments = &colorResolveRef;
 
-	m_pSwapchainWrapper->AddFrameBuffers(m_pRenderpassWrapper.get());
+	m_pRenderpass->AddSubpass(subpass);
+
+
+	VkSubpassDependency dependency{};
+	dependency.srcSubpass = 0;
+	dependency.dstSubpass = VK_SUBPASS_EXTERNAL;
+	dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+	dependency.dstStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+	dependency.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+	dependency.dstAccessMask = 0;
+	dependency.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
+
+	m_pRenderpass->AddDependency(dependency);
+
+
+	m_pRenderpass->CreateRenderPass();
+
+	m_pSwapchainWrapper->AddFrameBuffers(m_pRenderpass.get());
 }
 
 void DDM3::ForwardRenderer::InitImgui()
@@ -358,7 +393,7 @@ void DDM3::ForwardRenderer::InitImgui()
 	auto commandBuffer{ VulkanObject::GetInstance().BeginSingleTimeCommands() };
 	// Initialize ImGui
 	m_pImGuiWrapper = std::make_unique<DDM3::ImGuiWrapper>(init_info,
-		VulkanObject::GetInstance().GetDevice(), static_cast<uint32_t>(VulkanObject::GetInstance().GetMaxFrames()), m_pRenderpassWrapper->GetRenderpass(), commandBuffer);
+		VulkanObject::GetInstance().GetDevice(), static_cast<uint32_t>(VulkanObject::GetInstance().GetMaxFrames()), m_pRenderpass->GetRenderpass(), commandBuffer);
 	// End the single time command buffer
 	VulkanObject::GetInstance().EndSingleTimeCommands(commandBuffer);
 }
@@ -375,7 +410,7 @@ VkExtent2D DDM3::ForwardRenderer::GetExtent()
 
 DDM3::RenderpassWrapper* DDM3::ForwardRenderer::GetDefaultRenderpass()
 {
-	return m_pRenderpassWrapper.get();
+	return m_pRenderpass.get();
 }
 
 void DDM3::ForwardRenderer::AddDefaultPipelines()

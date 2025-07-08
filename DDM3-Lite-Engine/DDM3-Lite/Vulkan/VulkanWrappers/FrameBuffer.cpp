@@ -35,10 +35,11 @@ void DDM3::FrameBuffer::CreateFrameBuffer(RenderpassWrapper* renderpass, VkExten
 
 	for (auto& attachment : attachmentList)
 	{
-		attachments.push_back(attachment->GetTexture()->imageView);
+		if (attachment->GetAttachmentType() != Attachment::kAttachmentType_ColorResolve)
+		{
+			attachments.push_back(attachment->GetTexture()->imageView);
+		}
 	}
-
-	attachments.push_back(renderpass->GetDepthAttachment()->GetTexture()->imageView);
 
 	if (swapchainImage != VK_NULL_HANDLE)
 	{

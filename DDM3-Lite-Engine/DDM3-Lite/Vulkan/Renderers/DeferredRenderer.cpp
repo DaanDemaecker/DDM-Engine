@@ -74,7 +74,7 @@ void DDM3::DeferredRenderer::Render()
 	auto currentFrame{ vulkanObject.GetCurrentFrame() };
 
 	auto device{ vulkanObject.GetDevice() };
-	auto queueObject{ vulkanObject.GetQueueObject() };
+	auto& queueObject{ vulkanObject.GetQueueObject() };
 
 	vkWaitForFences(device, 1, &m_pSyncObjectManager->GetInFlightFence(currentFrame), VK_TRUE, UINT64_MAX);
 
@@ -371,7 +371,7 @@ void DDM3::DeferredRenderer::CreateDepthRenderpass()
 
 	depthAttachment->SetFormat(VulkanUtils::FindDepthFormat(VulkanObject::GetInstance().GetPhysicalDevice()));
 
-	VkAttachmentDescription depthAttachmentDesc;
+	VkAttachmentDescription depthAttachmentDesc{};
 	depthAttachmentDesc.flags = VK_ATTACHMENT_DESCRIPTION_MAY_ALIAS_BIT;
 	// Set format to depth format
 	depthAttachmentDesc.format = VulkanUtils::FindDepthFormat(VulkanObject::GetInstance().GetPhysicalDevice());
@@ -396,11 +396,11 @@ void DDM3::DeferredRenderer::CreateDepthRenderpass()
 
 	depthAttachment->SetAttachmentDesc(depthAttachmentDesc);
 
-	depthAttachment->SetAttachmentRef(depthAttachmentRef);
+	//depthAttachment->SetAttachmentRef(depthAttachmentRef);
 
 	m_pDepthTexture = depthAttachment->GetTextureSharedPtr();
 
-	m_pDepthRenderpass->AddDepthAttachment(std::move(depthAttachment));
+	//m_pDepthRenderpass->AddDepthAttachment(std::move(depthAttachment));
 
 	m_pDepthRenderpass->CreateRenderPass();
 
@@ -443,7 +443,7 @@ void DDM3::DeferredRenderer::CreateGeometryRenderpass()
 
 	albedoAttachment->SetAttachmentDesc(albedoAttachmentDesc);
 
-	albedoAttachment->SetAttachmentRef(albedoAttachmentRef);
+	//albedoAttachment->SetAttachmentRef(albedoAttachmentRef);
 
 	m_pGeometryRenderpass->AddAttachment(std::move(albedoAttachment));
 
@@ -475,7 +475,7 @@ void DDM3::DeferredRenderer::CreateGeometryRenderpass()
 
 	normalAttachment->SetAttachmentDesc(normalAttachmentDesc);
 
-	normalAttachment->SetAttachmentRef(normalAttachmentRef);
+	//normalAttachment->SetAttachmentRef(normalAttachmentRef);
 
 	m_pGeometryRenderpass->AddAttachment(std::move(normalAttachment));
 
@@ -506,7 +506,7 @@ void DDM3::DeferredRenderer::CreateGeometryRenderpass()
 	
 	positionAttachment->SetAttachmentDesc(positionAttachmentDesc);
 
-	positionAttachment->SetAttachmentRef(positionAttachmentRef);
+	//positionAttachment->SetAttachmentRef(positionAttachmentRef);
 
 	m_pGeometryRenderpass->AddAttachment(std::move(positionAttachment));
 
@@ -515,7 +515,7 @@ void DDM3::DeferredRenderer::CreateGeometryRenderpass()
 
 	depthAttachment->SetFormat(VulkanUtils::FindDepthFormat(VulkanObject::GetInstance().GetPhysicalDevice()));
 
-	VkAttachmentDescription depthAttachmentDesc;
+	VkAttachmentDescription depthAttachmentDesc{};
 	depthAttachmentDesc.flags = VK_ATTACHMENT_DESCRIPTION_MAY_ALIAS_BIT;
 	// Set format to depth format
 	depthAttachmentDesc.format = VulkanUtils::FindDepthFormat(VulkanObject::GetInstance().GetPhysicalDevice());
@@ -540,11 +540,11 @@ void DDM3::DeferredRenderer::CreateGeometryRenderpass()
 
 	depthAttachment->SetAttachmentDesc(depthAttachmentDesc);
 
-	depthAttachment->SetAttachmentRef(depthAttachmentRef);
+	//depthAttachment->SetAttachmentRef(depthAttachmentRef);
 
 	depthAttachment->SetTexture(m_pDepthTexture);
 
-	m_pGeometryRenderpass->AddDepthAttachment(std::move(depthAttachment));
+	//m_pGeometryRenderpass->AddDepthAttachment(std::move(depthAttachment));
 	
 	m_pGeometryRenderpass->CreateRenderPass();
 
@@ -588,7 +588,7 @@ void DDM3::DeferredRenderer::CreateLightingRendepass(VkFormat swapchainFormat)
 	colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
 	attachment->SetAttachmentDesc(colorAttachment);
-	attachment->SetAttachmentRef(colorAttachmentRef);
+	//attachment->SetAttachmentRef(colorAttachmentRef);
 
 	m_pLightingRenderpass->AddAttachment(std::move(attachment));
 
@@ -597,7 +597,7 @@ void DDM3::DeferredRenderer::CreateLightingRendepass(VkFormat swapchainFormat)
 
 	depthAttachment->SetFormat(VulkanUtils::FindDepthFormat(vulkanObject.GetPhysicalDevice()));
 
-	VkAttachmentDescription depthAttachmentDesc;
+	VkAttachmentDescription depthAttachmentDesc{};
 	depthAttachmentDesc.flags = VK_ATTACHMENT_DESCRIPTION_MAY_ALIAS_BIT;
 	// Set format to depth format
 	depthAttachmentDesc.format = VulkanUtils::FindDepthFormat(vulkanObject.GetPhysicalDevice());
@@ -622,9 +622,9 @@ void DDM3::DeferredRenderer::CreateLightingRendepass(VkFormat swapchainFormat)
 
 	depthAttachment->SetAttachmentDesc(depthAttachmentDesc);
 
-	depthAttachment->SetAttachmentRef(depthAttachmentRef);
+	//depthAttachment->SetAttachmentRef(depthAttachmentRef);
 
-	m_pLightingRenderpass->AddDepthAttachment(std::move(depthAttachment));
+	//m_pLightingRenderpass->AddDepthAttachment(std::move(depthAttachment));
 
 
 
@@ -652,15 +652,15 @@ void DDM3::DeferredRenderer::CreateLightingRendepass(VkFormat swapchainFormat)
 	colorResolveDesc.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 
 
-	VkAttachmentReference colorResolveRef;
+	VkAttachmentReference colorResolveRef{};
 	// Set layout to color attachment optimal
 	colorResolveRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
 	colorResolveAttachment->SetAttachmentDesc(colorResolveDesc);
 
-	colorResolveAttachment->SetAttachmentRef(colorResolveRef);
+	//colorResolveAttachment->SetAttachmentRef(colorResolveRef);
 
-	m_pLightingRenderpass->AddColorResolveAttachment(std::move(colorResolveAttachment));
+	//m_pLightingRenderpass->AddColorResolveAttachment(std::move(colorResolveAttachment));
 
 	m_pLightingRenderpass->CreateRenderPass();
 

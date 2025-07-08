@@ -17,6 +17,24 @@ DDM3::Attachment::~Attachment()
 	Cleanup();
 }
 
+void DDM3::Attachment::SetupImage(VkExtent2D extent, VkImageView swapchainImage)
+{
+	switch (m_Type)
+	{
+	case kAttachmentType_Color:
+		SetupColorTexture(extent);
+		break;
+	case kAttachmentType_ColorResolve:
+		SetupColorResolveTexture(extent, swapchainImage);
+		break;
+	case kAttachmentType_DepthStencil:
+		SetupDepthImage(extent);
+		break;
+	default:
+		break;
+	}
+}
+
 void DDM3::Attachment::SetupColorTexture(VkExtent2D extent)
 {
 	if (!m_ResetOnSetup)
@@ -41,12 +59,14 @@ void DDM3::Attachment::SetupColorTexture(VkExtent2D extent)
 	m_Texture->imageView = pImageManager->CreateImageView(vulkanObject.GetDevice(), m_Texture->image, m_Format, VK_IMAGE_ASPECT_COLOR_BIT, 1);
 }
 
-void DDM3::Attachment::SetupColorResolveTexture(VkExtent2D extent)
+void DDM3::Attachment::SetupColorResolveTexture(VkExtent2D extent, VkImageView swapchainImage)
 {
 	if (!m_ResetOnSetup)
 	{
 		return;
 	}
+
+	//m_Texture->imageView = swapchainImage;
 
 	Cleanup();
 

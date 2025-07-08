@@ -44,31 +44,28 @@ namespace DDM3
 
 		void AddAttachment(std::unique_ptr<Attachment> attachment);
 
-		void AddDepthAttachment(std::unique_ptr<Attachment> attachment);
-
-		void AddColorResolveAttachment(std::unique_ptr<Attachment> attachment);
-
-		void CreateRenderPass();
-
 		std::vector<std::unique_ptr<Attachment>>& GetAttachmentList() { return m_AttachmentList; }
 
-		std::unique_ptr<Attachment>& GetDepthAttachment() { return m_DepthAttachment; }
-
-		std::unique_ptr<Attachment>& GetColorResolveAttachment() { return m_ColorResolveAttachment; }
-
-		bool IsColorResolveSet() const { return m_ColorResolveSet;}
+		bool IsColorResolveSet() const;
 
 		void BeginRenderPass(VkCommandBuffer commandBuffer, VkFramebuffer frameBuffer, VkExtent2D extent, bool clearDepth = true);
 
 		void SetSampleCount(VkSampleCountFlagBits sampleCount) { m_SampleCount = sampleCount; }
 		VkSampleCountFlagBits GetSampleCount() const { return m_SampleCount; }
 
+		void AddSubpass(VkSubpassDescription subpass);
+
+		void AddDependency(VkSubpassDependency dependency);
+
+		void CreateRenderPass();
 	private:
+
 		std::vector<std::unique_ptr<Attachment>> m_AttachmentList{};
 
-		std::unique_ptr<Attachment> m_DepthAttachment{};
+		std::vector<VkSubpassDescription> m_Subpasses{};
 
-		std::unique_ptr<Attachment> m_ColorResolveAttachment{};
+		std::vector<VkSubpassDependency> m_Dependencies{};
+
 
 		bool m_DepthAttachmentSet{false};
 

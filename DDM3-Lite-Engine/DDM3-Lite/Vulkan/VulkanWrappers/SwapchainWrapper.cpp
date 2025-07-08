@@ -48,14 +48,7 @@ void DDM3::SwapchainWrapper::SetupImageViews(GPUObject* pGPUObject, DDM3::ImageM
 {
 	for (auto& attachment : renderPass->GetAttachmentList())
 	{
-		attachment->SetupColorTexture(m_SwapChainExtent);
-	}
-
-	renderPass->GetDepthAttachment()->SetupDepthImage(m_SwapChainExtent);
-
-	if (renderPass->IsColorResolveSet())
-	{
-		renderPass->GetColorResolveAttachment()->SetupColorResolveTexture(m_SwapChainExtent);
+		attachment->SetupImage(m_SwapChainExtent, VK_NULL_HANDLE);
 	}
 
 	// Initialize frame buffers

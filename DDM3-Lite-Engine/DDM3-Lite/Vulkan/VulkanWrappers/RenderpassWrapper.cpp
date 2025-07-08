@@ -28,121 +28,20 @@ void DDM3::RenderpassWrapper::Cleanup(VkDevice device)
 
 void DDM3::RenderpassWrapper::AddAttachment(std::unique_ptr<Attachment> attachment)
 {
-	attachment->SetAttachmentRefIndex(m_AttachmentList.size());
-
 	m_AttachmentList.push_back(std::move(attachment));
 }
 
-void DDM3::RenderpassWrapper::AddDepthAttachment(std::unique_ptr<Attachment> attachment)
+bool DDM3::RenderpassWrapper::IsColorResolveSet() const
 {
-	m_DepthAttachmentSet = true;
-
-	attachment->SetAttachmentRefIndex(m_AttachmentList.size());
-
-	m_DepthAttachment = std::move(attachment);
-}
-
-void DDM3::RenderpassWrapper::AddColorResolveAttachment(std::unique_ptr<Attachment> attachment)
-{
-	m_ColorResolveSet = true;
-
-	attachment->SetAttachmentRefIndex(m_AttachmentList.size() + (m_DepthAttachmentSet ? 1 : 0));
-
-	m_ColorResolveAttachment = std::move(attachment);
-}
-
-void DDM3::RenderpassWrapper::CreateRenderPass()
-{
-	std::vector<VkAttachmentReference>attachmentRefs{};
-	attachmentRefs.reserve(m_AttachmentList.size());
-
 	for (auto& attachment : m_AttachmentList)
 	{
-		attachmentRefs.emplace_back(attachment->GetAttachmentRef());
+		if (attachment->GetAttachmentType() == Attachment::kAttachmentType_ColorResolve)
+		{
+			return true;
+		}
 	}
 
-
-	// Create subpass description
-	VkSubpassDescription subpass{};
-	// Set pipelinje bind point to graphics
-	subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-	// Set color attachment count to 1
-	subpass.colorAttachmentCount = static_cast<uint32_t>(m_AttachmentList.size());
-	// Give pointer to color attachment reference
-	subpass.pColorAttachments = attachmentRefs.data();
-
-	if (m_DepthAttachmentSet)
-	{
-		// Give pointer to depth attachment reference
-		subpass.pDepthStencilAttachment = &m_DepthAttachment->GetAttachmentRef();
-	}
-
-	if (m_ColorResolveSet)
-	{
-		// Give pointer to color attachment resole reference
-		subpass.pResolveAttachments = &m_ColorResolveAttachment->GetAttachmentRef();
-	}
-
-	// Create subpass dependency
-	VkSubpassDependency dependency{};
-	// Set source subpass to external
-	dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
-	// Set destination subpass to 0
-	dependency.dstSubpass = 0;
-	// Set source stagemask to color attachment output and early fragment tests
-	dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-	// Set source access mask to 0
-	dependency.srcAccessMask = 0;
-	// Set destination stage mask to color atachment output and early fragment tests
-	dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-	// Set destination access mask to color attachment write and depth stencil attachment write
-	dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
-
-
-	std::vector<VkAttachmentDescription> attachments{};
-	attachments.reserve(m_AttachmentList.size() +
-		(m_DepthAttachmentSet ? 1 : 0) +
-		(m_ColorResolveSet ? 1 : 0));
-
-	for (auto& attachment : m_AttachmentList)
-	{
-		attachments.emplace_back(attachment->GetAttachmentDesc());
-	}
-
-	if (m_DepthAttachmentSet)
-	{
-		attachments.push_back(m_DepthAttachment->GetAttachmentDesc());
-	}
-
-	if (m_ColorResolveSet)
-	{
-		attachments.push_back(m_ColorResolveAttachment->GetAttachmentDesc());
-	}
-
-
-	// Create rander pass create info
-	VkRenderPassCreateInfo renderPassInfo{};
-	// Set type to render pass create info
-	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-	// Set attachment count to the size of attachments
-	renderPassInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
-	// Set pAttachments as pointer to date of attachments
-	renderPassInfo.pAttachments = attachments.data();
-	// Set subpasscount to 1
-	renderPassInfo.subpassCount = 1;
-	// Give pointer to subpass count
-	renderPassInfo.pSubpasses = &subpass;
-	// Set dependency count to 1
-	renderPassInfo.dependencyCount = 1;
-	// Give pointer to dependency
-	renderPassInfo.pDependencies = &dependency;
-
-	// Create the renderpass
-	if (vkCreateRenderPass(VulkanObject::GetInstance().GetDevice(), &renderPassInfo, nullptr, &m_RenderPass) != VK_SUCCESS)
-	{
-		// If unsuccessful, throw runtime error
-		throw std::runtime_error("failed to create render pass!");
-	}
+	return false;
 }
 
 void DDM3::RenderpassWrapper::BeginRenderPass(VkCommandBuffer commandBuffer, VkFramebuffer frameBuffer, VkExtent2D extent, bool clearDepth)
@@ -162,19 +61,74 @@ void DDM3::RenderpassWrapper::BeginRenderPass(VkCommandBuffer commandBuffer, VkF
 
 	for (int i{}; i < m_AttachmentList.size(); ++i)
 	{
-		clearValues[i].color = m_AttachmentList[i]->GetClearColorValue();
+		switch (m_AttachmentList[i]->GetAttachmentType())
+		{
+		case Attachment::kAttachmentType_Color:
+		case Attachment::kAttachmentType_ColorResolve:
+			clearValues[i].color = m_AttachmentList[i]->GetClearColorValue();
+			break;
+		case Attachment::kAttachmentType_DepthStencil:
+			clearValues[i].depthStencil = m_AttachmentList[i]->GetClearDepthStencilValue();
+		default:
+			break;
+		}
 	}
 
 
-	if (m_DepthAttachmentSet && clearDepth)
+	/*if (m_DepthAttachmentSet && clearDepth)
 	{
 		clearValues[clearAmount-1].depthStencil = { 1.0f, 0 };
-	}
+	}*/
 
 	renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
 	renderPassInfo.pClearValues = clearValues.data();
 
 	vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+}
+
+void DDM3::RenderpassWrapper::AddSubpass(VkSubpassDescription subpass)
+{
+	m_Subpasses.push_back(subpass);
+}
+
+void DDM3::RenderpassWrapper::AddDependency(VkSubpassDependency dependency)
+{
+	m_Dependencies.push_back(dependency);
+}
+
+void DDM3::RenderpassWrapper::CreateRenderPass()
+{
+	std::vector<VkAttachmentDescription> attachments(m_AttachmentList.size());
+
+	for (int i{}; i < m_AttachmentList.size(); ++i)
+	{
+		attachments[i] = m_AttachmentList[i]->GetAttachmentDesc();
+	}
+
+
+	// Create rander pass create info
+	VkRenderPassCreateInfo renderPassInfo{};
+	// Set type to render pass create info
+	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+	// Set attachment count to the size of attachments
+	renderPassInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
+	// Set pAttachments as pointer to date of attachments
+	renderPassInfo.pAttachments = attachments.data();
+	// Set subpasscount to 1
+	renderPassInfo.subpassCount = 1;
+	// Give pointer to subpass count
+	renderPassInfo.pSubpasses = m_Subpasses.data();
+	// Set dependency count to 1
+	renderPassInfo.dependencyCount = m_Dependencies.size();
+	// Give pointer to dependency
+	renderPassInfo.pDependencies = m_Dependencies.data();
+
+	// Create the renderpass
+	if (vkCreateRenderPass(VulkanObject::GetInstance().GetDevice(), &renderPassInfo, nullptr, &m_RenderPass) != VK_SUCCESS)
+	{
+		// If unsuccessful, throw runtime error
+		throw std::runtime_error("failed to create render pass!");
+	}
 }
 
 void DDM3::RenderpassWrapper::CreateRenderPass(VkDevice device, VkFormat swapchainImageFormat, VkFormat depthFormat, VkSampleCountFlagBits msaaSamples, int attachmentCount)

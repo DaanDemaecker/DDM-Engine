@@ -47,6 +47,25 @@ namespace DDM3
 
 		virtual void AddDefaultPipelines();
 	private:
+		enum
+		{
+			kAttachment_BACK = 0,
+			kAttachment_DEPTH = 1,
+			kAtttachment_GBUFFER = 2
+		};
+
+		enum
+		{
+			kSubpass_DEPTH = 0,
+			kSubpass_GBUFFER = 1,
+			kSubpass_LIGHTING = 2
+		};
+
+		void CreateRenderpass();
+
+		VkRenderPass m_MasterRenderpass{};
+
+
 		std::unique_ptr<RenderpassWrapper> m_pDepthRenderpass{};
 
 		// Pointer to the renderpass wrapper
@@ -85,12 +104,6 @@ namespace DDM3
 		void RecordCommandBuffer(VkCommandBuffer& commandBuffer, uint32_t imageIndex);
 
 		void RecreateSwapChain();
-
-		void CreateDepthRenderpass();
-
-		void CreateGeometryRenderpass();
-
-		void CreateLightingRendepass(VkFormat swapchainFormat);
 
 
 
