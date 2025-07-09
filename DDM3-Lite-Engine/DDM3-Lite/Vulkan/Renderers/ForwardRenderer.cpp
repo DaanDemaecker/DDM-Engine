@@ -345,18 +345,6 @@ void DDM3::ForwardRenderer::CreateRenderpass(VkFormat swapchainFormat)
 	m_pRenderpass->AddSubpass(subpass);
 
 
-	VkSubpassDependency dependency{};
-	dependency.srcSubpass = 0;
-	dependency.dstSubpass = VK_SUBPASS_EXTERNAL;
-	dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-	dependency.dstStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
-	dependency.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-	dependency.dstAccessMask = 0;
-	dependency.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
-
-	m_pRenderpass->AddDependency(dependency);
-
-
 	m_pRenderpass->CreateRenderPass();
 
 	m_pSwapchainWrapper->AddFrameBuffers(m_pRenderpass.get());

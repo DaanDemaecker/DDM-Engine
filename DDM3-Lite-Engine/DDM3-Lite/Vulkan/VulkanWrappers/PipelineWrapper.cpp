@@ -331,7 +331,7 @@ void DDM3::PipelineWrapper::SetDepthStencilStateCreateInfo(VkPipelineDepthStenci
 
 	depthStencil.depthTestEnable = hasDepthStencil ? VK_TRUE : VK_FALSE;
 	depthStencil.depthWriteEnable = writesToDepth ? VK_TRUE : VK_FALSE;
-	depthStencil.depthCompareOp = writesToDepth ? VK_COMPARE_OP_LESS : VK_COMPARE_OP_LESS_OR_EQUAL;
+	depthStencil.depthCompareOp = writesToDepth ? VK_COMPARE_OP_LESS : VK_COMPARE_OP_EQUAL;
 
 	// Set depth bounds test enable to false
 	depthStencil.depthBoundsTestEnable = VK_FALSE;

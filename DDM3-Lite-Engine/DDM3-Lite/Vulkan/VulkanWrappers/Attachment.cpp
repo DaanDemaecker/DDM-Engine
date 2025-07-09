@@ -19,6 +19,9 @@ DDM3::Attachment::~Attachment()
 
 void DDM3::Attachment::SetupImage(VkExtent2D extent, VkImageView swapchainImage)
 {
+	if (!m_ResetOnSetup)
+		return;
+
 	switch (m_Type)
 	{
 	case kAttachmentType_Color:
@@ -37,11 +40,6 @@ void DDM3::Attachment::SetupImage(VkExtent2D extent, VkImageView swapchainImage)
 
 void DDM3::Attachment::SetupColorTexture(VkExtent2D extent)
 {
-	if (!m_ResetOnSetup)
-	{
-		return;
-	}
-
 	Cleanup();
 
 	auto& vulkanObject{ VulkanObject::GetInstance() };
@@ -61,11 +59,6 @@ void DDM3::Attachment::SetupColorTexture(VkExtent2D extent)
 
 void DDM3::Attachment::SetupColorResolveTexture(VkExtent2D extent, VkImageView swapchainImage)
 {
-	if (!m_ResetOnSetup)
-	{
-		return;
-	}
-
 	//m_Texture->imageView = swapchainImage;
 
 	Cleanup();
@@ -87,11 +80,6 @@ void DDM3::Attachment::SetupColorResolveTexture(VkExtent2D extent, VkImageView s
 
 void DDM3::Attachment::SetupDepthImage(VkExtent2D extent)
 {
-	if (!m_ResetOnSetup)
-	{
-		return;
-	}
-
 	Cleanup();
 
 	auto& vulkanObject{ VulkanObject::GetInstance() };

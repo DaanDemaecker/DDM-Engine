@@ -17,12 +17,12 @@ int main()
 	//engine.Init<DDM3::DeferredRenderer2>();
 	//engine.Run(LoadDeferredScene2::LoadScene);
 
-	//engine.Init<DDM3::DeferredRenderer>();
-	//engine.Run(LoadDeferredScene::LoadScene);
+	engine.Init<DDM3::DeferredRenderer>();
+	engine.Run(LoadDeferredScene::LoadScene);
 
 	
-	engine.Init<DDM3::ForwardRenderer>();
-	engine.Run(LoadTestScene::loadTestScene);
+	//engine.Init<DDM3::ForwardRenderer>();
+	//engine.Run(LoadTestScene::loadTestScene);
 	//engine.Run(LoadModelLoaderScene::LoadModelLoaderScene);
 	
 	return EXIT_SUCCESS;
