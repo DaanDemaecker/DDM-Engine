@@ -69,16 +69,11 @@ void DDM3::RenderpassWrapper::BeginRenderPass(VkCommandBuffer commandBuffer, VkF
 			break;
 		case Attachment::kAttachmentType_DepthStencil:
 			clearValues[i].depthStencil = m_AttachmentList[i]->GetClearDepthStencilValue();
+			break;
 		default:
 			break;
 		}
 	}
-
-
-	/*if (m_DepthAttachmentSet && clearDepth)
-	{
-		clearValues[clearAmount-1].depthStencil = { 1.0f, 0 };
-	}*/
 
 	renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
 	renderPassInfo.pClearValues = clearValues.data();
@@ -86,9 +81,9 @@ void DDM3::RenderpassWrapper::BeginRenderPass(VkCommandBuffer commandBuffer, VkF
 	vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 }
 
-void DDM3::RenderpassWrapper::AddSubpass(VkSubpassDescription subpass)
+void DDM3::RenderpassWrapper::AddSubpass(std::unique_ptr<Subpass> subpass)
 {
-	m_Subpasses.push_back(subpass);
+	m_pSubpasses.push_back(std::move(subpass));
 }
 
 void DDM3::RenderpassWrapper::AddDependency(VkSubpassDependency dependency)
@@ -105,6 +100,12 @@ void DDM3::RenderpassWrapper::CreateRenderPass()
 		attachments[i] = m_AttachmentList[i]->GetAttachmentDesc();
 	}
 
+	std::vector<VkSubpassDescription> subpasses(m_pSubpasses.size());
+
+	for (int i{}; i < m_pSubpasses.size(); ++i)
+	{
+		subpasses[i] = m_pSubpasses[i]->GetDescription();
+	}
 
 	// Create rander pass create info
 	VkRenderPassCreateInfo renderPassInfo{};
@@ -115,9 +116,9 @@ void DDM3::RenderpassWrapper::CreateRenderPass()
 	// Set pAttachments as pointer to date of attachments
 	renderPassInfo.pAttachments = attachments.data();
 	// Set subpasscount to 1
-	renderPassInfo.subpassCount = 1;
+	renderPassInfo.subpassCount = subpasses.size();
 	// Give pointer to subpass count
-	renderPassInfo.pSubpasses = m_Subpasses.data();
+	renderPassInfo.pSubpasses = subpasses.data();
 	// Set dependency count to 1
 	renderPassInfo.dependencyCount = m_Dependencies.size();
 	// Give pointer to dependency

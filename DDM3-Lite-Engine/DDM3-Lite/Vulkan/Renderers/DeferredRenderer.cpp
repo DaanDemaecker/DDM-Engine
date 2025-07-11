@@ -16,6 +16,7 @@
 #include "Vulkan/VulkanWrappers/GPUObject.h"
 #include "Vulkan/VulkanWrappers/PipelineWrapper.h"
 #include "DataTypes/DescriptorObjects/TextureDescriptorObject.h"
+#include "Vulkan/VulkanWrappers/Subpass.h"
 
 #include "Engine/Window.h"
 #include "Managers/SceneManager.h"
@@ -406,15 +407,11 @@ void DDM3::DeferredRenderer::CreateDepthRenderpass()
 
 
 	// Create subpass description
-	VkSubpassDescription subpass{};
-	// Set pipelinje bind point to graphics
-	subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-	subpass.colorAttachmentCount = 0;
-	subpass.pColorAttachments = nullptr;
-	subpass.pDepthStencilAttachment = &depthAttachmentRef;
-	subpass.pResolveAttachments = nullptr;
+	std::unique_ptr<Subpass> subpass{std::make_unique<Subpass>()};
 
-	m_pDepthRenderpass->AddSubpass(subpass);
+	subpass->AddDepthRef(depthAttachmentRef);
+
+	m_pDepthRenderpass->AddSubpass(std::move(subpass));
 
 	m_pDepthRenderpass->CreateRenderPass();
 
@@ -426,7 +423,7 @@ void DDM3::DeferredRenderer::CreateGeometryRenderpass()
 {
 	m_pGeometryRenderpass = std::make_unique<RenderpassWrapper>();
 
-	std::vector<VkAttachmentReference> attachmentReferences{};
+	std::unique_ptr<Subpass> subpass{ std::make_unique<Subpass>() };
 
 	m_pGeometryRenderpass->SetSampleCount(VK_SAMPLE_COUNT_1_BIT);
 
@@ -459,7 +456,7 @@ void DDM3::DeferredRenderer::CreateGeometryRenderpass()
 	// Set layout to color attachment optimal
 	albedoAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
-	attachmentReferences.push_back(albedoAttachmentRef);
+	subpass->AddReference(albedoAttachmentRef);
 
 	albedoAttachment->SetAttachmentDesc(albedoAttachmentDesc);
 
@@ -495,7 +492,7 @@ void DDM3::DeferredRenderer::CreateGeometryRenderpass()
 	// Set layout to color attachment optimal
 	normalAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
-	attachmentReferences.push_back(normalAttachmentRef);
+	subpass->AddReference(normalAttachmentRef);
 
 
 	normalAttachment->SetAttachmentDesc(normalAttachmentDesc);
@@ -530,7 +527,7 @@ void DDM3::DeferredRenderer::CreateGeometryRenderpass()
 	// Set layout to color attachment optimal
 	positionAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 	
-	attachmentReferences.push_back(positionAttachmentRef);
+	subpass->AddReference(positionAttachmentRef);
 
 
 	positionAttachment->SetAttachmentDesc(positionAttachmentDesc);
@@ -576,16 +573,9 @@ void DDM3::DeferredRenderer::CreateGeometryRenderpass()
 
 	m_pGeometryRenderpass->AddAttachment(std::move(depthAttachment));
 
-	// Create subpass description
-	VkSubpassDescription subpass{};
-	// Set pipelinje bind point to graphics
-	subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-	subpass.colorAttachmentCount = attachmentReferences.size();
-	subpass.pColorAttachments = attachmentReferences.data();
-	subpass.pDepthStencilAttachment = &depthAttachmentRef;
-	subpass.pResolveAttachments = nullptr;
+	subpass->AddDepthRef(depthAttachmentRef);
 
-	m_pGeometryRenderpass->AddSubpass(subpass);
+	m_pGeometryRenderpass->AddSubpass(std::move(subpass));
 	
 	m_pGeometryRenderpass->CreateRenderPass();
 
@@ -706,16 +696,16 @@ void DDM3::DeferredRenderer::CreateLightingRendepass(VkFormat swapchainFormat)
 
 	m_pLightingRenderpass->AddAttachment(std::move(colorResolveAttachment));
 
-	// Create subpass description
-	VkSubpassDescription subpass{};
-	// Set pipelinje bind point to graphics
-	subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-	subpass.colorAttachmentCount = 1;
-	subpass.pColorAttachments = &colorAttachmentRef;
-	subpass.pDepthStencilAttachment = &depthAttachmentRef;
-	subpass.pResolveAttachments = &colorResolveRef;
 
-	m_pLightingRenderpass->AddSubpass(subpass);
+
+	// Create subpass description
+	std::unique_ptr<Subpass> subpass{ std::make_unique<Subpass>() };
+
+	subpass->AddReference(colorAttachmentRef);
+	subpass->AddDepthRef(depthAttachmentRef);
+	subpass->AddResolveRef(colorResolveRef);
+
+	m_pLightingRenderpass->AddSubpass(std::move(subpass));
 
 	m_pLightingRenderpass->CreateRenderPass();
 

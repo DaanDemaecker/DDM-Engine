@@ -51,7 +51,9 @@ namespace DDM3
 		{
 			kAttachment_BACK = 0,
 			kAttachment_DEPTH = 1,
-			kAtttachment_GBUFFER = 2
+			kAtttachment_GBUFFER_ALBEDO = 2,
+			kAtttachment_GBUFFER_NORMAL = 3,
+			kAtttachment_GBUFFER_POSITION = 4
 		};
 
 		enum
@@ -61,18 +63,26 @@ namespace DDM3
 			kSubpass_LIGHTING = 2
 		};
 
-		void CreateRenderpass();
+		void CreateMasterRenderpass();
 
 		VkRenderPass m_MasterRenderpass{};
 
 
-		std::unique_ptr<RenderpassWrapper> m_pDepthRenderpass{};
+		std::unique_ptr<RenderpassWrapper> m_pRenderpass{};
 
-		// Pointer to the renderpass wrapper
-		std::unique_ptr<RenderpassWrapper> m_pGeometryRenderpass{};
+		void CreateRenderpass();
 
-		// Pointer to the renderpass wrapper
-		std::unique_ptr<RenderpassWrapper> m_pLightingRenderpass{};
+		void SetupAttachments();
+
+		void SetupDepthPass();
+
+		void SetupGeometryPass();
+
+		void SetupLightingPass();
+
+		void SetupDependencies();
+
+
 
 		// Pointer to the swapchain wrapper
 		std::unique_ptr<SwapchainWrapper> m_pSwapchainWrapper{};
@@ -110,17 +120,6 @@ namespace DDM3
 		void CreateDescriptorSetLayout();
 
 		void CreateDescriptorPool();
-
-		void CreateDescriptorSets();
-
-		void SetupDescriptorSets();
-
-		void UpdateDescriptorSets();
-
-		void BindDescriptorSets(VkCommandBuffer commandBuffer);
-
-		
-		void TransitionImages(VkCommandBuffer commandBuffer, VkImageLayout oldLayout, VkImageLayout newLayout);
 	};
 }
 

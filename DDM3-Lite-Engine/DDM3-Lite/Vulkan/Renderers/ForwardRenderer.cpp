@@ -214,52 +214,57 @@ void DDM3::ForwardRenderer::RecreateSwapChain()
 
 void DDM3::ForwardRenderer::CreateRenderpass(VkFormat swapchainFormat)
 {
+	// Create renderpass
 	m_pRenderpass = std::make_unique<RenderpassWrapper>();
 
+	// Create subpass
+	std::unique_ptr<Subpass> subpass{std::make_unique<Subpass>()};
+
+	// Get a reference to vulkanobject
 	auto& vulkanObject = VulkanObject::GetInstance();
 
 	VkSampleCountFlagBits msaaSamples = vulkanObject.GetMsaaSamples();
 
 	m_pRenderpass->SetSampleCount(msaaSamples);
 
-	std::vector<VkAttachmentReference> attachmentRefs{};
+	std::unique_ptr<Attachment> colorAttachment = std::make_unique<Attachment>();
 
-	std::unique_ptr<Attachment> attachment = std::make_unique<Attachment>();
-
-	attachment->SetFormat(swapchainFormat);
-	attachment->SetClearColorValue({ 0.388f, 0.588f, 0.929f, 1.0f });
+	colorAttachment->SetFormat(swapchainFormat);
+	colorAttachment->SetClearColorValue({ 0.388f, 0.588f, 0.929f, 1.0f });
 
 	// Create attachment description
-	VkAttachmentDescription colorAttachment{};
+	VkAttachmentDescription colorAttachmentDesc{};
 	// et format to color format 
-	colorAttachment.format = swapchainFormat;
+	colorAttachmentDesc.format = swapchainFormat;
 	// Give max amount of samplples
-	colorAttachment.samples = msaaSamples;
+	colorAttachmentDesc.samples = msaaSamples;
 	// Set loadOp function to load op clear
-	colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+	colorAttachmentDesc.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
 	// Set storeOp functoin to store op store
-	colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+	colorAttachmentDesc.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
 	// Set initial layout to undefined
-	colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+	colorAttachmentDesc.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 	// Set final layout to color attachment optimal
-	colorAttachment.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;;
+	colorAttachmentDesc.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;;
 
 
-	attachment->SetAttachmentDesc(colorAttachment);
+	colorAttachment->SetAttachmentDesc(colorAttachmentDesc);
 
-	m_pRenderpass->AddAttachment(std::move(attachment));
+	m_pRenderpass->AddAttachment(std::move(colorAttachment));
 
 
 	auto depthAttachment = std::make_unique<Attachment>();
 
+	auto depthFormat = VulkanUtils::FindDepthFormat(vulkanObject.GetPhysicalDevice());
+
 	depthAttachment->SetAttachmentType(Attachment::kAttachmentType_DepthStencil);
 
-	depthAttachment->SetFormat(VulkanUtils::FindDepthFormat(vulkanObject.GetPhysicalDevice()));
+	depthAttachment->SetFormat(depthFormat);
 
 	VkAttachmentDescription depthAttachmentDesc{};
 	depthAttachmentDesc.flags = VK_ATTACHMENT_DESCRIPTION_MAY_ALIAS_BIT;
 	// Set format to depth format
-	depthAttachmentDesc.format = VulkanUtils::FindDepthFormat(vulkanObject.GetPhysicalDevice());
+	depthAttachmentDesc.format = depthFormat;
 	// Give max amount of samples
 	depthAttachmentDesc.samples = vulkanObject.GetMsaaSamples();
 	// Set loadOp function to load op clear
@@ -275,10 +280,6 @@ void DDM3::ForwardRenderer::CreateRenderpass(VkFormat swapchainFormat)
 	// Set final layout to depth stencil attachment optimal
 	depthAttachmentDesc.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
-	VkAttachmentReference depthAttachmentRef{};
-	depthAttachmentRef.attachment = kAttachemnt_DEPTH;
-	// Set layout to depth stencil attachment optimal
-	depthAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
 	depthAttachment->SetAttachmentDesc(depthAttachmentDesc);
 
@@ -311,13 +312,9 @@ void DDM3::ForwardRenderer::CreateRenderpass(VkFormat swapchainFormat)
 	// Set final layout to present src khr
 	colorResolveDesc.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 
-
-	VkAttachmentReference colorResolveRef{};
-	colorResolveRef.attachment = kAttachment_COLORRESOLVE;
-	// Set layout to color attachment optimal
-	colorResolveRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-
 	colorResolveAttachment->SetAttachmentDesc(colorResolveDesc);
+
+
 
 	m_pRenderpass->AddAttachment(std::move(colorResolveAttachment));
 	
@@ -327,22 +324,21 @@ void DDM3::ForwardRenderer::CreateRenderpass(VkFormat swapchainFormat)
 	// Set layout to color attachment optimal
 	colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
-	attachmentRefs.push_back(colorAttachmentRef);
+	VkAttachmentReference depthAttachmentRef{};
+	depthAttachmentRef.attachment = kAttachemnt_DEPTH;
+	// Set layout to depth stencil attachment optimal
+	depthAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
-	// Create subpass description
-	VkSubpassDescription subpass{};
-	// Set pipelinje bind point to graphics
-	subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-	// Set color attachment count to 1
-	subpass.colorAttachmentCount = 1;
-	// Give pointer to color attachment reference
-	subpass.pColorAttachments = &colorAttachmentRef;
-	// Give pointer to depth attachment reference
-	subpass.pDepthStencilAttachment = &depthAttachmentRef;
-	// Give pointer to color attachment resole reference
-	subpass.pResolveAttachments = &colorResolveRef;
+	VkAttachmentReference colorResolveRef{};
+	colorResolveRef.attachment = kAttachment_COLORRESOLVE;
+	// Set layout to color attachment optimal
+	colorResolveRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
-	m_pRenderpass->AddSubpass(subpass);
+	subpass->AddReference(colorAttachmentRef);
+	subpass->AddDepthRef(depthAttachmentRef);
+	subpass->AddResolveRef(colorResolveRef);
+
+	m_pRenderpass->AddSubpass(std::move(subpass));
 
 
 	m_pRenderpass->CreateRenderPass();

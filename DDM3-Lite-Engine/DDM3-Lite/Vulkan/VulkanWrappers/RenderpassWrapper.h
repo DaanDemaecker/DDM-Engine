@@ -6,6 +6,7 @@
 
 // File includdes
 #include "Includes/VulkanIncludes.h"
+#include "Vulkan/VulkanWrappers/Subpass.h"
 #include "Vulkan/VulkanWrappers/Attachment.h"
 
 // Standard library includes
@@ -53,7 +54,7 @@ namespace DDM3
 		void SetSampleCount(VkSampleCountFlagBits sampleCount) { m_SampleCount = sampleCount; }
 		VkSampleCountFlagBits GetSampleCount() const { return m_SampleCount; }
 
-		void AddSubpass(VkSubpassDescription subpass);
+		void AddSubpass(std::unique_ptr<Subpass> subpass);
 
 		void AddDependency(VkSubpassDependency dependency);
 
@@ -62,7 +63,7 @@ namespace DDM3
 
 		std::vector<std::unique_ptr<Attachment>> m_AttachmentList{};
 
-		std::vector<VkSubpassDescription> m_Subpasses{};
+		std::vector<std::unique_ptr<Subpass>> m_pSubpasses{};
 
 		std::vector<VkSubpassDependency> m_Dependencies{};
 

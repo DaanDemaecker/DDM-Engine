@@ -16,6 +16,7 @@
 #include "Vulkan/VulkanWrappers/GPUObject.h"
 #include "Vulkan/VulkanWrappers/PipelineWrapper.h"
 #include "DataTypes/DescriptorObjects/TextureDescriptorObject.h"
+#include "Vulkan/VulkanWrappers/Subpass.h"
 
 #include "Engine/Window.h"
 #include "Managers/SceneManager.h"
@@ -32,27 +33,19 @@ DDM3::DeferredRenderer2::DeferredRenderer2()
 	// Initialize the swapchain
 	m_pSwapchainWrapper = std::make_unique<SwapchainWrapper>(pGPUObject, surface, VulkanObject::GetInstance().GetImageManager(), VulkanObject::GetInstance().GetMsaaSamples());
 
+	//CreateMasterRenderpass();
+
 	CreateRenderpass();
 
 
 	auto commandBuffer = VulkanObject::GetInstance().BeginSingleTimeCommands();
-	m_pSwapchainWrapper->SetupImageViews(pGPUObject, VulkanObject::GetInstance().GetImageManager(), commandBuffer, m_pDepthRenderpass.get());
-	VulkanObject::GetInstance().EndSingleTimeCommands(commandBuffer);
-
-	commandBuffer = VulkanObject::GetInstance().BeginSingleTimeCommands();
-	m_pSwapchainWrapper->SetupImageViews(pGPUObject, VulkanObject::GetInstance().GetImageManager(), commandBuffer, m_pGeometryRenderpass.get());
-	VulkanObject::GetInstance().EndSingleTimeCommands(commandBuffer);
-
-	commandBuffer = VulkanObject::GetInstance().BeginSingleTimeCommands();
-	m_pSwapchainWrapper->SetupImageViews(pGPUObject, VulkanObject::GetInstance().GetImageManager(), commandBuffer, m_pLightingRenderpass.get());
+	m_pSwapchainWrapper->SetupImageViews(pGPUObject, VulkanObject::GetInstance().GetImageManager(), commandBuffer, m_pRenderpass.get());
 	VulkanObject::GetInstance().EndSingleTimeCommands(commandBuffer);
 
 	// Initialize the sync objects
 	m_pSyncObjectManager = std::make_unique<SyncObjectManager>(pGPUObject->GetDevice(), VulkanObject::GetInstance().GetMaxFrames());
 
 	//InitImgui();
-
-	SetupDescriptorSets();
 }
 
 DDM3::DeferredRenderer2::~DeferredRenderer2()
@@ -153,7 +146,7 @@ VkExtent2D DDM3::DeferredRenderer2::GetExtent()
 
 DDM3::RenderpassWrapper* DDM3::DeferredRenderer2::GetDefaultRenderpass()
 {
-	return m_pGeometryRenderpass.get();
+	return m_pRenderpass.get();
 }
 
 void DDM3::DeferredRenderer2::AddDefaultPipelines()
@@ -168,7 +161,7 @@ void DDM3::DeferredRenderer2::AddDefaultPipelines()
 	VulkanObject::GetInstance().AddGraphicsPipeline(defaultPipelineName, {
 		"Resources/DefaultResources/Deferred2.vert",
 		"Resources/DefaultResources/Deferred2.vert" },
-		true, false, m_pGeometryRenderpass.get());
+		true, false);
 
 	// Initialize default pipeline name 
 	auto lightingPipelineName = configManager.GetString("DeferredLightingPipelineName");
@@ -177,16 +170,15 @@ void DDM3::DeferredRenderer2::AddDefaultPipelines()
 	VulkanObject::GetInstance().AddGraphicsPipeline(lightingPipelineName, {
 		"Resources/DefaultResources/DeferredLighting2.vert",
 		"Resources/DefaultResources/DeferredLighting2.vert" },
-		false, true, m_pLightingRenderpass.get());
+		false, true);
 
 	m_PipelineLayout = VulkanObject::GetInstance().GetPipeline(lightingPipelineName)->GetPipelineLayout();
 
 	VulkanObject::GetInstance().AddGraphicsPipeline("Depth", {
-		"Resources/DefaultResources/Depth.Vert.spv"},
-		true, true, m_pDepthRenderpass.get());
+		"Resources/DefaultResources/Depth.Vert.spv"});
 }
 
-void DDM3::DeferredRenderer2::CreateRenderpass()
+void DDM3::DeferredRenderer2::CreateMasterRenderpass()
 {
 	const VkAttachmentDescription attachments[] =
 	{
@@ -239,7 +231,7 @@ void DDM3::DeferredRenderer2::CreateRenderpass()
 	const VkAttachmentReference gBufferOutputs[] =
 	{
 		{
-			kAtttachment_GBUFFER,							// attachment
+			kAtttachment_GBUFFER_ALBEDO,					// attachment
 			VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL		// layout
 		}
 	};
@@ -249,7 +241,7 @@ void DDM3::DeferredRenderer2::CreateRenderpass()
 	{
 		/// Read from g-buffer
 		{
-			kAtttachment_GBUFFER,							// attachment
+			kAtttachment_GBUFFER_ALBEDO,					// attachment
 			VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL		// layout
 		},
 		// Read depth as texture
@@ -290,7 +282,7 @@ void DDM3::DeferredRenderer2::CreateRenderpass()
 			VK_PIPELINE_BIND_POINT_GRAPHICS,	// pipelineBindPoint
 			0,									// inputAttachmentCount
 			nullptr,							// pInputAttachments
-			2,									// colorAttachmentCount
+			1,									// colorAttachmentCount
 			gBufferOutputs,						// pColorAttachments
 			nullptr,							// pResollveAttachmentCount
 			&depthAttachmentReference,			// pDepthStencilAttachment
@@ -356,6 +348,170 @@ void DDM3::DeferredRenderer2::CreateRenderpass()
 		&m_MasterRenderpass);
 }
 
+void DDM3::DeferredRenderer2::CreateRenderpass()
+{
+	m_pRenderpass = std::make_unique<RenderpassWrapper>();
+
+	SetupAttachments();
+
+	SetupDepthPass();
+
+	SetupGeometryPass();
+
+	SetupLightingPass();
+
+	SetupDependencies();
+
+	m_pRenderpass->CreateRenderPass();
+}
+
+void DDM3::DeferredRenderer2::SetupAttachments()
+{
+	// Set up backbuffer attachment
+	auto backbufferFormat = VK_FORMAT_R8G8B8_UNORM;
+
+	auto backBufferAttachment = std::make_unique<Attachment>();
+	backBufferAttachment->SetFormat(backbufferFormat);
+	backBufferAttachment->SetAttachmentType(Attachment::kAttachmentType_Color);
+
+
+	VkAttachmentDescription backBufferAttachmentDesc{};
+	backBufferAttachmentDesc.flags = 0;
+	backBufferAttachmentDesc.format = backbufferFormat;
+	backBufferAttachmentDesc.samples = VK_SAMPLE_COUNT_1_BIT;
+	backBufferAttachmentDesc.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+	backBufferAttachmentDesc.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+	backBufferAttachmentDesc.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+	backBufferAttachmentDesc.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+	backBufferAttachmentDesc.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+	backBufferAttachmentDesc.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+
+	backBufferAttachment->SetAttachmentDesc(backBufferAttachmentDesc);
+
+	// Set up Depth attachment
+	auto depthFormat = VulkanUtils::FindDepthFormat(VulkanObject::GetInstance().GetPhysicalDevice());
+	auto depthAttachment = std::make_unique<Attachment>();
+	depthAttachment->SetAttachmentType(Attachment::kAttachmentType_DepthStencil);
+	depthAttachment->SetFormat(depthFormat);
+
+	VkAttachmentDescription depthAttachmentDesc{};
+	depthAttachmentDesc.flags = VK_ATTACHMENT_DESCRIPTION_MAY_ALIAS_BIT;
+	// Set format to depth format
+	depthAttachmentDesc.format = depthFormat;
+	// Give max amount of samples
+	depthAttachmentDesc.samples = VK_SAMPLE_COUNT_1_BIT;
+	// Set loadOp function to load op clear
+	depthAttachmentDesc.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+	// Set storeOp function to store op don't care
+	depthAttachmentDesc.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+	// Set stencilLoadOp function to load op don't care
+	depthAttachmentDesc.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+	// Set store op function to store op don't care
+	depthAttachmentDesc.stencilStoreOp = VK_ATTACHMENT_STORE_OP_STORE;
+	// Set initial layout to undefined
+	depthAttachmentDesc.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+	// Set final layout to depth stencil attachment optimal
+	depthAttachmentDesc.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+	depthAttachment->SetAttachmentDesc(depthAttachmentDesc);
+
+
+
+
+	// Set up color attachments
+	auto colorAttachmentFormat = VK_FORMAT_R8G8B8A8_UNORM;
+
+	// albedo attachment
+	auto albedoAttachment = std::make_unique<Attachment>();
+	albedoAttachment->SetFormat(colorAttachmentFormat);
+	albedoAttachment->SetAttachmentType(Attachment::kAttachmentType_Color);
+
+
+	VkAttachmentDescription albedoAttachmentDesc{};
+	albedoAttachmentDesc.flags = 0;
+	albedoAttachmentDesc.format = colorAttachmentFormat;
+	albedoAttachmentDesc.samples = VK_SAMPLE_COUNT_1_BIT;
+	albedoAttachmentDesc.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+	albedoAttachmentDesc.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+	albedoAttachmentDesc.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+	albedoAttachmentDesc.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+	albedoAttachmentDesc.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+	albedoAttachmentDesc.finalLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+
+	albedoAttachment->SetAttachmentDesc(albedoAttachmentDesc);
+
+	// normal attachment
+	auto normalAttachment = std::make_unique<Attachment>();
+	normalAttachment->SetFormat(colorAttachmentFormat);
+	normalAttachment->SetAttachmentType(Attachment::kAttachmentType_Color);
+
+
+	VkAttachmentDescription normalAttachmentDesc{};
+	normalAttachmentDesc.flags = 0;
+	normalAttachmentDesc.format = colorAttachmentFormat;
+	normalAttachmentDesc.samples = VK_SAMPLE_COUNT_1_BIT;
+	normalAttachmentDesc.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+	normalAttachmentDesc.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+	normalAttachmentDesc.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+	normalAttachmentDesc.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+	normalAttachmentDesc.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+	normalAttachmentDesc.finalLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+	
+	normalAttachment->SetAttachmentDesc(normalAttachmentDesc);
+
+	// posiition attachment
+	auto posiitionAttachment = std::make_unique<Attachment>();
+	posiitionAttachment->SetFormat(colorAttachmentFormat);
+	posiitionAttachment->SetAttachmentType(Attachment::kAttachmentType_Color);
+
+
+	VkAttachmentDescription posiitionAttachmentDesc{};
+	posiitionAttachmentDesc.flags = 0;
+	posiitionAttachmentDesc.format = colorAttachmentFormat;
+	posiitionAttachmentDesc.samples = VK_SAMPLE_COUNT_1_BIT;
+	posiitionAttachmentDesc.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+	posiitionAttachmentDesc.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+	posiitionAttachmentDesc.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+	posiitionAttachmentDesc.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+	posiitionAttachmentDesc.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+	posiitionAttachmentDesc.finalLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+
+	posiitionAttachment->SetAttachmentDesc(posiitionAttachmentDesc);
+
+
+	m_pRenderpass->AddAttachment(std::move(backBufferAttachment));
+	m_pRenderpass->AddAttachment(std::move(depthAttachment));
+	m_pRenderpass->AddAttachment(std::move(albedoAttachment));
+	m_pRenderpass->AddAttachment(std::move(normalAttachment));
+	m_pRenderpass->AddAttachment(std::move(posiitionAttachment));
+}
+
+void DDM3::DeferredRenderer2::SetupDepthPass()
+{
+	// Depth prepass depth buffer reference (read/write)
+	VkAttachmentReference depthAttachmentReference{};
+	depthAttachmentReference.attachment = kAttachment_DEPTH;
+	depthAttachmentReference.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+	std::unique_ptr<Subpass> depthPass;
+
+	depthPass->AddDepthRef(depthAttachmentReference);
+
+	m_pRenderpass->AddSubpass(std::move(depthPass));
+}
+
+void DDM3::DeferredRenderer2::SetupGeometryPass()
+{
+}
+
+void DDM3::DeferredRenderer2::SetupLightingPass()
+{
+}
+
+void DDM3::DeferredRenderer2::SetupDependencies()
+{
+}
+
 void DDM3::DeferredRenderer2::InitImgui()
 {
 	// Create ImGui vulkan init info
@@ -386,8 +542,8 @@ void DDM3::DeferredRenderer2::InitImgui()
 	// Create a single time command buffer
 	auto commandBuffer{ VulkanObject::GetInstance().BeginSingleTimeCommands() };
 	// Initialize ImGui
-	m_pImGuiWrapper = std::make_unique<DDM3::ImGuiWrapper>(init_info,
-		VulkanObject::GetInstance().GetDevice(), static_cast<uint32_t>(VulkanObject::GetInstance().GetMaxFrames()), m_pGeometryRenderpass->GetRenderpass(), commandBuffer);
+	//m_pImGuiWrapper = std::make_unique<DDM3::ImGuiWrapper>(init_info,
+	//	VulkanObject::GetInstance().GetDevice(), static_cast<uint32_t>(VulkanObject::GetInstance().GetMaxFrames()), m_pGeometryRenderpass->GetRenderpass(), commandBuffer);
 	// End the single time command buffer
 	VulkanObject::GetInstance().EndSingleTimeCommands(commandBuffer);
 }
@@ -424,39 +580,25 @@ void DDM3::DeferredRenderer2::RecordCommandBuffer(VkCommandBuffer& commandBuffer
 	scissor.extent = extent;
 	vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
-	VkRenderPassBeginInfo renderPassInfo{};
-	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-	renderPassInfo.renderPass = m_MasterRenderpass;
-	renderPassInfo.framebuffer = m_pSwapchainWrapper->GetFrameBuffer(imageIndex, m_pDepthRenderpass.get());
-
-	renderPassInfo.renderArea.offset = { 0, 0 };
-	renderPassInfo.renderArea.extent = extent;
-
-	const int clearAmount = 3;
-
-	std::vector<VkClearValue> clearValues(clearAmount);
-
-	clearValues[0] = {};
-	clearValues[1].depthStencil = { 1.0f, 0 };
-	clearValues[2] = { 0,0,1 };
-
-	renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
-	renderPassInfo.pClearValues = clearValues.data();
-
-	vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+	
+	m_pRenderpass->BeginRenderPass(commandBuffer, m_pSwapchainWrapper->GetFrameBuffer(imageIndex, m_pRenderpass.get()), extent);
 
 
+	SceneManager::GetInstance().RenderDepth();
 
 
 	vkCmdNextSubpass(commandBuffer, VK_SUBPASS_CONTENTS_INLINE);
 
-
+	//SceneManager::GetInstance().Render();
 
 
 	vkCmdNextSubpass(commandBuffer, VK_SUBPASS_CONTENTS_INLINE);
 
+	//vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
+	//	VulkanObject::GetInstance().GetPipeline(ConfigManager::GetInstance().GetString("DeferredLightingPipelineName"))->GetPipeline());
 
 
+	//vkCmdDraw(commandBuffer, 3, 1, 0, 0);
 
 	vkCmdEndRenderPass(commandBuffer);
 	//m_pDepthRenderpass->BeginRenderPass(commandBuffer, m_pSwapchainWrapper->GetFrameBuffer(imageIndex, m_pDepthRenderpass.get()), extent);
@@ -548,7 +690,7 @@ void DDM3::DeferredRenderer2::RecreateSwapChain()
 	auto commandBuffer{ VulkanObject::GetInstance().BeginSingleTimeCommands() };
 
 
-	std::vector<RenderpassWrapper*> renderpasses{ m_pDepthRenderpass.get(), m_pGeometryRenderpass.get(), m_pLightingRenderpass.get()};
+	std::vector<RenderpassWrapper*> renderpasses{ m_pRenderpass.get()};
 
 	// Recreate the swapchain
 	m_pSwapchainWrapper->RecreateSwapChain(DDM3::VulkanObject::GetInstance().GetGPUObject(), DDM3::VulkanObject::GetInstance().GetSurface(),
@@ -557,8 +699,6 @@ void DDM3::DeferredRenderer2::RecreateSwapChain()
 
 	// End single time command
 	VulkanObject::GetInstance().EndSingleTimeCommands(commandBuffer);
-
-	CreateDescriptorSets();
 }
 
 void DDM3::DeferredRenderer2::CreateDescriptorSetLayout()
@@ -637,153 +777,4 @@ void DDM3::DeferredRenderer2::CreateDescriptorPool()
 	if (vkCreateDescriptorPool(vulkanObject.GetDevice(), &poolInfo, nullptr, &m_DescriptorPool) != VK_SUCCESS) {
 		throw std::runtime_error("failed to create descriptor pool!");
 	}
-}
-
-void DDM3::DeferredRenderer2::CreateDescriptorSets()
-{
-	m_TextureDescriptorObjects.clear();
-
-	if (m_DescriptorSets.size() > 0)
-	{
-		vkFreeDescriptorSets(VulkanObject::GetInstance().GetDevice(), m_DescriptorPool, m_DescriptorSets.size(), m_DescriptorSets.data());
-	}
-
-	m_DescriptorSets.clear();
-	m_DescriptorSets.resize(VulkanObject::GetInstance().GetMaxFrames());
-
-	auto& attachmentList = m_pGeometryRenderpass->GetAttachmentList();
-
-	for (auto& attachment : attachmentList)
-	{
-		auto descriptorObject = std::make_unique<TextureDescriptorObject>();
-		descriptorObject->AddTextures(*attachment->GetTexture());
-		descriptorObject->SetCleanupTextures(false);
-
-		m_TextureDescriptorObjects.push_back(std::move(descriptorObject));
-	}
-
-
-	// Get a reference to the renderer for later use
-	auto& renderer{ VulkanObject::GetInstance() };
-
-	// Get the amount of frames in flight
-	auto maxFrames = renderer.GetMaxFrames();
-
-	// Create the allocation info for the descriptorsets
-	VkDescriptorSetAllocateInfo allocInfo{};
-	// Set type to descriptor set allocate info
-	allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-	// Give the right descriptorpool
-	allocInfo.descriptorPool = m_DescriptorPool;
-	// Give the amount of descriptorsets to be allocated
-	allocInfo.descriptorSetCount = static_cast<uint32_t>(maxFrames);
-	// Create vector of descriptorsets the size of maxFrames and fill with layout
-	std::vector<VkDescriptorSetLayout> layouts(maxFrames, m_DescriptorSetLayout);
-	allocInfo.pSetLayouts = layouts.data();
-
-
-	// Allocate descriptorsets, if not succeeded, throw runtime error
-	if (vkAllocateDescriptorSets(renderer.GetDevice(), &allocInfo, m_DescriptorSets.data()) != VK_SUCCESS)
-	{
-		throw std::runtime_error("failed to allocate descriptor sets!");
-	}
-
-	UpdateDescriptorSets();
-}
-
-void DDM3::DeferredRenderer2::SetupDescriptorSets()
-{
-	CreateDescriptorSetLayout();
-
-	CreateDescriptorPool();
-
-	CreateDescriptorSets();
-}
-
-void DDM3::DeferredRenderer2::UpdateDescriptorSets()
-{
-	std::vector<VkWriteDescriptorSet> descriptorWrites{};
-
-	// Loop trough all the descriptor sets
-	for (int i{}; i < static_cast<int>(m_DescriptorSets.size()); i++)
-	{
-		// Create a vector of descriptor writes
-		std::vector<VkWriteDescriptorSet> descriptorWrites{};
-
-		// Initialize current binding with 0
-		int binding{};
-
-		// Loop trough all descriptor objects and add the descriptor writes
-		for (auto& descriptorObject : m_TextureDescriptorObjects)
-		{
-			descriptorObject->AddDescriptorWrite(m_DescriptorSets[i], descriptorWrites, binding, 1, i);
-		}
-
-
-		//vkDeviceWaitIdle(VulkanRenderer::GetInstance().GetDevice());
-		// Update descriptorsets
-		vkUpdateDescriptorSets(VulkanObject::GetInstance().GetDevice(), static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
-	}
-}
-
-void DDM3::DeferredRenderer2::BindDescriptorSets(VkCommandBuffer commandBuffer)
-{
-	auto& vulkanObject = VulkanObject::GetInstance();
-	
-	auto frame = vulkanObject.GetCurrentFrame();
-
-	// Bind descriptor sets
-	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_PipelineLayout, 0, 1, &m_DescriptorSets[frame], 0, nullptr);
-}
-
-void DDM3::DeferredRenderer2::TransitionImages(VkCommandBuffer commandBuffer, VkImageLayout oldLayout, VkImageLayout newLayout)
-{
-	std::vector<VkImageMemoryBarrier> barriers;
-	VkPipelineStageFlags srcStage{};
-	VkPipelineStageFlags dstStage{};
-
-	for (auto& attachment : m_pGeometryRenderpass->GetAttachmentList()) {
-		VkImageMemoryBarrier barrier{};
-		barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-		barrier.oldLayout = oldLayout;
-		barrier.newLayout = newLayout;
-		barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-		barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-		barrier.image = attachment->GetTexture()->image;
-		barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-		barrier.subresourceRange.baseMipLevel = 0;
-		barrier.subresourceRange.levelCount = 1;
-		barrier.subresourceRange.baseArrayLayer = 0;
-		barrier.subresourceRange.layerCount = 1;
-
-		if (oldLayout == VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL &&
-			newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) {
-			barrier.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-			barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-			srcStage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-			dstStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-		}
-		else if (oldLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL &&
-			newLayout == VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL) {
-			barrier.srcAccessMask = VK_ACCESS_SHADER_READ_BIT;
-			barrier.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-			srcStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-			dstStage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-		}
-		else {
-			throw std::runtime_error("Unsupported layout transition!");
-		}
-
-		barriers.push_back(barrier);
-	}
-
-	vkCmdPipelineBarrier(
-		commandBuffer,
-		srcStage,
-		dstStage,
-		0,
-		0, nullptr,
-		0, nullptr,
-		static_cast<uint32_t>(barriers.size()), barriers.data()
-	);
 }
