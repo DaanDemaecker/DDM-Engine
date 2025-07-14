@@ -11,6 +11,7 @@
 #include "Includes/VulkanIncludes.h"
 #include "Vulkan/VulkanManagers/SyncObjectManager.h"
 #include "DataTypes/Structs.h"
+#include "DataTypes/DescriptorObjects/InputAttachmentDescriptorObject.h"
 
 // Standard library includes
 #include <memory>
@@ -19,11 +20,11 @@
 namespace DDM3
 {
 	// Class forward declarations
+	class PipelineWrapper;
 	class SwapchainWrapper;
 	class RenderpassWrapper;
 	class ImGuiWrapper;
 	class SyncObjectManager;
-	class TextureDescriptorObject;
 
 	class DeferredRenderer2 final : public Renderer
 	{
@@ -46,21 +47,21 @@ namespace DDM3
 		virtual RenderpassWrapper* GetDefaultRenderpass() override;
 
 		virtual void AddDefaultPipelines();
-	private:
-		enum
-		{
-			kAttachment_BACK = 0,
-			kAttachment_DEPTH = 1,
-			kAtttachment_GBUFFER_ALBEDO = 2,
-			kAtttachment_GBUFFER_NORMAL = 3,
-			kAtttachment_GBUFFER_POSITION = 4
-		};
 
 		enum
 		{
 			kSubpass_DEPTH = 0,
 			kSubpass_GBUFFER = 1,
 			kSubpass_LIGHTING = 2
+		};
+	private:
+		enum
+		{
+			kAttachment_BACK = 0,
+			kAttachment_DEPTH = 1,
+			kAttachment_GBUFFER_ALBEDO = 2,
+			kAttachment_GBUFFER_NORMAL = 3,
+			kAttachment_GBUFFER_POSITION = 4
 		};
 
 		void CreateMasterRenderpass();
@@ -82,6 +83,8 @@ namespace DDM3
 
 		void SetupDependencies();
 
+		void SetupDescriptorObjects();
+
 
 
 		// Pointer to the swapchain wrapper
@@ -93,10 +96,11 @@ namespace DDM3
 		// Pointer to the ImGui wrapper
 		std::unique_ptr<ImGuiWrapper> m_pImGuiWrapper{};
 
-		std::vector<std::unique_ptr<TextureDescriptorObject>> m_TextureDescriptorObjects{};
+		std::vector<std::unique_ptr<InputAttachmentDescriptorObject>> m_pInputAttachmentList{};
 
-		// Descriptor sets
-		VkPipelineLayout m_PipelineLayout{};
+
+		
+		PipelineWrapper* m_pLightingPipeline{};
 
 		std::vector<VkDescriptorSet> m_DescriptorSets{};
 
@@ -104,7 +108,6 @@ namespace DDM3
 
 		VkDescriptorPool m_DescriptorPool{};
 
-		std::shared_ptr<Texture> m_pDepthTexture{};
 
 
 		void InitImgui();
@@ -120,6 +123,8 @@ namespace DDM3
 		void CreateDescriptorSetLayout();
 
 		void CreateDescriptorPool();
+
+		void CreateDescriptorSets();
 	};
 }
 

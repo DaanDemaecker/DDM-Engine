@@ -17,7 +17,10 @@ namespace DDM3
 	class Attachment final
 	{
 	public:
-		Attachment();
+		Attachment(int swapchainImagesAmount);
+
+		Attachment() = delete;
+
 		~Attachment();
 
 		Attachment(Attachment&) = delete;
@@ -28,17 +31,21 @@ namespace DDM3
 
 		void SetAttachmentDesc(VkAttachmentDescription desc) { m_AttachmentDesc = desc; }
 
-		std::shared_ptr<Texture> GetTextureSharedPtr() const { return m_Texture; }
+		std::shared_ptr<Texture> GetTextureSharedPtr(int swapchainIndex) const { return m_Textures[swapchainIndex]; }
 
-		const Texture* GetTexture() const { return m_Texture.get(); };
+		const Texture* GetTexture(int swapchainIndex) const { return m_Textures[swapchainIndex].get(); };
 
-		void SetTexture(std::shared_ptr<Texture> texture) { m_Texture = texture; m_ResetOnSetup = false; }
+		void SetTexture(std::shared_ptr<Texture> texture, int index) { m_Textures[index] = texture; m_ResetOnSetup = false; }
+
+		void SetTexture(int index, VkImage image, VkImageView imageView);
 
 		VkAttachmentDescription& GetAttachmentDesc() { return m_AttachmentDesc; }
 
+		void SetIsInput(bool isInput) { m_IsInput = isInput; }
+
 		void SetFormat(VkFormat format) { m_Format = format; }
 
-		void SetupImage(VkExtent2D extent, VkImageView swapchainImage);
+		void SetupImage(int index, VkExtent2D extent, VkImageView swapchainImage);
 
 		void SetAttachmentType(int type) { m_Type = type; }
 
@@ -50,6 +57,9 @@ namespace DDM3
 		void SetClearDepthStencilValue(VkClearDepthStencilValue value) { m_ClearDepthstencilValue = value; }
 		VkClearDepthStencilValue GetClearDepthStencilValue() const { return m_ClearDepthstencilValue; }
 
+		void SetIsSwapchainImage(bool isSwapchainImage) { m_IsSwapchainImage = isSwapchainImage; }
+		bool IsSwapchainImage() const { return m_IsSwapchainImage; }
+
 		enum
 		{
 			kAttachmentType_Color = 0,
@@ -57,11 +67,15 @@ namespace DDM3
 			kAttachmentType_DepthStencil = 2,
 		};
 	private:
+		bool m_IsSwapchainImage{ false };
+
+		bool m_IsInput{ false };
+
 		int m_Type = kAttachmentType_Color;
 
 		VkAttachmentDescription m_AttachmentDesc{};
 
-		std::shared_ptr<Texture> m_Texture{};
+		std::vector<std::shared_ptr<Texture>> m_Textures{};
 
 		VkFormat m_Format{};
 
@@ -73,11 +87,11 @@ namespace DDM3
 		void Cleanup();
 
 
-		void SetupColorTexture(VkExtent2D extent);
+		void SetupColorTexture(int index, VkExtent2D extent);
 
-		void SetupColorResolveTexture(VkExtent2D extent, VkImageView swapchainImage);
+		void SetupDepthImage(int index, VkExtent2D extent);
 
-		void SetupDepthImage(VkExtent2D extent);
+		void CleanupImage(int index);
 	};
 }
 

@@ -29,7 +29,7 @@ namespace DDM3
 
 		VkFramebuffer GetFrameBuffer() const { return m_FrameBuffer; }
 
-		void CreateFrameBuffer(RenderpassWrapper* renderpass, VkExtent2D extent, VkImageView swapchainImage);
+		void CreateFrameBuffer(int index, RenderpassWrapper* renderpass, VkExtent2D extent, VkImageView swapchainImage);
 
 	public:
 		VkFramebuffer m_FrameBuffer{};

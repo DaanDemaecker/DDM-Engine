@@ -20,7 +20,7 @@ DDM3::FrameBuffer::~FrameBuffer()
 	vkDestroyFramebuffer(VulkanObject::GetInstance().GetDevice(), m_FrameBuffer, nullptr);
 }
 
-void DDM3::FrameBuffer::CreateFrameBuffer(RenderpassWrapper* renderpass, VkExtent2D extent, VkImageView swapchainImage)
+void DDM3::FrameBuffer::CreateFrameBuffer(int index, RenderpassWrapper* renderpass, VkExtent2D extent, VkImageView swapchainImage)
 {
 	if (m_FrameBuffer != VK_NULL_HANDLE)
 	{
@@ -35,15 +35,7 @@ void DDM3::FrameBuffer::CreateFrameBuffer(RenderpassWrapper* renderpass, VkExten
 
 	for (auto& attachment : attachmentList)
 	{
-		if (attachment->GetAttachmentType() != Attachment::kAttachmentType_ColorResolve)
-		{
-			attachments.push_back(attachment->GetTexture()->imageView);
-		}
-	}
-
-	if (swapchainImage != VK_NULL_HANDLE)
-	{
-		attachments.push_back(swapchainImage);
+			attachments.push_back(attachment->GetTexture(index)->imageView);
 	}
 
 

@@ -14,10 +14,10 @@
 
 DDM3::PipelineWrapper::PipelineWrapper(VkDevice device, VkRenderPass renderPass,
 	VkSampleCountFlagBits sampleCount,
-	std::initializer_list<const std::string>& filePaths, bool hasDepthStencil, bool writesToDepth)
+	std::initializer_list<const std::string>& filePaths, bool hasDepthStencil, bool writesToDepth, int subpass)
 {
 	// Create the pipeline
-	CreatePipeline(device, renderPass, sampleCount, filePaths, hasDepthStencil, writesToDepth);
+	CreatePipeline(device, renderPass, sampleCount, filePaths, hasDepthStencil, writesToDepth, subpass);
 }
 
 DDM3::PipelineWrapper::~PipelineWrapper()
@@ -60,7 +60,7 @@ DDM3::DescriptorPoolWrapper* DDM3::PipelineWrapper::GetDescriptorPool()
 
 void DDM3::PipelineWrapper::CreatePipeline(VkDevice device, VkRenderPass renderPass,
 	VkSampleCountFlagBits sampleCount,
-	std::initializer_list<const std::string>& filePaths, bool hasDepthStencil, bool writesToDepth)
+	std::initializer_list<const std::string>& filePaths, bool hasDepthStencil, bool writesToDepth, int subpass)
 {
 	int attachmentCount = 0;
 
@@ -215,7 +215,7 @@ void DDM3::PipelineWrapper::CreatePipeline(VkDevice device, VkRenderPass renderP
 	// Give renderpass
 	pipelineInfo.renderPass = renderPass;
 	// Set subpass to 0
-	pipelineInfo.subpass = 0;
+	pipelineInfo.subpass = subpass;
 	// Set basepipeline to null handle
 	pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
 

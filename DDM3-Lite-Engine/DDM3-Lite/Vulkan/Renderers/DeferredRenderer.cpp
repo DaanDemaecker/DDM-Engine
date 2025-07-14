@@ -33,6 +33,8 @@ DDM3::DeferredRenderer::DeferredRenderer()
 	// Initialize the swapchain
 	m_pSwapchainWrapper = std::make_unique<SwapchainWrapper>(pGPUObject, surface, VulkanObject::GetInstance().GetImageManager(), VulkanObject::GetInstance().GetMsaaSamples());
 
+	m_pDepthTextures.resize(m_pSwapchainWrapper->GetSwapchainImageAmount());
+
 	CreateDepthRenderpass();
 
 	CreateGeometryRenderpass();
@@ -172,7 +174,7 @@ void DDM3::DeferredRenderer::AddDefaultPipelines()
 	VulkanObject::GetInstance().AddGraphicsPipeline(defaultPipelineName, {
 		configManager.GetString("DefaultDeferredVert"),
 		configManager.GetString("DefaultDeferredFrag") },
-		true, false, m_pGeometryRenderpass.get());
+		true, false, 0, m_pGeometryRenderpass.get());
 
 	// Initialize default pipeline name 
 	auto lightingPipelineName = configManager.GetString("DeferredLightingPipelineName");
@@ -181,13 +183,13 @@ void DDM3::DeferredRenderer::AddDefaultPipelines()
 	VulkanObject::GetInstance().AddGraphicsPipeline(lightingPipelineName, {
 		configManager.GetString("DeferredLightingVert"),
 		configManager.GetString("DeferredLightingFrag") },
-		false, true, m_pLightingRenderpass.get());
+		false, true, 0, m_pLightingRenderpass.get());
 
 	m_PipelineLayout = VulkanObject::GetInstance().GetPipeline(lightingPipelineName)->GetPipelineLayout();
 
 	VulkanObject::GetInstance().AddGraphicsPipeline("Depth", {
 		"Resources/DefaultResources/Depth.Vert.spv"},
-		true, true, m_pDepthRenderpass.get());
+		true, true, 0, m_pDepthRenderpass.get());
 }
 
 void DDM3::DeferredRenderer::InitImgui()
@@ -272,7 +274,7 @@ void DDM3::DeferredRenderer::RecordCommandBuffer(VkCommandBuffer& commandBuffer,
 	barrier.newLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 	barrier.srcAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
 	barrier.dstAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT;
-	barrier.image = m_pDepthTexture->image; // Your actual VkImage
+	barrier.image = m_pDepthTextures[imageIndex]->image; // Your actual VkImage
 	barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
 	barrier.subresourceRange.baseMipLevel = 0;
 	barrier.subresourceRange.levelCount = 1;
@@ -362,6 +364,8 @@ void DDM3::DeferredRenderer::RecreateSwapChain()
 
 void DDM3::DeferredRenderer::CreateDepthRenderpass()
 {
+	int swapchainImageAmount = m_pSwapchainWrapper->GetSwapchainImageAmount();
+
 	m_pDepthRenderpass = std::make_unique<RenderpassWrapper>();
 
 	// No multisampling needed for depth attachment
@@ -370,7 +374,7 @@ void DDM3::DeferredRenderer::CreateDepthRenderpass()
 
 	// Set up Depth attachment
 	auto depthFormat = VulkanUtils::FindDepthFormat(VulkanObject::GetInstance().GetPhysicalDevice());
-	auto depthAttachment = std::make_unique<Attachment>();
+	auto depthAttachment = std::make_unique<Attachment>(swapchainImageAmount);
 	depthAttachment->SetAttachmentType(Attachment::kAttachmentType_DepthStencil);
 	depthAttachment->SetFormat(depthFormat);
 
@@ -400,7 +404,11 @@ void DDM3::DeferredRenderer::CreateDepthRenderpass()
 
 	depthAttachment->SetAttachmentDesc(depthAttachmentDesc);
 
-	m_pDepthTexture = depthAttachment->GetTextureSharedPtr();
+
+	for (int i{}; i < swapchainImageAmount; ++i)
+	{
+		m_pDepthTextures[i] = depthAttachment->GetTextureSharedPtr(0);
+	}
 
 	m_pDepthRenderpass->AddAttachment(std::move(depthAttachment));
 
@@ -421,13 +429,15 @@ void DDM3::DeferredRenderer::CreateDepthRenderpass()
 
 void DDM3::DeferredRenderer::CreateGeometryRenderpass()
 {
+	int swapchainImageAmount = m_pSwapchainWrapper->GetSwapchainImageAmount();
+
 	m_pGeometryRenderpass = std::make_unique<RenderpassWrapper>();
 
 	std::unique_ptr<Subpass> subpass{ std::make_unique<Subpass>() };
 
 	m_pGeometryRenderpass->SetSampleCount(VK_SAMPLE_COUNT_1_BIT);
 
-	auto albedoAttachment = std::make_unique<Attachment>();
+	auto albedoAttachment = std::make_unique<Attachment>(swapchainImageAmount);
 
 	auto albedoFormat = VK_FORMAT_R8G8B8A8_UNORM;
 	
@@ -465,7 +475,7 @@ void DDM3::DeferredRenderer::CreateGeometryRenderpass()
 	m_pGeometryRenderpass->AddAttachment(std::move(albedoAttachment));
 
 
-	auto normalAttachment = std::make_unique<Attachment>();
+	auto normalAttachment = std::make_unique<Attachment>(swapchainImageAmount);
 
 	auto normalFormat = VK_FORMAT_R16G16B16A16_SFLOAT;
 
@@ -502,7 +512,7 @@ void DDM3::DeferredRenderer::CreateGeometryRenderpass()
 	m_pGeometryRenderpass->AddAttachment(std::move(normalAttachment));
 
 
-	auto positionAttachment = std::make_unique<Attachment>();
+	auto positionAttachment = std::make_unique<Attachment>(swapchainImageAmount);
 
 	positionAttachment->SetFormat(VK_FORMAT_R16G16B16A16_SFLOAT);
 	
@@ -537,7 +547,7 @@ void DDM3::DeferredRenderer::CreateGeometryRenderpass()
 	m_pGeometryRenderpass->AddAttachment(std::move(positionAttachment));
 
 
-	auto depthAttachment = std::make_unique<Attachment>();
+	auto depthAttachment = std::make_unique<Attachment>(swapchainImageAmount);
 
 	depthAttachment->SetAttachmentType(Attachment::kAttachmentType_DepthStencil);
 
@@ -569,7 +579,10 @@ void DDM3::DeferredRenderer::CreateGeometryRenderpass()
 
 	depthAttachment->SetAttachmentDesc(depthAttachmentDesc);
 
-	depthAttachment->SetTexture(m_pDepthTexture);
+	for (int i{}; i < swapchainImageAmount; ++i)
+	{
+		depthAttachment->SetTexture(m_pDepthTextures[i], i);
+	}
 
 	m_pGeometryRenderpass->AddAttachment(std::move(depthAttachment));
 
@@ -584,6 +597,8 @@ void DDM3::DeferredRenderer::CreateGeometryRenderpass()
 
 void DDM3::DeferredRenderer::CreateLightingRendepass(VkFormat swapchainFormat)
 {
+	int swapchainImageAmount = m_pSwapchainWrapper->GetSwapchainImageAmount();
+
 	m_pLightingRenderpass = std::make_unique<RenderpassWrapper>();
 
 	auto& vulkanObject = VulkanObject::GetInstance();
@@ -593,9 +608,8 @@ void DDM3::DeferredRenderer::CreateLightingRendepass(VkFormat swapchainFormat)
 
 	m_pLightingRenderpass->SetSampleCount(msaaSamples);
 
-	std::unique_ptr<Attachment> colorAttachment = std::make_unique<Attachment>();
-
-
+	std::unique_ptr<Attachment> colorAttachment = std::make_unique<Attachment>(swapchainImageAmount);
+	//colorAttachment->SetIsSwapchainImage(true);
 	colorAttachment->SetFormat(swapchainFormat);
 	colorAttachment->SetClearColorValue({ 0.388f, 0.588f, 0.929f, 1.0f });
 
@@ -626,7 +640,7 @@ void DDM3::DeferredRenderer::CreateLightingRendepass(VkFormat swapchainFormat)
 	m_pLightingRenderpass->AddAttachment(std::move(colorAttachment));
 
 
-	auto depthAttachment = std::make_unique<Attachment>();
+	auto depthAttachment = std::make_unique<Attachment>(swapchainImageAmount);
 	depthAttachment->SetAttachmentType(Attachment::kAttachmentType_DepthStencil);
 	depthAttachment->SetFormat(VulkanUtils::FindDepthFormat(vulkanObject.GetPhysicalDevice()));
 
@@ -660,9 +674,10 @@ void DDM3::DeferredRenderer::CreateLightingRendepass(VkFormat swapchainFormat)
 	m_pLightingRenderpass->AddAttachment(std::move(depthAttachment));
 
 
-	auto colorResolveAttachment = std::make_unique<Attachment>();
+	auto colorResolveAttachment = std::make_unique<Attachment>(swapchainImageAmount);
 
 	colorResolveAttachment->SetAttachmentType(Attachment::kAttachmentType_ColorResolve);
+	colorResolveAttachment->SetIsSwapchainImage(true);
 	colorResolveAttachment->SetFormat(swapchainFormat);
 
 	// Create attachment description
@@ -810,7 +825,7 @@ void DDM3::DeferredRenderer::CreateDescriptorSets()
 			continue;
 
 		auto descriptorObject = std::make_unique<TextureDescriptorObject>();
-		descriptorObject->AddTextures(*attachment->GetTexture());
+		descriptorObject->AddTextures(*attachment->GetTexture(0));
 		descriptorObject->SetCleanupTextures(false);
 
 		m_TextureDescriptorObjects.push_back(std::move(descriptorObject));
@@ -906,7 +921,7 @@ void DDM3::DeferredRenderer::TransitionImages(VkCommandBuffer commandBuffer, VkI
 		barrier.newLayout = newLayout;
 		barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
 		barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-		barrier.image = attachment->GetTexture()->image;
+		barrier.image = attachment->GetTexture(0)->image;
 		barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 		barrier.subresourceRange.baseMipLevel = 0;
 		barrier.subresourceRange.levelCount = 1;

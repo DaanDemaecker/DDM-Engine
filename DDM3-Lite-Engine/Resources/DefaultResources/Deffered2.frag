@@ -14,6 +14,8 @@ layout(location = 4) in vec3 fragTangent;
 layout(location = 5) in vec4 fragpos;
 
 layout(location = 0) out vec4 outColor;
+layout(location = 1) out vec4 outNormal;
+layout(location = 2) out vec4 outPos;
 
 
 void main()
@@ -27,4 +29,7 @@ void main()
     {
         discard;
     } 
+    
+	outNormal = vec4(fragNormal, 1);
+	outPos = vec4(fragpos);
 }

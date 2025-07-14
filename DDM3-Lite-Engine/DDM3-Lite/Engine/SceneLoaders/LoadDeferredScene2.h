@@ -25,6 +25,8 @@
 #include "Components/MaterialSwitcher/MaterialSwitcher.h"
 #include "Components/InfoComponent.h"
 
+#include "Vulkan/Renderers/DeferredRenderer2.h"
+
 namespace LoadDeferredScene2
 {
 	void SetupPipelines();
@@ -89,7 +91,7 @@ namespace LoadDeferredScene2
 	{
 		auto& vulkanObject{ DDM3::VulkanObject::GetInstance() };
 
-		vulkanObject.AddGraphicsPipeline("DeferredDiffuse", { "Resources/DefaultResources/Deffered2.Vert.spv", "Resources/Shaders/DefferedDiffuse2.frag.spv" }, true, false);
+		vulkanObject.AddGraphicsPipeline("DeferredDiffuse", { "Resources/DefaultResources/Deffered2.Vert.spv", "Resources/Shaders/DefferedDiffuse.frag.spv" }, true, false, DDM3::DeferredRenderer2::kSubpass_GBUFFER);
 	}
 
 	void SetupVehicle(DDM3::Scene* scene)

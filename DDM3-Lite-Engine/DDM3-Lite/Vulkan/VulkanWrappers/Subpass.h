@@ -29,11 +29,14 @@ namespace DDM3
 
 		VkSubpassDescription GetDescription();
 
+		void AddInputReference(VkAttachmentReference reference);
 		void AddReference(VkAttachmentReference reference);
 		void AddDepthRef(VkAttachmentReference reference);
 		void AddResolveRef(VkAttachmentReference reference);
 	private:
 		VkSubpassDescription m_Description{};
+
+		std::vector<VkAttachmentReference> m_InputAttachmentRefs{};
 
 		std::vector<VkAttachmentReference> m_AttachmentReferences{};
 

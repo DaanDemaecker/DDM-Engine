@@ -96,7 +96,7 @@ namespace DDM3
 
 		VkDescriptorPool m_DescriptorPool{};
 
-		std::shared_ptr<Texture> m_pDepthTexture{};
+		std::vector<std::shared_ptr<Texture>> m_pDepthTextures{};
 
 
 		void InitImgui();

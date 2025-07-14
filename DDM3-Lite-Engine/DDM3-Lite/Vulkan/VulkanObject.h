@@ -56,7 +56,7 @@ namespace DDM3
          //     filePaths: a list of shader file names for this pipeline
          //     hasDepthStencil: boolean that indicates if this pipeline needs a depth stencil, true by default
         void AddGraphicsPipeline(const std::string& pipelineName, std::initializer_list<const std::string>&& filePaths,
-            bool hasDepthStencil = true, bool writesToDepth = true, RenderpassWrapper* renderpass = nullptr);
+            bool hasDepthStencil = true, bool writesToDepth = true, int subpass = 0, RenderpassWrapper* renderpass = nullptr);
 
         //Public getters
         size_t GetMaxFrames() const { return m_MaxFramesInFlight; }

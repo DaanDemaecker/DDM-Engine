@@ -44,18 +44,7 @@ namespace DDM3
 		//     filePaths: a list of shader file names for this pipeline
 		//     isSkybox: boolean that indicates if this pipeline needs a depth stencil
 		void AddGraphicsPipeline(VkDevice device, VkRenderPass renderPass, VkSampleCountFlagBits sampleCount,
-			const std::string& pipelineName, std::initializer_list<const std::string>& filePaths, bool hasDepthStencil = true, bool writesToDepth = true);
-
-		// Add a graphics pipeline to the vector
-		// Parameters:
-		//     device: the VkDevice handle
-		//     renderPass: the handle of the VkRenderpass that will be used
-		//     sampleCount: the max useable sample count
-		//     pipelineName: the name for this pipeLine
-		//     filePaths: a list of shader file names for this pipeline
-		//     isSkybox: boolean that indicates if this pipeline needs a depth stencil
-		void AddGraphicsPipeline(VkDevice device, VkRenderPass renderPass, VkSampleCountFlagBits sampleCount,
-			const std::string& pipelineName, std::initializer_list<const std::string>&& filePaths, bool hasDepthStencil = true,bool writesToDepth = true);
+			const std::string& pipelineName, std::initializer_list<const std::string>& filePaths, bool hasDepthStencil = true,bool writesToDepth = true, int subpass = 0);
 
 		// Add default pipeline to the vector
 		// Parameters:

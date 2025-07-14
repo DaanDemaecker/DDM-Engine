@@ -214,6 +214,8 @@ void DDM3::ForwardRenderer::RecreateSwapChain()
 
 void DDM3::ForwardRenderer::CreateRenderpass(VkFormat swapchainFormat)
 {
+	int swapchainImageAmount = m_pSwapchainWrapper->GetSwapchainImageAmount();
+
 	// Create renderpass
 	m_pRenderpass = std::make_unique<RenderpassWrapper>();
 
@@ -227,7 +229,7 @@ void DDM3::ForwardRenderer::CreateRenderpass(VkFormat swapchainFormat)
 
 	m_pRenderpass->SetSampleCount(msaaSamples);
 
-	std::unique_ptr<Attachment> colorAttachment = std::make_unique<Attachment>();
+	std::unique_ptr<Attachment> colorAttachment = std::make_unique<Attachment>(swapchainImageAmount);
 
 	colorAttachment->SetFormat(swapchainFormat);
 	colorAttachment->SetClearColorValue({ 0.388f, 0.588f, 0.929f, 1.0f });
@@ -253,7 +255,7 @@ void DDM3::ForwardRenderer::CreateRenderpass(VkFormat swapchainFormat)
 	m_pRenderpass->AddAttachment(std::move(colorAttachment));
 
 
-	auto depthAttachment = std::make_unique<Attachment>();
+	auto depthAttachment = std::make_unique<Attachment>(swapchainImageAmount);
 
 	auto depthFormat = VulkanUtils::FindDepthFormat(vulkanObject.GetPhysicalDevice());
 
@@ -287,7 +289,9 @@ void DDM3::ForwardRenderer::CreateRenderpass(VkFormat swapchainFormat)
 
 
 
-	auto colorResolveAttachment = std::make_unique<Attachment>();
+	auto colorResolveAttachment = std::make_unique<Attachment>(swapchainImageAmount);
+
+	colorResolveAttachment->SetIsSwapchainImage(true);
 
 	colorResolveAttachment->SetFormat(swapchainFormat);
 

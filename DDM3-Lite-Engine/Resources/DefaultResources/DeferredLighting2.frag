@@ -1,6 +1,8 @@
 #version 450
 
-layout(binding = 0) uniform sampler2D gAlbedo;
+layout (input_attachment_index = 0, set = 0, binding = 0) uniform subpassInput inputColor;
+layout (input_attachment_index = 1, set = 1, binding = 1) uniform subpassInput inputNormal;
+layout (input_attachment_index = 2, set = 2, binding = 2) uniform subpassInput inputPosition;
 
 layout(location = 0) out vec4 outColor;
 
@@ -9,5 +11,6 @@ layout(location = 0) in vec2 fragUV;
 
 void main()
 {
-    outColor = texture(gAlbedo, fragUV);
+    vec3 color = subpassLoad(inputColor).rgb;
+    outColor = vec4(color, 1);
 }

@@ -89,6 +89,10 @@ namespace DDM3
 		// Parameters:
 		//     index: the index of the frame buffer
 		VkFramebuffer GetFrameBuffer(uint32_t index, RenderpassWrapper* renderpass);
+
+		VkImage GetSwapchainImage(int index);
+
+		int GetSwapchainImageAmount();
 	private:
 		// Handle of the swapchaint
 		VkSwapchainKHR m_SwapChain = VK_NULL_HANDLE;
@@ -101,6 +105,8 @@ namespace DDM3
 
 		// Vector of swapchain imageviews
 		std::vector<VkImageView> m_SwapChainImageViews{};
+
+		uint32_t m_ImageAmount{};
 
 		// Format of the swapchain
 		VkFormat m_SwapChainImageFormat{};

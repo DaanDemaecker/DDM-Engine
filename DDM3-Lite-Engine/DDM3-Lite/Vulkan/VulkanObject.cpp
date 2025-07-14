@@ -75,13 +75,13 @@ DDM3::VulkanObject::~VulkanObject()
 	
 }
 
-void DDM3::VulkanObject::AddGraphicsPipeline(const std::string& pipelineName, std::initializer_list<const std::string>&& filePaths, bool hasDepthStencil, bool writesToDepth, RenderpassWrapper* renderpass)
+void DDM3::VulkanObject::AddGraphicsPipeline(const std::string& pipelineName, std::initializer_list<const std::string>&& filePaths, bool hasDepthStencil, bool writesToDepth, int subpass, RenderpassWrapper* renderpass)
 {
 	// Add a graphics pipeline trough the pipeline manager
 	m_pPipelineManager->AddGraphicsPipeline(m_pVulkanCore->GetDevice(), 
 		renderpass == nullptr ? m_pRenderer->GetDefaultRenderpass()->GetRenderpass() : renderpass->GetRenderpass(),
 		renderpass == nullptr ? m_pRenderer->GetDefaultRenderpass()->GetSampleCount() : renderpass->GetSampleCount(),
-		pipelineName, filePaths, hasDepthStencil, writesToDepth);
+		pipelineName, filePaths, hasDepthStencil, writesToDepth, subpass);
 }
 
 VkDevice DDM3::VulkanObject::GetDevice()

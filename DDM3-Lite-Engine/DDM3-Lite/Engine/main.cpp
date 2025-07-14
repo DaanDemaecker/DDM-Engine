@@ -14,11 +14,11 @@ int main()
 	// Create the engine object and run it with the load function
 	DDM3::DDM3Engine engine{};
 
-	//engine.Init<DDM3::DeferredRenderer2>();
-	//engine.Run(LoadDeferredScene2::LoadScene);
+	engine.Init<DDM3::DeferredRenderer2>();
+	engine.Run(LoadDeferredScene2::LoadScene);
 
-	engine.Init<DDM3::DeferredRenderer>();
-	engine.Run(LoadDeferredScene::LoadScene);
+	//engine.Init<DDM3::DeferredRenderer>();
+	//engine.Run(LoadDeferredScene::LoadScene);
 
 	
 	//engine.Init<DDM3::ForwardRenderer>();
