@@ -25,6 +25,11 @@ void DDM3::InputAttachmentDescriptorObject::AddImageView(VkImageView imageView, 
 	m_ImageInfos.push_back(imageInfo);
 }
 
+void DDM3::InputAttachmentDescriptorObject::ClearImageViews()
+{
+	m_ImageInfos.clear();
+}
+
 void DDM3::InputAttachmentDescriptorObject::AddDescriptorWrite(VkDescriptorSet descriptorSet, std::vector<VkWriteDescriptorSet>& descriptorWrites, int& binding, int amount, int index)
 {
 	for (int i{}; i < amount; i++)

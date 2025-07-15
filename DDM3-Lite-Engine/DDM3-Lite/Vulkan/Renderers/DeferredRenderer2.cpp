@@ -629,11 +629,12 @@ void DDM3::DeferredRenderer2::SetupDependencies()
 
 void DDM3::DeferredRenderer2::SetupDescriptorObjects()
 {
+	m_pInputAttachmentList.clear();
+
 	auto& attachments{ m_pRenderpass->GetAttachmentList() };
 
 	for (int i{ kAttachment_GBUFFER_ALBEDO }; i < attachments.size(); ++i)
 	{
-
 		auto descriptorObject{ std::make_unique<InputAttachmentDescriptorObject>() };
 
 		descriptorObject->AddImageView(attachments[i]->GetTexture(0)->imageView, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
@@ -800,6 +801,17 @@ void DDM3::DeferredRenderer2::RecreateSwapChain()
 
 	// End single time command
 	VulkanObject::GetInstance().EndSingleTimeCommands(commandBuffer);
+
+	ResetDescriptorSets();
+}
+
+void DDM3::DeferredRenderer2::ResetDescriptorSets()
+{
+	vkFreeDescriptorSets(VulkanObject::GetInstance().GetDevice(), m_DescriptorPool, m_DescriptorSets.size(), m_DescriptorSets.data());
+
+	SetupDescriptorObjects();
+
+	CreateDescriptorSets();
 }
 
 void DDM3::DeferredRenderer2::CreateDescriptorSetLayout()

@@ -118,6 +118,8 @@ namespace DDM3
 
 		void RecreateSwapChain();
 
+		void ResetDescriptorSets();
+
 
 
 		void CreateDescriptorSetLayout();

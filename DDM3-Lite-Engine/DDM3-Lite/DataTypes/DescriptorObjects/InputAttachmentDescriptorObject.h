@@ -19,6 +19,8 @@ namespace DDM3
 
 		void AddImageView(VkImageView imageView, VkImageLayout layout);
 
+		void ClearImageViews();
+
 		// Add the descriptor write objects to the list of descriptorWrites
 		// Parameters:
 		//     descriptorSet: the current descriptorset connected to this descriptor object
