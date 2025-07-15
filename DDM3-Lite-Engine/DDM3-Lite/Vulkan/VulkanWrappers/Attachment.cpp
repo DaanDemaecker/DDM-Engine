@@ -24,6 +24,8 @@ void DDM3::Attachment::SetTexture(int index, VkImage image, VkImageView imageVie
 {
 	m_Textures[index]->image = image;
 	m_Textures[index]->imageView = imageView;
+
+	m_ResetOnSetup = false;
 }
 
 void DDM3::Attachment::SetupImage(int index, VkExtent2D extent, VkImageView swapchainImage)
@@ -103,8 +105,11 @@ void DDM3::Attachment::CleanupImage(int index)
 
 void DDM3::Attachment::Cleanup()
 {
-	for (int i{}; i < m_Textures.size(); ++i)
+	if (m_ResetOnSetup)
 	{
-		CleanupImage(i);
+		for (int i{}; i < m_Textures.size(); ++i)
+		{
+			CleanupImage(i);
+		}
 	}
 }
