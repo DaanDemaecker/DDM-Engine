@@ -52,7 +52,8 @@ namespace DDM3
 		{
 			kSubpass_DEPTH = 0,
 			kSubpass_GBUFFER = 1,
-			kSubpass_LIGHTING = 2
+			kSubpass_LIGHTING = 2,
+			kSubpass_IMGUI = 3
 		};
 	private:
 		enum
@@ -63,10 +64,6 @@ namespace DDM3
 			kAttachment_GBUFFER_NORMAL = 3,
 			kAttachment_GBUFFER_POSITION = 4
 		};
-
-		void CreateMasterRenderpass();
-
-		VkRenderPass m_MasterRenderpass{};
 
 
 		std::unique_ptr<RenderpassWrapper> m_pRenderpass{};
@@ -80,6 +77,8 @@ namespace DDM3
 		void SetupGeometryPass();
 
 		void SetupLightingPass();
+
+		void SetupImGuiPass();
 
 		void SetupDependencies();
 

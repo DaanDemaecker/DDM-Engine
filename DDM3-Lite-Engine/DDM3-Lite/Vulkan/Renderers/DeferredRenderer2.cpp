@@ -55,7 +55,7 @@ DDM3::DeferredRenderer2::DeferredRenderer2()
 	// Initialize the sync objects
 	m_pSyncObjectManager = std::make_unique<SyncObjectManager>(pGPUObject->GetDevice(), VulkanObject::GetInstance().GetMaxFrames());
 
-	//InitImgui();
+	InitImgui();
 }
 
 DDM3::DeferredRenderer2::~DeferredRenderer2()
@@ -190,176 +190,6 @@ void DDM3::DeferredRenderer2::AddDefaultPipelines()
 	m_pLightingPipeline = VulkanObject::GetInstance().GetPipeline(lightingPipelineName);
 }
 
-void DDM3::DeferredRenderer2::CreateMasterRenderpass()
-{
-	const VkAttachmentDescription attachments[] =
-	{
-		// Back buffer
-		{
-			0,									// flags
-			VK_FORMAT_R8G8B8A8_UNORM,			// format
-			VK_SAMPLE_COUNT_1_BIT,				// samples
-			VK_ATTACHMENT_LOAD_OP_DONT_CARE,	// loadOp
-			VK_ATTACHMENT_STORE_OP_DONT_CARE,	// storeOp
-			VK_ATTACHMENT_LOAD_OP_DONT_CARE,	// stencilLoadOp
-			VK_ATTACHMENT_STORE_OP_DONT_CARE,	// stencilStoreOp
-			VK_IMAGE_LAYOUT_UNDEFINED,			// initialLayout
-			VK_IMAGE_LAYOUT_PRESENT_SRC_KHR		// finalLayout
-		},
-		// Depth buffer
-		{
-			0,									// flags
-			VK_FORMAT_D32_SFLOAT,				// format
-			VK_SAMPLE_COUNT_1_BIT,				// samples
-			VK_ATTACHMENT_LOAD_OP_DONT_CARE,	// loadOp
-			VK_ATTACHMENT_STORE_OP_DONT_CARE,	// storeOp
-			VK_ATTACHMENT_LOAD_OP_DONT_CARE,	// stencilLoadOp
-			VK_ATTACHMENT_STORE_OP_DONT_CARE,	// stencilStoreO
-			VK_IMAGE_LAYOUT_UNDEFINED,			// initialLayout
-			VK_IMAGE_LAYOUT_UNDEFINED			// finalLayout
-		},
-		// G-buffer 1
-		{
-			0,									// flags
-			VK_FORMAT_R8G8B8A8_UNORM,			// format
-			VK_SAMPLE_COUNT_1_BIT,				// samples
-			VK_ATTACHMENT_LOAD_OP_DONT_CARE,	// loadOp
-			VK_ATTACHMENT_STORE_OP_DONT_CARE,	// storeOp
-			VK_ATTACHMENT_LOAD_OP_DONT_CARE,	// stencilLoadOp
-			VK_ATTACHMENT_STORE_OP_DONT_CARE,	// stencilStoreOp
-			VK_IMAGE_LAYOUT_UNDEFINED,			// initialLayout
-			VK_IMAGE_LAYOUT_UNDEFINED			// finalLayout
-		}
-	};
-
-	// Depth prepass depth buffer reference (read/write)
-	const VkAttachmentReference depthAttachmentReference
-	{
-		kAttachment_DEPTH,									// attachment
-		VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL	// layout
-	};
-
-	// G-buffer attachment references (render)
-	const VkAttachmentReference gBufferOutputs[] =
-	{
-		{
-			kAttachment_GBUFFER_ALBEDO,					// attachment
-			VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL		// layout
-		}
-	};
-
-	// Lighting input attachment reference
-	const VkAttachmentReference gBufferReadRef[] =
-	{
-		/// Read from g-buffer
-		{
-			kAttachment_GBUFFER_ALBEDO,					// attachment
-			VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL		// layout
-		},
-		// Read depth as texture
-		{
-			kAttachment_DEPTH,								// attachment
-			VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL	// layout
-		}
-	};
-
-	// Final pass-back buffer render reference
-	const VkAttachmentReference backBufferRenderRef[] =
-	{
-		{
-			kAttachment_BACK,								// attachmnet
-			VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL		// layout
-		}
-	};
-
-
-	const VkSubpassDescription subpasses[] =
-	{
-		// Subpass 1 - depth prepass
-		{
-			0,									// flags
-			VK_PIPELINE_BIND_POINT_GRAPHICS,	// pipelineBindPoint
-			0,									// inputAttachmentCount
-			nullptr,							// pInputAttachments
-			0,									// colorAttachmentCount
-			nullptr,							// pColorAttachments
-			nullptr,							// pResollveAttachmentCount
-			&depthAttachmentReference,			// pDepthStencilAttachment
-			0,									// preserveAttachmentCount
-			nullptr								// pPreserveAttachments
-		},
-		// Subpass 2 - g-buffer generation
-		{
-			0,									// flags
-			VK_PIPELINE_BIND_POINT_GRAPHICS,	// pipelineBindPoint
-			0,									// inputAttachmentCount
-			nullptr,							// pInputAttachments
-			1,									// colorAttachmentCount
-			gBufferOutputs,						// pColorAttachments
-			nullptr,							// pResollveAttachmentCount
-			&depthAttachmentReference,			// pDepthStencilAttachment
-			0,									// preserveAttachmentCount
-			nullptr								// pPreserveAttachments
-		},
-		// Subppass 3 - lighting
-		{
-			0,									// flags
-			VK_PIPELINE_BIND_POINT_GRAPHICS,	// pipelineBindPoint
-			2,									// inputAttachmentCount
-			gBufferReadRef,						// pInputAttachments
-			1,									// colorAttachmentCount
-			backBufferRenderRef,				// pColorAttachments
-			nullptr,							// pResollveAttachmentCoun
-			nullptr,							// pDepthStencilAttachment
-			0,									// preserveAttachmentCount
-			nullptr								// pPreserveAttachments
-		}
-	};
-
-	const VkSubpassDependency dependencies[] =
-	{
-		// G-buffer pass depends on depth prepass
-		{
-			kSubpass_DEPTH,									// srcSubpass
-			kSubpass_GBUFFER,								// dstSubpass
-			VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,	// srcStageMask
-			VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,			// dstStageMask
-			VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,			// srcAccessMask
-			VK_ACCESS_SHADER_READ_BIT,						// dstAccessMask
-			VK_DEPENDENCY_BY_REGION_BIT						// dependencyFlags
-		},
-		// Lighting pass depends on g-buffer
-		{
-			kSubpass_GBUFFER,									// srcSubpass
-			kSubpass_GBUFFER,								// dstSubpass
-			VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,	// srcStageMask
-			VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,			// dstStageMask
-			VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,			// srcAccessMask
-			VK_ACCESS_SHADER_READ_BIT,						// dstAccessMask
-			VK_DEPENDENCY_BY_REGION_BIT						// dependencyFlags
-		}
-	};
-
-
-	const VkRenderPassCreateInfo renderPassCreateInfo =
-	{
-		VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
-		nullptr,
-		0,
-		3,
-		attachments,
-		3,
-		subpasses,
-		2,
-		dependencies
-	};
-
-	vkCreateRenderPass(VulkanObject::GetInstance().GetDevice(),
-		&renderPassCreateInfo,
-		nullptr,
-		&m_MasterRenderpass);
-}
-
 void DDM3::DeferredRenderer2::CreateRenderpass()
 {
 	m_pRenderpass = std::make_unique<RenderpassWrapper>();
@@ -371,6 +201,8 @@ void DDM3::DeferredRenderer2::CreateRenderpass()
 	SetupGeometryPass();
 
 	SetupLightingPass();
+
+	SetupImGuiPass();
 
 	SetupDependencies();
 
@@ -603,6 +435,24 @@ void DDM3::DeferredRenderer2::SetupLightingPass()
 	m_pRenderpass->AddSubpass(std::move(pLightingPass));
 }
 
+void DDM3::DeferredRenderer2::SetupImGuiPass()
+{
+	int swapchainImageAmount = m_pSwapchainWrapper->GetSwapchainImageAmount();
+
+	// Create subpass
+	std::unique_ptr<Subpass> imGuiSubpass{ std::make_unique<Subpass>() };
+
+
+	// Final pass-back buffer render reference
+	VkAttachmentReference backBufferRenderRef{};
+	backBufferRenderRef.attachment = kAttachment_BACK;
+	backBufferRenderRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+	imGuiSubpass->AddReference(backBufferRenderRef);
+
+	m_pRenderpass->AddSubpass(std::move(imGuiSubpass));
+}
+
 void DDM3::DeferredRenderer2::SetupDependencies()
 {
 	VkSubpassDependency dependency1{};
@@ -622,6 +472,15 @@ void DDM3::DeferredRenderer2::SetupDependencies()
 	dependency2.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
 	dependency2.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
 	dependency2.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
+
+	VkSubpassDependency dependency3{};
+	dependency3.srcSubpass = kSubpass_LIGHTING;
+	dependency3.dstSubpass = kSubpass_IMGUI;
+	dependency3.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+	dependency3.dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+	dependency3.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+	dependency3.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+	dependency3.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
 
 	m_pRenderpass->AddDependency(dependency1);
 	m_pRenderpass->AddDependency(dependency2);
@@ -668,13 +527,14 @@ void DDM3::DeferredRenderer2::InitImgui()
 	// Give functoin for error handling
 	init_info.CheckVkResultFn = [](VkResult /*err*/) { /* error handling */ };
 	// Give the max amount of samples per mixel
-	init_info.MSAASamples = VulkanObject::GetInstance().GetMsaaSamples();
+	init_info.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
+	init_info.Subpass = kSubpass_IMGUI;
 
 	// Create a single time command buffer
 	auto commandBuffer{ VulkanObject::GetInstance().BeginSingleTimeCommands() };
 	// Initialize ImGui
-	//m_pImGuiWrapper = std::make_unique<DDM3::ImGuiWrapper>(init_info,
-	//	VulkanObject::GetInstance().GetDevice(), static_cast<uint32_t>(VulkanObject::GetInstance().GetMaxFrames()), m_pGeometryRenderpass->GetRenderpass(), commandBuffer);
+	m_pImGuiWrapper = std::make_unique<DDM3::ImGuiWrapper>(init_info,
+		VulkanObject::GetInstance().GetDevice(), static_cast<uint32_t>(VulkanObject::GetInstance().GetMaxFrames()), m_pRenderpass->GetRenderpass(), commandBuffer);
 	// End the single time command buffer
 	VulkanObject::GetInstance().EndSingleTimeCommands(commandBuffer);
 }
@@ -733,6 +593,11 @@ void DDM3::DeferredRenderer2::RecordCommandBuffer(VkCommandBuffer& commandBuffer
 		&m_DescriptorSets[frame], 0, nullptr);
 
 	vkCmdDraw(commandBuffer, 3, 1, 0, 0);
+
+	vkCmdNextSubpass(commandBuffer, VK_SUBPASS_CONTENTS_INLINE);
+
+	// Render the ImGui
+	m_pImGuiWrapper->Render(commandBuffer);
 
 	vkCmdEndRenderPass(commandBuffer);
 
