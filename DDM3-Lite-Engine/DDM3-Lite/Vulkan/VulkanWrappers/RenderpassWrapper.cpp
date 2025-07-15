@@ -9,6 +9,7 @@
 // Standard library includes
 #include <array>
 #include <stdexcept>
+#include <iostream>
 
 DDM3::RenderpassWrapper::RenderpassWrapper()
 {
@@ -55,24 +56,25 @@ void DDM3::RenderpassWrapper::BeginRenderPass(VkCommandBuffer commandBuffer, VkF
 	renderPassInfo.renderArea.offset = { 0, 0 };
 	renderPassInfo.renderArea.extent = extent;
 
-	const int clearAmount = m_AttachmentList.size() + (m_DepthAttachmentSet && clearDepth ? 1 : 0);
+	std::vector<VkClearValue> clearValues;
+	clearValues.reserve(m_AttachmentList.size());
 
-	std::vector<VkClearValue> clearValues(clearAmount);
-
-	for (int i{}; i < m_AttachmentList.size(); ++i)
+	for (const auto& attachment : m_AttachmentList)
 	{
-		switch (m_AttachmentList[i]->GetAttachmentType())
+		VkClearValue clearValue{};
+		switch (attachment->GetAttachmentType())
 		{
 		case Attachment::kAttachmentType_Color:
 		case Attachment::kAttachmentType_ColorResolve:
-			clearValues[i].color = m_AttachmentList[i]->GetClearColorValue();
+			clearValue.color = attachment->GetClearColorValue();
 			break;
 		case Attachment::kAttachmentType_DepthStencil:
-			clearValues[i].depthStencil = m_AttachmentList[i]->GetClearDepthStencilValue();
+			clearValue.depthStencil = attachment->GetClearDepthStencilValue();
 			break;
 		default:
 			break;
 		}
+		clearValues.push_back(clearValue);
 	}
 
 	renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());

@@ -52,7 +52,7 @@ namespace DDM3
 		int GetAttachmentType() const { return m_Type; }
 
 		void SetClearColorValue(VkClearColorValue value) { m_ClearColorValue = value; }
-		VkClearColorValue GetClearColorValue() const { return m_ClearColorValue; }
+		VkClearColorValue GetClearColorValue() const;
 
 		void SetClearDepthStencilValue(VkClearDepthStencilValue value) { m_ClearDepthstencilValue = value; }
 		VkClearDepthStencilValue GetClearDepthStencilValue() const { return m_ClearDepthstencilValue; }

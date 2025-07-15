@@ -444,6 +444,7 @@ void DDM3::DeferredRenderer2::SetupAttachments()
 
 	// albedo attachment
 	auto albedoAttachment = std::make_unique<Attachment>(swapchainImageAmount);
+	albedoAttachment->SetClearColorValue({ 0.388f, 0.588f, 0.929f, 1.0f });
 	albedoAttachment->SetFormat(colorAttachmentFormat);
 	albedoAttachment->SetAttachmentType(Attachment::kAttachmentType_Color);
 	albedoAttachment->SetIsInput(true);

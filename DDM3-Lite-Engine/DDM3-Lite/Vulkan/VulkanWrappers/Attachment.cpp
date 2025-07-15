@@ -49,6 +49,11 @@ void DDM3::Attachment::SetupImage(int index, VkExtent2D extent, VkImageView swap
 	}
 }
 
+VkClearColorValue DDM3::Attachment::GetClearColorValue() const
+{
+	return m_ClearColorValue;
+}
+
 void DDM3::Attachment::SetupColorTexture(int index, VkExtent2D extent)
 {
 	auto& vulkanObject{ VulkanObject::GetInstance() };
