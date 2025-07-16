@@ -1,8 +1,8 @@
-// DeferredRenderer.h
+// SSAORenderer.h
 // Renderer that will use the deferred rendering technique
 
-#ifndef _DEFERRED_RENDERER_
-#define _DEFERRED_RENDERER_
+#ifndef _SSAO_RENDERER_
+#define _SSAO_RENDERER_
 
 // Parent include
 #include "Vulkan/Renderers/Renderer.h"
@@ -26,19 +26,19 @@ namespace DDM3
 	class ImGuiWrapper;
 	class SyncObjectManager;
 
-	class DeferredRenderer final : public Renderer
+	class SSAORenderer final : public Renderer
 	{
 	public:
-		DeferredRenderer();
+		SSAORenderer();
 
-		~DeferredRenderer();
+		~SSAORenderer();
 
 		// Delete copy and move operations
-		DeferredRenderer(DeferredRenderer&) = delete;
-		DeferredRenderer(DeferredRenderer&&) = delete;
+		SSAORenderer(SSAORenderer&) = delete;
+		SSAORenderer(SSAORenderer&&) = delete;
 
-		DeferredRenderer& operator=(DeferredRenderer&) = delete;
-		DeferredRenderer& operator=(DeferredRenderer&& other) = delete;
+		SSAORenderer& operator=(SSAORenderer&) = delete;
+		SSAORenderer& operator=(SSAORenderer&&) = delete;
 
 		virtual void Render() override;
 
@@ -129,4 +129,4 @@ namespace DDM3
 	};
 }
 
-#endif // !_DEFERRED_RENDERER_
+#endif // !_SSAO_RENDERER_

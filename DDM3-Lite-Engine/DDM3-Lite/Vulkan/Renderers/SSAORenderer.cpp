@@ -1,7 +1,7 @@
-// DeferredRenderer.cpp
+// SSAORenderer.cpp
 
 // Header include 
-#include "DeferredRenderer.h"
+#include "SSAORenderer.h"
 
 #include "Vulkan/VulkanUtils.h"
 #include "Vulkan/VulkanObject.h"
@@ -23,7 +23,7 @@
 
 #include "Managers/ConfigManager.h"
 
-DDM3::DeferredRenderer::DeferredRenderer()
+DDM3::SSAORenderer::SSAORenderer()
 {
 	auto surface{ VulkanObject::GetInstance().GetSurface() };
 
@@ -58,7 +58,7 @@ DDM3::DeferredRenderer::DeferredRenderer()
 	InitImgui();
 }
 
-DDM3::DeferredRenderer::~DeferredRenderer()
+DDM3::SSAORenderer::~SSAORenderer()
 {
 	auto device = VulkanObject::GetInstance().GetDevice();
 
@@ -67,7 +67,7 @@ DDM3::DeferredRenderer::~DeferredRenderer()
 	vkDestroyDescriptorPool(device, m_DescriptorPool, nullptr);
 }
 
-void DDM3::DeferredRenderer::Render()
+void DDM3::SSAORenderer::Render()
 {
 	auto& vulkanObject{ DDM3::VulkanObject::GetInstance() };
 
@@ -149,17 +149,17 @@ void DDM3::DeferredRenderer::Render()
 	}
 }
 
-VkExtent2D DDM3::DeferredRenderer::GetExtent()
+VkExtent2D DDM3::SSAORenderer::GetExtent()
 {
 	return m_pSwapchainWrapper->GetExtent();
 }
 
-DDM3::RenderpassWrapper* DDM3::DeferredRenderer::GetDefaultRenderpass()
+DDM3::RenderpassWrapper* DDM3::SSAORenderer::GetDefaultRenderpass()
 {
 	return m_pRenderpass.get();
 }
 
-void DDM3::DeferredRenderer::AddDefaultPipelines()
+void DDM3::SSAORenderer::AddDefaultPipelines()
 {
 	// Get config manager
 	auto& configManager{ ConfigManager::GetInstance() };
@@ -190,7 +190,7 @@ void DDM3::DeferredRenderer::AddDefaultPipelines()
 	m_pLightingPipeline = VulkanObject::GetInstance().GetPipeline(lightingPipelineName);
 }
 
-void DDM3::DeferredRenderer::CreateRenderpass()
+void DDM3::SSAORenderer::CreateRenderpass()
 {
 	m_pRenderpass = std::make_unique<RenderpassWrapper>();
 
@@ -212,7 +212,7 @@ void DDM3::DeferredRenderer::CreateRenderpass()
 
 }
 
-void DDM3::DeferredRenderer::SetupAttachments()
+void DDM3::SSAORenderer::SetupAttachments()
 {
 	int swapchainImageAmount = m_pSwapchainWrapper->GetSwapchainImageAmount();
 
@@ -343,7 +343,7 @@ void DDM3::DeferredRenderer::SetupAttachments()
 	m_pRenderpass->AddAttachment(std::move(posiitionAttachment));
 }
 
-void DDM3::DeferredRenderer::SetupDepthPass()
+void DDM3::SSAORenderer::SetupDepthPass()
 {
 	// Depth prepass depth buffer reference (read/write)
 	VkAttachmentReference depthAttachmentReference{};
@@ -357,7 +357,7 @@ void DDM3::DeferredRenderer::SetupDepthPass()
 	m_pRenderpass->AddSubpass(std::move(depthPass));
 }
 
-void DDM3::DeferredRenderer::SetupGeometryPass()
+void DDM3::SSAORenderer::SetupGeometryPass()
 {
 	std::unique_ptr<Subpass> pGBufferPass{ std::make_unique<Subpass>() };
 
@@ -393,7 +393,7 @@ void DDM3::DeferredRenderer::SetupGeometryPass()
 	m_pRenderpass->AddSubpass(std::move(pGBufferPass));
 }
 
-void DDM3::DeferredRenderer::SetupLightingPass()
+void DDM3::SSAORenderer::SetupLightingPass()
 {
 	std::unique_ptr<Subpass> pLightingPass{ std::make_unique<Subpass>() };
 
@@ -435,7 +435,7 @@ void DDM3::DeferredRenderer::SetupLightingPass()
 	m_pRenderpass->AddSubpass(std::move(pLightingPass));
 }
 
-void DDM3::DeferredRenderer::SetupImGuiPass()
+void DDM3::SSAORenderer::SetupImGuiPass()
 {
 	int swapchainImageAmount = m_pSwapchainWrapper->GetSwapchainImageAmount();
 
@@ -453,7 +453,7 @@ void DDM3::DeferredRenderer::SetupImGuiPass()
 	m_pRenderpass->AddSubpass(std::move(imGuiSubpass));
 }
 
-void DDM3::DeferredRenderer::SetupDependencies()
+void DDM3::SSAORenderer::SetupDependencies()
 {
 	VkSubpassDependency dependency1{};
 	dependency1.srcSubpass = kSubpass_DEPTH;
@@ -486,7 +486,7 @@ void DDM3::DeferredRenderer::SetupDependencies()
 	m_pRenderpass->AddDependency(dependency2);
 }
 
-void DDM3::DeferredRenderer::SetupDescriptorObjects()
+void DDM3::SSAORenderer::SetupDescriptorObjects()
 {
 	m_pInputAttachmentList.clear();
 
@@ -502,7 +502,7 @@ void DDM3::DeferredRenderer::SetupDescriptorObjects()
 	}
 }
 
-void DDM3::DeferredRenderer::InitImgui()
+void DDM3::SSAORenderer::InitImgui()
 {
 	// Create ImGui vulkan init info
 	ImGui_ImplVulkan_InitInfo init_info = {};
@@ -539,12 +539,12 @@ void DDM3::DeferredRenderer::InitImgui()
 	VulkanObject::GetInstance().EndSingleTimeCommands(commandBuffer);
 }
 
-void DDM3::DeferredRenderer::CleanupImgui()
+void DDM3::SSAORenderer::CleanupImgui()
 {
 	m_pImGuiWrapper.reset();
 }
 
-void DDM3::DeferredRenderer::RecordCommandBuffer(VkCommandBuffer& commandBuffer, uint32_t imageIndex)
+void DDM3::SSAORenderer::RecordCommandBuffer(VkCommandBuffer& commandBuffer, uint32_t imageIndex)
 {
 	auto frame = VulkanObject::GetInstance().GetCurrentFrame();
 
@@ -637,7 +637,7 @@ void DDM3::DeferredRenderer::RecordCommandBuffer(VkCommandBuffer& commandBuffer,
 	}
 }
 
-void DDM3::DeferredRenderer::RecreateSwapChain()
+void DDM3::SSAORenderer::RecreateSwapChain()
 {
 	// Get a reference to the window struct
 	auto& windowStruct{ DDM3::Window::GetInstance().GetWindowStruct() };
@@ -672,7 +672,7 @@ void DDM3::DeferredRenderer::RecreateSwapChain()
 	ResetDescriptorSets();
 }
 
-void DDM3::DeferredRenderer::ResetDescriptorSets()
+void DDM3::SSAORenderer::ResetDescriptorSets()
 {
 	vkFreeDescriptorSets(VulkanObject::GetInstance().GetDevice(), m_DescriptorPool, m_DescriptorSets.size(), m_DescriptorSets.data());
 
@@ -681,7 +681,7 @@ void DDM3::DeferredRenderer::ResetDescriptorSets()
 	CreateDescriptorSets();
 }
 
-void DDM3::DeferredRenderer::CreateDescriptorSetLayout()
+void DDM3::SSAORenderer::CreateDescriptorSetLayout()
 {
 	// Create vector of descriptorsetlayoutbindings the size of the sum of vertexUbos, fragmentUbos and textureamount;
 	std::vector<VkDescriptorSetLayoutBinding> bindings{};
@@ -717,7 +717,7 @@ void DDM3::DeferredRenderer::CreateDescriptorSetLayout()
 	}
 }
 
-void DDM3::DeferredRenderer::CreateDescriptorPool()
+void DDM3::SSAORenderer::CreateDescriptorPool()
 {
 	// Get a reference to the renderer
 	auto& vulkanObject{ VulkanObject::GetInstance() };
@@ -759,7 +759,7 @@ void DDM3::DeferredRenderer::CreateDescriptorPool()
 	}
 }
 
-void DDM3::DeferredRenderer::CreateDescriptorSets()
+void DDM3::SSAORenderer::CreateDescriptorSets()
 {
 	// Get a reference to the renderer for later use
 	auto& renderer{ VulkanObject::GetInstance() };
