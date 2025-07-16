@@ -27,5 +27,7 @@
   "DefaultDeferredFrag": "resources/DefaultResources/Deffered.frag.spv",
   "DeferredLightingPipelineName" :  "DeferredLighting",
   "DeferredLightingVert": "resources/DefaultResources/DeferredLighting.vert.spv",
-  "DeferredLightingFrag": "resources/DefaultResources/DeferredLighting.frag.spv"
+  "DeferredLightingFrag": "resources/DefaultResources/DeferredLighting.frag.spv",
+  "DepthPipelineName" : "Depth",
+  "DepthVert" : "resources/DefaultResources/Depth.Vert.spv"
 }

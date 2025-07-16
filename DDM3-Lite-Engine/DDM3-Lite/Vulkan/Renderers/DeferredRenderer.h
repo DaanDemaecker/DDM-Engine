@@ -26,19 +26,19 @@ namespace DDM3
 	class ImGuiWrapper;
 	class SyncObjectManager;
 
-	class DeferredRenderer2 final : public Renderer
+	class DeferredRenderer final : public Renderer
 	{
 	public:
-		DeferredRenderer2();
+		DeferredRenderer();
 
-		~DeferredRenderer2();
+		~DeferredRenderer();
 
 		// Delete copy and move operations
-		DeferredRenderer2(DeferredRenderer2&) = delete;
-		DeferredRenderer2(DeferredRenderer2&&) = delete;
+		DeferredRenderer(DeferredRenderer&) = delete;
+		DeferredRenderer(DeferredRenderer&&) = delete;
 
-		DeferredRenderer2& operator=(DeferredRenderer2&) = delete;
-		DeferredRenderer2& operator=(DeferredRenderer2&& other) = delete;
+		DeferredRenderer& operator=(DeferredRenderer&) = delete;
+		DeferredRenderer& operator=(DeferredRenderer&& other) = delete;
 
 		virtual void Render() override;
 
