@@ -56,7 +56,7 @@ add_executable(${EXECUTABLE_NAME}
 "Components/MaterialSwitcher/MaterialSwitchManager.cpp"
 "Components/InfoComponent.cpp"
  "Vulkan/VulkanWrappers/VulkanCore.cpp"
- "Vulkan/Renderers/DeferredRenderer.cpp"
+ 
  "Vulkan/VulkanWrappers/Attachment.cpp"
  "Vulkan/VulkanWrappers/FrameBuffer.cpp"
  "Vulkan/Renderers/DeferredRenderer2.cpp"
