@@ -37,9 +37,13 @@ namespace DDM3
 		//     pPipeline: the pipeline to bind before drawing
 		//     descriptorSet: the descriptorset to bind before drawing
 		void Render(PipelineWrapper* pPipeline, VkDescriptorSet* descriptorSet);
+
+		bool IsTransparant() const { return m_IsTransparant; }
 	private:
 		// Friend class declaration
 		friend class ResourceManager;
+
+		bool m_IsTransparant{ false };
 
 		// Constructor
 		// Parameters:

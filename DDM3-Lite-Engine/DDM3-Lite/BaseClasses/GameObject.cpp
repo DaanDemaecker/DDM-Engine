@@ -253,6 +253,22 @@ void DDM3::GameObject::Render() const
 	}
 }
 
+void DDM3::GameObject::RenderTransparancy() const
+{
+	for (auto& component : m_pComponents)
+	{
+		component->RenderTransparancy();
+	}
+
+	for (auto& pChild : m_pChildren)
+	{
+		if (pChild->m_IsActive)
+		{
+			pChild->RenderTransparancy();
+		}
+	}
+}
+
 void DDM3::GameObject::OnGUI()
 {
 	if (m_ShowImGui)

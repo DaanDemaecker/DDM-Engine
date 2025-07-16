@@ -34,12 +34,16 @@ namespace DDM3
 
 		virtual void Render() override;
 
+		virtual void RenderTransparancy() override;
+
 		virtual void OnGUI() override;
 
 		void CreateDescriptorSets();
 
 
 	protected:
+		bool m_IsTransparant{ false };
+
 		//Member variables
 		bool m_Initialized{ false };
 

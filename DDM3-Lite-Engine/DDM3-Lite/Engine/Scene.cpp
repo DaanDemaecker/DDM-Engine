@@ -92,6 +92,11 @@ void DDM3::Scene::Render() const
 	m_pSceneRoot->Render();
 }
 
+void DDM3::Scene::RenderTransparancy() const
+{
+	m_pSceneRoot->RenderTransparancy();
+}
+
 void DDM3::Scene::OngGUI() const
 {
 	m_pSceneRoot->OnGUI();

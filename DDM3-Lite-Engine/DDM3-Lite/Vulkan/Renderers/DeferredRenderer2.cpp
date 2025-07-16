@@ -584,6 +584,8 @@ void DDM3::DeferredRenderer2::RecordCommandBuffer(VkCommandBuffer& commandBuffer
 
 	SceneManager::GetInstance().Render();
 
+	SceneManager::GetInstance().RenderTransparancy();
+
 
 	vkCmdNextSubpass(commandBuffer, VK_SUBPASS_CONTENTS_INLINE);
 

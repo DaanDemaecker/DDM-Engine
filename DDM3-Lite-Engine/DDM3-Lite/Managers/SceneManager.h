@@ -96,6 +96,9 @@ namespace DDM3
 		// Render everything
 		void Render() const;
 
+		// Render transparant object
+		void RenderTransparancy() const;
+
 		// Clean up the frame
 		void Cleanup();
 

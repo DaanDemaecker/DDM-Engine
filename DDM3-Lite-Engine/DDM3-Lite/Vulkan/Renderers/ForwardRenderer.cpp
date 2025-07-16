@@ -168,6 +168,8 @@ void DDM3::ForwardRenderer::RecordCommandBuffer(VkCommandBuffer& commandBuffer, 
 
 	SceneManager::GetInstance().Render();
 
+	SceneManager::GetInstance().RenderTransparancy();
+
 	// Render the ImGui
 	m_pImGuiWrapper->Render(commandBuffer);
 

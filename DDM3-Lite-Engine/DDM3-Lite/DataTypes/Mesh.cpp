@@ -23,6 +23,8 @@ DDM3::Mesh::Mesh(DDMML::Mesh* pMesh)
 	std::copy(indices.begin(), indices.end(), m_Indices.begin());
 
 	SetupBuffers();
+
+	m_IsTransparant = pMesh->GetIsTransparant();
 }
 
 DDM3::Mesh::Mesh(const std::string& filePath)

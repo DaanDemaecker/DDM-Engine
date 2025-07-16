@@ -211,6 +211,14 @@ void DDM3::SceneManager::Render() const
     }
 }
 
+void DDM3::SceneManager::RenderTransparancy() const
+{
+    if (m_ActiveScene != nullptr)
+    {
+        m_ActiveScene->RenderTransparancy();
+    }
+}
+
 void DDM3::SceneManager::Cleanup()
 {
     if (m_ActiveScene != nullptr)

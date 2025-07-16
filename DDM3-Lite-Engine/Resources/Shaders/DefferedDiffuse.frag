@@ -23,8 +23,7 @@ layout(location = 2) out vec4 outNormal;
 void main()
 {
 	vec4 finalColor = texture(gDiffuse, fragTexCoord);
-
-
+    
     outPos = fragpos;
     outNormal = vec4(fragNormal, 1.0);
 

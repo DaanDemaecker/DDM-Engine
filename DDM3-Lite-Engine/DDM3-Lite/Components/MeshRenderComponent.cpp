@@ -6,6 +6,7 @@
 #include "../Vulkan/VulkanWrappers/DescriptorPoolWrapper.h"
 #include "../DataTypes/Mesh.h"
 #include "Vulkan/VulkanWrappers/PipelineWrapper.h"
+#include "DDMModelLoader/Mesh.h"
 
 DDM3::MeshRenderComponent::MeshRenderComponent()
 {
@@ -44,6 +45,8 @@ void DDM3::MeshRenderComponent::SetMesh(std::shared_ptr<Mesh> pMesh)
 	CreateUniformBuffers();
 
 	m_Initialized = true;
+
+	m_IsTransparant = pMesh->IsTransparant();
 }
 
 void DDM3::MeshRenderComponent::SetMesh(DDMML::Mesh* pMesh)
@@ -56,6 +59,8 @@ void DDM3::MeshRenderComponent::SetMesh(DDMML::Mesh* pMesh)
 	m_ShouldCreateDescriptorSets = true;
 	CreateUniformBuffers();
 	m_Initialized = true;
+
+	m_IsTransparant = pMesh->GetIsTransparant();
 }
 
 void DDM3::MeshRenderComponent::SetMaterial(std::shared_ptr<Material> pMaterial)
@@ -68,21 +73,27 @@ void DDM3::MeshRenderComponent::SetMaterial(std::shared_ptr<Material> pMaterial)
 
 void DDM3::MeshRenderComponent::RenderDepth()
 {
-	if (m_pMesh == nullptr)
+	if (m_IsTransparant || m_pMesh == nullptr)
 		return;
 
 	auto frame{ VulkanObject::GetInstance().GetCurrentFrame() };
-
-	//vkCmdPushConstants(VulkanObject::GetInstance().GetCurrentCommandBuffer(),
-	//	VulkanObject::GetInstance().GetPipeline("Depth")->GetPipelineLayout(),
-	//	VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(UniformBufferObject), &m_Ubos[frame]);
 
 	m_pMesh->Render(VulkanObject::GetInstance().GetPipeline("Depth"), &m_DepthDescriptorSets[frame]);
 }
 
 void DDM3::MeshRenderComponent::Render()
 {
-	if (m_pMesh == nullptr)
+	if (m_IsTransparant || m_pMesh == nullptr)
+		return;
+
+	auto frame{ VulkanObject::GetInstance().GetCurrentFrame() };
+
+	m_pMesh->Render(GetPipeline(), &m_DescriptorSets[frame]);
+}
+
+void DDM3::MeshRenderComponent::RenderTransparancy()
+{
+	if (!m_IsTransparant || m_pMesh == nullptr)
 		return;
 
 	auto frame{ VulkanObject::GetInstance().GetCurrentFrame() };

@@ -48,6 +48,9 @@ namespace DDM3
 
 		void Render() const;
 
+		// Render transparant object
+		void RenderTransparancy() const;
+
 		void OngGUI() const;
 
 		void Cleanup();

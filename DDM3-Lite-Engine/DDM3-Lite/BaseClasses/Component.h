@@ -37,6 +37,9 @@ namespace DDM3
 
 		virtual void Render() {}
 
+		// Render transparant object
+		virtual void RenderTransparancy() {}
+
 		virtual void OnGUI() {}
 
 		virtual void Destroy() { m_ShouldDestroy = true; }

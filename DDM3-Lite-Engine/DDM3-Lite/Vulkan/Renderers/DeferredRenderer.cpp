@@ -299,6 +299,8 @@ void DDM3::DeferredRenderer::RecordCommandBuffer(VkCommandBuffer& commandBuffer,
 
 	SceneManager::GetInstance().Render();
 
+	SceneManager::GetInstance().RenderTransparancy();
+
 	vkCmdEndRenderPass(commandBuffer);
 
 	TransitionImages(commandBuffer, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
