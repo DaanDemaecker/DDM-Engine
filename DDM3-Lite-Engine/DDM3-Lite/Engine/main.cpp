@@ -11,6 +11,9 @@
 
 int main()
 {
+	// Seed random number generator
+	srand(time(NULL));
+
 	// Create the engine object and run it with the load function
 	DDM3::DDM3Engine engine{};
 

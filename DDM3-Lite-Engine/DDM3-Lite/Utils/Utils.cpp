@@ -41,3 +41,16 @@ std::string Utils::GetExtension(const std::string& filename)
 
 	return  filename.substr(index + 1, filename.size());
 }
+
+float Utils::RandomFLoat(float min, float max)
+{
+	float random = ((float)rand()) / (float)RAND_MAX;
+	float diff = max - min;
+	float r = random * diff;
+	return min + r;
+}
+
+float Utils::Lerp(float min, float max, float factor)
+{
+	return min + factor * (max - min);
+}

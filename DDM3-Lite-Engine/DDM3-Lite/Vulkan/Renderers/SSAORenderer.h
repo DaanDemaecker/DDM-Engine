@@ -126,6 +126,8 @@ namespace DDM3
 
 		void SetNewSamples(int frame);
 
+		void GetRandomVector(glm::vec4& vec, int index);
+
 
 		void InitImgui();
 

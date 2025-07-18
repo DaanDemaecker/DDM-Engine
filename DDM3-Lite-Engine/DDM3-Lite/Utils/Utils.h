@@ -21,6 +21,23 @@ namespace Utils
 	// Parameters:
 	//     - filename: The name of the file
 	std::string GetExtension(const std::string& filename);
+
+	/// <summary>
+	/// Get a random float
+	/// </summary>
+	/// <param name="min: ">minimum float value</param>
+	/// <param name="max: ">maximum float value</param>
+	/// <returns>Random float</returns>
+	float RandomFLoat(float min, float max);
+
+	/// <summary>
+	/// Lerps a value between a min and max given a factor
+	/// </summary>
+	/// <param name="min: ">Lower value</param>
+	/// <param name="max: ">Upper value</param>
+	/// <param name="factor: ">Factor between 0 and 1</param>
+	/// <returns>Lerped value</returns>
+	float Lerp(float min, float max, float factor);
 }
 
 #endif // !UtilsIncluded

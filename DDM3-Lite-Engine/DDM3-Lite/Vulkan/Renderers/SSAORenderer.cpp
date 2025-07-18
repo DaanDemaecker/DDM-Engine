@@ -23,6 +23,8 @@
 
 #include "Managers/ConfigManager.h"
 
+#include "Utils/Utils.h"
+
 DDM3::SSAORenderer::SSAORenderer()
 {
 	auto maxFrames = VulkanObject::GetInstance().GetMaxFrames();
@@ -647,13 +649,30 @@ void DDM3::SSAORenderer::SetupDescriptorObjectsLighting()
 
 void DDM3::SSAORenderer::SetNewSamples(int frame)
 {
-
-	for (auto& sample : m_Samples[frame])
+	for (int i{}; i < m_Samples[frame].size(); ++i)
 	{
-		sample = glm::vec4{ 0, 1, 0, 0 };
+		GetRandomVector(m_Samples[frame][i], i);
 	}
 	
 	UpdateAoGenDescriptorSets(frame);
+}
+
+
+// Logic by Brian Will
+// https://www.youtube.com/watch?v=7hxrPKoELpo
+void DDM3::SSAORenderer::GetRandomVector(glm::vec4& vec, int index)
+{
+	vec.x = Utils::RandomFLoat(-1.0f, 1.0f);
+	vec.y = Utils::RandomFLoat(0.0f, 1.0f);
+	vec.z = Utils::RandomFLoat(-1.0f, 1.0f);
+	vec.w = 0;
+
+	glm::normalize(vec);
+	vec *= Utils::RandomFLoat(0.0f, 1.0f);
+
+	// This logic will cluster the vectors near the origin
+	float scale = static_cast<float>(index) / static_cast<float>(m_SampleCount);
+	vec *= Utils::Lerp(0.1f, 1.0f, scale * scale);
 }
 
 void DDM3::SSAORenderer::InitImgui()
