@@ -147,6 +147,9 @@ namespace DDM3
        //     commandBuffer: handle of the buffer to be ended
        void EndSingleTimeCommands(VkCommandBuffer commandBuffer);
 
+
+       void DrawQuad(VkCommandBuffer commandBuffer);
+
     private:
         // Constructor
         friend class Singleton<VulkanObject>;

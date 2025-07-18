@@ -58,6 +58,8 @@ namespace DDM3
 		int GetShaderStage() const { return m_ReflectShaderModule.shader_stage; }
 		int GetOutputAmount() const { return m_ReflectShaderModule.output_variable_count; }
 
+		bool ShouldEnableBlend(int index) const;
+
 	private:
 		// The binary code from the shader
 		std::vector<char> m_ShaderCode{};
@@ -71,6 +73,9 @@ namespace DDM3
 		// The shade info from spirv-reflect
 		SpvReflectShaderModule m_ReflectShaderModule{};
 
+		// Output variables info
+		std::vector<SpvReflectInterfaceVariable*> m_OutputVariables;
+
 		// Create a vulkan shader module from binary code
 		// Parameters:
 		//     device: handle of the VkDevice
@@ -81,6 +86,9 @@ namespace DDM3
 
 		// Create the info for the shader stage
 		void CreateShaderStageInfo();
+
+		// Read and store the output variables
+		void ReadOutputVariables();
 	};
 }
 

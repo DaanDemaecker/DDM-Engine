@@ -161,6 +161,20 @@ void DDM3::PipelineWrapper::CreatePipeline(VkDevice device, VkRenderPass renderP
 	{
 		// Create color blend attachment state
 		VkPipelineColorBlendAttachmentState colorBlendAttachment{};
+
+		bool blendEnabled = true;
+
+		for (auto& shaderModule : shaderModuleWrappers)
+		{
+			if (shaderModule->GetShaderStage() == VK_SHADER_STAGE_FRAGMENT_BIT)
+			{
+				blendEnabled = shaderModule->ShouldEnableBlend(i);
+			}
+		}
+
+
+		colorBlendAttachment.blendEnable = blendEnabled ? VK_TRUE : VK_FALSE;
+
 		// Set color blend attachment state
 		SetColorBlendAttachmentState(colorBlendAttachment);
 		// Add color blend attachment to the vector
@@ -351,8 +365,6 @@ void DDM3::PipelineWrapper::SetColorBlendAttachmentState(VkPipelineColorBlendAtt
 {
 	// Set color write mask to rgba
 	colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
-	// Enable blending
-	colorBlendAttachment.blendEnable = VK_TRUE;
 	// Set color blend factor to source alpha
 	colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
 	// Set color blend destination to one minus source alpha

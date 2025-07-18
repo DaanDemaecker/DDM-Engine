@@ -91,7 +91,7 @@ namespace LoadSSAOScene
 	{
 		auto& vulkanObject{ DDM3::VulkanObject::GetInstance() };
 
-		vulkanObject.AddGraphicsPipeline("DeferredDiffuse", { "Resources/DefaultResources/Deffered2.Vert.spv", "Resources/Shaders/DefferedDiffuse.frag.spv" }, true, false, DDM3::SSAORenderer::kSubpass_GBUFFER);
+		vulkanObject.AddGraphicsPipeline("DeferredDiffuse", { "Resources/DefaultResources/Deffered.Vert.spv", "Resources/Shaders/DefferedDiffuse.frag.spv" }, true, false, DDM3::SSAORenderer::kSubpass_GBUFFER);
 	}
 
 	void SetupVehicle(DDM3::Scene* scene)

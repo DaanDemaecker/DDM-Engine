@@ -20,7 +20,7 @@ void DDM3::InputAttachmentDescriptorObject::AddImageView(VkImageView imageView, 
 	VkDescriptorImageInfo imageInfo{};
 	imageInfo.imageView = imageView;
 	imageInfo.imageLayout = layout;
-	imageInfo.sampler = VK_NULL_HANDLE;
+	imageInfo.sampler = VulkanObject::GetInstance().GetSampler();
 
 	m_ImageInfos.push_back(imageInfo);
 }

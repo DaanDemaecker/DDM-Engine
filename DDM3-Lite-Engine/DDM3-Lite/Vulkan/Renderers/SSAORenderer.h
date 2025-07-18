@@ -52,8 +52,9 @@ namespace DDM3
 		{
 			kSubpass_DEPTH = 0,
 			kSubpass_GBUFFER = 1,
-			kSubpass_LIGHTING = 2,
-			kSubpass_IMGUI = 3
+			kSubpass_AO_GEN = 2,
+			kSubpass_LIGHTING = 3,
+			kSubpass_IMGUI = 4
 		};
 	private:
 		enum
@@ -62,7 +63,9 @@ namespace DDM3
 			kAttachment_DEPTH = 1,
 			kAttachment_GBUFFER_ALBEDO = 2,
 			kAttachment_GBUFFER_NORMAL = 3,
-			kAttachment_GBUFFER_POSITION = 4
+			kAttachment_GBUFFER_POSITION = 4,
+			kAttachment_AO_MAP = 5,
+			kAttachment_AO_BLURRED = 6
 		};
 
 
@@ -76,14 +79,13 @@ namespace DDM3
 
 		void SetupGeometryPass();
 
+		void SetupAoGenPass();
+
 		void SetupLightingPass();
 
 		void SetupImGuiPass();
 
 		void SetupDependencies();
-
-		void SetupDescriptorObjects();
-
 
 
 		// Pointer to the swapchain wrapper
@@ -95,18 +97,28 @@ namespace DDM3
 		// Pointer to the ImGui wrapper
 		std::unique_ptr<ImGuiWrapper> m_pImGuiWrapper{};
 
-		std::vector<std::unique_ptr<InputAttachmentDescriptorObject>> m_pInputAttachmentList{};
-
 
 		
 		PipelineWrapper* m_pLightingPipeline{};
 
-		std::vector<VkDescriptorSet> m_DescriptorSets{};
+		std::vector<std::unique_ptr<InputAttachmentDescriptorObject>> m_pLightingInputDescriptorObjects{};
 
-		VkDescriptorSetLayout m_DescriptorSetLayout{};
+		std::vector<VkDescriptorSet> m_LightingDescriptorSets{};
 
-		VkDescriptorPool m_DescriptorPool{};
+		VkDescriptorSetLayout m_LightingDescriptorSetLayout{};
 
+		VkDescriptorPool m_LightingDescriptorPool{};
+
+
+		PipelineWrapper* m_pAoPipeline{};
+
+		std::vector<std::unique_ptr<InputAttachmentDescriptorObject>> m_pAoGenInputDescriptorObjects{};
+
+		std::vector<VkDescriptorSet> m_AoGenDescriptorSets{};
+
+		VkDescriptorSetLayout m_AoGenDescriptorSetLayout{};
+
+		VkDescriptorPool m_AoGenDescriptorPool{};
 
 
 		void InitImgui();
@@ -120,12 +132,41 @@ namespace DDM3
 		void ResetDescriptorSets();
 
 
+		// Descriptor objects setup
+		void SetupDescriptorObjects();
 
-		void CreateDescriptorSetLayout();
+		void SetupDescriptorObjectsAoGen();
 
+		void SetupDescriptorObjectsLighting();
+
+		// Descriptor pools setup
 		void CreateDescriptorPool();
 
+		void CreateAoGenDescriptorPool();
+
+		void CreateLightingDescriptorPool();
+
+		// Descriptor Layouts setup
+		void CreateDescriptorSetLayout();
+
+		void CreateAoGenDescriptorSetLayout();
+
+		void CreateLightingDescriptorSetLayout();
+
+
+		// Descriptor sets setup
 		void CreateDescriptorSets();
+
+		void CreateAoGenDescriptorSets();
+
+		void CreateLightingDescriptorSets();
+
+		// Update Descriptor sets
+		void UpdateDescriptorSets();
+
+		void UpdateAoGenDescriptorSets();
+
+		void UpdateLightingDescriptorSets();
 	};
 }
 

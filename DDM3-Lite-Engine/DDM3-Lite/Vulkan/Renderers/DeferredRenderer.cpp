@@ -183,7 +183,7 @@ void DDM3::DeferredRenderer::AddDefaultPipelines()
 	
 	// Add default pipeline
 	VulkanObject::GetInstance().AddGraphicsPipeline(lightingPipelineName, {
-		configManager.GetString("DeferredLightingVert"),
+		configManager.GetString("DrawQuadVert"),
 		configManager.GetString("DeferredLightingFrag") },
 		false, true, kSubpass_LIGHTING);
 
@@ -492,7 +492,7 @@ void DDM3::DeferredRenderer::SetupDescriptorObjects()
 
 	auto& attachments{ m_pRenderpass->GetAttachmentList() };
 
-	for (int i{ kAttachment_GBUFFER_ALBEDO }; i < attachments.size(); ++i)
+	for (int i{ kAttachment_GBUFFER_ALBEDO }; i <= kAttachment_GBUFFER_POSITION; ++i)
 	{
 		auto descriptorObject{ std::make_unique<InputAttachmentDescriptorObject>() };
 
@@ -594,7 +594,7 @@ void DDM3::DeferredRenderer::RecordCommandBuffer(VkCommandBuffer& commandBuffer,
 	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pLightingPipeline->GetPipelineLayout(), 0, 1,
 		&m_DescriptorSets[frame], 0, nullptr);
 
-	vkCmdDraw(commandBuffer, 3, 1, 0, 0);
+	VulkanObject::GetInstance().DrawQuad(commandBuffer);
 
 	vkCmdNextSubpass(commandBuffer, VK_SUBPASS_CONTENTS_INLINE);
 

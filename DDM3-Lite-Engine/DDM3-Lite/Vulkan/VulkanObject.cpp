@@ -199,6 +199,11 @@ void DDM3::VulkanObject::EndSingleTimeCommands(VkCommandBuffer commandBuffer)
 	m_pCommandPoolManager->EndSingleTimeCommands(GetGPUObject(), commandBuffer);
 }
 
+void DDM3::VulkanObject::DrawQuad(VkCommandBuffer commandBuffer)
+{
+	vkCmdDraw(commandBuffer, 3, 1, 0, 0);
+}
+
 void DDM3::VulkanObject::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory)
 {
 	// Create the buffer trough vulkan utils

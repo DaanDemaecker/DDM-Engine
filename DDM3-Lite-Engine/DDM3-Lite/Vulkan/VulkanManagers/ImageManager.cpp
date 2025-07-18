@@ -594,6 +594,7 @@ void DDM3::ImageManager::CreateImage(GPUObject* pGPUObject, uint32_t width, uint
 
 	// Create image create info object
 	VkImageCreateInfo imageInfo{};
+	imageInfo.pNext = nullptr;
 	// Set type to image create info
 	imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
 	// Set image type to 2D

@@ -20,6 +20,9 @@ DDM3::ShaderModuleWrapper::ShaderModuleWrapper(VkDevice device, const std::strin
 
 	// Create the shader stage create info
 	CreateShaderStageInfo();
+
+	// Read output variables
+	ReadOutputVariables();
 }
 
 void DDM3::ShaderModuleWrapper::Cleanup(VkDevice device)
@@ -120,6 +123,24 @@ void DDM3::ShaderModuleWrapper::AddPushConstantRanges(std::vector<VkPushConstant
 	}
 }
 
+bool DDM3::ShaderModuleWrapper::ShouldEnableBlend(int index) const
+{
+	if (index < m_OutputVariables.size())
+	{
+		SpvReflectTypeDescription* typeDesc = m_OutputVariables[index]->type_description;
+		if (typeDesc->type_flags & SPV_REFLECT_TYPE_FLAG_FLOAT) {
+			return false;
+		}
+		else if (typeDesc->type_flags & SPV_REFLECT_TYPE_FLAG_INT) {
+			return false;
+		}
+		else if (typeDesc->type_flags & SPV_REFLECT_TYPE_FLAG_BOOL) {
+			return true;
+		}
+	}
+	return true;
+}
+
 void DDM3::ShaderModuleWrapper::CreateShaderModule(VkDevice device)
 {
 	// Create modlue create info
@@ -162,4 +183,15 @@ void DDM3::ShaderModuleWrapper::CreateShaderStageInfo()
 	m_ShaderstageCreateInfo.module = m_ShaderModule;
 	// Give the name of the function
 	m_ShaderstageCreateInfo.pName = m_ReflectShaderModule.entry_point_name;
+}
+
+void DDM3::ShaderModuleWrapper::ReadOutputVariables()
+{
+	uint32_t outputAmount{};
+
+	spvReflectEnumerateOutputVariables(&m_ReflectShaderModule, &outputAmount, nullptr);
+
+	m_OutputVariables.resize(outputAmount);
+
+	spvReflectEnumerateOutputVariables(&m_ReflectShaderModule, &outputAmount, m_OutputVariables.data());
 }
