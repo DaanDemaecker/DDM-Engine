@@ -27,14 +27,14 @@ DDM3::SSAORenderer::SSAORenderer()
 {
 	auto maxFrames = VulkanObject::GetInstance().GetMaxFrames();
 
-	m_Samples = std::vector<std::vector<AlignedVector>>(maxFrames);
+	m_Samples = std::vector<std::vector<glm::vec4>>(maxFrames);
 
 	for (auto& sampleList : m_Samples)
 	{
-		sampleList = std::vector<AlignedVector>(m_SampleCount);
+		sampleList = std::vector<glm::vec4>(m_SampleCount);
 	}
 
-	m_pSamplesDescriptorObject = std::make_unique<UboDescriptorObject<AlignedVector>>(m_SampleCount);
+	m_pSamplesDescriptorObject = std::make_unique<UboDescriptorObject<glm::vec4>>(m_SampleCount);
 
 
 	auto surface{ VulkanObject::GetInstance().GetSurface() };
@@ -650,7 +650,7 @@ void DDM3::SSAORenderer::SetNewSamples(int frame)
 
 	for (auto& sample : m_Samples[frame])
 	{
-		sample.vec = glm::vec3{ 0, 1, 0 };
+		sample = glm::vec4{ 0, 1, 0, 0 };
 	}
 	
 	UpdateAoGenDescriptorSets(frame);

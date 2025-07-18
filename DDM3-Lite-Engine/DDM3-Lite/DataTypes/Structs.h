@@ -15,12 +15,6 @@
 
 namespace DDM3
 {
-	// A glm::vec3 that is aligned for use in vulkan shaders
-	struct AlignedVector
-	{
-		alignas(16) glm::vec3 vec;
-	};
-
 	// Struct needed for vulkan setup
 	struct QueueFamilyIndices
 	{
