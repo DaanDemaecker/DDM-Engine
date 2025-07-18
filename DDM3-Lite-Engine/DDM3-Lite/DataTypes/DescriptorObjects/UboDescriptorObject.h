@@ -8,6 +8,9 @@
 #include "DescriptorObject.h"
 #include "Vulkan/VulkanObject.h"
 
+// Standard library includes
+#include <vector>
+
 namespace DDM3
 {
 	// Templated class so that the user can choose what the descriptor holds
@@ -15,7 +18,7 @@ namespace DDM3
 	class UboDescriptorObject final : public DescriptorObject
 	{
 	public:
-		UboDescriptorObject();
+		UboDescriptorObject(int arraySize = 1);
 
 		virtual ~UboDescriptorObject();
 
@@ -32,7 +35,7 @@ namespace DDM3
 		// Parameters:
 		//     uboObject: a reference of the object in question
 		//     frame: the index of the current frame
-		void UpdateUboBuffer(T& uboObject, uint32_t frame);
+		void UpdateUboBuffer(T* uboObjects, uint32_t frame);
 
 	private:
 		// Vector of buffers for UBOs
@@ -41,6 +44,8 @@ namespace DDM3
 		std::vector<VkDeviceMemory> m_UbosMemory{};
 		// Pointers to mapped UBOs
 		std::vector<void*> m_UbosMapped{};
+
+		int m_ArraySize{};
 
 		// BufferInfos
 		std::vector<VkDescriptorBufferInfo> m_BufferInfos{};
@@ -57,9 +62,11 @@ namespace DDM3
 
 
 	template<typename T>
-	inline UboDescriptorObject<T>::UboDescriptorObject()
+	inline UboDescriptorObject<T>::UboDescriptorObject(int arraySize)
 		:DescriptorObject(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER)
 	{
+
+		m_ArraySize = arraySize;
 		// Set up the buffers and buffer infos
 		SetupBuffers();
 		SetupBufferInfos();
@@ -99,10 +106,10 @@ namespace DDM3
 	}
 
 	template<typename T>
-	inline void UboDescriptorObject<T>::UpdateUboBuffer(T& uboObject, uint32_t frame)
+	inline void UboDescriptorObject<T>::UpdateUboBuffer(T* uboObjects, uint32_t frame)
 	{
 		// Copy the memory of the object to the buffer
-		memcpy(m_UbosMapped[frame], &uboObject, sizeof(T));
+		memcpy(m_UbosMapped[frame], uboObjects, sizeof(T) * m_ArraySize);
 	}
 
 	template<typename T>
@@ -114,7 +121,7 @@ namespace DDM3
 		auto frames = renderer.GetMaxFrames();
 
 		// Get size of Uniform Buffer Object
-		VkDeviceSize bufferSize = sizeof(T);
+		VkDeviceSize bufferSize = sizeof(T) * m_ArraySize;
 
 		// Resize ubobuffers to amount of frames
 		m_UboBuffers.resize(frames);
@@ -149,7 +156,7 @@ namespace DDM3
 			// Offset should be 0
 			m_BufferInfos[i].offset = 0;
 			// Give the correct size of the buffer object
-			m_BufferInfos[i].range = sizeof(T);
+			m_BufferInfos[i].range = sizeof(T) * m_ArraySize;
 		}
 	}
 	template<typename T>

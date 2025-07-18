@@ -56,5 +56,5 @@ void DDM3::DirectionalLightComponent::CreateLightBuffer()
 void DDM3::DirectionalLightComponent::UpdateBuffer(int frame)
 {
 	m_BufferObject.direction = GetTransform()->GetForward();
-	m_DescriptorObject->UpdateUboBuffer(m_BufferObject, frame);
+	m_DescriptorObject->UpdateUboBuffer(&m_BufferObject, frame);
 }

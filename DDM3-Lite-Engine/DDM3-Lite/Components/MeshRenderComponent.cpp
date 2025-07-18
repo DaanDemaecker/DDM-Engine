@@ -155,7 +155,7 @@ void DDM3::MeshRenderComponent::UpdateUniformBuffer(uint32_t frame)
 	VulkanObject::GetInstance().UpdateUniformBuffer(m_Ubos[frame]);
 
 
-	m_pUboDescriptorObject->UpdateUboBuffer(m_Ubos[frame], frame);
+	m_pUboDescriptorObject->UpdateUboBuffer(&m_Ubos[frame], frame);
 }
 
 DDM3::PipelineWrapper* DDM3::MeshRenderComponent::GetPipeline()

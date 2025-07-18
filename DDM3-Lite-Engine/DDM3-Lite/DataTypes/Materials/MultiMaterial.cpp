@@ -162,7 +162,7 @@ void DDM3::MultiMaterial::UpdateShaderBuffer()
 
 	for (int frame{}; frame < renderer.GetMaxFrames(); frame++)
 	{
-		m_pMultiShaderBufferDescriptor->UpdateUboBuffer(m_MultiShaderBuffer, frame);
+		m_pMultiShaderBufferDescriptor->UpdateUboBuffer(&m_MultiShaderBuffer, frame);
 	}
 }
 
