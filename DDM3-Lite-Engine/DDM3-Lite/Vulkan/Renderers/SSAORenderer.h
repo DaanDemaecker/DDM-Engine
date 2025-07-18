@@ -12,10 +12,8 @@
 #include "Vulkan/VulkanManagers/SyncObjectManager.h"
 #include "DataTypes/Structs.h"
 #include "DataTypes/DescriptorObjects/InputAttachmentDescriptorObject.h"
+#include "DataTypes/DescriptorObjects/UboDescriptorObject.h"
 
-// Standard library includes
-#include <memory>
-#include <vector>
 
 namespace DDM3
 {
@@ -120,6 +118,14 @@ namespace DDM3
 
 		VkDescriptorPool m_AoGenDescriptorPool{};
 
+		// Samples
+		const int m_SampleCount{ 64 };
+		std::vector<std::vector<AlignedVector>> m_Samples{};
+
+		std::unique_ptr<UboDescriptorObject<AlignedVector>> m_pSamplesDescriptorObject{};
+
+		void SetNewSamples(int frame);
+
 
 		void InitImgui();
 
@@ -162,11 +168,11 @@ namespace DDM3
 		void CreateLightingDescriptorSets();
 
 		// Update Descriptor sets
-		void UpdateDescriptorSets();
+		void UpdateDescriptorSets(int frame);
 
-		void UpdateAoGenDescriptorSets();
+		void UpdateAoGenDescriptorSets(int frame);
 
-		void UpdateLightingDescriptorSets();
+		void UpdateLightingDescriptorSets(int frame);
 	};
 }
 

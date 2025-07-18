@@ -25,6 +25,18 @@
 
 DDM3::SSAORenderer::SSAORenderer()
 {
+	auto maxFrames = VulkanObject::GetInstance().GetMaxFrames();
+
+	m_Samples = std::vector<std::vector<AlignedVector>>(maxFrames);
+
+	for (auto& sampleList : m_Samples)
+	{
+		sampleList = std::vector<AlignedVector>(m_SampleCount);
+	}
+
+	m_pSamplesDescriptorObject = std::make_unique<UboDescriptorObject<AlignedVector>>(m_SampleCount);
+
+
 	auto surface{ VulkanObject::GetInstance().GetSurface() };
 
 	// Get pointer to gpu object
@@ -72,6 +84,7 @@ DDM3::SSAORenderer::~SSAORenderer()
 	vkDestroyDescriptorPool(device, m_AoGenDescriptorPool, nullptr);
 }
 
+
 void DDM3::SSAORenderer::Render()
 {
 	auto& vulkanObject{ DDM3::VulkanObject::GetInstance() };
@@ -82,6 +95,8 @@ void DDM3::SSAORenderer::Render()
 	auto& queueObject{ vulkanObject.GetQueueObject() };
 
 	vkWaitForFences(device, 1, &m_pSyncObjectManager->GetInFlightFence(currentFrame), VK_TRUE, UINT64_MAX);
+
+	SetNewSamples(currentFrame);
 
 	uint32_t imageIndex{};
 	VkResult result = vkAcquireNextImageKHR(device, m_pSwapchainWrapper->GetSwapchain(),
@@ -630,6 +645,17 @@ void DDM3::SSAORenderer::SetupDescriptorObjectsLighting()
 	m_pLightingInputDescriptorObjects.push_back(std::move(descriptorObject));
 }
 
+void DDM3::SSAORenderer::SetNewSamples(int frame)
+{
+
+	for (auto& sample : m_Samples[frame])
+	{
+		sample.vec = glm::vec3{ 0, 1, 0 };
+	}
+	
+	UpdateAoGenDescriptorSets(frame);
+}
+
 void DDM3::SSAORenderer::InitImgui()
 {
 	// Create ImGui vulkan init info
@@ -849,6 +875,23 @@ void DDM3::SSAORenderer::CreateAoGenDescriptorSetLayout()
 		bindings.push_back(binding);
 	}
 
+	VkDescriptorSetLayoutBinding binding{};
+
+	binding.binding = 3;
+	binding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+	binding.descriptorCount = 1;
+	binding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+	binding.pImmutableSamplers = nullptr;
+
+	bindings.push_back(binding);
+
+	VkDescriptorBindingFlags bindingFlags[] = {
+		0,
+		0,
+		0,
+		VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT
+	};
+
 	// Create layout info
 	VkDescriptorSetLayoutCreateInfo layoutInfo{};
 	// Set type to descriptor set layout create info
@@ -911,7 +954,7 @@ void DDM3::SSAORenderer::CreateDescriptorPool()
 
 void DDM3::SSAORenderer::CreateAoGenDescriptorPool()
 {
-	// Get a reference to the renderer
+	// Get a reference to the vulkan object
 	auto& vulkanObject{ VulkanObject::GetInstance() };
 
 	// Get the amount of frames in flight
@@ -921,7 +964,7 @@ void DDM3::SSAORenderer::CreateAoGenDescriptorPool()
 	std::vector<VkDescriptorPoolSize> poolSizes{};
 
 	// Loop trough all the descriptor types
-	for (int i{}; i < 2; ++i)
+	for (int i{}; i < 3; ++i)
 	{
 		VkDescriptorPoolSize descriptorPoolSize{};
 		// Set the type of the poolsize
@@ -932,6 +975,13 @@ void DDM3::SSAORenderer::CreateAoGenDescriptorPool()
 		// Add the descriptor poolsize to the vector
 		poolSizes.push_back(descriptorPoolSize);
 	}
+
+	VkDescriptorPoolSize descriptorPoolSize{};
+	descriptorPoolSize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+	descriptorPoolSize.descriptorCount = m_SampleCount * frames;
+
+	poolSizes.push_back(descriptorPoolSize);
+
 
 	// Create pool info
 	VkDescriptorPoolCreateInfo poolInfo{};
@@ -1029,7 +1079,10 @@ void DDM3::SSAORenderer::CreateAoGenDescriptorSets()
 		throw std::runtime_error("failed to allocate descriptor sets!");
 	}
 
-	UpdateAoGenDescriptorSets();
+	for (int i{}; i < renderer.GetMaxFrames(); ++i)
+	{
+		UpdateAoGenDescriptorSets(i);
+	}
 }
 
 void DDM3::SSAORenderer::CreateLightingDescriptorSets()
@@ -1061,21 +1114,21 @@ void DDM3::SSAORenderer::CreateLightingDescriptorSets()
 		throw std::runtime_error("failed to allocate descriptor sets!");
 	}
 
-	UpdateLightingDescriptorSets();
-}
-
-void DDM3::SSAORenderer::UpdateDescriptorSets()
-{
-	UpdateAoGenDescriptorSets();
-
-	UpdateLightingDescriptorSets();
-}
-
-void DDM3::SSAORenderer::UpdateAoGenDescriptorSets()
-{
-	// Loop trough all the descriptor sets
-	for (int i{}; i < static_cast<int>(m_AoGenDescriptorSets.size()); i++)
+	for (int i{}; i < renderer.GetMaxFrames(); ++i)
 	{
+		UpdateLightingDescriptorSets(i);
+	}
+}
+
+void DDM3::SSAORenderer::UpdateDescriptorSets(int frame)
+{
+	UpdateAoGenDescriptorSets(frame);
+
+	UpdateLightingDescriptorSets(frame);
+}
+
+void DDM3::SSAORenderer::UpdateAoGenDescriptorSets(int frame)
+{
 		// Create a vector of descriptor writes
 		std::vector<VkWriteDescriptorSet> descriptorWrites{};
 
@@ -1085,22 +1138,22 @@ void DDM3::SSAORenderer::UpdateAoGenDescriptorSets()
 		// Loop trough all descriptor objects and add the descriptor writes
 		for (auto& descriptorObject : m_pAoGenInputDescriptorObjects)
 		{
-			descriptorObject->AddDescriptorWrite(m_AoGenDescriptorSets[i], descriptorWrites, binding, 1, i);
+			descriptorObject->AddDescriptorWrite(m_AoGenDescriptorSets[frame], descriptorWrites, binding, 1, frame);
 		}
+
+
+		m_pSamplesDescriptorObject->UpdateUboBuffer(m_Samples[frame].data(), frame);
+
+		m_pSamplesDescriptorObject->AddDescriptorWrite(m_AoGenDescriptorSets[frame], descriptorWrites, binding, 1, frame);
 
 
 		//vkDeviceWaitIdle(VulkanRenderer::GetInstance().GetDevice());
 		// Update descriptorsets
 		vkUpdateDescriptorSets(VulkanObject::GetInstance().GetDevice(), static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
-	}
 }
 
-void DDM3::SSAORenderer::UpdateLightingDescriptorSets()
+void DDM3::SSAORenderer::UpdateLightingDescriptorSets(int frame)
 {
-
-	// Loop trough all the descriptor sets
-	for (int i{}; i < static_cast<int>(m_LightingDescriptorSets.size()); i++)
-	{
 		// Create a vector of descriptor writes
 		std::vector<VkWriteDescriptorSet> descriptorWrites{};
 
@@ -1110,12 +1163,11 @@ void DDM3::SSAORenderer::UpdateLightingDescriptorSets()
 		// Loop trough all descriptor objects and add the descriptor writes
 		for (auto& descriptorObject : m_pLightingInputDescriptorObjects)
 		{
-			descriptorObject->AddDescriptorWrite(m_LightingDescriptorSets[i], descriptorWrites, binding, 1, i);
+			descriptorObject->AddDescriptorWrite(m_LightingDescriptorSets[frame], descriptorWrites, binding, 1, frame);
 		}
 
 
 		//vkDeviceWaitIdle(VulkanRenderer::GetInstance().GetDevice());
 		// Update descriptorsets
 		vkUpdateDescriptorSets(VulkanObject::GetInstance().GetDevice(), static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
-	}
 }
