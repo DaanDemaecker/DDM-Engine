@@ -52,8 +52,9 @@ namespace DDM3
 			kSubpass_DEPTH = 0,
 			kSubpass_GBUFFER = 1,
 			kSubpass_AO_GEN = 2,
-			kSubpass_LIGHTING = 3,
-			kSubpass_IMGUI = 4
+			kSubpass_AO_BLUR = 3,
+			kSubpass_LIGHTING = 4,
+			kSubpass_IMGUI = 5
 		};
 	private:
 		enum
@@ -81,6 +82,8 @@ namespace DDM3
 		void SetupGBufferPass();
 
 		void SetupAoGenPass();
+
+		void SetupAoBlurPass();
 
 		void SetupLightingPass();
 
@@ -125,6 +128,24 @@ namespace DDM3
 		// Projection matrix
 		std::unique_ptr<UboDescriptorObject<glm::mat4>> m_pProjectionMatrixDescObject{};
 		
+
+
+
+		// Everything needed for AOBlur Descriptorsets
+		PipelineWrapper* m_pAoBlurPipeline{};
+
+		std::vector<VkDescriptorSet> m_AoBlurDescriptorSets{};
+
+		VkDescriptorSetLayout m_AoBlurDescriptorSetLayout{};
+
+		VkDescriptorPool m_AoBlurDescriptorPool{};
+
+		// AOGen texture
+		std::unique_ptr<TextureDescriptorObject> m_pAoGenTextureDescriptorObject{};
+
+
+
+
 		// Everything needed for the Lighting descriptor sets
 		PipelineWrapper* m_pLightingPipeline{};
 
@@ -138,8 +159,6 @@ namespace DDM3
 
 		void SetupPositionTexture();
 
-		void AddPositionTexture();
-
 		void SetupNoiseTexture();
 
 		void SetupSamples();
@@ -151,9 +170,12 @@ namespace DDM3
 		void SetupProjectionMatrix();
 
 
+
 		void InitImgui();
 
 		void CleanupImgui();
+
+
 
 		void RecordCommandBuffer(VkCommandBuffer& commandBuffer, uint32_t imageIndex);
 
@@ -167,19 +189,25 @@ namespace DDM3
 
 		void SetupDescriptorObjectsAoGen();
 
+		void SetupDescriptorObjectsAoBlur();
+
 		void SetupDescriptorObjectsLighting();
 
 		// Descriptor pools setup
-		void CreateDescriptorPool();
+		void CreateDescriptorPools();
 
 		void CreateAoGenDescriptorPool();
+
+		void CreateAoBlurDescriptorPool();
 
 		void CreateLightingDescriptorPool();
 
 		// Descriptor Layouts setup
-		void CreateDescriptorSetLayout();
+		void CreateDescriptorSetLayouts();
 
 		void CreateAoGenDescriptorSetLayout();
+
+		void CreateAoBlurDescriptorSetLayout();
 
 		void CreateLightingDescriptorSetLayout();
 
@@ -189,12 +217,16 @@ namespace DDM3
 
 		void CreateAoGenDescriptorSets();
 
+		void CreateAoBlurDescriptorSets();
+
 		void CreateLightingDescriptorSets();
 
 		// Update Descriptor sets
 		void UpdateDescriptorSets(int frame, int swapchainIndex);
 
 		void UpdateAoGenDescriptorSets(int frame, int swapchainIndex);
+
+		void UpdateAoBlurDescriptorSets(int frame, int swapchainIndex);
 
 		void UpdateLightingDescriptorSets(int frame);
 	};

@@ -56,9 +56,9 @@ DDM3::SSAORenderer::SSAORenderer()
 
 	SetupDescriptorObjects();
 
-	CreateDescriptorPool();
+	CreateDescriptorPools();
 	
-	CreateDescriptorSetLayout();
+	CreateDescriptorSetLayouts();
 
 	CreateDescriptorSets();
 
@@ -77,6 +77,11 @@ DDM3::SSAORenderer::~SSAORenderer()
 	vkDestroyDescriptorSetLayout(device, m_LightingDescriptorSetLayout, nullptr);
 
 	vkDestroyDescriptorPool(device, m_LightingDescriptorPool, nullptr);
+
+
+	vkDestroyDescriptorSetLayout(device, m_AoBlurDescriptorSetLayout, nullptr);
+
+	vkDestroyDescriptorPool(device, m_AoBlurDescriptorPool, nullptr);
 
 
 	vkDestroyDescriptorSetLayout(device, m_AoGenDescriptorSetLayout, nullptr);
@@ -103,6 +108,8 @@ void DDM3::SSAORenderer::Render()
 
 
 	SetNewSamples(currentFrame, imageIndex);
+
+	UpdateAoBlurDescriptorSets(currentFrame, imageIndex);
 
 	if (result == VK_ERROR_OUT_OF_DATE_KHR)
 	{
@@ -186,8 +193,11 @@ void DDM3::SSAORenderer::AddDefaultPipelines()
 	// Get config manager
 	auto& configManager{ ConfigManager::GetInstance() };
 
+	// Get reference to vulkan object
+	auto& vulkanObject = VulkanObject::GetInstance();
 
-	VulkanObject::GetInstance().AddGraphicsPipeline(configManager.GetString("DepthPipelineName"), {
+
+	vulkanObject.AddGraphicsPipeline(configManager.GetString("DepthPipelineName"), {
 		configManager.GetString("DepthVert")});
 
 
@@ -195,7 +205,7 @@ void DDM3::SSAORenderer::AddDefaultPipelines()
 	auto defaultPipelineName = configManager.GetString("DefaultPipelineName");
 
 	// Add default pipeline
-	VulkanObject::GetInstance().AddGraphicsPipeline(defaultPipelineName, {
+	vulkanObject.AddGraphicsPipeline(defaultPipelineName, {
 		"Resources/Shaders/SSAOGbuffer.vert.spv",
 		"Resources/Shaders/SSAOGbuffer.frag.spv" },
 		true, false, kSubpass_GBUFFER);
@@ -204,23 +214,34 @@ void DDM3::SSAORenderer::AddDefaultPipelines()
 	auto lightingPipelineName = configManager.GetString("DeferredLightingPipelineName");
 	
 	// Add default pipeline
-	VulkanObject::GetInstance().AddGraphicsPipeline(lightingPipelineName, {
+	vulkanObject.AddGraphicsPipeline(lightingPipelineName, {
 		configManager.GetString("DrawQuadVert"),
 		"Resources/Shaders/SSAOLighting.frag.spv" },
 		false, true, kSubpass_LIGHTING);
 
-	m_pLightingPipeline = VulkanObject::GetInstance().GetPipeline(lightingPipelineName);
+	m_pLightingPipeline = vulkanObject.GetPipeline(lightingPipelineName);
 
 
 	auto aoPipelineName = "AoGeneration";
 
-	VulkanObject::GetInstance().AddGraphicsPipeline(aoPipelineName, {
+	vulkanObject.AddGraphicsPipeline(aoPipelineName, {
 		configManager.GetString("DrawQuadVert"),
 		"Resources/Shaders/SSAOGen.frag.spv"},
 		true, true, kSubpass_AO_GEN);
 
+	m_pAoPipeline = vulkanObject.GetPipeline(aoPipelineName);
 
-	m_pAoPipeline = VulkanObject::GetInstance().GetPipeline(aoPipelineName);
+
+
+	auto aoBlurPipelineName = "AoBlur";
+
+	vulkanObject.AddGraphicsPipeline(aoBlurPipelineName, {
+		configManager.GetString("DrawQuadVert"),
+		"Resources/Shaders/SSAOBlur.frag.spv" },
+		true, true, kSubpass_AO_BLUR);
+
+
+	m_pAoBlurPipeline = vulkanObject.GetPipeline(aoBlurPipelineName);
 }
 
 void DDM3::SSAORenderer::CreateRenderpass()
@@ -234,6 +255,8 @@ void DDM3::SSAORenderer::CreateRenderpass()
 	SetupGBufferPass();
 
 	SetupAoGenPass();
+
+	SetupAoBlurPass();
 
 	SetupLightingPass();
 
@@ -410,7 +433,7 @@ void DDM3::SSAORenderer::SetupAttachments()
 
 
 	VkFormat aoMapFormat = VK_FORMAT_R32_SFLOAT;
-	// albedo attachment
+	// AoGen attachment
 	auto aoMapAttachment = std::make_unique<Attachment>(swapchainImageAmount);
 	aoMapAttachment->SetClearColorValue({ 1.0f, 1.0f, 1.0f, 1.0f });
 	aoMapAttachment->SetFormat(aoMapFormat);
@@ -430,6 +453,27 @@ void DDM3::SSAORenderer::SetupAttachments()
 
 	aoMapAttachment->SetAttachmentDesc(aoMapAttachmentDesc);
 
+
+	// AoBlur attachment
+	auto aoBlurMapAttachment = std::make_unique<Attachment>(swapchainImageAmount);
+	aoBlurMapAttachment->SetClearColorValue({ 1.0f, 1.0f, 1.0f, 1.0f });
+	aoBlurMapAttachment->SetFormat(aoMapFormat);
+	aoBlurMapAttachment->SetAttachmentType(Attachment::kAttachmentType_Color);
+	aoBlurMapAttachment->SetIsInput(true);
+
+	VkAttachmentDescription aoBlurMapAttachmentDesc{};
+	aoBlurMapAttachmentDesc.flags = 0;
+	aoBlurMapAttachmentDesc.format = aoMapFormat;
+	aoBlurMapAttachmentDesc.samples = VK_SAMPLE_COUNT_1_BIT;
+	aoBlurMapAttachmentDesc.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+	aoBlurMapAttachmentDesc.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+	aoBlurMapAttachmentDesc.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+	aoBlurMapAttachmentDesc.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+	aoBlurMapAttachmentDesc.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+	aoBlurMapAttachmentDesc.finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+
+	aoBlurMapAttachment->SetAttachmentDesc(aoBlurMapAttachmentDesc);
+
 	m_pRenderpass->AddAttachment(std::move(backBufferAttachment));
 	m_pRenderpass->AddAttachment(std::move(depthAttachment));
 	m_pRenderpass->AddAttachment(std::move(albedoAttachment));
@@ -438,6 +482,7 @@ void DDM3::SSAORenderer::SetupAttachments()
 	m_pRenderpass->AddAttachment(std::move(viewNormalAttachment));
 	m_pRenderpass->AddAttachment(std::move(viewPositionAttachment));
 	m_pRenderpass->AddAttachment(std::move(aoMapAttachment));
+	m_pRenderpass->AddAttachment(std::move(aoBlurMapAttachment));
 
 }
 
@@ -538,6 +583,26 @@ void DDM3::SSAORenderer::SetupAoGenPass()
 	m_pRenderpass->AddSubpass(std::move(pAoMapPass));
 }
 
+void DDM3::SSAORenderer::SetupAoBlurPass()
+{
+	std::unique_ptr<Subpass> pBlurSubpass{std::make_unique<Subpass>()};
+
+	VkAttachmentReference aoMapReference{};
+	aoMapReference.attachment = kAttachment_AO_MAP;
+	aoMapReference.layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+
+	pBlurSubpass->AddInputReference(aoMapReference);
+
+	VkAttachmentReference aoBlurReference{};
+	aoBlurReference.attachment = kAttachment_AO_BLURRED;
+	aoBlurReference.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+	pBlurSubpass->AddReference(aoBlurReference);
+
+
+	m_pRenderpass->AddSubpass(std::move(pBlurSubpass));
+}
+
 void DDM3::SSAORenderer::SetupLightingPass()
 {
 	std::unique_ptr<Subpass> pLightingPass{ std::make_unique<Subpass>() };
@@ -571,7 +636,7 @@ void DDM3::SSAORenderer::SetupLightingPass()
 	pLightingPass->AddInputReference(positionAttachmentRef);
 
 	VkAttachmentReference aoAttachmentRef{};
-	aoAttachmentRef.attachment = kAttachment_AO_MAP;
+	aoAttachmentRef.attachment = kAttachment_AO_BLURRED;
 	aoAttachmentRef.layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
 	pLightingPass->AddInputReference(aoAttachmentRef);
@@ -624,14 +689,23 @@ void DDM3::SSAORenderer::SetupDependencies()
 	gBufferToAoGenDependency.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
 	gBufferToAoGenDependency.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
 
-	VkSubpassDependency aoGenToLightingDependency{};
-	aoGenToLightingDependency.srcSubpass = kSubpass_AO_GEN;
-	aoGenToLightingDependency.dstSubpass = kSubpass_LIGHTING;
-	aoGenToLightingDependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-	aoGenToLightingDependency.dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-	aoGenToLightingDependency.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-	aoGenToLightingDependency.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-	aoGenToLightingDependency.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
+	VkSubpassDependency aoGenToAoBlurDependency{};
+	aoGenToAoBlurDependency.srcSubpass = kSubpass_AO_GEN;
+	aoGenToAoBlurDependency.dstSubpass = kSubpass_AO_BLUR;
+	aoGenToAoBlurDependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+	aoGenToAoBlurDependency.dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+	aoGenToAoBlurDependency.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+	aoGenToAoBlurDependency.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+	aoGenToAoBlurDependency.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
+
+	VkSubpassDependency aoBlurToLightingDependency{};
+	aoBlurToLightingDependency.srcSubpass = kSubpass_AO_BLUR;
+	aoBlurToLightingDependency.dstSubpass = kSubpass_LIGHTING;
+	aoBlurToLightingDependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+	aoBlurToLightingDependency.dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+	aoBlurToLightingDependency.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+	aoBlurToLightingDependency.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+	aoBlurToLightingDependency.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
 
 	VkSubpassDependency lightingToImguiDependency{};
 	lightingToImguiDependency.srcSubpass = kSubpass_LIGHTING;
@@ -645,13 +719,16 @@ void DDM3::SSAORenderer::SetupDependencies()
 
 	m_pRenderpass->AddDependency(depthToGbufferDependency);
 	m_pRenderpass->AddDependency(gBufferToAoGenDependency);
-	m_pRenderpass->AddDependency(aoGenToLightingDependency);
+	m_pRenderpass->AddDependency(aoGenToAoBlurDependency);
+	m_pRenderpass->AddDependency(aoBlurToLightingDependency);
 	m_pRenderpass->AddDependency(lightingToImguiDependency);;
 }
 
 void DDM3::SSAORenderer::SetupDescriptorObjects()
 {
 	SetupDescriptorObjectsAoGen();
+
+	SetupDescriptorObjectsAoBlur();
 
 	SetupDescriptorObjectsLighting();
 }
@@ -675,6 +752,12 @@ void DDM3::SSAORenderer::SetupDescriptorObjectsAoGen()
 	descriptorObject->AddImageView(attachments[kAttachment_DEPTH]->GetTexture(0)->imageView, VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL);
 
 	m_pAoGenInputDescriptorObjects.push_back(std::move(descriptorObject));
+}
+
+void DDM3::SSAORenderer::SetupDescriptorObjectsAoBlur()
+{
+	m_pAoGenTextureDescriptorObject = std::make_unique<TextureDescriptorObject>();
+	m_pAoGenTextureDescriptorObject->SetCleanupTextures(false);
 }
 
 void DDM3::SSAORenderer::SetupDescriptorObjectsLighting()
@@ -703,12 +786,6 @@ void DDM3::SSAORenderer::SetupPositionTexture()
 {
 	m_pPositionTextureDescriptorObject = std::make_unique<TextureDescriptorObject>();
 	m_pPositionTextureDescriptorObject->SetCleanupTextures(false);
-}
-
-void DDM3::SSAORenderer::AddPositionTexture()
-{
-	m_pPositionTextureDescriptorObject->Clear();
-	m_pPositionTextureDescriptorObject->AddTextures(m_pRenderpass->GetAttachmentList()[kAttachment_GBUFFER_VIEWPOS]->GetTextureRef(0));
 }
 
 void DDM3::SSAORenderer::SetupNoiseTexture()
@@ -747,8 +824,8 @@ void DDM3::SSAORenderer::SetNewSamples(int frame, int swapchainIndex)
 void DDM3::SSAORenderer::GetRandomVector(glm::vec4& vec, int index)
 {
 	vec.x = Utils::RandomFLoat(-1.0f, 1.0f);
-	vec.y = Utils::RandomFLoat(0.0f, 1.0f);
-	vec.z = Utils::RandomFLoat(-1.0f, 1.0f);
+	vec.y = Utils::RandomFLoat(-1.0f, 1.0f);
+	vec.z = Utils::RandomFLoat(0.0f, 1.0f);
 	vec.w = 0;
 
 	vec = glm::normalize(vec);
@@ -857,6 +934,17 @@ void DDM3::SSAORenderer::RecordCommandBuffer(VkCommandBuffer& commandBuffer, uin
 
 	VulkanObject::GetInstance().DrawQuad(commandBuffer);
 
+	// AO Blur pass
+	vkCmdNextSubpass(commandBuffer, VK_SUBPASS_CONTENTS_INLINE);
+
+	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pAoBlurPipeline->GetPipeline());
+
+	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pAoBlurPipeline->GetPipelineLayout(), 0, 1,
+		&m_AoBlurDescriptorSets[frame], 0, nullptr);
+
+	VulkanObject::GetInstance().DrawQuad(commandBuffer);
+
+
 	// Lighting pass
 	vkCmdNextSubpass(commandBuffer, VK_SUBPASS_CONTENTS_INLINE);
 
@@ -949,17 +1037,20 @@ void DDM3::SSAORenderer::ResetDescriptorSets()
 {
 	vkFreeDescriptorSets(VulkanObject::GetInstance().GetDevice(), m_LightingDescriptorPool, m_LightingDescriptorSets.size(), m_LightingDescriptorSets.data());
 
-
 	vkFreeDescriptorSets(VulkanObject::GetInstance().GetDevice(), m_AoGenDescriptorPool, m_AoGenDescriptorSets.size(), m_AoGenDescriptorSets.data());
+
+	vkFreeDescriptorSets(VulkanObject::GetInstance().GetDevice(), m_AoBlurDescriptorPool, m_AoBlurDescriptorSets.size(), m_AoBlurDescriptorSets.data());
 
 	SetupDescriptorObjects();
 
 	CreateDescriptorSets();
 }
 
-void DDM3::SSAORenderer::CreateDescriptorSetLayout()
+void DDM3::SSAORenderer::CreateDescriptorSetLayouts()
 {
 	CreateAoGenDescriptorSetLayout();
+
+	CreateAoBlurDescriptorSetLayout();
 
 	CreateLightingDescriptorSetLayout();
 }
@@ -1041,6 +1132,38 @@ void DDM3::SSAORenderer::CreateAoGenDescriptorSetLayout()
 	}
 }
 
+void DDM3::SSAORenderer::CreateAoBlurDescriptorSetLayout()
+{
+	// Create vector of descriptorsetlayoutbindings the size of the sum of vertexUbos, fragmentUbos and textureamount;
+	std::vector<VkDescriptorSetLayoutBinding> bindings{};
+
+	VkDescriptorSetLayoutBinding aoGenTextureBinding{};
+
+	aoGenTextureBinding.binding = 0;
+	aoGenTextureBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+	aoGenTextureBinding.descriptorCount = 1;
+	aoGenTextureBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+	aoGenTextureBinding.pImmutableSamplers = nullptr;
+
+	bindings.push_back(aoGenTextureBinding);
+
+	// Create layout info
+	VkDescriptorSetLayoutCreateInfo layoutInfo{};
+	// Set type to descriptor set layout create info
+	layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+	// Set bindingcount to the amount of bindings
+	layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
+	// Set bindings to the data of bindings vector
+	layoutInfo.pBindings = bindings.data();
+
+	// Create descriptorset layout
+	if (vkCreateDescriptorSetLayout(VulkanObject::GetInstance().GetDevice(), &layoutInfo, nullptr, &m_AoBlurDescriptorSetLayout) != VK_SUCCESS)
+	{
+		// If not successfull, throw runtime error
+		throw std::runtime_error("failed to create descriptor set layout!");
+	}
+}
+
 void DDM3::SSAORenderer::CreateLightingDescriptorSetLayout()
 {
 	// Create vector of descriptorsetlayoutbindings the size of the sum of vertexUbos, fragmentUbos and textureamount;
@@ -1077,9 +1200,11 @@ void DDM3::SSAORenderer::CreateLightingDescriptorSetLayout()
 	}
 }
 
-void DDM3::SSAORenderer::CreateDescriptorPool()
+void DDM3::SSAORenderer::CreateDescriptorPools()
 {
 	CreateAoGenDescriptorPool();
+
+	CreateAoBlurDescriptorPool();
 
 	CreateLightingDescriptorPool();
 }
@@ -1151,6 +1276,44 @@ void DDM3::SSAORenderer::CreateAoGenDescriptorPool()
 	}
 }
 
+void DDM3::SSAORenderer::CreateAoBlurDescriptorPool()
+{
+	// Get a reference to the vulkan object
+	auto& vulkanObject{ VulkanObject::GetInstance() };
+
+	// Get the amount of frames in flight
+	auto frames{ vulkanObject.GetMaxFrames() };
+
+	// Create a vector of pool sizes
+	std::vector<VkDescriptorPoolSize> poolSizes{};
+	
+
+	VkDescriptorPoolSize aogGenTextureDescriptorpoolSize{};
+	aogGenTextureDescriptorpoolSize.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+	aogGenTextureDescriptorpoolSize.descriptorCount = frames;
+
+	poolSizes.push_back(aogGenTextureDescriptorpoolSize);
+
+
+	// Create pool info
+	VkDescriptorPoolCreateInfo poolInfo{};
+	// Set type to descriptor pool create info
+	poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+	// Set sizecount to the size of poolsizes
+	poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
+	// Give poolSizes
+	poolInfo.pPoolSizes = poolSizes.data();
+	// Give max sets
+	poolInfo.maxSets = static_cast<uint32_t>(frames);
+	poolInfo.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
+
+	// Created descriptorpool, if not successful, throw runtime error
+	if (vkCreateDescriptorPool(vulkanObject.GetDevice(), &poolInfo, nullptr, &m_AoBlurDescriptorPool) != VK_SUCCESS)
+	{
+		throw std::runtime_error("failed to create descriptor pool!");
+	}
+}
+
 void DDM3::SSAORenderer::CreateLightingDescriptorPool()
 {
 	// Get a reference to the renderer
@@ -1197,6 +1360,8 @@ void DDM3::SSAORenderer::CreateDescriptorSets()
 {
 	CreateAoGenDescriptorSets();
 
+	CreateAoBlurDescriptorSets();
+
 	CreateLightingDescriptorSets();
 }
 
@@ -1232,6 +1397,41 @@ void DDM3::SSAORenderer::CreateAoGenDescriptorSets()
 	for (int i{}; i < renderer.GetMaxFrames(); ++i)
 	{
 		UpdateAoGenDescriptorSets(i, 0);
+	}
+}
+
+void DDM3::SSAORenderer::CreateAoBlurDescriptorSets()
+{
+	// Get a reference to the renderer for later use
+	auto& renderer{ VulkanObject::GetInstance() };
+
+	// Get the amount of frames in flight
+	auto maxFrames = renderer.GetMaxFrames();
+
+	// Create the allocation info for the descriptorsets
+	VkDescriptorSetAllocateInfo allocInfo{};
+	// Set type to descriptor set allocate info
+	allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+	// Give the right descriptorpool
+	allocInfo.descriptorPool = m_AoBlurDescriptorPool;
+	// Give the amount of descriptorsets to be allocated
+	allocInfo.descriptorSetCount = static_cast<uint32_t>(maxFrames);
+	// Create vector of descriptorsets the size of maxFrames and fill with layout
+	std::vector<VkDescriptorSetLayout> layouts(maxFrames, m_AoBlurDescriptorSetLayout);
+	allocInfo.pSetLayouts = layouts.data();
+
+	// Resize descriptorsets to right amount
+	m_AoBlurDescriptorSets.resize(maxFrames);
+
+	// Allocate descriptorsets, if not succeeded, throw runtime error
+	if (vkAllocateDescriptorSets(renderer.GetDevice(), &allocInfo, m_AoBlurDescriptorSets.data()) != VK_SUCCESS)
+	{
+		throw std::runtime_error("failed to allocate descriptor sets!");
+	}
+
+	for (int i{}; i < renderer.GetMaxFrames(); ++i)
+	{
+		UpdateAoBlurDescriptorSets(i, 0);
 	}
 }
 
@@ -1274,6 +1474,8 @@ void DDM3::SSAORenderer::UpdateDescriptorSets(int frame, int swapchainIndex)
 {
 	UpdateAoGenDescriptorSets(frame, swapchainIndex);
 
+	UpdateAoBlurDescriptorSets(frame, swapchainIndex);
+
 	UpdateLightingDescriptorSets(frame);
 }
 
@@ -1293,7 +1495,7 @@ void DDM3::SSAORenderer::UpdateAoGenDescriptorSets(int frame, int swapchainIndex
 
 		m_pPositionTextureDescriptorObject->Clear();
 
-		auto& posTexture = m_pRenderpass->GetAttachmentList()[kAttachment_GBUFFER_VIEWPOS]->GetTextureRef(frame);
+		auto& posTexture = m_pRenderpass->GetAttachmentList()[kAttachment_GBUFFER_VIEWPOS]->GetTextureRef(swapchainIndex);
 		m_pPositionTextureDescriptorObject->AddTextures(posTexture);
 
 		m_pPositionTextureDescriptorObject->AddDescriptorWrite(m_AoGenDescriptorSets[frame], descriptorWrites, binding, 1, frame);
@@ -1316,6 +1518,27 @@ void DDM3::SSAORenderer::UpdateAoGenDescriptorSets(int frame, int swapchainIndex
 		//vkDeviceWaitIdle(VulkanRenderer::GetInstance().GetDevice());
 		// Update descriptorsets
 		vkUpdateDescriptorSets(VulkanObject::GetInstance().GetDevice(), static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
+}
+
+void DDM3::SSAORenderer::UpdateAoBlurDescriptorSets(int frame, int swapchainIndex)
+{
+	// Create a vector of descriptor writes
+	std::vector<VkWriteDescriptorSet> descriptorWrites{};
+
+	// Initialize current binding with 0
+	int binding{};
+
+
+	auto& aoGenTexture = m_pRenderpass->GetAttachmentList()[kAttachment_AO_MAP]->GetTextureRef(swapchainIndex);
+	m_pAoGenTextureDescriptorObject->AddTextures(aoGenTexture);
+
+	m_pAoGenTextureDescriptorObject->AddDescriptorWrite(m_AoBlurDescriptorSets[frame], descriptorWrites, binding, 1, frame);
+
+
+	//vkDeviceWaitIdle(VulkanRenderer::GetInstance().GetDevice());
+	// Update descriptorsets
+	vkUpdateDescriptorSets(VulkanObject::GetInstance().GetDevice(), static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
+
 }
 
 void DDM3::SSAORenderer::UpdateLightingDescriptorSets(int frame)

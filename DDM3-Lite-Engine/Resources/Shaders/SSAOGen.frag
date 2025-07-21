@@ -2,7 +2,7 @@
 
 const int sampleAmount = 64;
 const float radius = 0.5;
-const float bias = 0.0000025;
+const float bias = 0.0025;
 
 layout (input_attachment_index = 0, set = 0, binding = 0) uniform subpassInput inNormal;
 layout (input_attachment_index = 2, set = 0, binding = 1) uniform subpassInput depth;
@@ -71,7 +71,9 @@ void CalculateOutValue()
 
       vec3 occluderPos = texture(inPos, offset.xy).rgb;
 
-      occlusion += (occluderPos.z <= sampleVec.z - bias ? 1.0 : 0.0);
+      float rangeCheck = smoothstep(0.0, 1.0, radius/length(pos - occluderPos));
+
+      occlusion += (occluderPos.z <= sampleVec.z - bias ? 1.0 : 0.0) * rangeCheck;
     }
 
    outValue = 1.0 - (occlusion / sampleAmount);
