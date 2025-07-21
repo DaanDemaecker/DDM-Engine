@@ -24,19 +24,17 @@
 #include "Managers/ConfigManager.h"
 
 #include "Utils/Utils.h"
+#include "Components/CameraComponent.h"
 
 DDM3::SSAORenderer::SSAORenderer()
 {
-	auto maxFrames = VulkanObject::GetInstance().GetMaxFrames();
+	SetupPositionTexture();
 
-	m_Samples = std::vector<std::vector<glm::vec4>>(maxFrames);
+	SetupNoiseTexture();
 
-	for (auto& sampleList : m_Samples)
-	{
-		sampleList = std::vector<glm::vec4>(m_SampleCount);
-	}
+	SetupSamples();
 
-	m_pSamplesDescriptorObject = std::make_unique<UboDescriptorObject<glm::vec4>>(m_SampleCount);
+	SetupProjectionMatrix();
 
 
 	auto surface{ VulkanObject::GetInstance().GetSurface() };
@@ -98,11 +96,13 @@ void DDM3::SSAORenderer::Render()
 
 	vkWaitForFences(device, 1, &m_pSyncObjectManager->GetInFlightFence(currentFrame), VK_TRUE, UINT64_MAX);
 
-	SetNewSamples(currentFrame);
 
 	uint32_t imageIndex{};
 	VkResult result = vkAcquireNextImageKHR(device, m_pSwapchainWrapper->GetSwapchain(),
 		UINT64_MAX, m_pSyncObjectManager->GetImageAvailableSemaphore(currentFrame), VK_NULL_HANDLE, &imageIndex);
+
+
+	SetNewSamples(currentFrame, imageIndex);
 
 	if (result == VK_ERROR_OUT_OF_DATE_KHR)
 	{
@@ -196,8 +196,8 @@ void DDM3::SSAORenderer::AddDefaultPipelines()
 
 	// Add default pipeline
 	VulkanObject::GetInstance().AddGraphicsPipeline(defaultPipelineName, {
-		configManager.GetString("DefaultDeferredVert"),
-		configManager.GetString("DefaultDeferredFrag") },
+		"Resources/Shaders/SSAOGbuffer.vert.spv",
+		"Resources/Shaders/SSAOGbuffer.frag.spv" },
 		true, false, kSubpass_GBUFFER);
 
 	// Initialize default pipeline name 
@@ -231,7 +231,7 @@ void DDM3::SSAORenderer::CreateRenderpass()
 
 	SetupDepthPass();
 
-	SetupGeometryPass();
+	SetupGBufferPass();
 
 	SetupAoGenPass();
 
@@ -306,7 +306,7 @@ void DDM3::SSAORenderer::SetupAttachments()
 
 
 	// Set up color attachments
-	auto colorAttachmentFormat = VK_FORMAT_R8G8B8A8_UNORM;
+	auto colorAttachmentFormat = VK_FORMAT_R16G16B16A16_SFLOAT;
 
 	// albedo attachment
 	auto albedoAttachment = std::make_unique<Attachment>(swapchainImageAmount);
@@ -367,6 +367,46 @@ void DDM3::SSAORenderer::SetupAttachments()
 	positionAttachmentDesc.finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
 	positionAttachment->SetAttachmentDesc(positionAttachmentDesc);
+	
+	// viewspace normal attachment
+	auto viewNormalAttachment = std::make_unique<Attachment>(swapchainImageAmount);
+	viewNormalAttachment->SetFormat(colorAttachmentFormat);
+	viewNormalAttachment->SetAttachmentType(Attachment::kAttachmentType_Color);
+	viewNormalAttachment->SetIsInput(true);
+
+
+	VkAttachmentDescription viewNormalAttachmentDesc{};
+	viewNormalAttachmentDesc.flags = 0;
+	viewNormalAttachmentDesc.format = colorAttachmentFormat;
+	viewNormalAttachmentDesc.samples = VK_SAMPLE_COUNT_1_BIT;
+	viewNormalAttachmentDesc.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+	viewNormalAttachmentDesc.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+	viewNormalAttachmentDesc.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+	viewNormalAttachmentDesc.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+	viewNormalAttachmentDesc.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+	viewNormalAttachmentDesc.finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+
+	viewNormalAttachment->SetAttachmentDesc(viewNormalAttachmentDesc);
+
+	// viewspace posiition attachment
+	auto viewPositionAttachment = std::make_unique<Attachment>(swapchainImageAmount);
+	viewPositionAttachment->SetFormat(colorAttachmentFormat);
+	viewPositionAttachment->SetAttachmentType(Attachment::kAttachmentType_Color);
+	viewPositionAttachment->SetIsInput(true);
+
+
+	VkAttachmentDescription viewPositionAttachmentDesc{};
+	viewPositionAttachmentDesc.flags = 0;
+	viewPositionAttachmentDesc.format = colorAttachmentFormat;
+	viewPositionAttachmentDesc.samples = VK_SAMPLE_COUNT_1_BIT;
+	viewPositionAttachmentDesc.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+	viewPositionAttachmentDesc.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+	viewPositionAttachmentDesc.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+	viewPositionAttachmentDesc.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+	viewPositionAttachmentDesc.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+	viewPositionAttachmentDesc.finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+
+	viewPositionAttachment->SetAttachmentDesc(viewPositionAttachmentDesc);
 
 
 	VkFormat aoMapFormat = VK_FORMAT_R32_SFLOAT;
@@ -395,6 +435,8 @@ void DDM3::SSAORenderer::SetupAttachments()
 	m_pRenderpass->AddAttachment(std::move(albedoAttachment));
 	m_pRenderpass->AddAttachment(std::move(normalAttachment));
 	m_pRenderpass->AddAttachment(std::move(positionAttachment));
+	m_pRenderpass->AddAttachment(std::move(viewNormalAttachment));
+	m_pRenderpass->AddAttachment(std::move(viewPositionAttachment));
 	m_pRenderpass->AddAttachment(std::move(aoMapAttachment));
 
 }
@@ -413,7 +455,7 @@ void DDM3::SSAORenderer::SetupDepthPass()
 	m_pRenderpass->AddSubpass(std::move(depthPass));
 }
 
-void DDM3::SSAORenderer::SetupGeometryPass()
+void DDM3::SSAORenderer::SetupGBufferPass()
 {
 	std::unique_ptr<Subpass> pGBufferPass{ std::make_unique<Subpass>() };
 
@@ -445,6 +487,19 @@ void DDM3::SSAORenderer::SetupGeometryPass()
 
 	pGBufferPass->AddReference(positionAttachmentRef);
 
+	VkAttachmentReference viewNormalAttachmentRef{};
+	viewNormalAttachmentRef.attachment = kAttachment_GBUFFER_VIEWNORMAL;
+	viewNormalAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+	pGBufferPass->AddReference(viewNormalAttachmentRef);
+
+
+	VkAttachmentReference viewPositionAttachmentRef{};
+	viewPositionAttachmentRef.attachment = kAttachment_GBUFFER_VIEWPOS;
+	viewPositionAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+	pGBufferPass->AddReference(viewPositionAttachmentRef);
+
 
 	m_pRenderpass->AddSubpass(std::move(pGBufferPass));
 }
@@ -454,16 +509,16 @@ void DDM3::SSAORenderer::SetupAoGenPass()
 	std::unique_ptr<Subpass> pAoMapPass{ std::make_unique<Subpass>() };
 
 	VkAttachmentReference normalAttachmentRef{};
-	normalAttachmentRef.attachment = kAttachment_GBUFFER_NORMAL;
+	normalAttachmentRef.attachment = kAttachment_GBUFFER_VIEWNORMAL;
 	normalAttachmentRef.layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
 	pAoMapPass->AddInputReference(normalAttachmentRef);
 
 
 	VkAttachmentReference positionAttachmentRef{};
-	positionAttachmentRef.attachment = kAttachment_GBUFFER_POSITION;
+	positionAttachmentRef.attachment = kAttachment_GBUFFER_VIEWPOS;
 	positionAttachmentRef.layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-
+	
 	pAoMapPass->AddInputReference(positionAttachmentRef);
 
 	// Depth prepass depth buffer reference (read/write)
@@ -477,9 +532,7 @@ void DDM3::SSAORenderer::SetupAoGenPass()
 	aoMapReference.attachment = kAttachment_AO_MAP;
 	aoMapReference.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
-	pAoMapPass->AddReference(aoMapReference);
-
-	
+	pAoMapPass->AddReference(aoMapReference);	
 
 
 	m_pRenderpass->AddSubpass(std::move(pAoMapPass));
@@ -609,16 +662,15 @@ void DDM3::SSAORenderer::SetupDescriptorObjectsAoGen()
 
 	auto& attachments{ m_pRenderpass->GetAttachmentList() };
 
-	for (int i{ kAttachment_GBUFFER_NORMAL }; i <= kAttachment_GBUFFER_POSITION; ++i)
-	{
-		auto descriptorObject{ std::make_unique<InputAttachmentDescriptorObject>() };
-
-		descriptorObject->AddImageView(attachments[i]->GetTexture(0)->imageView, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-
-		m_pAoGenInputDescriptorObjects.push_back(std::move(descriptorObject));
-	}
-
+	// Normal texture
 	auto descriptorObject{ std::make_unique<InputAttachmentDescriptorObject>() };
+
+	descriptorObject->AddImageView(attachments[kAttachment_GBUFFER_VIEWNORMAL]->GetTexture(0)->imageView, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+
+	m_pAoGenInputDescriptorObjects.push_back(std::move(descriptorObject));
+
+	// Depth texture
+	descriptorObject = std::make_unique<InputAttachmentDescriptorObject>();
 
 	descriptorObject->AddImageView(attachments[kAttachment_DEPTH]->GetTexture(0)->imageView, VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL);
 
@@ -647,14 +699,46 @@ void DDM3::SSAORenderer::SetupDescriptorObjectsLighting()
 	m_pLightingInputDescriptorObjects.push_back(std::move(descriptorObject));
 }
 
-void DDM3::SSAORenderer::SetNewSamples(int frame)
+void DDM3::SSAORenderer::SetupPositionTexture()
+{
+	m_pPositionTextureDescriptorObject = std::make_unique<TextureDescriptorObject>();
+	m_pPositionTextureDescriptorObject->SetCleanupTextures(false);
+}
+
+void DDM3::SSAORenderer::AddPositionTexture()
+{
+	m_pPositionTextureDescriptorObject->Clear();
+	m_pPositionTextureDescriptorObject->AddTextures(m_pRenderpass->GetAttachmentList()[kAttachment_GBUFFER_VIEWPOS]->GetTextureRef(0));
+}
+
+void DDM3::SSAORenderer::SetupNoiseTexture()
+{
+	m_pNoiseTextureDescriptorObject = std::make_unique<TextureDescriptorObject>();
+	m_pNoiseTextureDescriptorObject->AddTexture("Resources/Images/NoiseTexture2.png");
+}
+
+void DDM3::SSAORenderer::SetupSamples()
+{
+	auto maxFrames = VulkanObject::GetInstance().GetMaxFrames();
+
+	m_Samples = std::vector<std::vector<glm::vec4>>(maxFrames);
+
+	for (auto& sampleList : m_Samples)
+	{
+		sampleList = std::vector<glm::vec4>(m_SampleCount);
+	}
+
+	m_pSamplesDescriptorObject = std::make_unique<UboDescriptorObject<glm::vec4>>(m_SampleCount);
+}
+
+void DDM3::SSAORenderer::SetNewSamples(int frame, int swapchainIndex)
 {
 	for (int i{}; i < m_Samples[frame].size(); ++i)
 	{
 		GetRandomVector(m_Samples[frame][i], i);
 	}
 	
-	UpdateAoGenDescriptorSets(frame);
+	UpdateAoGenDescriptorSets(frame, swapchainIndex);
 }
 
 
@@ -667,12 +751,17 @@ void DDM3::SSAORenderer::GetRandomVector(glm::vec4& vec, int index)
 	vec.z = Utils::RandomFLoat(-1.0f, 1.0f);
 	vec.w = 0;
 
-	glm::normalize(vec);
+	vec = glm::normalize(vec);
 	vec *= Utils::RandomFLoat(0.0f, 1.0f);
 
 	// This logic will cluster the vectors near the origin
 	float scale = static_cast<float>(index) / static_cast<float>(m_SampleCount);
 	vec *= Utils::Lerp(0.1f, 1.0f, scale * scale);
+}
+
+void DDM3::SSAORenderer::SetupProjectionMatrix()
+{
+	m_pProjectionMatrixDescObject = std::make_unique<UboDescriptorObject<glm::mat4>>();
 }
 
 void DDM3::SSAORenderer::InitImgui()
@@ -881,7 +970,7 @@ void DDM3::SSAORenderer::CreateAoGenDescriptorSetLayout()
 	std::vector<VkDescriptorSetLayoutBinding> bindings{};
 
 	// Add the descriptor layout bindings for each shader module
-	for (int i{}; i < 3; ++i)
+	for (int i{}; i < 2; ++i)
 	{
 		VkDescriptorSetLayoutBinding binding{};
 
@@ -894,22 +983,46 @@ void DDM3::SSAORenderer::CreateAoGenDescriptorSetLayout()
 		bindings.push_back(binding);
 	}
 
-	VkDescriptorSetLayoutBinding binding{};
+	VkDescriptorSetLayoutBinding posTextureBinding{};
 
-	binding.binding = 3;
-	binding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-	binding.descriptorCount = 1;
-	binding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-	binding.pImmutableSamplers = nullptr;
+	posTextureBinding.binding = 2;
+	posTextureBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+	posTextureBinding.descriptorCount = 1;
+	posTextureBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+	posTextureBinding.pImmutableSamplers = nullptr;
 
-	bindings.push_back(binding);
+	bindings.push_back(posTextureBinding);
 
-	VkDescriptorBindingFlags bindingFlags[] = {
-		0,
-		0,
-		0,
-		VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT
-	};
+	VkDescriptorSetLayoutBinding noiseTextureBinding{};
+
+	noiseTextureBinding.binding = 3;
+	noiseTextureBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+	noiseTextureBinding.descriptorCount = 1;
+	noiseTextureBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+	noiseTextureBinding.pImmutableSamplers = nullptr;
+
+	bindings.push_back(noiseTextureBinding);
+
+	VkDescriptorSetLayoutBinding samplesBinding{};
+
+	samplesBinding.binding = 4;
+	samplesBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+	samplesBinding.descriptorCount = 1;
+	samplesBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+	samplesBinding.pImmutableSamplers = nullptr;
+
+	bindings.push_back(samplesBinding);
+
+
+	VkDescriptorSetLayoutBinding projectionMatrixBinding{};
+
+	projectionMatrixBinding.binding = 5;
+	projectionMatrixBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+	projectionMatrixBinding.descriptorCount = 1;
+	projectionMatrixBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+	projectionMatrixBinding.pImmutableSamplers = nullptr;
+
+	bindings.push_back(projectionMatrixBinding);
 
 	// Create layout info
 	VkDescriptorSetLayoutCreateInfo layoutInfo{};
@@ -983,7 +1096,7 @@ void DDM3::SSAORenderer::CreateAoGenDescriptorPool()
 	std::vector<VkDescriptorPoolSize> poolSizes{};
 
 	// Loop trough all the descriptor types
-	for (int i{}; i < 3; ++i)
+	for (int i{}; i < 2; ++i)
 	{
 		VkDescriptorPoolSize descriptorPoolSize{};
 		// Set the type of the poolsize
@@ -995,11 +1108,29 @@ void DDM3::SSAORenderer::CreateAoGenDescriptorPool()
 		poolSizes.push_back(descriptorPoolSize);
 	}
 
-	VkDescriptorPoolSize descriptorPoolSize{};
-	descriptorPoolSize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-	descriptorPoolSize.descriptorCount = m_SampleCount * frames;
+	VkDescriptorPoolSize posTextureDescriptorpoolSize{};
+	posTextureDescriptorpoolSize.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+	posTextureDescriptorpoolSize.descriptorCount = frames;
 
-	poolSizes.push_back(descriptorPoolSize);
+	poolSizes.push_back(posTextureDescriptorpoolSize);
+
+	VkDescriptorPoolSize noiseTextureDescriptorpoolSize{};
+	noiseTextureDescriptorpoolSize.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+	noiseTextureDescriptorpoolSize.descriptorCount = frames;
+
+	poolSizes.push_back(noiseTextureDescriptorpoolSize);
+
+	VkDescriptorPoolSize samplesDescriptorPoolSize{};
+	samplesDescriptorPoolSize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+	samplesDescriptorPoolSize.descriptorCount = frames;
+
+	poolSizes.push_back(samplesDescriptorPoolSize);
+
+	VkDescriptorPoolSize projectionMatrixPoolSize{};
+	projectionMatrixPoolSize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+	projectionMatrixPoolSize.descriptorCount = frames;
+
+	poolSizes.push_back(projectionMatrixPoolSize);
 
 
 	// Create pool info
@@ -1100,7 +1231,7 @@ void DDM3::SSAORenderer::CreateAoGenDescriptorSets()
 
 	for (int i{}; i < renderer.GetMaxFrames(); ++i)
 	{
-		UpdateAoGenDescriptorSets(i);
+		UpdateAoGenDescriptorSets(i, 0);
 	}
 }
 
@@ -1139,14 +1270,14 @@ void DDM3::SSAORenderer::CreateLightingDescriptorSets()
 	}
 }
 
-void DDM3::SSAORenderer::UpdateDescriptorSets(int frame)
+void DDM3::SSAORenderer::UpdateDescriptorSets(int frame, int swapchainIndex)
 {
-	UpdateAoGenDescriptorSets(frame);
+	UpdateAoGenDescriptorSets(frame, swapchainIndex);
 
 	UpdateLightingDescriptorSets(frame);
 }
 
-void DDM3::SSAORenderer::UpdateAoGenDescriptorSets(int frame)
+void DDM3::SSAORenderer::UpdateAoGenDescriptorSets(int frame, int swapchainIndex)
 {
 		// Create a vector of descriptor writes
 		std::vector<VkWriteDescriptorSet> descriptorWrites{};
@@ -1160,11 +1291,27 @@ void DDM3::SSAORenderer::UpdateAoGenDescriptorSets(int frame)
 			descriptorObject->AddDescriptorWrite(m_AoGenDescriptorSets[frame], descriptorWrites, binding, 1, frame);
 		}
 
+		m_pPositionTextureDescriptorObject->Clear();
+
+		auto& posTexture = m_pRenderpass->GetAttachmentList()[kAttachment_GBUFFER_VIEWPOS]->GetTextureRef(frame);
+		m_pPositionTextureDescriptorObject->AddTextures(posTexture);
+
+		m_pPositionTextureDescriptorObject->AddDescriptorWrite(m_AoGenDescriptorSets[frame], descriptorWrites, binding, 1, frame);
+
+		m_pNoiseTextureDescriptorObject->AddDescriptorWrite(m_AoGenDescriptorSets[frame], descriptorWrites, binding, 1, frame);
 
 		m_pSamplesDescriptorObject->UpdateUboBuffer(m_Samples[frame].data(), frame);
 
 		m_pSamplesDescriptorObject->AddDescriptorWrite(m_AoGenDescriptorSets[frame], descriptorWrites, binding, 1, frame);
 
+		auto camera = SceneManager::GetInstance().GetCamera();
+
+		if (camera != nullptr)
+		{
+			m_pProjectionMatrixDescObject->UpdateUboBuffer(camera->GetProjectionMatrixPointer(), frame);
+		}
+
+		m_pProjectionMatrixDescObject->AddDescriptorWrite(m_AoGenDescriptorSets[frame], descriptorWrites, binding, 1, frame);
 
 		//vkDeviceWaitIdle(VulkanRenderer::GetInstance().GetDevice());
 		// Update descriptorsets

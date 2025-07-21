@@ -238,7 +238,7 @@ const std::shared_ptr<DDM3::CameraComponent> DDM3::SceneManager::GetCamera() con
         return m_NextActiveScene->GetCamera();
     }
 
-    return std::shared_ptr<CameraComponent>();
+    return nullptr;
 }
 
 const std::shared_ptr<DDM3::DirectionalLightComponent> DDM3::SceneManager::GetGlobalLight() const

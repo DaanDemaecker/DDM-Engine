@@ -32,13 +32,21 @@ namespace DDM3
 		
 		void RenderSkybox();
 
+		glm::mat4& GetProjectionMatrix();
+
+		glm::mat4* GetProjectionMatrixPointer();
+
 	private:
-		glm::mat4 m_Matrix{};
+		glm::mat4 m_ProjectionMatrix{};
+		glm::mat4 m_ViewMatrix{};
+
+		bool m_ShouldUpdateProjection{ true };
 
 		float m_FovAngle{};
 		const float m_DefaultAngleDegrees{ 90.f };
 
-		void UpdateMatrix();
+		void UpdateViewMatrix();
+		void UpdateProjectionMatrix();
 
 		std::shared_ptr<SkyBoxComponent> m_pSkyBox{};
 	};

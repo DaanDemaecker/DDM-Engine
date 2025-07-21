@@ -35,6 +35,8 @@ namespace DDM3
 
 		const Texture* GetTexture(int swapchainIndex) const { return m_Textures[swapchainIndex].get(); };
 
+		const Texture& GetTextureRef(int swapchainIndex) const { return *(m_Textures[swapchainIndex].get()); };
+
 		void SetTexture(std::shared_ptr<Texture> texture, int index) { m_Textures[index] = texture; m_ResetOnSetup = false; }
 
 		void SetTexture(int index, VkImage image, VkImageView imageView);

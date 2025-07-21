@@ -13,6 +13,7 @@
 #include "DataTypes/Structs.h"
 #include "DataTypes/DescriptorObjects/InputAttachmentDescriptorObject.h"
 #include "DataTypes/DescriptorObjects/UboDescriptorObject.h"
+#include "DataTypes/DescriptorObjects/TextureDescriptorObject.h"
 
 
 namespace DDM3
@@ -62,8 +63,10 @@ namespace DDM3
 			kAttachment_GBUFFER_ALBEDO = 2,
 			kAttachment_GBUFFER_NORMAL = 3,
 			kAttachment_GBUFFER_POSITION = 4,
-			kAttachment_AO_MAP = 5,
-			kAttachment_AO_BLURRED = 6
+			kAttachment_GBUFFER_VIEWNORMAL = 5,
+			kAttachment_GBUFFER_VIEWPOS = 6,
+			kAttachment_AO_MAP = 7,
+			kAttachment_AO_BLURRED = 8
 		};
 
 
@@ -75,7 +78,7 @@ namespace DDM3
 
 		void SetupDepthPass();
 
-		void SetupGeometryPass();
+		void SetupGBufferPass();
 
 		void SetupAoGenPass();
 
@@ -96,18 +99,7 @@ namespace DDM3
 		std::unique_ptr<ImGuiWrapper> m_pImGuiWrapper{};
 
 
-		
-		PipelineWrapper* m_pLightingPipeline{};
-
-		std::vector<std::unique_ptr<InputAttachmentDescriptorObject>> m_pLightingInputDescriptorObjects{};
-
-		std::vector<VkDescriptorSet> m_LightingDescriptorSets{};
-
-		VkDescriptorSetLayout m_LightingDescriptorSetLayout{};
-
-		VkDescriptorPool m_LightingDescriptorPool{};
-
-
+		// Everything needed for the AO descriptor sets
 		PipelineWrapper* m_pAoPipeline{};
 
 		std::vector<std::unique_ptr<InputAttachmentDescriptorObject>> m_pAoGenInputDescriptorObjects{};
@@ -118,15 +110,45 @@ namespace DDM3
 
 		VkDescriptorPool m_AoGenDescriptorPool{};
 
+		// Position texture
+		std::unique_ptr<TextureDescriptorObject> m_pPositionTextureDescriptorObject{};
+
+		// Noise texture
+		std::unique_ptr<TextureDescriptorObject> m_pNoiseTextureDescriptorObject{};
+
 		// Samples
 		const int m_SampleCount{ 64 };
 		std::vector<std::vector<glm::vec4>> m_Samples{};
 
 		std::unique_ptr<UboDescriptorObject<glm::vec4>> m_pSamplesDescriptorObject{};
 
-		void SetNewSamples(int frame);
+		// Projection matrix
+		std::unique_ptr<UboDescriptorObject<glm::mat4>> m_pProjectionMatrixDescObject{};
+		
+		// Everything needed for the Lighting descriptor sets
+		PipelineWrapper* m_pLightingPipeline{};
+
+		std::vector<std::unique_ptr<InputAttachmentDescriptorObject>> m_pLightingInputDescriptorObjects{};
+
+		std::vector<VkDescriptorSet> m_LightingDescriptorSets{};
+
+		VkDescriptorSetLayout m_LightingDescriptorSetLayout{};
+
+		VkDescriptorPool m_LightingDescriptorPool{};
+
+		void SetupPositionTexture();
+
+		void AddPositionTexture();
+
+		void SetupNoiseTexture();
+
+		void SetupSamples();
+
+		void SetNewSamples(int frame, int swapchainIndex);
 
 		void GetRandomVector(glm::vec4& vec, int index);
+		
+		void SetupProjectionMatrix();
 
 
 		void InitImgui();
@@ -170,9 +192,9 @@ namespace DDM3
 		void CreateLightingDescriptorSets();
 
 		// Update Descriptor sets
-		void UpdateDescriptorSets(int frame);
+		void UpdateDescriptorSets(int frame, int swapchainIndex);
 
-		void UpdateAoGenDescriptorSets(int frame);
+		void UpdateAoGenDescriptorSets(int frame, int swapchainIndex);
 
 		void UpdateLightingDescriptorSets(int frame);
 	};

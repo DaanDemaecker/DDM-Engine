@@ -91,7 +91,7 @@ namespace LoadSSAOScene
 	{
 		auto& vulkanObject{ DDM3::VulkanObject::GetInstance() };
 
-		vulkanObject.AddGraphicsPipeline("DeferredDiffuse", { "Resources/DefaultResources/Deffered.Vert.spv", "Resources/Shaders/DefferedDiffuse.frag.spv" }, true, false, DDM3::SSAORenderer::kSubpass_GBUFFER);
+		vulkanObject.AddGraphicsPipeline("DeferredDiffuse", { "Resources/Shaders/SSAOGbuffer.Vert.spv", "Resources/Shaders/SSAODiffuse.frag.spv" }, true, false, DDM3::SSAORenderer::kSubpass_GBUFFER);
 	}
 
 	void SetupVehicle(DDM3::Scene* scene)
@@ -218,7 +218,7 @@ namespace LoadSSAOScene
 			renderComponent->SetMesh(pMesh.get());
 
 
-			auto texturedMaterial = std::make_shared<DDM3::TexturedMaterial>("DeferredDiffuse");
+			auto texturedMaterial = std::make_shared<DDM3::TexturedMaterial>("Default");
 
 			for (auto& texture : pMesh->GetDiffuseTextureNames())
 			{

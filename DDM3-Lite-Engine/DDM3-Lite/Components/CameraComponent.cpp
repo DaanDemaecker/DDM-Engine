@@ -1,6 +1,7 @@
 #include "CameraComponent.h"
 #include "../Includes/GLMIncludes.h"
 #include "TransformComponent.h"
+#include "Engine/Window.h"
 
 DDM3::CameraComponent::CameraComponent()
 {
@@ -14,21 +15,20 @@ void DDM3::CameraComponent::SetFovAngleDegrees(float angle)
 
 void DDM3::CameraComponent::LateUpdate()
 {
-	UpdateMatrix();
+	UpdateViewMatrix();
 }
 
 void DDM3::CameraComponent::UpdateUniformBuffer(UniformBufferObject& buffer, VkExtent2D extent)
 {
 	// Set buffer view matrix
-	buffer.view = m_Matrix;
+	buffer.view = m_ViewMatrix;
 
-	// Set the projection matrix
-	buffer.proj = glm::perspective(m_FovAngle, extent.width / static_cast<float>(extent.height), 0.001f, 100.0f);
+	if (m_ShouldUpdateProjection)
+	{
+		UpdateProjectionMatrix();
+	}
 
-	buffer.proj[1][1] *= -1;
-
-	buffer.proj[2][2] *= -1;
-	buffer.proj[2][3] *= -1;
+	buffer.proj = m_ProjectionMatrix;
 }
 
 void DDM3::CameraComponent::RenderSkybox()
@@ -44,7 +44,17 @@ void DDM3::CameraComponent::RenderSkybox()
 	}
 }
 
-void DDM3::CameraComponent::UpdateMatrix()
+glm::mat4& DDM3::CameraComponent::GetProjectionMatrix()
+{
+	return m_ProjectionMatrix;
+}
+
+glm::mat4* DDM3::CameraComponent::GetProjectionMatrixPointer()
+{
+	return &m_ProjectionMatrix;
+}
+
+void DDM3::CameraComponent::UpdateViewMatrix()
 {
 	auto transform = GetTransform();
 
@@ -55,5 +65,18 @@ void DDM3::CameraComponent::UpdateMatrix()
 	glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), -transform->GetWorldPosition());
 
 	// Multiply matrices (apply rotation first, then translation)
-	m_Matrix = rotationMatrix * translationMatrix;
+	m_ViewMatrix = rotationMatrix * translationMatrix;
+}
+
+void DDM3::CameraComponent::UpdateProjectionMatrix()
+{
+	auto& windowStruct = Window::GetInstance().GetWindowStruct();
+
+	// Set the projection matrix
+	m_ProjectionMatrix = glm::perspective(m_FovAngle, windowStruct.Width / static_cast<float>(windowStruct.Height), 0.001f, 100.0f);
+
+	m_ProjectionMatrix[1][1] *= -1;
+
+	m_ProjectionMatrix[2][2] *= -1;
+	m_ProjectionMatrix[2][3] *= -1;
 }
