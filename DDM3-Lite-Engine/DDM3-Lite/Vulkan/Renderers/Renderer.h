@@ -6,6 +6,7 @@
 
 // File includes
 #include "Includes/VulkanIncludes.h"
+#include "Vulkan/VulkanWrappers/RenderpassWrapper.h"
 
 // Standard library includes
 #include <memory>
@@ -13,8 +14,6 @@
 
 namespace DDM3
 {
-	class RenderpassWrapper;
-
 	class Renderer
 	{
 	public:

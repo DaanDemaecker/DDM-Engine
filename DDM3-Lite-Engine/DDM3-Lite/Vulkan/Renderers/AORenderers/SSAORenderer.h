@@ -21,7 +21,6 @@ namespace DDM3
 	// Class forward declarations
 	class PipelineWrapper;
 	class SwapchainWrapper;
-	class RenderpassWrapper;
 	class ImGuiWrapper;
 	class SyncObjectManager;
 

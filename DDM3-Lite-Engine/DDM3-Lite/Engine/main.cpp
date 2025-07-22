@@ -7,7 +7,7 @@
 
 #include "Vulkan/Renderers/ForwardRenderer.h"
 #include "Vulkan/Renderers/DeferredRenderer.h"
-#include "Vulkan/Renderers/SSAORenderer.h"
+#include "Vulkan/Renderers/AORenderers/SSAORenderer.h"
 
 int main()
 {
