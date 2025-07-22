@@ -121,7 +121,7 @@ namespace DDM3
 
 		// Samples
 		const int m_SampleCount{ 64 };
-		std::vector<std::vector<glm::vec4>> m_Samples{};
+		std::vector<glm::vec4> m_Samples{};
 
 		std::unique_ptr<UboDescriptorObject<glm::vec4>> m_pSamplesDescriptorObject{};
 
@@ -163,7 +163,7 @@ namespace DDM3
 
 		void SetupSamples();
 
-		void SetNewSamples(int frame, int swapchainIndex);
+		void SetNewSamples();
 
 		void GetRandomVector(glm::vec4& vec, int index);
 		

@@ -28,15 +28,6 @@
 
 DDM3::SSAORenderer::SSAORenderer()
 {
-	SetupPositionTexture();
-
-	SetupNoiseTexture();
-
-	SetupSamples();
-
-	SetupProjectionMatrix();
-
-
 	auto surface{ VulkanObject::GetInstance().GetSurface() };
 
 	// Get pointer to gpu object
@@ -54,20 +45,33 @@ DDM3::SSAORenderer::SSAORenderer()
 	VulkanObject::GetInstance().EndSingleTimeCommands(commandBuffer);
 
 
+	// Initialize the sync objects
+	m_pSyncObjectManager = std::make_unique<SyncObjectManager>(pGPUObject->GetDevice(), VulkanObject::GetInstance().GetMaxFrames());
+
+	InitImgui();
+
+
+
 	SetupDescriptorObjects();
 
 	CreateDescriptorPools();
-	
+
 	CreateDescriptorSetLayouts();
 
 	CreateDescriptorSets();
 
 
 
-	// Initialize the sync objects
-	m_pSyncObjectManager = std::make_unique<SyncObjectManager>(pGPUObject->GetDevice(), VulkanObject::GetInstance().GetMaxFrames());
+	SetupPositionTexture();
 
-	InitImgui();
+	SetupNoiseTexture();
+
+	SetupSamples();
+
+	SetupProjectionMatrix();
+
+	SetNewSamples();
+
 }
 
 DDM3::SSAORenderer::~SSAORenderer()
@@ -107,7 +111,9 @@ void DDM3::SSAORenderer::Render()
 		UINT64_MAX, m_pSyncObjectManager->GetImageAvailableSemaphore(currentFrame), VK_NULL_HANDLE, &imageIndex);
 
 
-	SetNewSamples(currentFrame, imageIndex);
+	//SetNewSamples(currentFrame, imageIndex);
+
+	UpdateDescriptorSets(currentFrame, imageIndex);
 
 	UpdateAoBlurDescriptorSets(currentFrame, imageIndex);
 
@@ -798,24 +804,17 @@ void DDM3::SSAORenderer::SetupSamples()
 {
 	auto maxFrames = VulkanObject::GetInstance().GetMaxFrames();
 
-	m_Samples = std::vector<std::vector<glm::vec4>>(maxFrames);
-
-	for (auto& sampleList : m_Samples)
-	{
-		sampleList = std::vector<glm::vec4>(m_SampleCount);
-	}
+	m_Samples = std::vector<glm::vec4>(m_SampleCount);
 
 	m_pSamplesDescriptorObject = std::make_unique<UboDescriptorObject<glm::vec4>>(m_SampleCount);
 }
 
-void DDM3::SSAORenderer::SetNewSamples(int frame, int swapchainIndex)
+void DDM3::SSAORenderer::SetNewSamples()
 {
-	for (int i{}; i < m_Samples[frame].size(); ++i)
+	for (int i{}; i < m_Samples.size(); ++i)
 	{
-		GetRandomVector(m_Samples[frame][i], i);
+		GetRandomVector(m_Samples[i], i);
 	}
-	
-	UpdateAoGenDescriptorSets(frame, swapchainIndex);
 }
 
 
@@ -1393,11 +1392,6 @@ void DDM3::SSAORenderer::CreateAoGenDescriptorSets()
 	{
 		throw std::runtime_error("failed to allocate descriptor sets!");
 	}
-
-	for (int i{}; i < renderer.GetMaxFrames(); ++i)
-	{
-		UpdateAoGenDescriptorSets(i, 0);
-	}
 }
 
 void DDM3::SSAORenderer::CreateAoBlurDescriptorSets()
@@ -1428,11 +1422,6 @@ void DDM3::SSAORenderer::CreateAoBlurDescriptorSets()
 	{
 		throw std::runtime_error("failed to allocate descriptor sets!");
 	}
-
-	for (int i{}; i < renderer.GetMaxFrames(); ++i)
-	{
-		UpdateAoBlurDescriptorSets(i, 0);
-	}
 }
 
 void DDM3::SSAORenderer::CreateLightingDescriptorSets()
@@ -1462,11 +1451,6 @@ void DDM3::SSAORenderer::CreateLightingDescriptorSets()
 	if (vkAllocateDescriptorSets(renderer.GetDevice(), &allocInfo, m_LightingDescriptorSets.data()) != VK_SUCCESS)
 	{
 		throw std::runtime_error("failed to allocate descriptor sets!");
-	}
-
-	for (int i{}; i < renderer.GetMaxFrames(); ++i)
-	{
-		UpdateLightingDescriptorSets(i);
 	}
 }
 
@@ -1502,7 +1486,7 @@ void DDM3::SSAORenderer::UpdateAoGenDescriptorSets(int frame, int swapchainIndex
 
 		m_pNoiseTextureDescriptorObject->AddDescriptorWrite(m_AoGenDescriptorSets[frame], descriptorWrites, binding, 1, frame);
 
-		m_pSamplesDescriptorObject->UpdateUboBuffer(m_Samples[frame].data(), frame);
+		m_pSamplesDescriptorObject->UpdateUboBuffer(m_Samples.data(), frame);
 
 		m_pSamplesDescriptorObject->AddDescriptorWrite(m_AoGenDescriptorSets[frame], descriptorWrites, binding, 1, frame);
 
