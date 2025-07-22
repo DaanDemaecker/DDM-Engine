@@ -8,7 +8,6 @@
 #include "Vulkan/Renderers/Renderer.h"
 
 // File includes
-#include "Includes/VulkanIncludes.h"
 #include "Vulkan/VulkanManagers/SyncObjectManager.h"
 #include "DataTypes/Structs.h"
 #include "DataTypes/DescriptorObjects/InputAttachmentDescriptorObject.h"
@@ -24,7 +23,6 @@ namespace DDM3
 	class SwapchainWrapper;
 	class RenderpassWrapper;
 	class ImGuiWrapper;
-	class SyncObjectManager;
 
 	class DeferredRenderer final : public Renderer
 	{

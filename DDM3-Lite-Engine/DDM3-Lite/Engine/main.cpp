@@ -1,13 +1,24 @@
 // File includes
 #include "DDM3Engine.h"
+
 #include "SceneLoaders/LoadModelLoaderScene.h"
 #include "SceneLoaders/LoadTestScene.h"
 #include "SceneLoaders/LoadDeferredScene.h"
 #include "SceneLoaders/LoadSSAOScene.h"
+#include "SceneLoaders/LoadHBAOScene.h"
 
 #include "Vulkan/Renderers/ForwardRenderer.h"
 #include "Vulkan/Renderers/DeferredRenderer.h"
 #include "Vulkan/Renderers/AORenderers/SSAORenderer.h"
+#include "Vulkan/Renderers/AORenderers/HBAORenderer.h"
+
+enum
+{
+	activeRendererForward = 0,
+	activeRendererDeffered = 1,
+	activeRendererSSAO = 2,
+	activeRendererHBAO = 3,
+};
 
 int main()
 {
@@ -17,15 +28,33 @@ int main()
 	// Create the engine object and run it with the load function
 	DDM3::DDM3Engine engine{};
 
-	//engine.Init<DDM3::DeferredRenderer>();
-	//engine.Run(LoadDeferredScene::LoadScene);
+	int activeRenderer{ activeRendererHBAO };
 
-	engine.Init<DDM3::SSAORenderer>();
-	engine.Run(LoadSSAOScene::LoadScene);
+	switch (activeRenderer)
+	{
+	case activeRendererForward:
+		engine.Init<DDM3::ForwardRenderer>();
+		engine.Run(LoadTestScene::loadTestScene);
+		//engine.Run(LoadModelLoaderScene::LoadModelLoaderScene);
+		break;
+	case activeRendererDeffered:
+		engine.Init<DDM3::DeferredRenderer>();
+		engine.Run(LoadDeferredScene::LoadScene);
+		break;
+	case activeRendererSSAO:
+
+		engine.Init<DDM3::SSAORenderer>();
+		engine.Run(LoadSSAOScene::LoadScene);
+		break;
+	case activeRendererHBAO:
+		engine.Init<DDM3::HBAORenderer>();
+		engine.Run(LoadHBAOScene::LoadScene);
+		break;
+	default:
+		break;
+	}
+
 	
-	//engine.Init<DDM3::ForwardRenderer>();
-	//engine.Run(LoadTestScene::loadTestScene);
-	//engine.Run(LoadModelLoaderScene::LoadModelLoaderScene);
 	
 	return EXIT_SUCCESS;
 } 
