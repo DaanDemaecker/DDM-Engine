@@ -257,20 +257,27 @@ void DDM3::HBAORenderer::RecordCommandBuffer(VkCommandBuffer& commandBuffer, uin
 	scissor.extent = extent;
 	vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
-
+	// Depth prepass
 	m_pRenderpass->BeginRenderPass(commandBuffer, m_pSwapchainWrapper->GetFrameBuffer(imageIndex, m_pRenderpass.get()), extent);
 
 
 	SceneManager::GetInstance().RenderDepth();
 
 
+	// Gbuffer pass
 	vkCmdNextSubpass(commandBuffer, VK_SUBPASS_CONTENTS_INLINE);
 
 	SceneManager::GetInstance().Render();
 
 	SceneManager::GetInstance().RenderTransparancy();
 
+	// Ambient occlusion generation pass
+	vkCmdNextSubpass(commandBuffer, VK_SUBPASS_CONTENTS_INLINE);
 
+	// Ambient occlusion blur pass
+	vkCmdNextSubpass(commandBuffer, VK_SUBPASS_CONTENTS_INLINE);
+
+	// Lighting pass
 	vkCmdNextSubpass(commandBuffer, VK_SUBPASS_CONTENTS_INLINE);
 
 	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pLightingPipeline->GetPipeline());
@@ -280,6 +287,7 @@ void DDM3::HBAORenderer::RecordCommandBuffer(VkCommandBuffer& commandBuffer, uin
 
 	VulkanObject::GetInstance().DrawQuad(commandBuffer);
 
+	// ImGui pass
 	vkCmdNextSubpass(commandBuffer, VK_SUBPASS_CONTENTS_INLINE);
 
 	// Render the ImGui
@@ -507,6 +515,10 @@ void DDM3::HBAORenderer::CreateRenderpass()
 
 	SetupGeometryPass();
 
+	SetupAOGenPass();
+
+	SetupAOBlurPass();
+
 	SetupLightingPass();
 
 	SetupImGuiPass();
@@ -699,6 +711,24 @@ void DDM3::HBAORenderer::SetupGeometryPass()
 	m_pRenderpass->AddSubpass(std::move(pGBufferPass));
 }
 
+void DDM3::HBAORenderer::SetupAOGenPass()
+{
+	std::unique_ptr<Subpass> gAoGenPass{ std::make_unique<Subpass>() };
+
+
+
+	m_pRenderpass->AddSubpass(std::move(gAoGenPass));
+}
+
+void DDM3::HBAORenderer::SetupAOBlurPass()
+{
+	std::unique_ptr<Subpass> gAoBlurPass{ std::make_unique<Subpass>() };
+
+
+
+	m_pRenderpass->AddSubpass(std::move(gAoBlurPass));
+}
+
 void DDM3::HBAORenderer::SetupLightingPass()
 {
 	std::unique_ptr<Subpass> pLightingPass{ std::make_unique<Subpass>() };
@@ -770,14 +800,33 @@ void DDM3::HBAORenderer::SetupDependencies()
 	depthToGbufferDependency.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
 	depthToGbufferDependency.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
 
-	VkSubpassDependency gBufferToLightingDependency{};
-	gBufferToLightingDependency.srcSubpass = kSubpass_GBUFFER;
-	gBufferToLightingDependency.dstSubpass = kSubpass_LIGHTING;
-	gBufferToLightingDependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-	gBufferToLightingDependency.dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-	gBufferToLightingDependency.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-	gBufferToLightingDependency.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-	gBufferToLightingDependency.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
+	VkSubpassDependency gBufferToAoGenDependency{};
+	gBufferToAoGenDependency.srcSubpass = kSubpass_GBUFFER;
+	gBufferToAoGenDependency.dstSubpass = kSubpass_AOGEN;
+	gBufferToAoGenDependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+	gBufferToAoGenDependency.dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+	gBufferToAoGenDependency.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+	gBufferToAoGenDependency.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+	gBufferToAoGenDependency.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
+
+	VkSubpassDependency aoGenToAoBlurDependency{};
+	aoGenToAoBlurDependency.srcSubpass = kSubpass_AOGEN;
+	aoGenToAoBlurDependency.dstSubpass = kSubpass_AOBLUR;
+	aoGenToAoBlurDependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+	aoGenToAoBlurDependency.dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+	aoGenToAoBlurDependency.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+	aoGenToAoBlurDependency.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+	aoGenToAoBlurDependency.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
+
+
+	VkSubpassDependency aoBlurToLightingDependency{};
+	aoBlurToLightingDependency.srcSubpass = kSubpass_AOBLUR;
+	aoBlurToLightingDependency.dstSubpass = kSubpass_LIGHTING;
+	aoBlurToLightingDependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+	aoBlurToLightingDependency.dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+	aoBlurToLightingDependency.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+	aoBlurToLightingDependency.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+	aoBlurToLightingDependency.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
 
 	VkSubpassDependency lightingToImguiDependency{};
 	lightingToImguiDependency.srcSubpass = kSubpass_LIGHTING;
@@ -789,7 +838,10 @@ void DDM3::HBAORenderer::SetupDependencies()
 	lightingToImguiDependency.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
 
 	m_pRenderpass->AddDependency(depthToGbufferDependency);
-	m_pRenderpass->AddDependency(gBufferToLightingDependency);
+	m_pRenderpass->AddDependency(gBufferToAoGenDependency);
+	m_pRenderpass->AddDependency(aoGenToAoBlurDependency);
+	m_pRenderpass->AddDependency(aoBlurToLightingDependency);
+	m_pRenderpass->AddDependency(lightingToImguiDependency);
 }
 
 void DDM3::HBAORenderer::SetupDescriptorObjects()

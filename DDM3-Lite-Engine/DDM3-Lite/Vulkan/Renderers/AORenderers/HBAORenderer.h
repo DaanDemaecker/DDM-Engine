@@ -49,8 +49,10 @@ namespace DDM3
 		{
 			kSubpass_DEPTH = 0,
 			kSubpass_GBUFFER = 1,
-			kSubpass_LIGHTING = 2,
-			kSubpass_IMGUI = 3
+			kSubpass_AOGEN = 2,
+			kSubpass_AOBLUR = 3,
+			kSubpass_LIGHTING = 4,
+			kSubpass_IMGUI = 5
 		};
 	private:
 		enum
@@ -72,6 +74,10 @@ namespace DDM3
 		void SetupDepthPass();
 
 		void SetupGeometryPass();
+
+		void SetupAOGenPass();
+
+		void SetupAOBlurPass();
 
 		void SetupLightingPass();
 
