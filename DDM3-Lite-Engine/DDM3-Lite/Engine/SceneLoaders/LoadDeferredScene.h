@@ -283,7 +283,7 @@ namespace LoadDeferredScene
 		auto pCameraComponent{ pCamera->AddComponent<DDM3::CameraComponent>() };
 
 		auto pCameraTransform{ pCamera->GetTransform() };
-		pCameraTransform->SetLocalPosition(0, 5, -5);
+		pCameraTransform->SetLocalPosition(0, 1, 0);
 		//pCameraTransform->SetLocalRotation(glm::vec3(0.0f, glm::radians(180.f), 0.0f));
 
 		//pCamera->AddComponent<D3D::RotatorComponent>();

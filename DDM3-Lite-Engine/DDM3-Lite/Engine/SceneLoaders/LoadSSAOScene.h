@@ -109,31 +109,11 @@ namespace LoadSSAOScene
 		auto pCameraComponent{ pCamera->AddComponent<DDM3::CameraComponent>() };
 
 		auto pCameraTransform{ pCamera->GetTransform() };
-		pCameraTransform->SetLocalPosition(0, 5, -5);
-		//pCameraTransform->SetLocalRotation(glm::vec3(0.0f, glm::radians(180.f), 0.0f));
+		pCameraTransform->SetLocalPosition(0, 1, 0);
 
 		//pCamera->AddComponent<D3D::RotatorComponent>();
 
 		scene->SetCamera(pCameraComponent);
-		
-		//auto& configManager{ DDM3::ConfigManager::GetInstance() };
-		//
-		//// Set the vertex shader name
-		//const std::string vertShaderName{ configManager.GetString("SkyboxVertName") };
-		//// Set the fragment shader name
-		//const std::string fragShaderName{ configManager.GetString("SkyboxFragName") };
-		//
-		//// Create the graphics pipeline for the skybox
-		//DDM3::VulkanObject::GetInstance().AddGraphicsPipeline(configManager.GetString("SkyboxPipelineName"), { vertShaderName, fragShaderName }, false);
-		//
-		//auto pSkyBox{ pCamera->AddComponent<DDM3::SkyBoxComponent>() };
-		//
-		//pSkyBox->LoadSkybox(std::initializer_list<const std::string>{"resources/images/CubeMap/Sky_Right.png",
-		//	"resources/images/CubeMap/Sky_Left.png",
-		//	"resources/images/CubeMap/Sky_Up.png",
-		//	"resources/images/CubeMap/Sky_Down.png",
-		//	"resources/images/CubeMap/Sky_Front.png",
-		//	"resources/images/CubeMap/Sky_Back.png"});
 	}
 
 	void SetupLight(DDM3::Scene* scene)
