@@ -60,18 +60,7 @@ DDM3::HBAORenderer::HBAORenderer()
 
 	CreateDescriptorSets();
 
-
-
 	SetupPositionTexture();
-
-	SetupNoiseTexture();
-
-	SetupSamples();
-
-	SetupProjectionMatrix();
-
-	SetNewSamples();
-
 }
 
 DDM3::HBAORenderer::~HBAORenderer()
@@ -212,8 +201,8 @@ void DDM3::HBAORenderer::AddDefaultPipelines()
 
 	// Add default pipeline
 	vulkanObject.AddGraphicsPipeline(defaultPipelineName, {
-		"Resources/Shaders/SSAO/SSAOGbuffer.vert.spv",
-		"Resources/Shaders/SSAO/SSAOGbuffer.frag.spv" },
+		"Resources/Shaders/HBAO/HBAOGbuffer.vert.spv",
+		"Resources/Shaders/HBAO/HBAOGbuffer.frag.spv" },
 		true, false, kSubpass_GBUFFER);
 
 	// Initialize default pipeline name 
@@ -222,7 +211,7 @@ void DDM3::HBAORenderer::AddDefaultPipelines()
 	// Add default pipeline
 	vulkanObject.AddGraphicsPipeline(lightingPipelineName, {
 		configManager.GetString("DrawQuadVert"),
-		"Resources/Shaders/SSAO/SSAOLighting.frag.spv" },
+		"Resources/Shaders/HBAO/HBAOLighting.frag.spv" },
 		false, true, kSubpass_LIGHTING);
 
 	m_pLightingPipeline = vulkanObject.GetPipeline(lightingPipelineName);
@@ -232,7 +221,7 @@ void DDM3::HBAORenderer::AddDefaultPipelines()
 
 	vulkanObject.AddGraphicsPipeline(aoPipelineName, {
 		configManager.GetString("DrawQuadVert"),
-		"Resources/Shaders/SSAO/SSAOGen.frag.spv" },
+		"Resources/Shaders/HBAO/HBAOGen.frag.spv" },
 		true, true, kSubpass_AO_GEN);
 
 	m_pAoPipeline = vulkanObject.GetPipeline(aoPipelineName);
@@ -788,56 +777,11 @@ void DDM3::HBAORenderer::SetupDescriptorObjectsLighting()
 	m_pLightingInputDescriptorObjects.push_back(std::move(descriptorObject));
 }
 
+
 void DDM3::HBAORenderer::SetupPositionTexture()
 {
 	m_pPositionTextureDescriptorObject = std::make_unique<TextureDescriptorObject>();
 	m_pPositionTextureDescriptorObject->SetCleanupTextures(false);
-}
-
-void DDM3::HBAORenderer::SetupNoiseTexture()
-{
-	m_pNoiseTextureDescriptorObject = std::make_unique<TextureDescriptorObject>();
-	m_pNoiseTextureDescriptorObject->AddTexture("Resources/Images/NoiseTexture2.png");
-}
-
-void DDM3::HBAORenderer::SetupSamples()
-{
-	auto maxFrames = VulkanObject::GetInstance().GetMaxFrames();
-
-	m_Samples = std::vector<glm::vec4>(m_SampleCount);
-
-	m_pSamplesDescriptorObject = std::make_unique<UboDescriptorObject<glm::vec4>>(m_SampleCount);
-}
-
-void DDM3::HBAORenderer::SetNewSamples()
-{
-	for (int i{}; i < m_Samples.size(); ++i)
-	{
-		GetRandomVector(m_Samples[i], i);
-	}
-}
-
-
-// Logic by Brian Will
-// https://www.youtube.com/watch?v=7hxrPKoELpo
-void DDM3::HBAORenderer::GetRandomVector(glm::vec4& vec, int index)
-{
-	vec.x = Utils::RandomFLoat(-1.0f, 1.0f);
-	vec.y = Utils::RandomFLoat(-1.0f, 1.0f);
-	vec.z = Utils::RandomFLoat(0.0f, 1.0f);
-	vec.w = 0;
-
-	vec = glm::normalize(vec);
-	vec *= Utils::RandomFLoat(0.0f, 1.0f);
-
-	// This logic will cluster the vectors near the origin
-	float scale = static_cast<float>(index) / static_cast<float>(m_SampleCount);
-	vec *= Utils::Lerp(0.1f, 1.0f, scale * scale);
-}
-
-void DDM3::HBAORenderer::SetupProjectionMatrix()
-{
-	m_pProjectionMatrixDescObject = std::make_unique<UboDescriptorObject<glm::mat4>>();
 }
 
 void DDM3::HBAORenderer::InitImgui()
@@ -1082,37 +1026,6 @@ void DDM3::HBAORenderer::CreateAoGenDescriptorSetLayout()
 	posTextureBinding.pImmutableSamplers = nullptr;
 
 	bindings.push_back(posTextureBinding);
-
-	VkDescriptorSetLayoutBinding noiseTextureBinding{};
-
-	noiseTextureBinding.binding = 3;
-	noiseTextureBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-	noiseTextureBinding.descriptorCount = 1;
-	noiseTextureBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-	noiseTextureBinding.pImmutableSamplers = nullptr;
-
-	bindings.push_back(noiseTextureBinding);
-
-	VkDescriptorSetLayoutBinding samplesBinding{};
-
-	samplesBinding.binding = 4;
-	samplesBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-	samplesBinding.descriptorCount = 1;
-	samplesBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-	samplesBinding.pImmutableSamplers = nullptr;
-
-	bindings.push_back(samplesBinding);
-
-
-	VkDescriptorSetLayoutBinding projectionMatrixBinding{};
-
-	projectionMatrixBinding.binding = 5;
-	projectionMatrixBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-	projectionMatrixBinding.descriptorCount = 1;
-	projectionMatrixBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-	projectionMatrixBinding.pImmutableSamplers = nullptr;
-
-	bindings.push_back(projectionMatrixBinding);
 
 	// Create layout info
 	VkDescriptorSetLayoutCreateInfo layoutInfo{};
@@ -1483,21 +1396,6 @@ void DDM3::HBAORenderer::UpdateAoGenDescriptorSets(int frame, int swapchainIndex
 	m_pPositionTextureDescriptorObject->AddTextures(posTexture);
 
 	m_pPositionTextureDescriptorObject->AddDescriptorWrite(m_AoGenDescriptorSets[frame], descriptorWrites, binding, 1, frame);
-
-	m_pNoiseTextureDescriptorObject->AddDescriptorWrite(m_AoGenDescriptorSets[frame], descriptorWrites, binding, 1, frame);
-
-	m_pSamplesDescriptorObject->UpdateUboBuffer(m_Samples.data(), frame);
-
-	m_pSamplesDescriptorObject->AddDescriptorWrite(m_AoGenDescriptorSets[frame], descriptorWrites, binding, 1, frame);
-
-	auto camera = SceneManager::GetInstance().GetCamera();
-
-	if (camera != nullptr)
-	{
-		m_pProjectionMatrixDescObject->UpdateUboBuffer(camera->GetProjectionMatrixPointer(), frame);
-	}
-
-	m_pProjectionMatrixDescObject->AddDescriptorWrite(m_AoGenDescriptorSets[frame], descriptorWrites, binding, 1, frame);
 
 	//vkDeviceWaitIdle(VulkanRenderer::GetInstance().GetDevice());
 	// Update descriptorsets

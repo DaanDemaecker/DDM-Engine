@@ -1,5 +1,5 @@
 // SSAORenderer.h
-// Renderer that will use the deferred rendering technique
+// Renderer that will use the deferred rendering technique with Horizon Based Ambient Occlusion (HBAO)
 
 #ifndef _HBAO_RENDERER_
 #define _HBAO_RENDERER_
@@ -115,20 +115,6 @@ namespace DDM3
 		// Position texture
 		std::unique_ptr<TextureDescriptorObject> m_pPositionTextureDescriptorObject{};
 
-		// Noise texture
-		std::unique_ptr<TextureDescriptorObject> m_pNoiseTextureDescriptorObject{};
-
-		// Samples
-		const int m_SampleCount{ 64 };
-		std::vector<glm::vec4> m_Samples{};
-
-		std::unique_ptr<UboDescriptorObject<glm::vec4>> m_pSamplesDescriptorObject{};
-
-		// Projection matrix
-		std::unique_ptr<UboDescriptorObject<glm::mat4>> m_pProjectionMatrixDescObject{};
-
-
-
 
 		// Everything needed for AOBlur Descriptorsets
 		PipelineWrapper* m_pAoBlurPipeline{};
@@ -158,18 +144,7 @@ namespace DDM3
 
 		void SetupPositionTexture();
 
-		void SetupNoiseTexture();
-
-		void SetupSamples();
-
-		void SetNewSamples();
-
-		void GetRandomVector(glm::vec4& vec, int index);
-
-		void SetupProjectionMatrix();
-
-
-
+		
 		void InitImgui();
 
 		void CleanupImgui();

@@ -59,7 +59,7 @@ namespace LoadHBAOScene
 	{
 		auto& vulkanObject{ DDM3::VulkanObject::GetInstance() };
 
-		vulkanObject.AddGraphicsPipeline("DeferredDiffuse", { "Resources/Shaders/SSAO/SSAOGbuffer.Vert.spv", "Resources/Shaders/SSAO/SSAODiffuse.frag.spv" }, true, false, DDM3::HBAORenderer::kSubpass_GBUFFER);
+		vulkanObject.AddGraphicsPipeline("DeferredDiffuse", { "Resources/Shaders/HBAO/HBAOGbuffer.Vert.spv", "Resources/Shaders/HBAO/HBAODiffuse.frag.spv" }, true, false, DDM3::HBAORenderer::kSubpass_GBUFFER);
 	}
 
 	void SetupAtrium(DDM3::Scene* scene)

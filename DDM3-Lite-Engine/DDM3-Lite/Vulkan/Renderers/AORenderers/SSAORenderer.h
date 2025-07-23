@@ -1,5 +1,5 @@
 // SSAORenderer.h
-// Renderer that will use the deferred rendering technique
+// Renderer that will use the deferred rendering technique with Screen Space Ambient Occlusion (SSAO)
 
 #ifndef _SSAO_RENDERER_
 #define _SSAO_RENDERER_
