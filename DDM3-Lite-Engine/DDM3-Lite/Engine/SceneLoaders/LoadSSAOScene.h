@@ -59,7 +59,7 @@ namespace LoadSSAOScene
 	{
 		auto& vulkanObject{ DDM3::VulkanObject::GetInstance() };
 
-		vulkanObject.AddGraphicsPipeline("DeferredDiffuse", { "Resources/Shaders/SSAOGbuffer.Vert.spv", "Resources/Shaders/SSAODiffuse.frag.spv" }, true, false, DDM3::SSAORenderer::kSubpass_GBUFFER);
+		vulkanObject.AddGraphicsPipeline("DeferredDiffuse", { "Resources/Shaders/SSAO/SSAOGbuffer.Vert.spv", "Resources/Shaders/SSAO/SSAODiffuse.frag.spv" }, true, false, DDM3::SSAORenderer::kSubpass_GBUFFER);
 	}
 
 	void SetupAtrium(DDM3::Scene* scene)

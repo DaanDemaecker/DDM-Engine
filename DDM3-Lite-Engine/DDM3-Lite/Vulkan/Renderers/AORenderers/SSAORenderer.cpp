@@ -212,8 +212,8 @@ void DDM3::SSAORenderer::AddDefaultPipelines()
 
 	// Add default pipeline
 	vulkanObject.AddGraphicsPipeline(defaultPipelineName, {
-		"Resources/Shaders/SSAOGbuffer.vert.spv",
-		"Resources/Shaders/SSAOGbuffer.frag.spv" },
+		"Resources/Shaders/SSAO/SSAOGbuffer.vert.spv",
+		"Resources/Shaders/SSAO/SSAOGbuffer.frag.spv" },
 		true, false, kSubpass_GBUFFER);
 
 	// Initialize default pipeline name 
@@ -222,7 +222,7 @@ void DDM3::SSAORenderer::AddDefaultPipelines()
 	// Add default pipeline
 	vulkanObject.AddGraphicsPipeline(lightingPipelineName, {
 		configManager.GetString("DrawQuadVert"),
-		"Resources/Shaders/SSAOLighting.frag.spv" },
+		"Resources/Shaders/SSAO/SSAOLighting.frag.spv" },
 		false, true, kSubpass_LIGHTING);
 
 	m_pLightingPipeline = vulkanObject.GetPipeline(lightingPipelineName);
@@ -232,7 +232,7 @@ void DDM3::SSAORenderer::AddDefaultPipelines()
 
 	vulkanObject.AddGraphicsPipeline(aoPipelineName, {
 		configManager.GetString("DrawQuadVert"),
-		"Resources/Shaders/SSAOGen.frag.spv"},
+		"Resources/Shaders/SSAO/SSAOGen.frag.spv"},
 		true, true, kSubpass_AO_GEN);
 
 	m_pAoPipeline = vulkanObject.GetPipeline(aoPipelineName);
@@ -243,7 +243,7 @@ void DDM3::SSAORenderer::AddDefaultPipelines()
 
 	vulkanObject.AddGraphicsPipeline(aoBlurPipelineName, {
 		configManager.GetString("DrawQuadVert"),
-		"Resources/Shaders/SSAOBlur.frag.spv" },
+		"Resources/Shaders/SSAO/SSAOBlur.frag.spv" },
 		true, true, kSubpass_AO_BLUR);
 
 
