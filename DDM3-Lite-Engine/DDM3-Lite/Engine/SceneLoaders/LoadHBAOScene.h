@@ -25,15 +25,13 @@
 #include "Components/MaterialSwitcher/MaterialSwitcher.h"
 #include "Components/InfoComponent.h"
 
-#include "Vulkan/Renderers/DeferredRenderer.h"
+#include "Vulkan/Renderers/AORenderers/HBAORenderer.h"
 
 namespace LoadHBAOScene
 {
 	void SetupPipelines();
 
-	
-	void SetupAtrium2(DDM3::Scene* scene);
-
+	void SetupAtrium(DDM3::Scene* scene);
 
 	void SetupInfoComponent(DDM3::Scene* scene);
 
@@ -48,7 +46,7 @@ namespace LoadHBAOScene
 
 		SetupPipelines();
 
-		SetupAtrium2(scene.get());
+		SetupAtrium(scene.get());
 
 		SetupInfoComponent(scene.get());
 
@@ -61,10 +59,10 @@ namespace LoadHBAOScene
 	{
 		auto& vulkanObject{ DDM3::VulkanObject::GetInstance() };
 
-		vulkanObject.AddGraphicsPipeline("DeferredDiffuse", { "Resources/DefaultResources/Deffered.Vert.spv", "Resources/Shaders/DefferedDiffuse.frag.spv" }, true, false, DDM3::DeferredRenderer::kSubpass_GBUFFER);
+		vulkanObject.AddGraphicsPipeline("DeferredDiffuse", { "Resources/Shaders/SSAO/SSAOGbuffer.Vert.spv", "Resources/Shaders/SSAO/SSAODiffuse.frag.spv" }, true, false, DDM3::HBAORenderer::kSubpass_GBUFFER);
 	}
 
-	void SetupAtrium2(DDM3::Scene* scene)
+	void SetupAtrium(DDM3::Scene* scene)
 	{
 		auto& modelLoader = DDM3::DDMModelLoader::GetInstance();
 
@@ -81,7 +79,7 @@ namespace LoadHBAOScene
 			renderComponent->SetMesh(pMesh.get());
 
 
-			auto texturedMaterial = std::make_shared<DDM3::TexturedMaterial>("DeferredDiffuse");
+			auto texturedMaterial = std::make_shared<DDM3::TexturedMaterial>("Default");
 
 			for (auto& texture : pMesh->GetDiffuseTextureNames())
 			{
@@ -91,6 +89,7 @@ namespace LoadHBAOScene
 			renderComponent->SetMaterial(texturedMaterial);
 		}
 	}
+
 
 	void SetupInfoComponent(DDM3::Scene* scene)
 	{
@@ -111,30 +110,10 @@ namespace LoadHBAOScene
 
 		auto pCameraTransform{ pCamera->GetTransform() };
 		pCameraTransform->SetLocalPosition(0, 1, 0);
-		//pCameraTransform->SetLocalRotation(glm::vec3(0.0f, glm::radians(180.f), 0.0f));
 
 		//pCamera->AddComponent<D3D::RotatorComponent>();
 
 		scene->SetCamera(pCameraComponent);
-		
-		//auto& configManager{ DDM3::ConfigManager::GetInstance() };
-		//
-		//// Set the vertex shader name
-		//const std::string vertShaderName{ configManager.GetString("SkyboxVertName") };
-		//// Set the fragment shader name
-		//const std::string fragShaderName{ configManager.GetString("SkyboxFragName") };
-		//
-		//// Create the graphics pipeline for the skybox
-		//DDM3::VulkanObject::GetInstance().AddGraphicsPipeline(configManager.GetString("SkyboxPipelineName"), { vertShaderName, fragShaderName }, false);
-		//
-		//auto pSkyBox{ pCamera->AddComponent<DDM3::SkyBoxComponent>() };
-		//
-		//pSkyBox->LoadSkybox(std::initializer_list<const std::string>{"resources/images/CubeMap/Sky_Right.png",
-		//	"resources/images/CubeMap/Sky_Left.png",
-		//	"resources/images/CubeMap/Sky_Up.png",
-		//	"resources/images/CubeMap/Sky_Down.png",
-		//	"resources/images/CubeMap/Sky_Front.png",
-		//	"resources/images/CubeMap/Sky_Back.png"});
 	}
 
 	void SetupLight(DDM3::Scene* scene)

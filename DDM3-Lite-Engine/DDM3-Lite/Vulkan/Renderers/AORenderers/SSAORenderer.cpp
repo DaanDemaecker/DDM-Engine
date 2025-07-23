@@ -243,7 +243,7 @@ void DDM3::SSAORenderer::AddDefaultPipelines()
 
 	vulkanObject.AddGraphicsPipeline(aoBlurPipelineName, {
 		configManager.GetString("DrawQuadVert"),
-		"Resources/Shaders/SSAO/SSAOBlur.frag.spv" },
+		"Resources/Shaders/Utils/SingleChannelBlur.frag.spv" },
 		true, true, kSubpass_AO_BLUR);
 
 

@@ -3,11 +3,12 @@
 layout (input_attachment_index = 0, set = 0, binding = 0) uniform subpassInput inNormal;
 layout (input_attachment_index = 2, set = 0, binding = 1) uniform subpassInput depth;
 
-
 layout(set = 0, binding = 2) uniform sampler2D inPos;
 
 
+
 layout(location = 0) out float outValue;
+
 
 
 layout(location = 0) in vec2 fragUV;
@@ -100,9 +101,6 @@ vec3 GetHighestPos(float texelSize, vec2 direction, vec3 tangent, vec3 fragPos)
             highestDepth = dist;
         }
     }
-
-
-
 
     return highestPos;
 }
