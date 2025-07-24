@@ -6,11 +6,13 @@
 #include "SceneLoaders/LoadDeferredScene.h"
 #include "SceneLoaders/LoadSSAOScene.h"
 #include "SceneLoaders/LoadHBAOScene.h"
+#include "SceneLoaders/LoadGTAOScene.h"
 
 #include "Vulkan/Renderers/ForwardRenderer.h"
 #include "Vulkan/Renderers/DeferredRenderer.h"
 #include "Vulkan/Renderers/AORenderers/SSAORenderer.h"
 #include "Vulkan/Renderers/AORenderers/HBAORenderer.h"
+#include "Vulkan/Renderers/AORenderers/GTAORenderer.h"
 
 enum
 {
@@ -18,6 +20,7 @@ enum
 	activeRendererDeffered = 1,
 	activeRendererSSAO = 2,
 	activeRendererHBAO = 3,
+	activeRendererGTAO = 4
 };
 
 int main()
@@ -28,7 +31,7 @@ int main()
 	// Create the engine object and run it with the load function
 	DDM3::DDM3Engine engine{};
 
-	int activeRenderer{ activeRendererHBAO };
+	int activeRenderer{ activeRendererGTAO };
 
 	switch (activeRenderer)
 	{
@@ -49,6 +52,10 @@ int main()
 	case activeRendererHBAO:
 		engine.Init<DDM3::HBAORenderer>();
 		engine.Run(LoadHBAOScene::LoadScene);
+		break;
+	case activeRendererGTAO:
+		engine.Init<DDM3::GTAORenderer>();
+		engine.Run(LoadGTAOScene::LoadScene);
 		break;
 	default:
 		break;
