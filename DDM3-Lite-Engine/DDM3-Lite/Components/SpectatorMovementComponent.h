@@ -14,6 +14,8 @@ namespace DDM3
 		virtual void Update() override;
 
 	private:
+		TransformComponent* m_pTransform{ nullptr };
+
 		const float m_Speed{5.f};
 		const float m_AngularSpeed{ 0.01f };
 

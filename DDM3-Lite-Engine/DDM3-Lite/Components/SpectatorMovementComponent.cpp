@@ -16,35 +16,48 @@ DDM3::SpectatorMovementComponent::SpectatorMovementComponent()
 
 void DDM3::SpectatorMovementComponent::Update()
 {
+	if (m_pTransform == nullptr)
+	{
+		m_pTransform = GetComponent<TransformComponent>().get();
+		
+		auto rotation = m_pTransform->GetWorldRotation();
+
+		glm::vec3 eulerAngles = glm::eulerAngles( rotation );
+		
+		m_TotalPitch = eulerAngles.x;
+
+		m_TotalYaw = eulerAngles.y;
+	}
+
+
 	auto& input{ InputManager::GetInstance() };
 
 	glm::vec3 direction{};
 
 	auto window = Window::GetInstance().GetWindowStruct().pWindow;
 
-	auto transform = GetTransform();
 	auto deltaTime = TimeManager::GetInstance().GetDeltaTime();
 
 	// Determine movement direction based on key presses
 	if (input.GetKeyPressed(GLFW_KEY_W))
 	{
 		//direction += transform->GetForward() * m_Speed * deltaTime;
-		direction += transform->GetForward();
+		direction += m_pTransform->GetForward();
 	}
 	if (input.GetKeyPressed(GLFW_KEY_S))
 	{
 		//direction -= transform->GetForward() * m_Speed * deltaTime;
-		direction -= transform->GetForward();
+		direction -= m_pTransform->GetForward();
 	}
 	if (input.GetKeyPressed(GLFW_KEY_A))
 	{
 		//direction -= transform->GetRight() * m_Speed * deltaTime;
-		direction -= transform->GetRight();
+		direction -= m_pTransform->GetRight();
 	}
 	if (input.GetKeyPressed(GLFW_KEY_D))
 	{
 		//direction += transform->GetRight() * m_Speed * deltaTime;
-		direction += transform->GetRight();
+		direction += m_pTransform->GetRight();
 	}
 
 	glm::normalize(direction);
@@ -53,7 +66,7 @@ void DDM3::SpectatorMovementComponent::Update()
 
 
 	// Translate the object based on the rotated movement direction
-	transform->Translate(direction);
+	m_pTransform->Translate(direction);
 
 	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
 	{
@@ -64,6 +77,6 @@ void DDM3::SpectatorMovementComponent::Update()
 		m_TotalYaw += static_cast<float>(mouseDelta.x * m_AngularSpeed);
 
 		// Rotate the camera based on mouse movement
-		transform->SetWorldRotation(m_TotalPitch, m_TotalYaw, 0);
+		m_pTransform->SetWorldRotation(m_TotalPitch, m_TotalYaw, 0);
 	}
 }
