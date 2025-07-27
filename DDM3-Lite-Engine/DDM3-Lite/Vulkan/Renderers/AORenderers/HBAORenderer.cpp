@@ -772,7 +772,7 @@ void DDM3::HBAORenderer::SetupDescriptorObjectsLighting()
 
 	auto descriptorObject{ std::make_unique<InputAttachmentDescriptorObject>() };
 
-	descriptorObject->AddImageView(attachments[kAttachment_AO_MAP]->GetTexture(0)->imageView, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+	descriptorObject->AddImageView(attachments[kAttachment_AO_BLURRED]->GetTexture(0)->imageView, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
 	m_pLightingInputDescriptorObjects.push_back(std::move(descriptorObject));
 }

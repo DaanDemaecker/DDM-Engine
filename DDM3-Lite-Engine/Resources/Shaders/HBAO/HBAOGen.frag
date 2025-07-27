@@ -44,7 +44,7 @@ void CalculateOutValue()
    // Get the screen size and use it to calculate stepsize in UV space per sample
    vec2 screenSize = vec2(textureSize(inPos, 0).xy);
    vec2 stepSize = vec2(1.0) / screenSize;
-   vec2 scaledStep = (radius / abs(fragPos.z)) * stepSize;
+   vec2 scaledStep = stepSize * radius;
 
    float angle = pi/directions;
 
@@ -70,7 +70,7 @@ float ComputeAO(vec3 fragPos, vec3 normal, vec2 direction, vec2 stepSize)
     vec3 leftDirection = cross(normal, vec3(direction, 0.0));
     vec3 tangent = normalize(cross(leftDirection, normal));
 
-    float tangentAngle = atan(tangent.z / length(tangent.xy));
+    float tangentAngle = atan(tangent.z / length(tangent.xy)) + bias;
     float sinTangentAngle = sin(tangentAngle);
 
 
@@ -81,6 +81,14 @@ float ComputeAO(vec3 fragPos, vec3 normal, vec2 direction, vec2 stepSize)
     {
         vec2 offsetUV = clamp(fragUV + direction * (i * stepSize), vec2(0.0), vec2(1.0));
         vec3 samplePos = texture(inPos, offsetUV).xyz;
+
+
+        float depthThreshold = 0.1;
+        // Depth discontinuity check
+        float depthDifference = abs(samplePos.z - fragPos.z);
+        if (depthDifference > depthThreshold)
+            continue;
+
 
         vec3 directionVec = (samplePos - fragPos);
 
@@ -95,5 +103,5 @@ float ComputeAO(vec3 fragPos, vec3 normal, vec2 direction, vec2 stepSize)
 
     float sinHorizonAngle = sin(highestAngle);
 
-    return clamp(sinHorizonAngle - sinTangentAngle, 0.0, 1.0);
+    return clamp(sinHorizonAngle - sinTangentAngle, 0, 1);
 }

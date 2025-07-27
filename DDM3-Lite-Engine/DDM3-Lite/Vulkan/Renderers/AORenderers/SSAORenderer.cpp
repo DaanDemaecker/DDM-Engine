@@ -82,11 +82,12 @@ DDM3::SSAORenderer::~SSAORenderer()
 
 	vkDestroyDescriptorPool(device, m_LightingDescriptorPool, nullptr);
 
+	if (m_ShouldBlur)
+	{
+		vkDestroyDescriptorSetLayout(device, m_AoBlurDescriptorSetLayout, nullptr);
 
-	vkDestroyDescriptorSetLayout(device, m_AoBlurDescriptorSetLayout, nullptr);
-
-	vkDestroyDescriptorPool(device, m_AoBlurDescriptorPool, nullptr);
-
+		vkDestroyDescriptorPool(device, m_AoBlurDescriptorPool, nullptr);
+	}
 
 	vkDestroyDescriptorSetLayout(device, m_AoGenDescriptorSetLayout, nullptr);
 
@@ -110,12 +111,7 @@ void DDM3::SSAORenderer::Render()
 	VkResult result = vkAcquireNextImageKHR(device, m_pSwapchainWrapper->GetSwapchain(),
 		UINT64_MAX, m_pSyncObjectManager->GetImageAvailableSemaphore(currentFrame), VK_NULL_HANDLE, &imageIndex);
 
-
-	//SetNewSamples(currentFrame, imageIndex);
-
 	UpdateDescriptorSets(currentFrame, imageIndex);
-
-	UpdateAoBlurDescriptorSets(currentFrame, imageIndex);
 
 	if (result == VK_ERROR_OUT_OF_DATE_KHR)
 	{
@@ -734,7 +730,10 @@ void DDM3::SSAORenderer::SetupDescriptorObjects()
 {
 	SetupDescriptorObjectsAoGen();
 
-	SetupDescriptorObjectsAoBlur();
+	if (m_ShouldBlur)
+	{
+		SetupDescriptorObjectsAoBlur();
+	}
 
 	SetupDescriptorObjectsLighting();
 }
@@ -783,7 +782,14 @@ void DDM3::SSAORenderer::SetupDescriptorObjectsLighting()
 
 	auto descriptorObject{ std::make_unique<InputAttachmentDescriptorObject>() };
 
-	descriptorObject->AddImageView(attachments[kAttachment_AO_MAP]->GetTexture(0)->imageView, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+	if (m_ShouldBlur)
+	{
+		descriptorObject->AddImageView(attachments[kAttachment_AO_BLURRED]->GetTexture(0)->imageView, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+	}
+	else
+	{
+		descriptorObject->AddImageView(attachments[kAttachment_AO_MAP]->GetTexture(0)->imageView, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+	}
 
 	m_pLightingInputDescriptorObjects.push_back(std::move(descriptorObject));
 }
@@ -936,12 +942,15 @@ void DDM3::SSAORenderer::RecordCommandBuffer(VkCommandBuffer& commandBuffer, uin
 	// AO Blur pass
 	vkCmdNextSubpass(commandBuffer, VK_SUBPASS_CONTENTS_INLINE);
 
-	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pAoBlurPipeline->GetPipeline());
+	if (m_ShouldBlur)
+	{
+		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pAoBlurPipeline->GetPipeline());
 
-	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pAoBlurPipeline->GetPipelineLayout(), 0, 1,
-		&m_AoBlurDescriptorSets[frame], 0, nullptr);
+		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pAoBlurPipeline->GetPipelineLayout(), 0, 1,
+			&m_AoBlurDescriptorSets[frame], 0, nullptr);
 
-	VulkanObject::GetInstance().DrawQuad(commandBuffer);
+		VulkanObject::GetInstance().DrawQuad(commandBuffer);
+	}
 
 
 	// Lighting pass
@@ -1038,7 +1047,10 @@ void DDM3::SSAORenderer::ResetDescriptorSets()
 
 	vkFreeDescriptorSets(VulkanObject::GetInstance().GetDevice(), m_AoGenDescriptorPool, m_AoGenDescriptorSets.size(), m_AoGenDescriptorSets.data());
 
-	vkFreeDescriptorSets(VulkanObject::GetInstance().GetDevice(), m_AoBlurDescriptorPool, m_AoBlurDescriptorSets.size(), m_AoBlurDescriptorSets.data());
+	if (m_ShouldBlur)
+	{
+		vkFreeDescriptorSets(VulkanObject::GetInstance().GetDevice(), m_AoBlurDescriptorPool, m_AoBlurDescriptorSets.size(), m_AoBlurDescriptorSets.data());
+	}
 
 	SetupDescriptorObjects();
 
@@ -1048,8 +1060,10 @@ void DDM3::SSAORenderer::ResetDescriptorSets()
 void DDM3::SSAORenderer::CreateDescriptorSetLayouts()
 {
 	CreateAoGenDescriptorSetLayout();
-
-	CreateAoBlurDescriptorSetLayout();
+	if (m_ShouldBlur)
+	{
+		CreateAoBlurDescriptorSetLayout();
+	}
 
 	CreateLightingDescriptorSetLayout();
 }
@@ -1203,7 +1217,10 @@ void DDM3::SSAORenderer::CreateDescriptorPools()
 {
 	CreateAoGenDescriptorPool();
 
-	CreateAoBlurDescriptorPool();
+	if (m_ShouldBlur)
+	{
+		CreateAoBlurDescriptorPool();
+	}
 
 	CreateLightingDescriptorPool();
 }
@@ -1359,7 +1376,10 @@ void DDM3::SSAORenderer::CreateDescriptorSets()
 {
 	CreateAoGenDescriptorSets();
 
-	CreateAoBlurDescriptorSets();
+	if (m_ShouldBlur)
+	{
+		CreateAoBlurDescriptorSets();
+	}
 
 	CreateLightingDescriptorSets();
 }
@@ -1458,7 +1478,10 @@ void DDM3::SSAORenderer::UpdateDescriptorSets(int frame, int swapchainIndex)
 {
 	UpdateAoGenDescriptorSets(frame, swapchainIndex);
 
-	UpdateAoBlurDescriptorSets(frame, swapchainIndex);
+	if (m_ShouldBlur)
+	{
+		UpdateAoBlurDescriptorSets(frame, swapchainIndex);
+	}
 
 	UpdateLightingDescriptorSets(frame);
 }

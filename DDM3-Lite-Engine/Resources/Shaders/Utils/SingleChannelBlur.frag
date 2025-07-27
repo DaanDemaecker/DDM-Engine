@@ -6,7 +6,7 @@ layout(location = 0) out float outColor;
 
 layout(binding = 0) uniform sampler2D ssaoInput;
 
-const int range = 2;
+const int range = 1;
 
 // Logic by Brian Will
 // https://www.youtube.com/watch?v=7hxrPKoELpo

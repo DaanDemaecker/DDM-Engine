@@ -69,6 +69,7 @@ namespace DDM3
 			kAttachment_AO_BLURRED = 8
 		};
 
+		bool m_ShouldBlur{ true };
 
 		std::unique_ptr<RenderpassWrapper> m_pRenderpass{};
 

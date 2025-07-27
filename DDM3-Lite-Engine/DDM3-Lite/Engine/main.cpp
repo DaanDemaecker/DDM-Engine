@@ -31,7 +31,7 @@ int main()
 	// Create the engine object and run it with the load function
 	DDM3::DDM3Engine engine{};
 
-	int activeRenderer{ activeRendererGTAO };
+	int activeRenderer{ activeRendererSSAO };
 
 	switch (activeRenderer)
 	{
@@ -45,7 +45,6 @@ int main()
 		engine.Run(LoadDeferredScene::LoadScene);
 		break;
 	case activeRendererSSAO:
-
 		engine.Init<DDM3::SSAORenderer>();
 		engine.Run(LoadSSAOScene::LoadScene);
 		break;

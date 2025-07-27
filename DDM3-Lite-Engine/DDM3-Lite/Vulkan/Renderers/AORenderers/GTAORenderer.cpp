@@ -36,8 +36,6 @@ DDM3::GTAORenderer::GTAORenderer()
 	// Initialize the swapchain
 	m_pSwapchainWrapper = std::make_unique<SwapchainWrapper>(pGPUObject, surface, VulkanObject::GetInstance().GetImageManager(), VulkanObject::GetInstance().GetMsaaSamples());
 
-	//CreateMasterRenderpass();
-
 	CreateRenderpass();
 
 	auto commandBuffer = VulkanObject::GetInstance().BeginSingleTimeCommands();
@@ -201,8 +199,8 @@ void DDM3::GTAORenderer::AddDefaultPipelines()
 
 	// Add default pipeline
 	vulkanObject.AddGraphicsPipeline(defaultPipelineName, {
-		"Resources/Shaders/HBAO/HBAOGbuffer.vert.spv",
-		"Resources/Shaders/HBAO/HBAOGbuffer.frag.spv" },
+		"Resources/Shaders/GTAO/GTAOGbuffer.vert.spv",
+		"Resources/Shaders/GTAO/GTAOGbuffer.frag.spv" },
 		true, false, kSubpass_GBUFFER);
 
 	// Initialize default pipeline name 
@@ -211,7 +209,7 @@ void DDM3::GTAORenderer::AddDefaultPipelines()
 	// Add default pipeline
 	vulkanObject.AddGraphicsPipeline(lightingPipelineName, {
 		configManager.GetString("DrawQuadVert"),
-		"Resources/Shaders/HBAO/HBAOLighting.frag.spv" },
+		"Resources/Shaders/GTAO/GTAOLighting.frag.spv" },
 		false, true, kSubpass_LIGHTING);
 
 	m_pLightingPipeline = vulkanObject.GetPipeline(lightingPipelineName);
@@ -221,7 +219,7 @@ void DDM3::GTAORenderer::AddDefaultPipelines()
 
 	vulkanObject.AddGraphicsPipeline(aoPipelineName, {
 		configManager.GetString("DrawQuadVert"),
-		"Resources/Shaders/HBAO/HBAOGen.frag.spv" },
+		"Resources/Shaders/GTAO/GTAOGen.frag.spv" },
 		true, true, kSubpass_AO_GEN);
 
 	m_pAoPipeline = vulkanObject.GetPipeline(aoPipelineName);
@@ -348,6 +346,7 @@ void DDM3::GTAORenderer::SetupAttachments()
 
 	// normal attachment
 	auto normalAttachment = std::make_unique<Attachment>(swapchainImageAmount);
+	normalAttachment->SetClearColorValue({ 0.0f, 0.0f, 0.0f, 1.0f });
 	normalAttachment->SetFormat(colorAttachmentFormat);
 	normalAttachment->SetAttachmentType(Attachment::kAttachmentType_Color);
 	normalAttachment->SetIsInput(true);
@@ -429,8 +428,9 @@ void DDM3::GTAORenderer::SetupAttachments()
 
 	VkFormat aoMapFormat = VK_FORMAT_R32_SFLOAT;
 	// AoGen attachment
+
 	auto aoMapAttachment = std::make_unique<Attachment>(swapchainImageAmount);
-	aoMapAttachment->SetClearColorValue({ 1.0f, 1.0f, 1.0f, 1.0f });
+	aoMapAttachment->SetClearColorValue({0.0f, 0.0f, 0.0f, 1.0f});
 	aoMapAttachment->SetFormat(aoMapFormat);
 	aoMapAttachment->SetAttachmentType(Attachment::kAttachmentType_Color);
 	aoMapAttachment->SetIsInput(true);
@@ -440,9 +440,9 @@ void DDM3::GTAORenderer::SetupAttachments()
 	aoMapAttachmentDesc.format = aoMapFormat;
 	aoMapAttachmentDesc.samples = VK_SAMPLE_COUNT_1_BIT;
 	aoMapAttachmentDesc.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-	aoMapAttachmentDesc.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	aoMapAttachmentDesc.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-	aoMapAttachmentDesc.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+	aoMapAttachmentDesc.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+	aoMapAttachmentDesc.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+	aoMapAttachmentDesc.stencilStoreOp = VK_ATTACHMENT_STORE_OP_STORE;
 	aoMapAttachmentDesc.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 	aoMapAttachmentDesc.finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
@@ -462,7 +462,7 @@ void DDM3::GTAORenderer::SetupAttachments()
 	aoBlurMapAttachmentDesc.samples = VK_SAMPLE_COUNT_1_BIT;
 	aoBlurMapAttachmentDesc.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
 	aoBlurMapAttachmentDesc.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	aoBlurMapAttachmentDesc.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+	aoBlurMapAttachmentDesc.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
 	aoBlurMapAttachmentDesc.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
 	aoBlurMapAttachmentDesc.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 	aoBlurMapAttachmentDesc.finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
