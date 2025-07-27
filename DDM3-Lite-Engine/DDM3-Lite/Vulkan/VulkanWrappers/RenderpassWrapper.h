@@ -80,15 +80,6 @@ namespace DDM3
 
 		VkSampleCountFlagBits m_SampleCount{ VK_SAMPLE_COUNT_1_BIT };
 
-		// Initialize the renderpass
-		// Parameters:
-		//     device: handle of the VkDevice
-		//     swapchainImageFormat: the format that the swapchain color image is in
-		//     depthFormat: the format that the swapchain depth image is in
-		//     msaaSamples: the max amount of samples per pixels
-		void CreateRenderPass(VkDevice device, VkFormat swapchainImageFormat, VkFormat depthFormat,
-			VkSampleCountFlagBits msaaSamples, int attachmentCount);
-
 	};
 }
 
