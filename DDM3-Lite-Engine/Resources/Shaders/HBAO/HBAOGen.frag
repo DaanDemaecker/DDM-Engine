@@ -19,7 +19,7 @@ float ComputeAO(vec3 fragPos, vec3 normal, vec2 direction, vec2 stepSize);
 const int directions = 8; // Number of directions to test
 const int samples = 8; // Number of samples per direction
 const float pi = 3.14159265358979323846; // Pi constant
-const float bias = radians(30.0); // Bias angle in radians
+const float bias = radians(15.0); // Bias angle in radians
 const float inf = 1/0; // Constant representing infinity
 const float radius = 1; // Constant radius of testing dome
 
@@ -46,13 +46,13 @@ void CalculateOutValue()
    vec2 stepSize = vec2(1.0) / screenSize;
    vec2 scaledStep = stepSize * radius;
 
-   float angle = pi/directions;
+   float angle = 2*pi/directions;
 
    float ao = 0;
 
    for(int i = 0; i < directions; ++i)
    {
-        vec2 direction = vec2(cos(angle * i), sin(angle * i));
+        vec2 direction = normalize(vec2(cos(angle * i), sin(angle * i)));       
 
         ao += ComputeAO(fragPos, normal, direction, scaledStep);
    }
@@ -67,14 +67,14 @@ void CalculateOutValue()
 
 float ComputeAO(vec3 fragPos, vec3 normal, vec2 direction, vec2 stepSize)
 {
+    // Calculate tangent angle from normal (upward-facing hemisphere)
     vec3 leftDirection = cross(normal, vec3(direction, 0.0));
     vec3 tangent = normalize(cross(leftDirection, normal));
 
-    float tangentAngle = atan(tangent.z / length(tangent.xy)) + bias;
+    // Tangent angle to bias the dome upward
+    float tangentAngle = atan(-tangent.z, length(tangent.xy)) + bias;
     float sinTangentAngle = sin(tangentAngle);
 
-
-    
     float highestAngle = -inf;
 
     for (int i = 1; i <= samples; ++i)
@@ -82,26 +82,23 @@ float ComputeAO(vec3 fragPos, vec3 normal, vec2 direction, vec2 stepSize)
         vec2 offsetUV = clamp(fragUV + direction * (i * stepSize), vec2(0.0), vec2(1.0));
         vec3 samplePos = texture(inPos, offsetUV).xyz;
 
+        // Discard samples with big depth jumps
 
-        float depthThreshold = 0.1;
-        // Depth discontinuity check
-        float depthDifference = abs(samplePos.z - fragPos.z);
-        if (depthDifference > depthThreshold)
-            continue;
+        float depthDifference = length(samplePos - fragPos);
+        if (depthDifference > radius || abs(samplePos.z - fragPos.z) > 0.2)
+        continue;
 
 
-        vec3 directionVec = (samplePos - fragPos);
+        vec3 directionVec = samplePos - fragPos;
 
-        float angle = atan(directionVec.z, length(directionVec.xy));
+        float angle = atan(-directionVec.z, length(directionVec.xy));
 
         if (angle > highestAngle)
         {
             highestAngle = angle;
         }
-
     }
 
     float sinHorizonAngle = sin(highestAngle);
-
-    return clamp(sinHorizonAngle - sinTangentAngle, 0, 1);
+    return max(0.0, sinHorizonAngle - sinTangentAngle);
 }

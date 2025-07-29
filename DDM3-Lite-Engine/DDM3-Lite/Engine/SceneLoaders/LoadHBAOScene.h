@@ -79,7 +79,7 @@ namespace LoadHBAOScene
 			renderComponent->SetMesh(pMesh.get());
 
 
-			auto texturedMaterial = std::make_shared<DDM3::TexturedMaterial>("DeferredDiffuse");
+			auto texturedMaterial = std::make_shared<DDM3::TexturedMaterial>("Default");
 
 			for (auto& texture : pMesh->GetDiffuseTextureNames())
 			{
