@@ -72,33 +72,43 @@ float ComputeAO(vec3 fragPos, vec3 normal, vec2 direction, vec2 stepSize)
     vec3 tangent = normalize(cross(leftDirection, normal));
 
     // Tangent angle to bias the dome upward
-    float tangentAngle = atan(-tangent.z, length(tangent.xy)) + bias;
+    float tangentAngle = atan(-tangent.z, length(tangent.xy)); // + bias;
     float sinTangentAngle = sin(tangentAngle);
 
-    float highestAngle = -inf;
+    float highestValue = -inf;
+    
+    float horizonAngle = 0.0f;
 
     for (int i = 1; i <= samples; ++i)
     {
         vec2 offsetUV = clamp(fragUV + direction * (i * stepSize), vec2(0.0), vec2(1.0));
         vec3 samplePos = texture(inPos, offsetUV).xyz;
 
-        // Discard samples with big depth jumps
-
-        float depthDifference = length(samplePos - fragPos);
-        if (depthDifference > radius || abs(samplePos.z - fragPos.z) > 0.2)
-        continue;
-
-
-        vec3 directionVec = samplePos - fragPos;
-
-        float angle = atan(-directionVec.z, length(directionVec.xy));
-
-        if (angle > highestAngle)
+        if(samplePos.z > highestValue)
         {
-            highestAngle = angle;
+        
+            vec3 difference = samplePos - fragPos;
+            float xyLength = length(difference.xy);
+
+            float epsilon = 0.01;
+            if(xyLength <= epsilon)
+            {
+                continue;
+            }
+
+            
+            highestValue = samplePos.z;
+
+            horizonAngle = atan(-difference.z, length(difference.xy));
         }
     }
 
-    float sinHorizonAngle = sin(highestAngle);
-    return max(0.0, sinHorizonAngle - sinTangentAngle);
+    if(highestValue == -inf)
+    {
+        horizonAngle = tangentAngle;
+    }
+
+
+    float sinHorizonAngle = sin(horizonAngle);
+    return sinHorizonAngle - sinTangentAngle;
 }

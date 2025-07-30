@@ -31,6 +31,8 @@ namespace LoadHBAOScene
 {
 	void SetupPipelines();
 
+	void SetupVehicle(DDM3::Scene* scene);
+
 	void SetupAtrium(DDM3::Scene* scene);
 
 	void SetupInfoComponent(DDM3::Scene* scene);
@@ -46,6 +48,8 @@ namespace LoadHBAOScene
 
 		SetupPipelines();
 
+		//SetupVehicle(scene.get());
+
 		SetupAtrium(scene.get());
 
 		SetupInfoComponent(scene.get());
@@ -60,6 +64,28 @@ namespace LoadHBAOScene
 		auto& vulkanObject{ DDM3::VulkanObject::GetInstance() };
 
 		vulkanObject.AddGraphicsPipeline("DeferredDiffuse", { "Resources/Shaders/HBAO/HBAOGbuffer.Vert.spv", "Resources/Shaders/HBAO/HBAODiffuse.frag.spv" }, true, false, DDM3::HBAORenderer::kSubpass_GBUFFER);
+	}
+
+	void SetupVehicle(DDM3::Scene* scene)
+	{
+		std::shared_ptr<DDM3::Material> pVehicleMaterial{ std::make_shared<DDM3::Material>() };
+
+		auto pVehicle{ scene->CreateGameObject("Vehicle") };
+		pVehicle->SetShowImGui(true);
+		//pVehicle->AddComponent<D3D::RotatorComponent>();
+
+		auto pVehicleMesh{ DDM3::ResourceManager::GetInstance().LoadMesh("Resources/Models/vehicle.obj") };
+
+		auto pVehicleModel{ pVehicle->AddComponent<DDM3::MeshRenderComponent>() };
+		pVehicleModel->SetMesh(pVehicleMesh);
+		pVehicleModel->SetMaterial(pVehicleMaterial);
+
+
+		auto pVehicleTransform{ pVehicle->GetTransform() };
+		pVehicleTransform->SetShowImGui(true);
+		pVehicleTransform->SetLocalPosition(0, 3, 0);
+		pVehicleTransform->SetLocalRotation(0.f, glm::radians(75.0f), 0.f);
+		pVehicleTransform->SetLocalScale(0.05f, 0.05f, 0.05f);
 	}
 
 	void SetupAtrium(DDM3::Scene* scene)
