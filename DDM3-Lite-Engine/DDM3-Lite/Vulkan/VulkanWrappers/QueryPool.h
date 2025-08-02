@@ -48,6 +48,7 @@ namespace DDM3
 		/// <param name="pipelineStage: ">Vulkan pipeline stage to put timestamp in, default: TOP_OF_PIPE</param>
 		void WriteTimeStamp(VkCommandBuffer commandBuffer, VkPipelineStageFlagBits pipelineStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT);
 
+		void PrintTimestamps();
 	private:
 		// Vulkan query pool object
 		VkQueryPool m_QueryPool{};

@@ -96,6 +96,19 @@ void DDM3::GTAORenderer::Render()
 	vkWaitForFences(device, 1, &m_pSyncObjectManager->GetInFlightFence(currentFrame), VK_TRUE, UINT64_MAX);
 
 
+
+	static bool keyPressedLastFrame = false;
+
+	bool keyPressed = static_cast<bool>(glfwGetKey(Window::GetInstance().GetWindowStruct().pWindow, GLFW_KEY_P));
+
+	if (!keyPressed && keyPressedLastFrame)
+	{
+		m_pQueryPool->PrintTimestamps();
+	}
+
+	keyPressedLastFrame = keyPressed;
+
+
 	uint32_t imageIndex{};
 	VkResult result = vkAcquireNextImageKHR(device, m_pSwapchainWrapper->GetSwapchain(),
 		UINT64_MAX, m_pSyncObjectManager->GetImageAvailableSemaphore(currentFrame), VK_NULL_HANDLE, &imageIndex);
