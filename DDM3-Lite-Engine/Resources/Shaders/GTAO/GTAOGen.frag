@@ -18,7 +18,6 @@ vec2 CalculateHorizonAngles(vec3 fragPos, vec3 viewDirection, vec2 testDirection
 const int directions = 16; // Number of directions to test
 const int samples = 16; // Number of samples per direction
 const float pi = 3.14159265358979323846; // Pi constant
-const float bias = radians(15.0); // Bias angle in radians
 const float inf = 1/0; // Constant representing infinity
 const float radius = 1; // Constant radius of testing dome
 

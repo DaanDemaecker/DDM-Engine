@@ -63,9 +63,9 @@ add_executable(${EXECUTABLE_NAME}
  "Vulkan/VulkanWrappers/Subpass.cpp"
  "DataTypes/DescriptorObjects/InputAttachmentDescriptorObject.cpp"
  "Vulkan/Renderers/AORenderers/SSAORenderer.cpp"
- "Engine/SceneLoaders/LoadSSAOScene.h"
  "Vulkan/Renderers/AORenderers/HBAORenderer.cpp"
- "Vulkan/Renderers/AORenderers/GTAORenderer.cpp")
+ "Vulkan/Renderers/AORenderers/GTAORenderer.cpp"
+ "Vulkan/VulkanWrappers/QueryPool.cpp")
 
 
 # Include directories specific to this target

@@ -64,7 +64,6 @@ namespace DDM3
 		/// </summary>
 		/// <returns>Reference to QueueObject</returns>
 		const QueueObject& GetQueueObject();
-
 	private:
 		// Wrapper for VkInstance
 		std::unique_ptr<InstanceWrapper> m_pInstance;

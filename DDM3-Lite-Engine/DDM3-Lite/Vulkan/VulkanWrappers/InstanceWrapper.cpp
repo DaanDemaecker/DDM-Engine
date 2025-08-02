@@ -123,7 +123,7 @@ void DDM3::InstanceWrapper::SetupApplicationInfo(VkApplicationInfo& appInfo, std
 		configManager.GetInt("EngineVersionMinor"),
 		configManager.GetInt("EngineVersionPatch"));
 	// Set version of api
-	appInfo.apiVersion = VK_API_VERSION_1_1;
+	appInfo.apiVersion = VK_API_VERSION_1_2;
 }
 
 bool DDM3::InstanceWrapper::CheckValidationLayerSupport(const std::vector<const char*> validationLayers)

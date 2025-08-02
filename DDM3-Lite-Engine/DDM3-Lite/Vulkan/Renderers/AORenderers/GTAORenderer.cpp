@@ -17,6 +17,7 @@
 #include "Vulkan/VulkanWrappers/PipelineWrapper.h"
 #include "DataTypes/DescriptorObjects/TextureDescriptorObject.h"
 #include "Vulkan/VulkanWrappers/Subpass.h"
+#include "Vulkan/VulkanWrappers/QueryPool.h"
 
 #include "Engine/Window.h"
 #include "Managers/SceneManager.h"
@@ -59,6 +60,8 @@ DDM3::GTAORenderer::GTAORenderer()
 	CreateDescriptorSets();
 
 	SetupPositionTexture();
+
+	m_pQueryPool = std::make_unique<QueryPool>();
 }
 
 DDM3::GTAORenderer::~GTAORenderer()
@@ -828,6 +831,10 @@ void DDM3::GTAORenderer::CleanupImgui()
 
 void DDM3::GTAORenderer::RecordCommandBuffer(VkCommandBuffer& commandBuffer, uint32_t imageIndex)
 {
+	// Reset querypool for start of frame
+	m_pQueryPool->ResetPool();
+
+
 	auto frame = VulkanObject::GetInstance().GetCurrentFrame();
 
 	VkCommandBufferBeginInfo beginInfo{};
@@ -839,6 +846,10 @@ void DDM3::GTAORenderer::RecordCommandBuffer(VkCommandBuffer& commandBuffer, uin
 	{
 		throw std::runtime_error("failed to begin recording command buffer!");
 	}
+
+	// Write timestamp for start of command buffer
+	m_pQueryPool->WriteTimeStamp(commandBuffer);
+
 	auto extent{ m_pSwapchainWrapper->GetExtent() };
 
 	VkViewport viewport{};
@@ -858,7 +869,13 @@ void DDM3::GTAORenderer::RecordCommandBuffer(VkCommandBuffer& commandBuffer, uin
 	// Depth prepass
 	m_pRenderpass->BeginRenderPass(commandBuffer, m_pSwapchainWrapper->GetFrameBuffer(imageIndex, m_pRenderpass.get()), extent);
 
+	// Write timestamp
+	m_pQueryPool->WriteTimeStamp(commandBuffer, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT);
+
 	SceneManager::GetInstance().RenderDepth();
+
+	// Write timestamp
+	m_pQueryPool->WriteTimeStamp(commandBuffer, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
 
 	// G-buffer pass
 	vkCmdNextSubpass(commandBuffer, VK_SUBPASS_CONTENTS_INLINE);

@@ -23,6 +23,7 @@ namespace DDM3
 	class SwapchainWrapper;
 	class ImGuiWrapper;
 	class SyncObjectManager;
+	class QueryPool;
 
 	class GTAORenderer final : public Renderer
 	{
@@ -141,6 +142,10 @@ namespace DDM3
 		VkDescriptorSetLayout m_LightingDescriptorSetLayout{};
 
 		VkDescriptorPool m_LightingDescriptorPool{};
+
+		// QueryPool
+		std::unique_ptr<QueryPool> m_pQueryPool{};
+
 
 		void SetupPositionTexture();
 

@@ -59,7 +59,8 @@ namespace DDM3
 
 		// Vector of requested device extensions
 		const std::vector<const char*> m_DeviceExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME,
-		VK_KHR_SHADER_DRAW_PARAMETERS_EXTENSION_NAME };
+		VK_KHR_SHADER_DRAW_PARAMETERS_EXTENSION_NAME,
+		VK_EXT_HOST_QUERY_RESET_EXTENSION_NAME};
 
 		// Handle of the logical device
 		VkDevice m_Device = VK_NULL_HANDLE;

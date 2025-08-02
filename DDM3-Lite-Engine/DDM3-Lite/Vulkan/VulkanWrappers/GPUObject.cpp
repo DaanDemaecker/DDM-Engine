@@ -216,8 +216,19 @@ void DDM3::GPUObject::CreateLogicalDevice(InstanceWrapper* pInstanceWrapper, VkS
 	// Enable sampler rate shading
 	deviceFeatures.sampleRateShading = VK_TRUE;
 
+	// Setup Query reset features
+	VkPhysicalDeviceHostQueryResetFeatures queryReset = {};
+	queryReset.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_HOST_QUERY_RESET_FEATURES;
+	queryReset.hostQueryReset = VK_TRUE;
+
+	VkPhysicalDeviceFeatures2 deviceFeatures2{};
+	deviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
+	deviceFeatures2.pNext = &queryReset;
+	deviceFeatures2.features = deviceFeatures;
+
 	// Create device create info
 	VkDeviceCreateInfo createInfo{};
+	createInfo.pNext = &deviceFeatures2;
 	// Set type to device create info
 	createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
 	// Set the amount of queue create infos to the size of the vector of create infos
@@ -225,7 +236,7 @@ void DDM3::GPUObject::CreateLogicalDevice(InstanceWrapper* pInstanceWrapper, VkS
 	// Give pointer to data of queue create info vector
 	createInfo.pQueueCreateInfos = queueCreateInfos.data();
 	// Give the requested device features
-	createInfo.pEnabledFeatures = &deviceFeatures;
+	createInfo.pEnabledFeatures = nullptr; //&deviceFeatures;
 	// Set amount of extensions to the size of the extensions vector
 	createInfo.enabledExtensionCount = static_cast<uint32_t>(m_DeviceExtensions.size());
 	// Give pointer to data of extensions vector
