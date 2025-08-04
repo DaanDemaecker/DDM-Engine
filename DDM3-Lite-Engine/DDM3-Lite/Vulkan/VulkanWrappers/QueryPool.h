@@ -11,7 +11,7 @@
 
 // Standard library includes
 #include <string>
-
+#include <vector>
 
 
 namespace DDM3
@@ -48,7 +48,16 @@ namespace DDM3
 		/// <param name="pipelineStage: ">Vulkan pipeline stage to put timestamp in, default: TOP_OF_PIPE</param>
 		void WriteTimeStamp(VkCommandBuffer commandBuffer, VkPipelineStageFlagBits pipelineStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT);
 
+		/// <summary>
+		/// Print the timestamps written to the querypool
+		/// </summary>
 		void PrintTimestamps();
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="message"></param>
+		void AddQueryMessage(const std::string& message);
 	private:
 		// Vulkan query pool object
 		VkQueryPool m_QueryPool{};
@@ -59,6 +68,8 @@ namespace DDM3
 		// Query count and type for creation and reset
 		const int m_QueryCount{};
 		const VkQueryType m_QueryType{};
+
+		std::vector<std::string> m_QueryMessages{};
 
 		/// <summary>
 		/// Querypool creation function

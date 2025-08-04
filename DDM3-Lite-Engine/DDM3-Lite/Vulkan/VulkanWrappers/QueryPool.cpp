@@ -12,6 +12,8 @@ DDM3::QueryPool::QueryPool(int queryCount, VkQueryType queryType)
 {
 	// Query query pool
 	SetupQueryPool();
+
+	m_QueryMessages.reserve(m_QueryCount);
 }
 
 DDM3::QueryPool::~QueryPool()
@@ -22,10 +24,15 @@ DDM3::QueryPool::~QueryPool()
 
 void DDM3::QueryPool::ResetPool()
 {
-	// Reset query pool and current query
+	// Reset query pool
 	vkResetQueryPool(VulkanObject::GetInstance().GetDevice(), m_QueryPool, 0, m_QueryCount);
 
+	// Reset current query
 	m_CurrentQuery = 0;
+
+	// Reset query messages list
+	m_QueryMessages.clear();
+	m_QueryMessages.reserve(m_QueryCount);
 }
 
 void DDM3::QueryPool::WriteTimeStamp(VkCommandBuffer commandBuffer, VkPipelineStageFlagBits pipelineStage)
@@ -44,6 +51,8 @@ void DDM3::QueryPool::PrintTimestamps()
 	// Only print if query type is correct
 	if (m_QueryType == VK_QUERY_TYPE_TIMESTAMP)
 	{
+		vkQueueWaitIdle(VulkanObject::GetInstance().GetQueueObject().graphicsQueue);
+
 		// Create vector of timestamps of size querycount
 		std::vector<uint64_t> timeStamps(m_QueryCount * 2);
 
@@ -76,7 +85,6 @@ void DDM3::QueryPool::PrintTimestamps()
 
 			if (avail == 0)
 			{
-				std::cout << "Timestamp " << index/2 << ": not yet available.\n";
 				continue;
 			}
 
@@ -91,11 +99,28 @@ void DDM3::QueryPool::PrintTimestamps()
 				std::cout << "DeltaTime: " << deltaTime << " nanoseconds" << std::endl;
 			}
 
-			std::cout << "Timestamp " << index / 2 << ": " << timestampNs << " nanoseconds" << std::endl;
+			std::string message{};
+
+			if (m_QueryMessages.size() > index / 2)
+			{
+				message = m_QueryMessages[index / 2];
+			}
+			else
+			{
+				message = "Timestamp " + std::to_string(index / 2) + ": ";
+			}
+
+			std::cout << message << timestampNs << " nanoseconds" << std::endl;
 
 
 		}
 	}
+}
+
+void DDM3::QueryPool::AddQueryMessage(const std::string& message)
+{
+	// Add new message to list
+	m_QueryMessages.push_back(message);
 }
 
 void DDM3::QueryPool::SetupQueryPool()

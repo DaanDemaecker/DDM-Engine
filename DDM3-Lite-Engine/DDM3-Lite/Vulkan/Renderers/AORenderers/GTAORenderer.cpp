@@ -860,9 +860,6 @@ void DDM3::GTAORenderer::RecordCommandBuffer(VkCommandBuffer& commandBuffer, uin
 		throw std::runtime_error("failed to begin recording command buffer!");
 	}
 
-	// Write timestamp for start of command buffer
-	m_pQueryPool->WriteTimeStamp(commandBuffer);
-
 	auto extent{ m_pSwapchainWrapper->GetExtent() };
 
 	VkViewport viewport{};
@@ -882,13 +879,7 @@ void DDM3::GTAORenderer::RecordCommandBuffer(VkCommandBuffer& commandBuffer, uin
 	// Depth prepass
 	m_pRenderpass->BeginRenderPass(commandBuffer, m_pSwapchainWrapper->GetFrameBuffer(imageIndex, m_pRenderpass.get()), extent);
 
-	// Write timestamp
-	m_pQueryPool->WriteTimeStamp(commandBuffer, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT);
-
 	SceneManager::GetInstance().RenderDepth();
-
-	// Write timestamp
-	m_pQueryPool->WriteTimeStamp(commandBuffer, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
 
 	// G-buffer pass
 	vkCmdNextSubpass(commandBuffer, VK_SUBPASS_CONTENTS_INLINE);
