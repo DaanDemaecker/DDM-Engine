@@ -11,6 +11,14 @@ DDM3::Material::Material(const std::string& pipelineName)
 	m_pPipeline = VulkanObject::GetInstance().GetPipeline(pipelineName);
 }
 
+DDM3::Material& DDM3::Material::operator=(DDM3::Material&& other)
+{
+	m_pPipeline = other.m_pPipeline;
+	m_ShouldUpdateDescriptorSets = other.m_ShouldUpdateDescriptorSets;
+
+	return *this;
+}
+
 DDM3::PipelineWrapper* DDM3::Material::GetPipeline()
 {
 	return m_pPipeline;

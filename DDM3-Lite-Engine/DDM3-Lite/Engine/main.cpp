@@ -4,9 +4,7 @@
 #include "SceneLoaders/LoadModelLoaderScene.h"
 #include "SceneLoaders/LoadTestScene.h"
 #include "SceneLoaders/LoadDeferredScene.h"
-#include "SceneLoaders/LoadSSAOScene.h"
-#include "SceneLoaders/LoadHBAOScene.h"
-#include "SceneLoaders/LoadGTAOScene.h"
+#include "SceneLoaders/LoadAOScene.h"
 
 #include "Vulkan/Renderers/ForwardRenderer.h"
 #include "Vulkan/Renderers/DeferredRenderer.h"
@@ -31,7 +29,7 @@ int main()
 	// Create the engine object and run it with the load function
 	DDM3::DDM3Engine engine{};
 
-	int activeRenderer{ activeRendererGTAO };
+	int activeRenderer{ activeRendererHBAO };
 
 	switch (activeRenderer)
 	{
@@ -46,15 +44,15 @@ int main()
 		break;
 	case activeRendererSSAO:
 		engine.Init<DDM3::SSAORenderer>();
-		engine.Run(LoadSSAOScene::LoadScene);
+		engine.Run(LoadAOScene::LoadScene);
 		break;
 	case activeRendererHBAO:
 		engine.Init<DDM3::HBAORenderer>();
-		engine.Run(LoadHBAOScene::LoadScene);
+		engine.Run(LoadAOScene::LoadScene);
 		break;
 	case activeRendererGTAO:
 		engine.Init<DDM3::GTAORenderer>();
-		engine.Run(LoadGTAOScene::LoadScene);
+		engine.Run(LoadAOScene::LoadScene);
 		break;
 	default:
 		break;

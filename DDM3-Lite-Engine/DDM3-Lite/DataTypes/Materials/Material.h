@@ -21,7 +21,7 @@ namespace DDM3
 		Material(Material&& other) = delete;
 
 		Material& operator=(Material& other) = delete;
-		Material& operator=(Material&& other) = delete;
+		Material& operator=(Material&& other);
 
 		virtual void OnGUI() {}
 
