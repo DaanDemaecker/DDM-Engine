@@ -47,13 +47,18 @@ void DDM3::DescriptorPoolWrapper::AddModel(MeshRenderComponent* pModel)
 	if (std::find(m_pModels.begin(), m_pModels.end(), pModel) == m_pModels.end())
 	{
 		m_pModels.push_back(pModel);
+		m_ModelsRegistered++;
 	}
 }
 
 void DDM3::DescriptorPoolWrapper::RemoveModel(MeshRenderComponent* pModel)
 {
 	// Remove model from vector
-	m_pModels.erase(std::remove(m_pModels.begin(), m_pModels.end(), pModel), m_pModels.end());
+	if (std::find(m_pModels.begin(), m_pModels.end(), pModel) != m_pModels.end())
+	{
+		m_pModels.erase(std::remove(m_pModels.begin(), m_pModels.end(), pModel), m_pModels.end());
+		m_ModelsRegistered--;
+	}
 }
 
 void DDM3::DescriptorPoolWrapper::CreateDescriptorSets(VkDescriptorSetLayout layout, std::vector<VkDescriptorSet>& descriptorSets)
@@ -136,9 +141,14 @@ void DDM3::DescriptorPoolWrapper::ResizeDescriptorPool()
 	InitDescriptorPool();
 
 	// Create new descriptorsets for all models boudn to this descriptorpool
-	for (auto& pModel : m_pModels)
+	for (int i{}; i < m_ModelsRegistered; ++i)
 	{
-		pModel->CreateDescriptorSets();
+		auto pModel = m_pModels[i];
+
+		if (pModel != nullptr)
+		{
+			pModel->CreateDescriptorSets();
+		}
 	}
 }
 

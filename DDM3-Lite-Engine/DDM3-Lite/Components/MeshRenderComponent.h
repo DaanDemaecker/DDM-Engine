@@ -81,6 +81,8 @@ namespace DDM3
 		void CreateDepthDescriptorSets();
 
 		void UpdateDepthDescriptorSets();
+
+		void CreateDefaultMaterial();
 	};
 }
 #endif // !MeshRenderComponentIncluded

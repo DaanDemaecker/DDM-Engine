@@ -33,6 +33,8 @@ namespace LoadGTAOScene
 
 	void SetupAtrium(DDM3::Scene* scene);
 
+	void SetupVehicle(DDM3::Scene* scene);
+
 	void SetupInfoComponent(DDM3::Scene* scene);
 
 	void SetupCamera(DDM3::Scene* scen);
@@ -46,7 +48,9 @@ namespace LoadGTAOScene
 
 		SetupPipelines();
 
-		SetupAtrium(scene.get());
+		//SetupAtrium(scene.get());
+
+		SetupVehicle(scene.get());
 
 		SetupInfoComponent(scene.get());
 
@@ -64,6 +68,14 @@ namespace LoadGTAOScene
 
 	void SetupAtrium(DDM3::Scene* scene)
 	{
+		auto switchManager = scene->GetSceneRoot()->CreateNewObject("Material switch manager");
+		switchManager->SetShowImGui(true);
+
+		auto switchManagerComponent = switchManager->AddComponent<DDM3::MaterialSwitchManager>();
+		switchManagerComponent->RegisterKey("Diffuse");
+		switchManagerComponent->RegisterKey("Default");
+
+
 		auto& modelLoader = DDM3::DDMModelLoader::GetInstance();
 
 		std::vector<std::unique_ptr<DDMML::Mesh>> pMeshes{};
@@ -79,17 +91,45 @@ namespace LoadGTAOScene
 			renderComponent->SetMesh(pMesh.get());
 
 
-			auto texturedMaterial = std::make_shared<DDM3::TexturedMaterial>("Default");
+			auto texturedMaterial = std::make_shared<DDM3::TexturedMaterial>("DeferredDiffuse");
 
 			for (auto& texture : pMesh->GetDiffuseTextureNames())
 			{
 				texturedMaterial->AddTexture(texture);
 			}
 
+			auto defaultMaterial = std::make_shared<DDM3::Material>();
+
 			renderComponent->SetMaterial(texturedMaterial);
+
+			auto pMaterialSwitcher = pGameObject->AddComponent<DDM3::MaterialSwitcher>();
+			pMaterialSwitcher->RegisterMaterial("Diffuse", texturedMaterial);
+			pMaterialSwitcher->RegisterMaterial("Default", defaultMaterial);
+
+
+			switchManagerComponent->RegisterMaterialSwitcher(pMaterialSwitcher);
 		}
 	}
 
+	void SetupVehicle(DDM3::Scene* scene)
+	{
+		auto texturedMaterial = std::make_shared<DDM3::TexturedMaterial>("DeferredDiffuse");
+		
+		texturedMaterial->AddTexture("resources/images/vehicle_diffuse.png");
+		
+		auto pVehicle{ DDM3::DDMModelLoader::GetInstance().LoadModel("Resources/Models/vehicle.obj", scene->GetSceneRoot()) };
+		pVehicle->SetShowImGui(true);
+		
+		auto pVehicleModel{ pVehicle->GetComponent<DDM3::MeshRenderComponent>() };
+		pVehicleModel->SetMaterial(texturedMaterial);
+		
+		
+		auto pVehicleTransform{ pVehicle->GetTransform() };
+		pVehicleTransform->SetShowImGui(true);
+		pVehicleTransform->SetLocalPosition(3, 3, 0);
+		pVehicleTransform->SetLocalRotation(0.f, glm::radians(75.0f), 0.f);
+		pVehicleTransform->SetLocalScale(0.05f, 0.05f, 0.05f);
+	}
 
 	void SetupInfoComponent(DDM3::Scene* scene)
 	{

@@ -121,6 +121,11 @@ void DDM3::MeshRenderComponent::CreateUniformBuffers()
 
 void DDM3::MeshRenderComponent::CreateDescriptorSets()
 {
+	if (m_pMaterial == nullptr)
+	{
+		CreateDefaultMaterial();
+	}
+
 	// Create descriptorsets
 	m_pMaterial->CreateDescriptorSets(this, m_DescriptorSets);
 
@@ -178,6 +183,8 @@ void DDM3::MeshRenderComponent::CreateDepthDescriptorSets()
 	descriptorPool->AddModel(this);
 	// Create descriptorpools
 	descriptorPool->CreateDescriptorSets(VulkanObject::GetInstance().GetPipeline("Depth")->GetDescriptorSetLayout(), m_DepthDescriptorSets);
+	
+	m_ShouldCreateDescriptorSets = false;
 }
 
 void DDM3::MeshRenderComponent::UpdateDepthDescriptorSets()
@@ -194,4 +201,9 @@ void DDM3::MeshRenderComponent::UpdateDepthDescriptorSets()
 
 	// Update descriptorsets
 	descriptorPool->UpdateDescriptorSets(m_DepthDescriptorSets, descriptors);
+}
+
+void DDM3::MeshRenderComponent::CreateDefaultMaterial()
+{
+	m_pMaterial = std::make_shared<Material>();
 }

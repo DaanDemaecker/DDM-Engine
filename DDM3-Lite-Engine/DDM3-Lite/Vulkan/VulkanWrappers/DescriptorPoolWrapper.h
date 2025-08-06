@@ -87,6 +87,7 @@ namespace DDM3
 
 		// The models to which the allocated descriptorsets belong, needed when resizing the pool
 		std::vector<MeshRenderComponent*> m_pModels{};
+		int m_ModelsRegistered{};
 
 		// Initialization of the descriptorpool
 		void InitDescriptorPool();

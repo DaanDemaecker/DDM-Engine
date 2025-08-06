@@ -22,7 +22,7 @@ void DDM3::Material::CreateDescriptorSets(MeshRenderComponent* pModel, std::vect
 	auto descriptorPool = GetDescriptorPool();
 	// Add model to descriptorpool wrapper
 	descriptorPool->AddModel(pModel);
-	// Create descriptorpools
+	// Create descriptorsets
 	descriptorPool->CreateDescriptorSets(GetDescriptorLayout(), descriptorSets);
 }
 

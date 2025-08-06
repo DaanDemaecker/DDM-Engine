@@ -76,7 +76,6 @@ void DDM3::CameraComponent::UpdateProjectionMatrix()
 	m_ProjectionMatrix = glm::perspective(m_FovAngle, windowStruct.Width / static_cast<float>(windowStruct.Height), 0.001f, 100.0f);
 
 	m_ProjectionMatrix[1][1] *= -1;
-
 	m_ProjectionMatrix[2][2] *= -1;
 	m_ProjectionMatrix[2][3] *= -1;
 }

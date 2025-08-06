@@ -218,7 +218,7 @@ namespace LoadDeferredScene
 			renderComponent->SetMesh(pMesh.get());
 
 
-			auto texturedMaterial = std::make_shared<DDM3::TexturedMaterial>("DeferredDiffuse");
+			auto texturedMaterial = std::make_shared<DDM3::TexturedMaterial>("Default");
 
 			for (auto& texture : pMesh->GetDiffuseTextureNames())
 			{
@@ -320,7 +320,7 @@ namespace LoadDeferredScene
 		auto pLightComponent{ pLight->AddComponent<DDM3::DirectionalLightComponent>() };
 		pLightComponent->SetShowImGui(true);
 
-		//pLightComponent->SetColor(glm::vec3{ 0, 0, 0 });
+		//pLightComponent->SetColor(glm::vec3{ 0, 0, 0 });pp
 
 		auto pLightTransform{ pLight->GetTransform() };
 		pLightTransform->SetShowImGui(true);
@@ -338,7 +338,7 @@ namespace LoadDeferredScene
 
 
 		//std::shared_ptr<D3D::TexturedMaterial> pFloorMaterial{
-		//	std::make_shared<D3D::TexturedMaterial>(std::initializer_list<const std::string>{"resources/images/GroundPlane.png"}, "DiffuseUnshaded") };
+		//	std::make_shared<D3D::TexturedMaterial>(std::initializer_lpist<const std::string>{"resources/images/GroundPlane.png"}, "DiffuseUnshaded") };
 
 		pFloorMaterial->AddDiffuseTexture("resources/images/GroundPlane.png");
 
