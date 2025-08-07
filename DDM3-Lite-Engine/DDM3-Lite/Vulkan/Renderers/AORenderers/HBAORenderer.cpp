@@ -28,6 +28,9 @@
 
 #include "Vulkan/Renderers/AORenderers/AoRenderPasses.h"
 
+#include "Components/CameraComponent.h"
+#include "DataTypes/DescriptorObjects/UboDescriptorObject.h"
+
 DDM3::HBAORenderer::HBAORenderer()
 {
 	auto surface{ VulkanObject::GetInstance().GetSurface() };
@@ -348,46 +351,6 @@ void DDM3::HBAORenderer::SetupAttachments()
 
 	albedoAttachment->SetAttachmentDesc(albedoAttachmentDesc);
 
-	// normal attachment
-	auto normalAttachment = std::make_unique<Attachment>(swapchainImageAmount);
-	normalAttachment->SetFormat(colorAttachmentFormat);
-	normalAttachment->SetAttachmentType(Attachment::kAttachmentType_Color);
-	normalAttachment->SetIsInput(true);
-
-
-	VkAttachmentDescription normalAttachmentDesc{};
-	normalAttachmentDesc.flags = 0;
-	normalAttachmentDesc.format = colorAttachmentFormat;
-	normalAttachmentDesc.samples = VK_SAMPLE_COUNT_1_BIT;
-	normalAttachmentDesc.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-	normalAttachmentDesc.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	normalAttachmentDesc.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-	normalAttachmentDesc.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	normalAttachmentDesc.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	normalAttachmentDesc.finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-
-	normalAttachment->SetAttachmentDesc(normalAttachmentDesc);
-
-	// posiition attachment
-	auto positionAttachment = std::make_unique<Attachment>(swapchainImageAmount);
-	positionAttachment->SetFormat(colorAttachmentFormat);
-	positionAttachment->SetAttachmentType(Attachment::kAttachmentType_Color);
-	positionAttachment->SetIsInput(true);
-
-
-	VkAttachmentDescription positionAttachmentDesc{};
-	positionAttachmentDesc.flags = 0;
-	positionAttachmentDesc.format = colorAttachmentFormat;
-	positionAttachmentDesc.samples = VK_SAMPLE_COUNT_1_BIT;
-	positionAttachmentDesc.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-	positionAttachmentDesc.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	positionAttachmentDesc.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-	positionAttachmentDesc.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	positionAttachmentDesc.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	positionAttachmentDesc.finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-
-	positionAttachment->SetAttachmentDesc(positionAttachmentDesc);
-
 	// viewspace normal attachment
 	auto viewNormalAttachment = std::make_unique<Attachment>(swapchainImageAmount);
 	viewNormalAttachment->SetFormat(colorAttachmentFormat);
@@ -474,8 +437,6 @@ void DDM3::HBAORenderer::SetupAttachments()
 	m_pRenderpass->AddAttachment(std::move(backBufferAttachment));
 	m_pRenderpass->AddAttachment(std::move(depthAttachment));
 	m_pRenderpass->AddAttachment(std::move(albedoAttachment));
-	m_pRenderpass->AddAttachment(std::move(normalAttachment));
-	m_pRenderpass->AddAttachment(std::move(positionAttachment));
 	m_pRenderpass->AddAttachment(std::move(viewNormalAttachment));
 	m_pRenderpass->AddAttachment(std::move(viewPositionAttachment));
 	m_pRenderpass->AddAttachment(std::move(aoMapAttachment));
@@ -514,20 +475,6 @@ void DDM3::HBAORenderer::SetupGBufferPass()
 	albedoAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
 	pGBufferPass->AddReference(albedoAttachmentRef);
-
-
-	VkAttachmentReference normalAttachmentRef{};
-	normalAttachmentRef.attachment = kAttachment_GBUFFER_NORMAL;
-	normalAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-
-	pGBufferPass->AddReference(normalAttachmentRef);
-
-
-	VkAttachmentReference positionAttachmentRef{};
-	positionAttachmentRef.attachment = kAttachment_GBUFFER_POSITION;
-	positionAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-
-	pGBufferPass->AddReference(positionAttachmentRef);
 
 	VkAttachmentReference viewNormalAttachmentRef{};
 	viewNormalAttachmentRef.attachment = kAttachment_GBUFFER_VIEWNORMAL;
@@ -620,14 +567,14 @@ void DDM3::HBAORenderer::SetupLightingPass()
 
 
 	VkAttachmentReference normalAttachmentRef{};
-	normalAttachmentRef.attachment = kAttachment_GBUFFER_NORMAL;
+	normalAttachmentRef.attachment = kAttachment_GBUFFER_VIEWNORMAL;
 	normalAttachmentRef.layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
 	pLightingPass->AddInputReference(normalAttachmentRef);
 
 
 	VkAttachmentReference positionAttachmentRef{};
-	positionAttachmentRef.attachment = kAttachment_GBUFFER_POSITION;
+	positionAttachmentRef.attachment = kAttachment_GBUFFER_VIEWPOS;
 	positionAttachmentRef.layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
 	pLightingPass->AddInputReference(positionAttachmentRef);
@@ -763,20 +710,37 @@ void DDM3::HBAORenderer::SetupDescriptorObjectsLighting()
 
 	auto& attachments{ m_pRenderpass->GetAttachmentList() };
 
-	for (int i{ kAttachment_GBUFFER_ALBEDO }; i <= kAttachment_GBUFFER_POSITION; ++i)
-	{
-		auto descriptorObject{ std::make_unique<InputAttachmentDescriptorObject>() };
-
-		descriptorObject->AddImageView(attachments[i]->GetTexture(0)->imageView, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-
-		m_pLightingInputDescriptorObjects.push_back(std::move(descriptorObject));
-	}
-
+	// ALbedo attachment
 	auto descriptorObject{ std::make_unique<InputAttachmentDescriptorObject>() };
+
+	descriptorObject->AddImageView(attachments[kAttachment_GBUFFER_ALBEDO]->GetTexture(0)->imageView, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+
+	m_pLightingInputDescriptorObjects.push_back(std::move(descriptorObject));
+
+	// View normal attachment
+	descriptorObject = std::make_unique<InputAttachmentDescriptorObject>();
+
+	descriptorObject->AddImageView(attachments[kAttachment_GBUFFER_VIEWNORMAL]->GetTexture(0)->imageView, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+
+	m_pLightingInputDescriptorObjects.push_back(std::move(descriptorObject));
+
+	// View position attachment
+	descriptorObject = std::make_unique<InputAttachmentDescriptorObject>();
+
+	descriptorObject->AddImageView(attachments[kAttachment_GBUFFER_VIEWPOS]->GetTexture(0)->imageView, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+
+	m_pLightingInputDescriptorObjects.push_back(std::move(descriptorObject));
+
+	// Ao map attachment
+	descriptorObject = std::make_unique<InputAttachmentDescriptorObject>();
 
 	descriptorObject->AddImageView(attachments[kAttachment_AO_BLURRED]->GetTexture(0)->imageView, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
 	m_pLightingInputDescriptorObjects.push_back(std::move(descriptorObject));
+
+	// Projection matrix attachment
+	m_pProjectionMatrixDescObject = std::make_unique<UboDescriptorObject<glm::mat4>>();
+
 }
 
 
@@ -1096,6 +1060,16 @@ void DDM3::HBAORenderer::CreateLightingDescriptorSetLayout()
 
 		bindings.push_back(binding);
 	}
+
+	VkDescriptorSetLayoutBinding binding{};
+
+	binding.binding = 4;
+	binding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+	binding.descriptorCount = 1;
+	binding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+	binding.pImmutableSamplers = nullptr;
+
+	bindings.push_back(binding);
 
 	// Create layout info
 	VkDescriptorSetLayoutCreateInfo layoutInfo{};
@@ -1439,6 +1413,14 @@ void DDM3::HBAORenderer::UpdateLightingDescriptorSets(int frame)
 		descriptorObject->AddDescriptorWrite(m_LightingDescriptorSets[frame], descriptorWrites, binding, 1, frame);
 	}
 
+	auto camera = SceneManager::GetInstance().GetCamera();
+
+	if (camera != nullptr)
+	{
+		m_pProjectionMatrixDescObject->UpdateUboBuffer(camera->GetProjectionMatrixPointer(), frame);
+	}
+
+	m_pProjectionMatrixDescObject->AddDescriptorWrite(m_LightingDescriptorSets[frame], descriptorWrites, binding, 1, frame);
 
 	//vkDeviceWaitIdle(VulkanRenderer::GetInstance().GetDevice());
 	// Update descriptorsets

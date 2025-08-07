@@ -1,5 +1,5 @@
 // SSAORenderer.h
-// Renderer that will use the deferred rendering technique with Ground Truth Ambient Occlusion (GTAO)
+// Renderer that will use the deferred rendering technique with Horizon Based Ambient Occlusion (HBAO)
 
 #ifndef _GTAO_RENDERER_
 #define _GTAO_RENDERER_
@@ -23,7 +23,6 @@ namespace DDM3
 	class SwapchainWrapper;
 	class ImGuiWrapper;
 	class SyncObjectManager;
-	class QueryPool;
 
 	class GTAORenderer final : public Renderer
 	{
@@ -48,20 +47,6 @@ namespace DDM3
 		virtual void AddDefaultPipelines();
 
 	private:
-		enum
-		{
-			kAttachment_BACK = 0,
-			kAttachment_DEPTH = 1,
-			kAttachment_GBUFFER_ALBEDO = 2,
-			kAttachment_GBUFFER_NORMAL = 3,
-			kAttachment_GBUFFER_POSITION = 4,
-			kAttachment_GBUFFER_VIEWNORMAL = 5,
-			kAttachment_GBUFFER_VIEWPOS = 6,
-			kAttachment_AO_MAP = 7,
-			kAttachment_AO_BLURRED = 8
-		};
-
-
 		std::unique_ptr<RenderpassWrapper> m_pRenderpass{};
 
 		void CreateRenderpass();
@@ -120,7 +105,8 @@ namespace DDM3
 		// AOGen texture
 		std::unique_ptr<TextureDescriptorObject> m_pAoGenTextureDescriptorObject{};
 
-
+		// Projection matrix
+		std::unique_ptr<UboDescriptorObject<glm::mat4>> m_pProjectionMatrixDescObject{};
 
 
 		// Everything needed for the Lighting descriptor sets
@@ -133,10 +119,6 @@ namespace DDM3
 		VkDescriptorSetLayout m_LightingDescriptorSetLayout{};
 
 		VkDescriptorPool m_LightingDescriptorPool{};
-
-		// QueryPool
-		std::unique_ptr<QueryPool> m_pQueryPool{};
-
 
 		void SetupPositionTexture();
 
@@ -202,4 +184,4 @@ namespace DDM3
 	};
 }
 
-#endif // !_GTAO_RENDERER_
+#endif // !_HBAO_RENDERER_

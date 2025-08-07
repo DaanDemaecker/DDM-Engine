@@ -5,6 +5,10 @@ layout (input_attachment_index = 1, set = 0, binding = 1) uniform subpassInput i
 layout (input_attachment_index = 2, set = 0, binding = 2) uniform subpassInput inputPosition;
 layout (input_attachment_index = 3, set = 0, binding = 3) uniform subpassInput aoMap;
 
+layout(set = 0, binding = 4) uniform Projection {
+    mat4 projection;
+} projectionMatrix;
+
 layout(location = 0) out vec4 outColor;
 
 

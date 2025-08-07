@@ -84,12 +84,9 @@ DDM3::SSAORenderer::~SSAORenderer()
 
 	vkDestroyDescriptorPool(device, m_LightingDescriptorPool, nullptr);
 
-	if (m_ShouldBlur)
-	{
-		vkDestroyDescriptorSetLayout(device, m_AoBlurDescriptorSetLayout, nullptr);
+	vkDestroyDescriptorSetLayout(device, m_AoBlurDescriptorSetLayout, nullptr);
 
-		vkDestroyDescriptorPool(device, m_AoBlurDescriptorPool, nullptr);
-	}
+	vkDestroyDescriptorPool(device, m_AoBlurDescriptorPool, nullptr);
 
 	vkDestroyDescriptorSetLayout(device, m_AoGenDescriptorSetLayout, nullptr);
 
@@ -354,46 +351,6 @@ void DDM3::SSAORenderer::SetupAttachments()
 	albedoAttachmentDesc.finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
 	albedoAttachment->SetAttachmentDesc(albedoAttachmentDesc);
-
-	// normal attachment
-	auto normalAttachment = std::make_unique<Attachment>(swapchainImageAmount);
-	normalAttachment->SetFormat(colorAttachmentFormat);
-	normalAttachment->SetAttachmentType(Attachment::kAttachmentType_Color);
-	normalAttachment->SetIsInput(true);
-
-
-	VkAttachmentDescription normalAttachmentDesc{};
-	normalAttachmentDesc.flags = 0;
-	normalAttachmentDesc.format = colorAttachmentFormat;
-	normalAttachmentDesc.samples = VK_SAMPLE_COUNT_1_BIT;
-	normalAttachmentDesc.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-	normalAttachmentDesc.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	normalAttachmentDesc.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-	normalAttachmentDesc.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	normalAttachmentDesc.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	normalAttachmentDesc.finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-	
-	normalAttachment->SetAttachmentDesc(normalAttachmentDesc);
-
-	// posiition attachment
-	auto positionAttachment = std::make_unique<Attachment>(swapchainImageAmount);
-	positionAttachment->SetFormat(colorAttachmentFormat);
-	positionAttachment->SetAttachmentType(Attachment::kAttachmentType_Color);
-	positionAttachment->SetIsInput(true);
-
-
-	VkAttachmentDescription positionAttachmentDesc{};
-	positionAttachmentDesc.flags = 0;
-	positionAttachmentDesc.format = colorAttachmentFormat;
-	positionAttachmentDesc.samples = VK_SAMPLE_COUNT_1_BIT;
-	positionAttachmentDesc.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-	positionAttachmentDesc.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	positionAttachmentDesc.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-	positionAttachmentDesc.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	positionAttachmentDesc.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	positionAttachmentDesc.finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-
-	positionAttachment->SetAttachmentDesc(positionAttachmentDesc);
 	
 	// viewspace normal attachment
 	auto viewNormalAttachment = std::make_unique<Attachment>(swapchainImageAmount);
@@ -481,8 +438,6 @@ void DDM3::SSAORenderer::SetupAttachments()
 	m_pRenderpass->AddAttachment(std::move(backBufferAttachment));
 	m_pRenderpass->AddAttachment(std::move(depthAttachment));
 	m_pRenderpass->AddAttachment(std::move(albedoAttachment));
-	m_pRenderpass->AddAttachment(std::move(normalAttachment));
-	m_pRenderpass->AddAttachment(std::move(positionAttachment));
 	m_pRenderpass->AddAttachment(std::move(viewNormalAttachment));
 	m_pRenderpass->AddAttachment(std::move(viewPositionAttachment));
 	m_pRenderpass->AddAttachment(std::move(aoMapAttachment));
@@ -521,20 +476,6 @@ void DDM3::SSAORenderer::SetupGBufferPass()
 	albedoAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
 	pGBufferPass->AddReference(albedoAttachmentRef);
-
-
-	VkAttachmentReference normalAttachmentRef{};
-	normalAttachmentRef.attachment = kAttachment_GBUFFER_NORMAL;
-	normalAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-
-	pGBufferPass->AddReference(normalAttachmentRef);
-
-
-	VkAttachmentReference positionAttachmentRef{};
-	positionAttachmentRef.attachment = kAttachment_GBUFFER_POSITION;
-	positionAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-
-	pGBufferPass->AddReference(positionAttachmentRef);
 
 	VkAttachmentReference viewNormalAttachmentRef{};
 	viewNormalAttachmentRef.attachment = kAttachment_GBUFFER_VIEWNORMAL;
@@ -627,14 +568,14 @@ void DDM3::SSAORenderer::SetupLightingPass()
 
 
 	VkAttachmentReference normalAttachmentRef{};
-	normalAttachmentRef.attachment = kAttachment_GBUFFER_NORMAL;
+	normalAttachmentRef.attachment = kAttachment_GBUFFER_VIEWNORMAL;
 	normalAttachmentRef.layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
 	pLightingPass->AddInputReference(normalAttachmentRef);
 
 
 	VkAttachmentReference positionAttachmentRef{};
-	positionAttachmentRef.attachment = kAttachment_GBUFFER_POSITION;
+	positionAttachmentRef.attachment = kAttachment_GBUFFER_VIEWPOS;
 	positionAttachmentRef.layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
 	pLightingPass->AddInputReference(positionAttachmentRef);
@@ -732,10 +673,7 @@ void DDM3::SSAORenderer::SetupDescriptorObjects()
 {
 	SetupDescriptorObjectsAoGen();
 
-	if (m_ShouldBlur)
-	{
-		SetupDescriptorObjectsAoBlur();
-	}
+	SetupDescriptorObjectsAoBlur();
 
 	SetupDescriptorObjectsLighting();
 }
@@ -773,25 +711,32 @@ void DDM3::SSAORenderer::SetupDescriptorObjectsLighting()
 
 	auto& attachments{ m_pRenderpass->GetAttachmentList() };
 
-	for (int i{ kAttachment_GBUFFER_ALBEDO }; i <= kAttachment_GBUFFER_POSITION; ++i)
-	{
-		auto descriptorObject{ std::make_unique<InputAttachmentDescriptorObject>() };
-
-		descriptorObject->AddImageView(attachments[i]->GetTexture(0)->imageView, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-
-		m_pLightingInputDescriptorObjects.push_back(std::move(descriptorObject));
-	}
 
 	auto descriptorObject{ std::make_unique<InputAttachmentDescriptorObject>() };
 
-	if (m_ShouldBlur)
-	{
-		descriptorObject->AddImageView(attachments[kAttachment_AO_BLURRED]->GetTexture(0)->imageView, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-	}
-	else
-	{
-		descriptorObject->AddImageView(attachments[kAttachment_AO_MAP]->GetTexture(0)->imageView, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-	}
+	descriptorObject->AddImageView(attachments[kAttachment_GBUFFER_ALBEDO]->GetTexture(0)->imageView, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+
+	m_pLightingInputDescriptorObjects.push_back(std::move(descriptorObject));
+
+
+	descriptorObject = std::make_unique<InputAttachmentDescriptorObject>();
+
+	descriptorObject->AddImageView(attachments[kAttachment_GBUFFER_VIEWNORMAL]->GetTexture(0)->imageView, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+
+	m_pLightingInputDescriptorObjects.push_back(std::move(descriptorObject));
+
+
+	descriptorObject = std::make_unique<InputAttachmentDescriptorObject>();
+
+	descriptorObject->AddImageView(attachments[kAttachment_GBUFFER_VIEWPOS]->GetTexture(0)->imageView, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+
+	m_pLightingInputDescriptorObjects.push_back(std::move(descriptorObject));
+
+
+	descriptorObject = std::make_unique<InputAttachmentDescriptorObject>();
+
+	descriptorObject->AddImageView(attachments[kAttachment_AO_BLURRED]->GetTexture(0)->imageView, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+
 
 	m_pLightingInputDescriptorObjects.push_back(std::move(descriptorObject));
 }
@@ -918,7 +863,7 @@ void DDM3::SSAORenderer::RecordCommandBuffer(VkCommandBuffer& commandBuffer, uin
 	scissor.offset = { 0, 0 };
 	scissor.extent = extent;
 	vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
-	
+
 	// Depth prepass
 	m_pRenderpass->BeginRenderPass(commandBuffer, m_pSwapchainWrapper->GetFrameBuffer(imageIndex, m_pRenderpass.get()), extent);
 
@@ -944,15 +889,13 @@ void DDM3::SSAORenderer::RecordCommandBuffer(VkCommandBuffer& commandBuffer, uin
 	// AO Blur pass
 	vkCmdNextSubpass(commandBuffer, VK_SUBPASS_CONTENTS_INLINE);
 
-	if (m_ShouldBlur)
-	{
-		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pAoBlurPipeline->GetPipeline());
 
-		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pAoBlurPipeline->GetPipelineLayout(), 0, 1,
-			&m_AoBlurDescriptorSets[frame], 0, nullptr);
+	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pAoBlurPipeline->GetPipeline());
 
-		VulkanObject::GetInstance().DrawQuad(commandBuffer);
-	}
+	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pAoBlurPipeline->GetPipelineLayout(), 0, 1,
+		&m_AoBlurDescriptorSets[frame], 0, nullptr);
+
+	VulkanObject::GetInstance().DrawQuad(commandBuffer);
 
 
 	// Lighting pass
@@ -1049,10 +992,7 @@ void DDM3::SSAORenderer::ResetDescriptorSets()
 
 	vkFreeDescriptorSets(VulkanObject::GetInstance().GetDevice(), m_AoGenDescriptorPool, m_AoGenDescriptorSets.size(), m_AoGenDescriptorSets.data());
 
-	if (m_ShouldBlur)
-	{
-		vkFreeDescriptorSets(VulkanObject::GetInstance().GetDevice(), m_AoBlurDescriptorPool, m_AoBlurDescriptorSets.size(), m_AoBlurDescriptorSets.data());
-	}
+	vkFreeDescriptorSets(VulkanObject::GetInstance().GetDevice(), m_AoBlurDescriptorPool, m_AoBlurDescriptorSets.size(), m_AoBlurDescriptorSets.data());
 
 	SetupDescriptorObjects();
 
@@ -1062,10 +1002,8 @@ void DDM3::SSAORenderer::ResetDescriptorSets()
 void DDM3::SSAORenderer::CreateDescriptorSetLayouts()
 {
 	CreateAoGenDescriptorSetLayout();
-	if (m_ShouldBlur)
-	{
-		CreateAoBlurDescriptorSetLayout();
-	}
+
+	CreateAoBlurDescriptorSetLayout();
 
 	CreateLightingDescriptorSetLayout();
 }
@@ -1198,6 +1136,16 @@ void DDM3::SSAORenderer::CreateLightingDescriptorSetLayout()
 		bindings.push_back(binding);
 	}
 
+	VkDescriptorSetLayoutBinding projectionMatrixBinding{};
+
+	projectionMatrixBinding.binding = 4;
+	projectionMatrixBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+	projectionMatrixBinding.descriptorCount = 1;
+	projectionMatrixBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+	projectionMatrixBinding.pImmutableSamplers = nullptr;
+
+	bindings.push_back(projectionMatrixBinding);
+
 	// Create layout info
 	VkDescriptorSetLayoutCreateInfo layoutInfo{};
 	// Set type to descriptor set layout create info
@@ -1219,10 +1167,7 @@ void DDM3::SSAORenderer::CreateDescriptorPools()
 {
 	CreateAoGenDescriptorPool();
 
-	if (m_ShouldBlur)
-	{
-		CreateAoBlurDescriptorPool();
-	}
+	CreateAoBlurDescriptorPool();
 
 	CreateLightingDescriptorPool();
 }
@@ -1356,6 +1301,16 @@ void DDM3::SSAORenderer::CreateLightingDescriptorPool()
 		poolSizes.push_back(descriptorPoolSize);
 	}
 
+	VkDescriptorPoolSize descriptorPoolSize{};
+	// Set the type of the poolsize
+	descriptorPoolSize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+	// Calculate the amount of descriptors needed from this type
+	descriptorPoolSize.descriptorCount = frames;
+
+	// Add the descriptor poolsize to the vector
+	poolSizes.push_back(descriptorPoolSize);
+
+
 	// Create pool info
 	VkDescriptorPoolCreateInfo poolInfo{};
 	// Set type to descriptor pool create info
@@ -1378,10 +1333,7 @@ void DDM3::SSAORenderer::CreateDescriptorSets()
 {
 	CreateAoGenDescriptorSets();
 
-	if (m_ShouldBlur)
-	{
-		CreateAoBlurDescriptorSets();
-	}
+	CreateAoBlurDescriptorSets();
 
 	CreateLightingDescriptorSets();
 }
@@ -1480,10 +1432,7 @@ void DDM3::SSAORenderer::UpdateDescriptorSets(int frame, int swapchainIndex)
 {
 	UpdateAoGenDescriptorSets(frame, swapchainIndex);
 
-	if (m_ShouldBlur)
-	{
-		UpdateAoBlurDescriptorSets(frame, swapchainIndex);
-	}
+	UpdateAoBlurDescriptorSets(frame, swapchainIndex);
 
 	UpdateLightingDescriptorSets(frame);
 }
@@ -1563,6 +1512,8 @@ void DDM3::SSAORenderer::UpdateLightingDescriptorSets(int frame)
 		{
 			descriptorObject->AddDescriptorWrite(m_LightingDescriptorSets[frame], descriptorWrites, binding, 1, frame);
 		}
+
+		m_pProjectionMatrixDescObject->AddDescriptorWrite(m_LightingDescriptorSets[frame], descriptorWrites, binding, 1, frame);
 
 
 		//vkDeviceWaitIdle(VulkanRenderer::GetInstance().GetDevice());

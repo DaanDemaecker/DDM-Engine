@@ -16,10 +16,8 @@ layout(location = 6) in vec4 viewPos;
 layout(location = 7) in vec3 viewNormal;
 
 layout(location = 0) out vec4 outColor;
-layout(location = 1) out vec4 outNormal;
-layout(location = 2) out vec4 outPos;
-layout(location = 3) out vec4 outViewNormal;
-layout(location = 4) out vec4 outViewPos;
+layout(location = 1) out vec4 outViewNormal;
+layout(location = 2) out vec4 outViewPos;
 
 
 void main()
@@ -33,9 +31,6 @@ void main()
     {
         discard;
     } 
-    
-	outNormal = vec4(fragNormal, 1);
-	outPos = fragpos;
 
     outViewNormal = vec4(normalize(viewNormal), 1);
     outViewPos = viewPos;

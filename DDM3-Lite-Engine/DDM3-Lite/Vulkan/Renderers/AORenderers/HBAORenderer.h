@@ -47,20 +47,6 @@ namespace DDM3
 		virtual void AddDefaultPipelines();
 
 	private:
-		enum
-		{
-			kAttachment_BACK = 0,
-			kAttachment_DEPTH = 1,
-			kAttachment_GBUFFER_ALBEDO = 2,
-			kAttachment_GBUFFER_NORMAL = 3,
-			kAttachment_GBUFFER_POSITION = 4,
-			kAttachment_GBUFFER_VIEWNORMAL = 5,
-			kAttachment_GBUFFER_VIEWPOS = 6,
-			kAttachment_AO_MAP = 7,
-			kAttachment_AO_BLURRED = 8
-		};
-
-
 		std::unique_ptr<RenderpassWrapper> m_pRenderpass{};
 
 		void CreateRenderpass();
@@ -119,7 +105,8 @@ namespace DDM3
 		// AOGen texture
 		std::unique_ptr<TextureDescriptorObject> m_pAoGenTextureDescriptorObject{};
 
-
+		// Projection matrix
+		std::unique_ptr<UboDescriptorObject<glm::mat4>> m_pProjectionMatrixDescObject{};
 
 
 		// Everything needed for the Lighting descriptor sets

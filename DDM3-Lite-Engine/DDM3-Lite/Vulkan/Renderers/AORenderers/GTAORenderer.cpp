@@ -17,7 +17,6 @@
 #include "Vulkan/VulkanWrappers/PipelineWrapper.h"
 #include "DataTypes/DescriptorObjects/TextureDescriptorObject.h"
 #include "Vulkan/VulkanWrappers/Subpass.h"
-#include "Vulkan/VulkanWrappers/QueryPool.h"
 
 #include "Engine/Window.h"
 #include "Managers/SceneManager.h"
@@ -29,6 +28,9 @@
 
 #include "Vulkan/Renderers/AORenderers/AoRenderPasses.h"
 
+#include "Components/CameraComponent.h"
+#include "DataTypes/DescriptorObjects/UboDescriptorObject.h"
+
 DDM3::GTAORenderer::GTAORenderer()
 {
 	auto surface{ VulkanObject::GetInstance().GetSurface() };
@@ -38,6 +40,8 @@ DDM3::GTAORenderer::GTAORenderer()
 
 	// Initialize the swapchain
 	m_pSwapchainWrapper = std::make_unique<SwapchainWrapper>(pGPUObject, surface, VulkanObject::GetInstance().GetImageManager(), VulkanObject::GetInstance().GetMsaaSamples());
+
+	//CreateMasterRenderpass();
 
 	CreateRenderpass();
 
@@ -62,8 +66,6 @@ DDM3::GTAORenderer::GTAORenderer()
 	CreateDescriptorSets();
 
 	SetupPositionTexture();
-
-	m_pQueryPool = std::make_unique<QueryPool>();
 }
 
 DDM3::GTAORenderer::~GTAORenderer()
@@ -96,19 +98,6 @@ void DDM3::GTAORenderer::Render()
 	auto& queueObject{ vulkanObject.GetQueueObject() };
 
 	vkWaitForFences(device, 1, &m_pSyncObjectManager->GetInFlightFence(currentFrame), VK_TRUE, UINT64_MAX);
-
-
-
-	static bool keyPressedLastFrame = false;
-
-	bool keyPressed = static_cast<bool>(glfwGetKey(Window::GetInstance().GetWindowStruct().pWindow, GLFW_KEY_P));
-
-	if (!keyPressed && keyPressedLastFrame)
-	{
-		m_pQueryPool->PrintTimestamps();
-	}
-
-	keyPressedLastFrame = keyPressed;
 
 
 	uint32_t imageIndex{};
@@ -233,7 +222,6 @@ void DDM3::GTAORenderer::AddDefaultPipelines()
 	m_pLightingPipeline = vulkanObject.GetPipeline(lightingPipelineName);
 
 
-	// Ao Generation pipeline
 	auto aoPipelineName = "AoGeneration";
 
 	vulkanObject.AddGraphicsPipeline(aoPipelineName, {
@@ -363,47 +351,6 @@ void DDM3::GTAORenderer::SetupAttachments()
 
 	albedoAttachment->SetAttachmentDesc(albedoAttachmentDesc);
 
-	// normal attachment
-	auto normalAttachment = std::make_unique<Attachment>(swapchainImageAmount);
-	normalAttachment->SetClearColorValue({ 0.0f, 0.0f, 0.0f, 1.0f });
-	normalAttachment->SetFormat(colorAttachmentFormat);
-	normalAttachment->SetAttachmentType(Attachment::kAttachmentType_Color);
-	normalAttachment->SetIsInput(true);
-
-
-	VkAttachmentDescription normalAttachmentDesc{};
-	normalAttachmentDesc.flags = 0;
-	normalAttachmentDesc.format = colorAttachmentFormat;
-	normalAttachmentDesc.samples = VK_SAMPLE_COUNT_1_BIT;
-	normalAttachmentDesc.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-	normalAttachmentDesc.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	normalAttachmentDesc.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-	normalAttachmentDesc.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	normalAttachmentDesc.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	normalAttachmentDesc.finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-
-	normalAttachment->SetAttachmentDesc(normalAttachmentDesc);
-
-	// posiition attachment
-	auto positionAttachment = std::make_unique<Attachment>(swapchainImageAmount);
-	positionAttachment->SetFormat(colorAttachmentFormat);
-	positionAttachment->SetAttachmentType(Attachment::kAttachmentType_Color);
-	positionAttachment->SetIsInput(true);
-
-
-	VkAttachmentDescription positionAttachmentDesc{};
-	positionAttachmentDesc.flags = 0;
-	positionAttachmentDesc.format = colorAttachmentFormat;
-	positionAttachmentDesc.samples = VK_SAMPLE_COUNT_1_BIT;
-	positionAttachmentDesc.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-	positionAttachmentDesc.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	positionAttachmentDesc.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-	positionAttachmentDesc.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	positionAttachmentDesc.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	positionAttachmentDesc.finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-
-	positionAttachment->SetAttachmentDesc(positionAttachmentDesc);
-
 	// viewspace normal attachment
 	auto viewNormalAttachment = std::make_unique<Attachment>(swapchainImageAmount);
 	viewNormalAttachment->SetFormat(colorAttachmentFormat);
@@ -447,9 +394,8 @@ void DDM3::GTAORenderer::SetupAttachments()
 
 	VkFormat aoMapFormat = VK_FORMAT_R32_SFLOAT;
 	// AoGen attachment
-
 	auto aoMapAttachment = std::make_unique<Attachment>(swapchainImageAmount);
-	aoMapAttachment->SetClearColorValue({0.0f, 0.0f, 0.0f, 1.0f});
+	aoMapAttachment->SetClearColorValue({ 1.0f, 1.0f, 1.0f, 1.0f });
 	aoMapAttachment->SetFormat(aoMapFormat);
 	aoMapAttachment->SetAttachmentType(Attachment::kAttachmentType_Color);
 	aoMapAttachment->SetIsInput(true);
@@ -459,9 +405,9 @@ void DDM3::GTAORenderer::SetupAttachments()
 	aoMapAttachmentDesc.format = aoMapFormat;
 	aoMapAttachmentDesc.samples = VK_SAMPLE_COUNT_1_BIT;
 	aoMapAttachmentDesc.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-	aoMapAttachmentDesc.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-	aoMapAttachmentDesc.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-	aoMapAttachmentDesc.stencilStoreOp = VK_ATTACHMENT_STORE_OP_STORE;
+	aoMapAttachmentDesc.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+	aoMapAttachmentDesc.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+	aoMapAttachmentDesc.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
 	aoMapAttachmentDesc.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 	aoMapAttachmentDesc.finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
@@ -481,7 +427,7 @@ void DDM3::GTAORenderer::SetupAttachments()
 	aoBlurMapAttachmentDesc.samples = VK_SAMPLE_COUNT_1_BIT;
 	aoBlurMapAttachmentDesc.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
 	aoBlurMapAttachmentDesc.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	aoBlurMapAttachmentDesc.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+	aoBlurMapAttachmentDesc.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
 	aoBlurMapAttachmentDesc.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
 	aoBlurMapAttachmentDesc.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 	aoBlurMapAttachmentDesc.finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
@@ -491,8 +437,6 @@ void DDM3::GTAORenderer::SetupAttachments()
 	m_pRenderpass->AddAttachment(std::move(backBufferAttachment));
 	m_pRenderpass->AddAttachment(std::move(depthAttachment));
 	m_pRenderpass->AddAttachment(std::move(albedoAttachment));
-	m_pRenderpass->AddAttachment(std::move(normalAttachment));
-	m_pRenderpass->AddAttachment(std::move(positionAttachment));
 	m_pRenderpass->AddAttachment(std::move(viewNormalAttachment));
 	m_pRenderpass->AddAttachment(std::move(viewPositionAttachment));
 	m_pRenderpass->AddAttachment(std::move(aoMapAttachment));
@@ -531,20 +475,6 @@ void DDM3::GTAORenderer::SetupGBufferPass()
 	albedoAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
 	pGBufferPass->AddReference(albedoAttachmentRef);
-
-
-	VkAttachmentReference normalAttachmentRef{};
-	normalAttachmentRef.attachment = kAttachment_GBUFFER_NORMAL;
-	normalAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-
-	pGBufferPass->AddReference(normalAttachmentRef);
-
-
-	VkAttachmentReference positionAttachmentRef{};
-	positionAttachmentRef.attachment = kAttachment_GBUFFER_POSITION;
-	positionAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-
-	pGBufferPass->AddReference(positionAttachmentRef);
 
 	VkAttachmentReference viewNormalAttachmentRef{};
 	viewNormalAttachmentRef.attachment = kAttachment_GBUFFER_VIEWNORMAL;
@@ -637,14 +567,14 @@ void DDM3::GTAORenderer::SetupLightingPass()
 
 
 	VkAttachmentReference normalAttachmentRef{};
-	normalAttachmentRef.attachment = kAttachment_GBUFFER_NORMAL;
+	normalAttachmentRef.attachment = kAttachment_GBUFFER_VIEWNORMAL;
 	normalAttachmentRef.layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
 	pLightingPass->AddInputReference(normalAttachmentRef);
 
 
 	VkAttachmentReference positionAttachmentRef{};
-	positionAttachmentRef.attachment = kAttachment_GBUFFER_POSITION;
+	positionAttachmentRef.attachment = kAttachment_GBUFFER_VIEWPOS;
 	positionAttachmentRef.layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
 	pLightingPass->AddInputReference(positionAttachmentRef);
@@ -780,20 +710,37 @@ void DDM3::GTAORenderer::SetupDescriptorObjectsLighting()
 
 	auto& attachments{ m_pRenderpass->GetAttachmentList() };
 
-	for (int i{ kAttachment_GBUFFER_ALBEDO }; i <= kAttachment_GBUFFER_POSITION; ++i)
-	{
-		auto descriptorObject{ std::make_unique<InputAttachmentDescriptorObject>() };
-
-		descriptorObject->AddImageView(attachments[i]->GetTexture(0)->imageView, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-
-		m_pLightingInputDescriptorObjects.push_back(std::move(descriptorObject));
-	}
-
+	// ALbedo attachment
 	auto descriptorObject{ std::make_unique<InputAttachmentDescriptorObject>() };
 
-	descriptorObject->AddImageView(attachments[kAttachment_AO_MAP]->GetTexture(0)->imageView, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+	descriptorObject->AddImageView(attachments[kAttachment_GBUFFER_ALBEDO]->GetTexture(0)->imageView, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
 	m_pLightingInputDescriptorObjects.push_back(std::move(descriptorObject));
+
+	// View normal attachment
+	descriptorObject = std::make_unique<InputAttachmentDescriptorObject>();
+
+	descriptorObject->AddImageView(attachments[kAttachment_GBUFFER_VIEWNORMAL]->GetTexture(0)->imageView, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+
+	m_pLightingInputDescriptorObjects.push_back(std::move(descriptorObject));
+
+	// View position attachment
+	descriptorObject = std::make_unique<InputAttachmentDescriptorObject>();
+
+	descriptorObject->AddImageView(attachments[kAttachment_GBUFFER_VIEWPOS]->GetTexture(0)->imageView, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+
+	m_pLightingInputDescriptorObjects.push_back(std::move(descriptorObject));
+
+	// Ao map attachment
+	descriptorObject = std::make_unique<InputAttachmentDescriptorObject>();
+
+	descriptorObject->AddImageView(attachments[kAttachment_AO_BLURRED]->GetTexture(0)->imageView, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+
+	m_pLightingInputDescriptorObjects.push_back(std::move(descriptorObject));
+
+	// Projection matrix attachment
+	m_pProjectionMatrixDescObject = std::make_unique<UboDescriptorObject<glm::mat4>>();
+
 }
 
 
@@ -847,10 +794,6 @@ void DDM3::GTAORenderer::CleanupImgui()
 
 void DDM3::GTAORenderer::RecordCommandBuffer(VkCommandBuffer& commandBuffer, uint32_t imageIndex)
 {
-	// Reset querypool for start of frame
-	m_pQueryPool->ResetPool();
-
-
 	auto frame = VulkanObject::GetInstance().GetCurrentFrame();
 
 	VkCommandBufferBeginInfo beginInfo{};
@@ -862,7 +805,6 @@ void DDM3::GTAORenderer::RecordCommandBuffer(VkCommandBuffer& commandBuffer, uin
 	{
 		throw std::runtime_error("failed to begin recording command buffer!");
 	}
-
 	auto extent{ m_pSwapchainWrapper->GetExtent() };
 
 	VkViewport viewport{};
@@ -1118,6 +1060,16 @@ void DDM3::GTAORenderer::CreateLightingDescriptorSetLayout()
 
 		bindings.push_back(binding);
 	}
+
+	VkDescriptorSetLayoutBinding binding{};
+
+	binding.binding = 4;
+	binding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+	binding.descriptorCount = 1;
+	binding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+	binding.pImmutableSamplers = nullptr;
+
+	bindings.push_back(binding);
 
 	// Create layout info
 	VkDescriptorSetLayoutCreateInfo layoutInfo{};
@@ -1461,6 +1413,14 @@ void DDM3::GTAORenderer::UpdateLightingDescriptorSets(int frame)
 		descriptorObject->AddDescriptorWrite(m_LightingDescriptorSets[frame], descriptorWrites, binding, 1, frame);
 	}
 
+	auto camera = SceneManager::GetInstance().GetCamera();
+
+	if (camera != nullptr)
+	{
+		m_pProjectionMatrixDescObject->UpdateUboBuffer(camera->GetProjectionMatrixPointer(), frame);
+	}
+
+	m_pProjectionMatrixDescObject->AddDescriptorWrite(m_LightingDescriptorSets[frame], descriptorWrites, binding, 1, frame);
 
 	//vkDeviceWaitIdle(VulkanRenderer::GetInstance().GetDevice());
 	// Update descriptorsets
