@@ -52,7 +52,6 @@ namespace LoadAOScene
 
 		//SetupAtrium(scene.get());
 
-
 		SetupRoom(scene.get());
 
 		//SetupVehicle(scene.get());

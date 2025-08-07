@@ -46,6 +46,9 @@ namespace DDM3
 
 		virtual void AddDefaultPipelines();
 	private:
+
+		bool m_ShouldBlur{ true };
+
 		std::unique_ptr<RenderpassWrapper> m_pRenderpass{};
 
 		void CreateRenderpass();
@@ -102,10 +105,8 @@ namespace DDM3
 
 		// Projection matrix
 		std::unique_ptr<UboDescriptorObject<glm::mat4>> m_pProjectionMatrixDescObject{};
-		
 
-		// View matrix
-		std::unique_ptr<UboDescriptorObject<glm::mat4>> m_pViewMatrixDescObject{};
+
 
 
 		// Everything needed for AOBlur Descriptorsets
@@ -143,8 +144,8 @@ namespace DDM3
 		void SetNewSamples();
 
 		void GetRandomVector(glm::vec4& vec, int index);
-		
-		void SetupProjectionViewMatrix();
+
+		void SetupProjectionMatrix();
 
 
 

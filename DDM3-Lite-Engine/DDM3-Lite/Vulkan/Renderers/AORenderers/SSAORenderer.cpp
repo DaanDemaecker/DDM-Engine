@@ -70,7 +70,7 @@ DDM3::SSAORenderer::SSAORenderer()
 
 	SetupSamples();
 
-	SetupProjectionViewMatrix();
+	SetupProjectionMatrix();
 
 	SetNewSamples();
 
@@ -84,9 +84,12 @@ DDM3::SSAORenderer::~SSAORenderer()
 
 	vkDestroyDescriptorPool(device, m_LightingDescriptorPool, nullptr);
 
-	vkDestroyDescriptorSetLayout(device, m_AoBlurDescriptorSetLayout, nullptr);
+	if (m_ShouldBlur)
+	{
+		vkDestroyDescriptorSetLayout(device, m_AoBlurDescriptorSetLayout, nullptr);
 
-	vkDestroyDescriptorPool(device, m_AoBlurDescriptorPool, nullptr);
+		vkDestroyDescriptorPool(device, m_AoBlurDescriptorPool, nullptr);
+	}
 
 	vkDestroyDescriptorSetLayout(device, m_AoGenDescriptorSetLayout, nullptr);
 
@@ -199,7 +202,7 @@ void DDM3::SSAORenderer::AddDefaultPipelines()
 
 
 	vulkanObject.AddGraphicsPipeline(configManager.GetString("DepthPipelineName"), {
-		configManager.GetString("DepthVert")});
+		configManager.GetString("DepthVert") });
 
 
 	// Initialize default pipeline name 
@@ -213,7 +216,7 @@ void DDM3::SSAORenderer::AddDefaultPipelines()
 
 	// Initialize default pipeline name 
 	auto lightingPipelineName = configManager.GetString("DeferredLightingPipelineName");
-	
+
 	// Add default pipeline
 	vulkanObject.AddGraphicsPipeline(lightingPipelineName, {
 		configManager.GetString("DrawQuadVert"),
@@ -227,7 +230,7 @@ void DDM3::SSAORenderer::AddDefaultPipelines()
 
 	vulkanObject.AddGraphicsPipeline(aoPipelineName, {
 		configManager.GetString("DrawQuadVert"),
-		"Resources/Shaders/AO/SSAOGen.frag.spv"},
+		"Resources/Shaders/AO/SSAOGen.frag.spv" },
 		true, true, kSubpass_AO_GEN);
 
 	m_pAoPipeline = vulkanObject.GetPipeline(aoPipelineName);
@@ -351,7 +354,47 @@ void DDM3::SSAORenderer::SetupAttachments()
 	albedoAttachmentDesc.finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
 	albedoAttachment->SetAttachmentDesc(albedoAttachmentDesc);
-	
+
+	// normal attachment
+	auto normalAttachment = std::make_unique<Attachment>(swapchainImageAmount);
+	normalAttachment->SetFormat(colorAttachmentFormat);
+	normalAttachment->SetAttachmentType(Attachment::kAttachmentType_Color);
+	normalAttachment->SetIsInput(true);
+
+
+	VkAttachmentDescription normalAttachmentDesc{};
+	normalAttachmentDesc.flags = 0;
+	normalAttachmentDesc.format = colorAttachmentFormat;
+	normalAttachmentDesc.samples = VK_SAMPLE_COUNT_1_BIT;
+	normalAttachmentDesc.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+	normalAttachmentDesc.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+	normalAttachmentDesc.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+	normalAttachmentDesc.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+	normalAttachmentDesc.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+	normalAttachmentDesc.finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+
+	normalAttachment->SetAttachmentDesc(normalAttachmentDesc);
+
+	// posiition attachment
+	auto positionAttachment = std::make_unique<Attachment>(swapchainImageAmount);
+	positionAttachment->SetFormat(colorAttachmentFormat);
+	positionAttachment->SetAttachmentType(Attachment::kAttachmentType_Color);
+	positionAttachment->SetIsInput(true);
+
+
+	VkAttachmentDescription positionAttachmentDesc{};
+	positionAttachmentDesc.flags = 0;
+	positionAttachmentDesc.format = colorAttachmentFormat;
+	positionAttachmentDesc.samples = VK_SAMPLE_COUNT_1_BIT;
+	positionAttachmentDesc.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+	positionAttachmentDesc.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+	positionAttachmentDesc.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+	positionAttachmentDesc.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+	positionAttachmentDesc.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+	positionAttachmentDesc.finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+
+	positionAttachment->SetAttachmentDesc(positionAttachmentDesc);
+
 	// viewspace normal attachment
 	auto viewNormalAttachment = std::make_unique<Attachment>(swapchainImageAmount);
 	viewNormalAttachment->SetFormat(colorAttachmentFormat);
@@ -438,6 +481,8 @@ void DDM3::SSAORenderer::SetupAttachments()
 	m_pRenderpass->AddAttachment(std::move(backBufferAttachment));
 	m_pRenderpass->AddAttachment(std::move(depthAttachment));
 	m_pRenderpass->AddAttachment(std::move(albedoAttachment));
+	m_pRenderpass->AddAttachment(std::move(normalAttachment));
+	m_pRenderpass->AddAttachment(std::move(positionAttachment));
 	m_pRenderpass->AddAttachment(std::move(viewNormalAttachment));
 	m_pRenderpass->AddAttachment(std::move(viewPositionAttachment));
 	m_pRenderpass->AddAttachment(std::move(aoMapAttachment));
@@ -452,7 +497,7 @@ void DDM3::SSAORenderer::SetupDepthPass()
 	depthAttachmentReference.attachment = kAttachment_DEPTH;
 	depthAttachmentReference.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
-	std::unique_ptr<Subpass> depthPass{std::make_unique<Subpass>()};
+	std::unique_ptr<Subpass> depthPass{ std::make_unique<Subpass>() };
 
 	depthPass->AddDepthRef(depthAttachmentReference);
 
@@ -508,7 +553,7 @@ void DDM3::SSAORenderer::SetupAoGenPass()
 	VkAttachmentReference positionAttachmentRef{};
 	positionAttachmentRef.attachment = kAttachment_GBUFFER_VIEWPOS;
 	positionAttachmentRef.layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-	
+
 	pAoMapPass->AddInputReference(positionAttachmentRef);
 
 	// Depth prepass depth buffer reference (read/write)
@@ -522,7 +567,7 @@ void DDM3::SSAORenderer::SetupAoGenPass()
 	aoMapReference.attachment = kAttachment_AO_MAP;
 	aoMapReference.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
-	pAoMapPass->AddReference(aoMapReference);	
+	pAoMapPass->AddReference(aoMapReference);
 
 
 	m_pRenderpass->AddSubpass(std::move(pAoMapPass));
@@ -530,7 +575,7 @@ void DDM3::SSAORenderer::SetupAoGenPass()
 
 void DDM3::SSAORenderer::SetupAoBlurPass()
 {
-	std::unique_ptr<Subpass> pBlurSubpass{std::make_unique<Subpass>()};
+	std::unique_ptr<Subpass> pBlurSubpass{ std::make_unique<Subpass>() };
 
 	VkAttachmentReference aoMapReference{};
 	aoMapReference.attachment = kAttachment_AO_MAP;
@@ -673,7 +718,10 @@ void DDM3::SSAORenderer::SetupDescriptorObjects()
 {
 	SetupDescriptorObjectsAoGen();
 
-	SetupDescriptorObjectsAoBlur();
+	if (m_ShouldBlur)
+	{
+		SetupDescriptorObjectsAoBlur();
+	}
 
 	SetupDescriptorObjectsLighting();
 }
@@ -711,32 +759,25 @@ void DDM3::SSAORenderer::SetupDescriptorObjectsLighting()
 
 	auto& attachments{ m_pRenderpass->GetAttachmentList() };
 
+	for (int i{ kAttachment_GBUFFER_ALBEDO }; i <= kAttachment_GBUFFER_VIEWPOS; ++i)
+	{
+		auto descriptorObject{ std::make_unique<InputAttachmentDescriptorObject>() };
+
+		descriptorObject->AddImageView(attachments[i]->GetTexture(0)->imageView, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+
+		m_pLightingInputDescriptorObjects.push_back(std::move(descriptorObject));
+	}
 
 	auto descriptorObject{ std::make_unique<InputAttachmentDescriptorObject>() };
 
-	descriptorObject->AddImageView(attachments[kAttachment_GBUFFER_ALBEDO]->GetTexture(0)->imageView, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-
-	m_pLightingInputDescriptorObjects.push_back(std::move(descriptorObject));
-
-
-	descriptorObject = std::make_unique<InputAttachmentDescriptorObject>();
-
-	descriptorObject->AddImageView(attachments[kAttachment_GBUFFER_VIEWNORMAL]->GetTexture(0)->imageView, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-
-	m_pLightingInputDescriptorObjects.push_back(std::move(descriptorObject));
-
-
-	descriptorObject = std::make_unique<InputAttachmentDescriptorObject>();
-
-	descriptorObject->AddImageView(attachments[kAttachment_GBUFFER_VIEWPOS]->GetTexture(0)->imageView, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-
-	m_pLightingInputDescriptorObjects.push_back(std::move(descriptorObject));
-
-
-	descriptorObject = std::make_unique<InputAttachmentDescriptorObject>();
-
-	descriptorObject->AddImageView(attachments[kAttachment_AO_BLURRED]->GetTexture(0)->imageView, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-
+	if (m_ShouldBlur)
+	{
+		descriptorObject->AddImageView(attachments[kAttachment_AO_BLURRED]->GetTexture(0)->imageView, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+	}
+	else
+	{
+		descriptorObject->AddImageView(attachments[kAttachment_AO_MAP]->GetTexture(0)->imageView, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+	}
 
 	m_pLightingInputDescriptorObjects.push_back(std::move(descriptorObject));
 }
@@ -788,11 +829,9 @@ void DDM3::SSAORenderer::GetRandomVector(glm::vec4& vec, int index)
 	vec *= Utils::Lerp(0.1f, 1.0f, scale * scale);
 }
 
-void DDM3::SSAORenderer::SetupProjectionViewMatrix()
+void DDM3::SSAORenderer::SetupProjectionMatrix()
 {
 	m_pProjectionMatrixDescObject = std::make_unique<UboDescriptorObject<glm::mat4>>();
-
-	m_pViewMatrixDescObject = std::make_unique<UboDescriptorObject<glm::mat4>>();
 }
 
 void DDM3::SSAORenderer::InitImgui()
@@ -891,13 +930,15 @@ void DDM3::SSAORenderer::RecordCommandBuffer(VkCommandBuffer& commandBuffer, uin
 	// AO Blur pass
 	vkCmdNextSubpass(commandBuffer, VK_SUBPASS_CONTENTS_INLINE);
 
+	if (m_ShouldBlur)
+	{
+		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pAoBlurPipeline->GetPipeline());
 
-	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pAoBlurPipeline->GetPipeline());
+		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pAoBlurPipeline->GetPipelineLayout(), 0, 1,
+			&m_AoBlurDescriptorSets[frame], 0, nullptr);
 
-	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pAoBlurPipeline->GetPipelineLayout(), 0, 1,
-		&m_AoBlurDescriptorSets[frame], 0, nullptr);
-
-	VulkanObject::GetInstance().DrawQuad(commandBuffer);
+		VulkanObject::GetInstance().DrawQuad(commandBuffer);
+	}
 
 
 	// Lighting pass
@@ -975,7 +1016,7 @@ void DDM3::SSAORenderer::RecreateSwapChain()
 	auto commandBuffer{ VulkanObject::GetInstance().BeginSingleTimeCommands() };
 
 
-	std::vector<RenderpassWrapper*> renderpasses{ m_pRenderpass.get()};
+	std::vector<RenderpassWrapper*> renderpasses{ m_pRenderpass.get() };
 
 	// Recreate the swapchain
 	m_pSwapchainWrapper->RecreateSwapChain(DDM3::VulkanObject::GetInstance().GetGPUObject(), DDM3::VulkanObject::GetInstance().GetSurface(),
@@ -994,7 +1035,10 @@ void DDM3::SSAORenderer::ResetDescriptorSets()
 
 	vkFreeDescriptorSets(VulkanObject::GetInstance().GetDevice(), m_AoGenDescriptorPool, m_AoGenDescriptorSets.size(), m_AoGenDescriptorSets.data());
 
-	vkFreeDescriptorSets(VulkanObject::GetInstance().GetDevice(), m_AoBlurDescriptorPool, m_AoBlurDescriptorSets.size(), m_AoBlurDescriptorSets.data());
+	if (m_ShouldBlur)
+	{
+		vkFreeDescriptorSets(VulkanObject::GetInstance().GetDevice(), m_AoBlurDescriptorPool, m_AoBlurDescriptorSets.size(), m_AoBlurDescriptorSets.data());
+	}
 
 	SetupDescriptorObjects();
 
@@ -1004,8 +1048,10 @@ void DDM3::SSAORenderer::ResetDescriptorSets()
 void DDM3::SSAORenderer::CreateDescriptorSetLayouts()
 {
 	CreateAoGenDescriptorSetLayout();
-
-	CreateAoBlurDescriptorSetLayout();
+	if (m_ShouldBlur)
+	{
+		CreateAoBlurDescriptorSetLayout();
+	}
 
 	CreateLightingDescriptorSetLayout();
 }
@@ -1138,16 +1184,6 @@ void DDM3::SSAORenderer::CreateLightingDescriptorSetLayout()
 		bindings.push_back(binding);
 	}
 
-	VkDescriptorSetLayoutBinding projectionMatrixBinding{};
-
-	projectionMatrixBinding.binding = 4;
-	projectionMatrixBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-	projectionMatrixBinding.descriptorCount = 1;
-	projectionMatrixBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-	projectionMatrixBinding.pImmutableSamplers = nullptr;
-
-	bindings.push_back(projectionMatrixBinding);
-
 	// Create layout info
 	VkDescriptorSetLayoutCreateInfo layoutInfo{};
 	// Set type to descriptor set layout create info
@@ -1169,7 +1205,10 @@ void DDM3::SSAORenderer::CreateDescriptorPools()
 {
 	CreateAoGenDescriptorPool();
 
-	CreateAoBlurDescriptorPool();
+	if (m_ShouldBlur)
+	{
+		CreateAoBlurDescriptorPool();
+	}
 
 	CreateLightingDescriptorPool();
 }
@@ -1251,7 +1290,7 @@ void DDM3::SSAORenderer::CreateAoBlurDescriptorPool()
 
 	// Create a vector of pool sizes
 	std::vector<VkDescriptorPoolSize> poolSizes{};
-	
+
 
 	VkDescriptorPoolSize aogGenTextureDescriptorpoolSize{};
 	aogGenTextureDescriptorpoolSize.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
@@ -1303,16 +1342,6 @@ void DDM3::SSAORenderer::CreateLightingDescriptorPool()
 		poolSizes.push_back(descriptorPoolSize);
 	}
 
-	VkDescriptorPoolSize descriptorPoolSize{};
-	// Set the type of the poolsize
-	descriptorPoolSize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-	// Calculate the amount of descriptors needed from this type
-	descriptorPoolSize.descriptorCount = frames;
-
-	// Add the descriptor poolsize to the vector
-	poolSizes.push_back(descriptorPoolSize);
-
-
 	// Create pool info
 	VkDescriptorPoolCreateInfo poolInfo{};
 	// Set type to descriptor pool create info
@@ -1335,7 +1364,10 @@ void DDM3::SSAORenderer::CreateDescriptorSets()
 {
 	CreateAoGenDescriptorSets();
 
-	CreateAoBlurDescriptorSets();
+	if (m_ShouldBlur)
+	{
+		CreateAoBlurDescriptorSets();
+	}
 
 	CreateLightingDescriptorSets();
 }
@@ -1434,50 +1466,53 @@ void DDM3::SSAORenderer::UpdateDescriptorSets(int frame, int swapchainIndex)
 {
 	UpdateAoGenDescriptorSets(frame, swapchainIndex);
 
-	UpdateAoBlurDescriptorSets(frame, swapchainIndex);
+	if (m_ShouldBlur)
+	{
+		UpdateAoBlurDescriptorSets(frame, swapchainIndex);
+	}
 
 	UpdateLightingDescriptorSets(frame);
 }
 
 void DDM3::SSAORenderer::UpdateAoGenDescriptorSets(int frame, int swapchainIndex)
 {
-		// Create a vector of descriptor writes
-		std::vector<VkWriteDescriptorSet> descriptorWrites{};
+	// Create a vector of descriptor writes
+	std::vector<VkWriteDescriptorSet> descriptorWrites{};
 
-		// Initialize current binding with 0
-		int binding{};
+	// Initialize current binding with 0
+	int binding{};
 
-		// Loop trough all descriptor objects and add the descriptor writes
-		for (auto& descriptorObject : m_pAoGenInputDescriptorObjects)
-		{
-			descriptorObject->AddDescriptorWrite(m_AoGenDescriptorSets[frame], descriptorWrites, binding, 1, frame);
-		}
+	// Loop trough all descriptor objects and add the descriptor writes
+	for (auto& descriptorObject : m_pAoGenInputDescriptorObjects)
+	{
+		descriptorObject->AddDescriptorWrite(m_AoGenDescriptorSets[frame], descriptorWrites, binding, 1, frame);
+	}
 
-		m_pPositionTextureDescriptorObject->Clear();
+	m_pPositionTextureDescriptorObject->Clear();
 
-		auto& posTexture = m_pRenderpass->GetAttachmentList()[kAttachment_GBUFFER_VIEWPOS]->GetTextureRef(swapchainIndex);
-		m_pPositionTextureDescriptorObject->AddTextures(posTexture);
+	auto& posTexture = m_pRenderpass->GetAttachmentList()[kAttachment_GBUFFER_VIEWPOS]->GetTextureRef(swapchainIndex);
+	m_pPositionTextureDescriptorObject->AddTextures(posTexture);
 
-		m_pPositionTextureDescriptorObject->AddDescriptorWrite(m_AoGenDescriptorSets[frame], descriptorWrites, binding, 1, frame);
+	m_pPositionTextureDescriptorObject->AddDescriptorWrite(m_AoGenDescriptorSets[frame], descriptorWrites, binding, 1, frame);
 
-		m_pNoiseTextureDescriptorObject->AddDescriptorWrite(m_AoGenDescriptorSets[frame], descriptorWrites, binding, 1, frame);
+	m_pNoiseTextureDescriptorObject->AddDescriptorWrite(m_AoGenDescriptorSets[frame], descriptorWrites, binding, 1, frame);
 
-		m_pSamplesDescriptorObject->UpdateUboBuffer(m_Samples.data(), frame);
+	m_pSamplesDescriptorObject->UpdateUboBuffer(m_Samples.data(), frame);
 
-		m_pSamplesDescriptorObject->AddDescriptorWrite(m_AoGenDescriptorSets[frame], descriptorWrites, binding, 1, frame);
+	m_pSamplesDescriptorObject->AddDescriptorWrite(m_AoGenDescriptorSets[frame], descriptorWrites, binding, 1, frame);
 
-		auto camera = SceneManager::GetInstance().GetCamera();
+	auto camera = SceneManager::GetInstance().GetCamera();
 
-		if (camera != nullptr)
-		{
-			m_pProjectionMatrixDescObject->UpdateUboBuffer(camera->GetProjectionMatrixPointer(), frame);
-		}
+	if (camera != nullptr)
+	{
+		m_pProjectionMatrixDescObject->UpdateUboBuffer(camera->GetProjectionMatrixPointer(), frame);
+	}
 
-		m_pProjectionMatrixDescObject->AddDescriptorWrite(m_AoGenDescriptorSets[frame], descriptorWrites, binding, 1, frame);
+	m_pProjectionMatrixDescObject->AddDescriptorWrite(m_AoGenDescriptorSets[frame], descriptorWrites, binding, 1, frame);
 
-		//vkDeviceWaitIdle(VulkanRenderer::GetInstance().GetDevice());
-		// Update descriptorsets
-		vkUpdateDescriptorSets(VulkanObject::GetInstance().GetDevice(), static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
+	//vkDeviceWaitIdle(VulkanRenderer::GetInstance().GetDevice());
+	// Update descriptorsets
+	vkUpdateDescriptorSets(VulkanObject::GetInstance().GetDevice(), static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
 }
 
 void DDM3::SSAORenderer::UpdateAoBlurDescriptorSets(int frame, int swapchainIndex)
@@ -1503,29 +1538,20 @@ void DDM3::SSAORenderer::UpdateAoBlurDescriptorSets(int frame, int swapchainInde
 
 void DDM3::SSAORenderer::UpdateLightingDescriptorSets(int frame)
 {
-		// Create a vector of descriptor writes
-		std::vector<VkWriteDescriptorSet> descriptorWrites{};
+	// Create a vector of descriptor writes
+	std::vector<VkWriteDescriptorSet> descriptorWrites{};
 
-		// Initialize current binding with 0
-		int binding{};
+	// Initialize current binding with 0
+	int binding{};
 
-		// Loop trough all descriptor objects and add the descriptor writes
-		for (auto& descriptorObject : m_pLightingInputDescriptorObjects)
-		{
-			descriptorObject->AddDescriptorWrite(m_LightingDescriptorSets[frame], descriptorWrites, binding, 1, frame);
-		}
-
-		auto camera = SceneManager::GetInstance().GetCamera();
-
-		if (camera != nullptr)
-		{
-			m_pProjectionMatrixDescObject->UpdateUboBuffer(camera->GetViewMatrixPointer(), frame);
-		}
-
-		m_pProjectionMatrixDescObject->AddDescriptorWrite(m_LightingDescriptorSets[frame], descriptorWrites, binding, 1, frame);
+	// Loop trough all descriptor objects and add the descriptor writes
+	for (auto& descriptorObject : m_pLightingInputDescriptorObjects)
+	{
+		descriptorObject->AddDescriptorWrite(m_LightingDescriptorSets[frame], descriptorWrites, binding, 1, frame);
+	}
 
 
-		//vkDeviceWaitIdle(VulkanRenderer::GetInstance().GetDevice());
-		// Update descriptorsets
-		vkUpdateDescriptorSets(VulkanObject::GetInstance().GetDevice(), static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
+	//vkDeviceWaitIdle(VulkanRenderer::GetInstance().GetDevice());
+	// Update descriptorsets
+	vkUpdateDescriptorSets(VulkanObject::GetInstance().GetDevice(), static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
 }

@@ -19,7 +19,6 @@ layout(location = 0) out vec4 outColor;
 layout(location = 1) out vec4 outViewNormal;
 layout(location = 2) out vec4 outViewPos;
 
-
 void main()
 {
 	vec3 finalColor = fragColor;
