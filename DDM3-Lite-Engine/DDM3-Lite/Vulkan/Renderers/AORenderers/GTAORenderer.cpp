@@ -27,6 +27,8 @@
 #include "Utils/Utils.h"
 #include "Components/CameraComponent.h"
 
+#include "Vulkan/Renderers/AORenderers/AoRenderPasses.h"
+
 DDM3::GTAORenderer::GTAORenderer()
 {
 	auto surface{ VulkanObject::GetInstance().GetSurface() };
@@ -215,8 +217,8 @@ void DDM3::GTAORenderer::AddDefaultPipelines()
 
 	// Add default pipeline
 	vulkanObject.AddGraphicsPipeline(defaultPipelineName, {
-		"Resources/Shaders/GTAO/GTAOGbuffer.vert.spv",
-		"Resources/Shaders/GTAO/GTAOGbuffer.frag.spv" },
+		"Resources/Shaders/AO/AOGbuffer.vert.spv",
+		"Resources/Shaders/AO/AOGbuffer.frag.spv" },
 		true, false, kSubpass_GBUFFER);
 
 	// Initialize default pipeline name 
@@ -225,17 +227,18 @@ void DDM3::GTAORenderer::AddDefaultPipelines()
 	// Add default pipeline
 	vulkanObject.AddGraphicsPipeline(lightingPipelineName, {
 		configManager.GetString("DrawQuadVert"),
-		"Resources/Shaders/GTAO/GTAOLighting.frag.spv" },
+		"Resources/Shaders/AO/AOLighting.frag.spv" },
 		false, true, kSubpass_LIGHTING);
 
 	m_pLightingPipeline = vulkanObject.GetPipeline(lightingPipelineName);
 
 
+	// Ao Generation pipeline
 	auto aoPipelineName = "AoGeneration";
 
 	vulkanObject.AddGraphicsPipeline(aoPipelineName, {
 		configManager.GetString("DrawQuadVert"),
-		"Resources/Shaders/GTAO/GTAOGen.frag.spv" },
+		"Resources/Shaders/AO/GTAOGen.frag.spv" },
 		true, true, kSubpass_AO_GEN);
 
 	m_pAoPipeline = vulkanObject.GetPipeline(aoPipelineName);

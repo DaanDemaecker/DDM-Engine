@@ -45,16 +45,6 @@ namespace DDM3
 		virtual RenderpassWrapper* GetDefaultRenderpass() override;
 
 		virtual void AddDefaultPipelines();
-
-		enum
-		{
-			kSubpass_DEPTH = 0,
-			kSubpass_GBUFFER = 1,
-			kSubpass_AO_GEN = 2,
-			kSubpass_AO_BLUR = 3,
-			kSubpass_LIGHTING = 4,
-			kSubpass_IMGUI = 5
-		};
 	private:
 		enum
 		{

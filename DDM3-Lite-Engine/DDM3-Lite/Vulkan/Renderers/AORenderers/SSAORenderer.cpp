@@ -26,6 +26,8 @@
 #include "Utils/Utils.h"
 #include "Components/CameraComponent.h"
 
+#include "Vulkan/Renderers/AORenderers/AoRenderPasses.h"
+
 DDM3::SSAORenderer::SSAORenderer()
 {
 	auto surface{ VulkanObject::GetInstance().GetSurface() };
@@ -208,8 +210,8 @@ void DDM3::SSAORenderer::AddDefaultPipelines()
 
 	// Add default pipeline
 	vulkanObject.AddGraphicsPipeline(defaultPipelineName, {
-		"Resources/Shaders/SSAO/SSAOGbuffer.vert.spv",
-		"Resources/Shaders/SSAO/SSAOGbuffer.frag.spv" },
+		"Resources/Shaders/AO/AOGbuffer.vert.spv",
+		"Resources/Shaders/AO/AOGbuffer.frag.spv" },
 		true, false, kSubpass_GBUFFER);
 
 	// Initialize default pipeline name 
@@ -218,7 +220,7 @@ void DDM3::SSAORenderer::AddDefaultPipelines()
 	// Add default pipeline
 	vulkanObject.AddGraphicsPipeline(lightingPipelineName, {
 		configManager.GetString("DrawQuadVert"),
-		"Resources/Shaders/SSAO/SSAOLighting.frag.spv" },
+		"Resources/Shaders/AO/AOLighting.frag.spv" },
 		false, true, kSubpass_LIGHTING);
 
 	m_pLightingPipeline = vulkanObject.GetPipeline(lightingPipelineName);
@@ -228,7 +230,7 @@ void DDM3::SSAORenderer::AddDefaultPipelines()
 
 	vulkanObject.AddGraphicsPipeline(aoPipelineName, {
 		configManager.GetString("DrawQuadVert"),
-		"Resources/Shaders/SSAO/SSAOGen.frag.spv"},
+		"Resources/Shaders/AO/SSAOGen.frag.spv"},
 		true, true, kSubpass_AO_GEN);
 
 	m_pAoPipeline = vulkanObject.GetPipeline(aoPipelineName);

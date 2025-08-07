@@ -25,7 +25,7 @@
 #include "Components/MaterialSwitcher/MaterialSwitcher.h"
 #include "Components/InfoComponent.h"
 
-#include "Vulkan/Renderers/AORenderers/GTAORenderer.h"
+#include "Vulkan/Renderers/AORenderers/AoRenderPasses.h"
 
 namespace LoadAOScene
 {
@@ -68,7 +68,7 @@ namespace LoadAOScene
 	{
 		auto& vulkanObject{ DDM3::VulkanObject::GetInstance() };
 
-		vulkanObject.AddGraphicsPipeline("DeferredDiffuse", { "Resources/Shaders/GTAO/GTAOGbuffer.Vert.spv", "Resources/Shaders/GTAO/GTAODiffuse.frag.spv" }, true, false, DDM3::GTAORenderer::kSubpass_GBUFFER);
+		vulkanObject.AddGraphicsPipeline("DeferredDiffuse", { "Resources/Shaders/AO/AOGbuffer.Vert.spv", "Resources/Shaders/AO/AODiffuse.frag.spv" }, true, false, DDM3::kSubpass_GBUFFER);
 	}
 
 	void SetupAtrium(DDM3::Scene* scene)

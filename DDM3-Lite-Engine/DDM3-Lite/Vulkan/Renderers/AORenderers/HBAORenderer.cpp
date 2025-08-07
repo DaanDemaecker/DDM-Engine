@@ -26,6 +26,8 @@
 #include "Utils/Utils.h"
 #include "Components/CameraComponent.h"
 
+#include "Vulkan/Renderers/AORenderers/AoRenderPasses.h"
+
 DDM3::HBAORenderer::HBAORenderer()
 {
 	auto surface{ VulkanObject::GetInstance().GetSurface() };
@@ -201,8 +203,8 @@ void DDM3::HBAORenderer::AddDefaultPipelines()
 
 	// Add default pipeline
 	vulkanObject.AddGraphicsPipeline(defaultPipelineName, {
-		"Resources/Shaders/HBAO/HBAOGbuffer.vert.spv",
-		"Resources/Shaders/HBAO/HBAOGbuffer.frag.spv" },
+		"Resources/Shaders/AO/AOGbuffer.vert.spv",
+		"Resources/Shaders/AO/AOGbuffer.frag.spv" },
 		true, false, kSubpass_GBUFFER);
 
 	// Initialize default pipeline name 
@@ -211,7 +213,7 @@ void DDM3::HBAORenderer::AddDefaultPipelines()
 	// Add default pipeline
 	vulkanObject.AddGraphicsPipeline(lightingPipelineName, {
 		configManager.GetString("DrawQuadVert"),
-		"Resources/Shaders/HBAO/HBAOLighting.frag.spv" },
+		"Resources/Shaders/AO/AOLighting.frag.spv" },
 		false, true, kSubpass_LIGHTING);
 
 	m_pLightingPipeline = vulkanObject.GetPipeline(lightingPipelineName);
@@ -221,7 +223,7 @@ void DDM3::HBAORenderer::AddDefaultPipelines()
 
 	vulkanObject.AddGraphicsPipeline(aoPipelineName, {
 		configManager.GetString("DrawQuadVert"),
-		"Resources/Shaders/HBAO/HBAOGen.frag.spv" },
+		"Resources/Shaders/AO/HBAOGen.frag.spv" },
 		true, true, kSubpass_AO_GEN);
 
 	m_pAoPipeline = vulkanObject.GetPipeline(aoPipelineName);
