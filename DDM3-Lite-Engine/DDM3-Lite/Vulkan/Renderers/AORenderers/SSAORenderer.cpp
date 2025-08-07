@@ -70,7 +70,7 @@ DDM3::SSAORenderer::SSAORenderer()
 
 	SetupSamples();
 
-	SetupProjectionMatrix();
+	SetupProjectionViewMatrix();
 
 	SetNewSamples();
 
@@ -829,9 +829,10 @@ void DDM3::SSAORenderer::GetRandomVector(glm::vec4& vec, int index)
 	vec *= Utils::Lerp(0.1f, 1.0f, scale * scale);
 }
 
-void DDM3::SSAORenderer::SetupProjectionMatrix()
+void DDM3::SSAORenderer::SetupProjectionViewMatrix()
 {
 	m_pProjectionMatrixDescObject = std::make_unique<UboDescriptorObject<glm::mat4>>();
+	m_pViewMatrixDescObject = std::make_unique<UboDescriptorObject<glm::mat4>>();
 }
 
 void DDM3::SSAORenderer::InitImgui()
@@ -1184,6 +1185,16 @@ void DDM3::SSAORenderer::CreateLightingDescriptorSetLayout()
 		bindings.push_back(binding);
 	}
 
+	VkDescriptorSetLayoutBinding binding{};
+
+	binding.binding = 4;
+	binding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+	binding.descriptorCount = 1;
+	binding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+	binding.pImmutableSamplers = nullptr;
+
+	bindings.push_back(binding);
+
 	// Create layout info
 	VkDescriptorSetLayoutCreateInfo layoutInfo{};
 	// Set type to descriptor set layout create info
@@ -1341,6 +1352,15 @@ void DDM3::SSAORenderer::CreateLightingDescriptorPool()
 		// Add the descriptor poolsize to the vector
 		poolSizes.push_back(descriptorPoolSize);
 	}
+
+	VkDescriptorPoolSize descriptorPoolSize{};
+	// Set the type of the poolsize
+	descriptorPoolSize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+	// Calculate the amount of descriptors needed from this type
+	descriptorPoolSize.descriptorCount = frames;
+
+	// Add the descriptor poolsize to the vector
+	poolSizes.push_back(descriptorPoolSize);
 
 	// Create pool info
 	VkDescriptorPoolCreateInfo poolInfo{};
@@ -1549,6 +1569,15 @@ void DDM3::SSAORenderer::UpdateLightingDescriptorSets(int frame)
 	{
 		descriptorObject->AddDescriptorWrite(m_LightingDescriptorSets[frame], descriptorWrites, binding, 1, frame);
 	}
+
+	auto camera = SceneManager::GetInstance().GetCamera();
+
+	if (camera != nullptr)
+	{
+		m_pViewMatrixDescObject->UpdateUboBuffer(camera->GetViewMatrixPointer(), frame);
+	}
+
+	m_pViewMatrixDescObject->AddDescriptorWrite(m_LightingDescriptorSets[frame], descriptorWrites, binding, 1, frame);
 
 
 	//vkDeviceWaitIdle(VulkanRenderer::GetInstance().GetDevice());

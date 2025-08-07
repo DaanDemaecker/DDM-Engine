@@ -5,9 +5,9 @@ layout (input_attachment_index = 1, set = 0, binding = 1) uniform subpassInput i
 layout (input_attachment_index = 2, set = 0, binding = 2) uniform subpassInput inputPosition;
 layout (input_attachment_index = 3, set = 0, binding = 3) uniform subpassInput aoMap;
 
-//layout(set = 0, binding = 4) uniform View {
-//    mat4 view;
-//} viewMatrix;
+layout(set = 0, binding = 4) uniform View {
+    mat4 view;
+} viewMatrix;
 
 layout(location = 0) out vec4 outColor;
 
@@ -22,13 +22,13 @@ void main()
 
     color *= aoMapValue;
 
-//    vec3 viewNormal = subpassLoad(inputNormal).xyz;
-//    mat3 viewToWorld = transpose(mat3(viewMatrix.view)); // assuming no non-uniform scale
-//    vec3 worldNormal = normalize(viewToWorld * viewNormal);
+    vec3 viewNormal = subpassLoad(inputNormal).xyz;
+    mat3 viewToWorld = transpose(mat3(viewMatrix.view)); // assuming no non-uniform scale
+    vec3 worldNormal = normalize(viewToWorld * viewNormal);
 
     // Flip x and z normal
-    //worldNormal.x = -worldNormal.x;
-    //worldNormal.z = -worldNormal.z;
+    worldNormal.x = -worldNormal.x;
+    worldNormal.z = -worldNormal.z;
 
     outColor = vec4(color, 1.0);
 }
