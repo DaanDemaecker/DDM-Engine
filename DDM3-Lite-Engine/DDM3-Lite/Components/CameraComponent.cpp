@@ -29,6 +29,17 @@ void DDM3::CameraComponent::UpdateUniformBuffer(UniformBufferObject& buffer, VkE
 	}
 
 	buffer.proj = m_ProjectionMatrix;
+
+	static bool keyPressedLastFrame = false;
+
+	bool keyPressed = glfwGetKey(Window::GetInstance().GetWindowStruct().pWindow, GLFW_KEY_P) == GLFW_PRESS;
+
+	if (keyPressed && !keyPressedLastFrame)
+	{
+		PrintTransform();
+	}
+
+	keyPressedLastFrame = keyPressed;
 }
 
 void DDM3::CameraComponent::RenderSkybox()
@@ -88,4 +99,20 @@ void DDM3::CameraComponent::UpdateProjectionMatrix()
 	m_ProjectionMatrix[1][1] *= -1;
 	m_ProjectionMatrix[2][2] *= -1;
 	m_ProjectionMatrix[2][3] *= -1;
+}
+
+void DDM3::CameraComponent::PrintTransform()
+{
+	auto transform = GetTransform();
+
+	auto pos = transform->GetWorldPosition();
+
+	auto rot = glm::eulerAngles(transform->GetWorldRotation());
+
+	std::cout << "Camera transform: " << std::endl;
+	std::cout << "Location: " << std::endl;
+	std::cout << "X: " << pos.x << ", Y: " << pos.y << ", Z: " << pos.z << std::endl;
+	std::cout << "Rotation: " << std::endl;
+	std::cout << "X: " << rot.x << ", Y: " << rot.y << ", Z: " << rot.z << std::endl;
+
 }

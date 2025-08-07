@@ -35,6 +35,8 @@ namespace LoadDeferredScene
 
 	void SetupVehicle2(DDM3::Scene* scene);
 
+	void SetupRoom(DDM3::Scene* scene);
+
 	void SetupVikingRoom(DDM3::Scene* scene);
 
 	void SetupGun(DDM3::Scene* scene);
@@ -44,6 +46,8 @@ namespace LoadDeferredScene
 	void SetupAtrium(DDM3::Scene* scene);
 
 	void SetupAtrium2(DDM3::Scene* scene);
+
+	void SetupAtrium3(DDM3::Scene* scene);
 
 	void SetupSkull(DDM3::Scene* scene);
 
@@ -76,7 +80,11 @@ namespace LoadDeferredScene
 
 		//SetupAtrium(scene.get());
 
-		SetupAtrium2(scene.get());
+		//SetupAtrium2(scene.get());
+
+		SetupAtrium3(scene.get());
+
+		//SetupRoom(scene.get());
 
 		//SetupSkull(scene.get());
 
@@ -143,6 +151,67 @@ namespace LoadDeferredScene
 		pVehicleTransform->SetLocalPosition(3, 3, 0);
 		pVehicleTransform->SetLocalRotation(0.f, glm::radians(75.0f), 0.f);
 		pVehicleTransform->SetLocalScale(0.05f, 0.05f, 0.05f);
+	}
+
+	void SetupRoom(DDM3::Scene* scene)
+	{
+		auto switchManager = scene->GetSceneRoot()->CreateNewObject("Material switch manager");
+		switchManager->SetShowImGui(true);
+
+		auto switchManagerComponent = switchManager->AddComponent<DDM3::MaterialSwitchManager>();
+		switchManagerComponent->RegisterKey("Diffuse");
+		switchManagerComponent->RegisterKey("Default");
+
+
+		auto& modelLoader = DDM3::DDMModelLoader::GetInstance();
+
+		std::vector<std::unique_ptr<DDMML::Mesh>> pMeshes{};
+
+		modelLoader.LoadScene("Resources/Models/Room/scene.gltf", pMeshes);
+
+		auto sceneRoot = scene->GetSceneRoot();
+
+		for (int i{}; i < 1; ++i)
+		{
+			auto& pMesh = pMeshes[i];
+
+			auto pGameObject = scene->GetSceneRoot()->CreateNewObject(pMesh->GetName());
+			auto renderComponent = pGameObject->AddComponent<DDM3::MeshRenderComponent>();
+			renderComponent->SetMesh(pMesh.get());
+
+
+			std::shared_ptr<DDM3::Material> texturedMaterial = std::make_shared<DDM3::TexturedMaterial>("DeferredDiffuse");
+
+
+			if (pMesh->GetDiffuseTextureNames().size() > 0)
+			{
+				for (auto& texture : pMesh->GetDiffuseTextureNames())
+				{
+					dynamic_pointer_cast<DDM3::TexturedMaterial>(texturedMaterial)->AddTexture(texture);
+				}
+			}
+			else
+			{
+				texturedMaterial = std::make_shared<DDM3::Material>();
+			}
+
+
+			renderComponent->SetMaterial(texturedMaterial);
+
+			auto defaultMaterial = std::make_shared<DDM3::Material>();
+
+
+			auto pMaterialSwitcher = pGameObject->AddComponent<DDM3::MaterialSwitcher>();
+			pMaterialSwitcher->RegisterMaterial("Diffuse", texturedMaterial);
+			pMaterialSwitcher->RegisterMaterial("Default", defaultMaterial);
+
+
+			switchManagerComponent->RegisterMaterialSwitcher(pMaterialSwitcher);
+
+			auto pRoomTransform{ pGameObject->GetTransform() };
+			pRoomTransform->SetShowImGui(true);
+			pRoomTransform->SetLocalScale(0.05f, 0.05f, 0.05f);
+		}
 	}
 
 	void SetupVikingRoom(DDM3::Scene* scene)
@@ -229,6 +298,51 @@ namespace LoadDeferredScene
 		}
 	}
 
+	void SetupAtrium3(DDM3::Scene* scene)
+	{
+		auto switchManager = scene->GetSceneRoot()->CreateNewObject("Material switch manager");
+		switchManager->SetShowImGui(true);
+
+		auto switchManagerComponent = switchManager->AddComponent<DDM3::MaterialSwitchManager>();
+		switchManagerComponent->RegisterKey("Diffuse");
+		switchManagerComponent->RegisterKey("Default");
+
+
+		auto& modelLoader = DDM3::DDMModelLoader::GetInstance();
+
+		std::vector<std::unique_ptr<DDMML::Mesh>> pMeshes{};
+
+		modelLoader.LoadScene("Resources/Models/SponzaAtrium/Sponza.gltf", pMeshes);
+
+		auto sceneRoot = scene->GetSceneRoot();
+
+		for (auto& pMesh : pMeshes)
+		{
+			auto pGameObject = scene->GetSceneRoot()->CreateNewObject(pMesh->GetName());
+			auto renderComponent = pGameObject->AddComponent<DDM3::MeshRenderComponent>();
+			renderComponent->SetMesh(pMesh.get());
+
+
+			auto texturedMaterial = std::make_shared<DDM3::TexturedMaterial>("DeferredDiffuse");
+
+			for (auto& texture : pMesh->GetDiffuseTextureNames())
+			{
+				texturedMaterial->AddTexture(texture);
+			}
+
+			auto defaultMaterial = std::make_shared<DDM3::Material>();
+
+			renderComponent->SetMaterial(texturedMaterial);
+
+			auto pMaterialSwitcher = pGameObject->AddComponent<DDM3::MaterialSwitcher>();
+			pMaterialSwitcher->RegisterMaterial("Diffuse", texturedMaterial);
+			pMaterialSwitcher->RegisterMaterial("Default", defaultMaterial);
+
+
+			switchManagerComponent->RegisterMaterialSwitcher(pMaterialSwitcher);
+		}
+	}
+
 	void SetupSkull(DDM3::Scene* scene)
 	{
 		auto switchManager = scene->GetSceneRoot()->CreateNewObject("Material switch manager");
@@ -286,6 +400,10 @@ namespace LoadDeferredScene
 		auto pCameraTransform{ pCamera->GetTransform() };
 		pCameraTransform->SetLocalPosition(8, 1.5, -0.3);
 		pCameraTransform->SetLocalRotation(0.0f, glm::radians(90.0f), 0.0f);
+
+		//pCameraTransform->SetLocalPosition(3.82492f, 5.96203f, -3.80923);
+		//pCameraTransform->SetLocalRotation(-2.73159, 0.0011386, 3.14159);
+
 		//pCameraTransform->SetLocalRotation(glm::vec3(0.0f, glm::radians(180.f), 0.0f));
 
 		//pCamera->AddComponent<D3D::RotatorComponent>();

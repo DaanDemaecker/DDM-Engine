@@ -53,6 +53,8 @@ namespace DDM3
 		void UpdateProjectionMatrix();
 
 		std::shared_ptr<SkyBoxComponent> m_pSkyBox{};
+
+		void PrintTransform();
 	};
 }
 #endif // !CameraComponentIncluded

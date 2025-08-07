@@ -50,9 +50,9 @@ namespace LoadAOScene
 
 		SetupPipelines();
 
-		//SetupAtrium(scene.get());
+		SetupAtrium(scene.get());
 
-		SetupRoom(scene.get());
+		//SetupRoom(scene.get());
 
 		//SetupVehicle(scene.get());
 
@@ -171,7 +171,6 @@ namespace LoadAOScene
 			switchManagerComponent->RegisterMaterialSwitcher(pMaterialSwitcher);
 
 			auto pRoomTransform{ pGameObject->GetTransform() };
-			pRoomTransform->SetShowImGui(true);
 			pRoomTransform->SetLocalScale(0.05f, 0.05f, 0.05f);
 		}
 	}
@@ -218,6 +217,9 @@ namespace LoadAOScene
 		auto pCameraTransform{ pCamera->GetTransform() };
 		pCameraTransform->SetLocalPosition(8, 1.5, -0.3);
 		pCameraTransform->SetLocalRotation(0.0f, glm::radians(90.0f), 0.0f);
+
+		//pCameraTransform->SetLocalPosition(3.82492f, 5.96203f, -3.80923);
+		//pCameraTransform->SetLocalRotation(-2.73159, 0.0011386, 3.14159);
 
 		//pCamera->AddComponent<D3D::RotatorComponent>();
 

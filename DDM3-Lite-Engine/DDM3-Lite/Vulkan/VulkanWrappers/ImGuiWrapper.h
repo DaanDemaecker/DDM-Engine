@@ -48,7 +48,7 @@ namespace DDM3
 		VkDescriptorPool m_DescriptorPool{};
 
 		// Show the ImGui Demo
-		bool m_ShowDemo{ true };
+		bool m_ShowDemo{ false };
 
 		// Initialization of descriptorpool
 		// Parameters:
