@@ -54,6 +54,16 @@ glm::mat4* DDM3::CameraComponent::GetProjectionMatrixPointer()
 	return &m_ProjectionMatrix;
 }
 
+glm::mat4& DDM3::CameraComponent::GetViewMatrix()
+{
+	return m_ViewMatrix;
+}
+
+glm::mat4* DDM3::CameraComponent::GetViewMatrixPointer()
+{
+	return &m_ViewMatrix;
+}
+
 void DDM3::CameraComponent::UpdateViewMatrix()
 {
 	auto transform = GetTransform();

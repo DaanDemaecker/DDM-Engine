@@ -106,7 +106,7 @@ namespace DDM3
 		std::unique_ptr<TextureDescriptorObject> m_pAoGenTextureDescriptorObject{};
 
 		// Projection matrix
-		std::unique_ptr<UboDescriptorObject<glm::mat4>> m_pProjectionMatrixDescObject{};
+		std::unique_ptr<UboDescriptorObject<glm::mat4>> m_pViewMatrixDescObject{};
 
 
 		// Everything needed for the Lighting descriptor sets

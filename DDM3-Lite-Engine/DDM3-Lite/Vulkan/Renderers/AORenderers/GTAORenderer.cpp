@@ -739,7 +739,7 @@ void DDM3::GTAORenderer::SetupDescriptorObjectsLighting()
 	m_pLightingInputDescriptorObjects.push_back(std::move(descriptorObject));
 
 	// Projection matrix attachment
-	m_pProjectionMatrixDescObject = std::make_unique<UboDescriptorObject<glm::mat4>>();
+	m_pViewMatrixDescObject = std::make_unique<UboDescriptorObject<glm::mat4>>();
 
 }
 
@@ -1417,10 +1417,10 @@ void DDM3::GTAORenderer::UpdateLightingDescriptorSets(int frame)
 
 	if (camera != nullptr)
 	{
-		m_pProjectionMatrixDescObject->UpdateUboBuffer(camera->GetProjectionMatrixPointer(), frame);
+		m_pViewMatrixDescObject->UpdateUboBuffer(camera->GetViewMatrixPointer(), frame);
 	}
 
-	m_pProjectionMatrixDescObject->AddDescriptorWrite(m_LightingDescriptorSets[frame], descriptorWrites, binding, 1, frame);
+	m_pViewMatrixDescObject->AddDescriptorWrite(m_LightingDescriptorSets[frame], descriptorWrites, binding, 1, frame);
 
 	//vkDeviceWaitIdle(VulkanRenderer::GetInstance().GetDevice());
 	// Update descriptorsets

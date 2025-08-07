@@ -70,7 +70,7 @@ DDM3::SSAORenderer::SSAORenderer()
 
 	SetupSamples();
 
-	SetupProjectionMatrix();
+	SetupProjectionViewMatrix();
 
 	SetNewSamples();
 
@@ -788,9 +788,11 @@ void DDM3::SSAORenderer::GetRandomVector(glm::vec4& vec, int index)
 	vec *= Utils::Lerp(0.1f, 1.0f, scale * scale);
 }
 
-void DDM3::SSAORenderer::SetupProjectionMatrix()
+void DDM3::SSAORenderer::SetupProjectionViewMatrix()
 {
 	m_pProjectionMatrixDescObject = std::make_unique<UboDescriptorObject<glm::mat4>>();
+
+	m_pViewMatrixDescObject = std::make_unique<UboDescriptorObject<glm::mat4>>();
 }
 
 void DDM3::SSAORenderer::InitImgui()
@@ -1511,6 +1513,13 @@ void DDM3::SSAORenderer::UpdateLightingDescriptorSets(int frame)
 		for (auto& descriptorObject : m_pLightingInputDescriptorObjects)
 		{
 			descriptorObject->AddDescriptorWrite(m_LightingDescriptorSets[frame], descriptorWrites, binding, 1, frame);
+		}
+
+		auto camera = SceneManager::GetInstance().GetCamera();
+
+		if (camera != nullptr)
+		{
+			m_pProjectionMatrixDescObject->UpdateUboBuffer(camera->GetViewMatrixPointer(), frame);
 		}
 
 		m_pProjectionMatrixDescObject->AddDescriptorWrite(m_LightingDescriptorSets[frame], descriptorWrites, binding, 1, frame);

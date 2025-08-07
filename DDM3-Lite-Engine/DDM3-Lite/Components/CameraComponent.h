@@ -36,6 +36,10 @@ namespace DDM3
 
 		glm::mat4* GetProjectionMatrixPointer();
 
+		glm::mat4& GetViewMatrix();
+
+		glm::mat4* GetViewMatrixPointer();
+
 	private:
 		glm::mat4 m_ProjectionMatrix{};
 		glm::mat4 m_ViewMatrix{};

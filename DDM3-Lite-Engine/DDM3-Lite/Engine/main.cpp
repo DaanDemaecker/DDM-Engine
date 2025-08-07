@@ -29,7 +29,7 @@ int main()
 	// Create the engine object and run it with the load function
 	DDM3::DDM3Engine engine{};
 
-	int activeRenderer{ activeRendererGTAO };
+	int activeRenderer{ activeRendererSSAO };
 
 	switch (activeRenderer)
 	{

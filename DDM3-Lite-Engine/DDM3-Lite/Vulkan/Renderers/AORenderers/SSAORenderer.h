@@ -104,6 +104,8 @@ namespace DDM3
 		std::unique_ptr<UboDescriptorObject<glm::mat4>> m_pProjectionMatrixDescObject{};
 		
 
+		// View matrix
+		std::unique_ptr<UboDescriptorObject<glm::mat4>> m_pViewMatrixDescObject{};
 
 
 		// Everything needed for AOBlur Descriptorsets
@@ -142,7 +144,7 @@ namespace DDM3
 
 		void GetRandomVector(glm::vec4& vec, int index);
 		
-		void SetupProjectionMatrix();
+		void SetupProjectionViewMatrix();
 
 
 
