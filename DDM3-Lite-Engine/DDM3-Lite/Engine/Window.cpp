@@ -143,6 +143,8 @@ void DDM3::Window::FramebufferResizeCallback(GLFWwindow* pWindow, int width, int
 	window.pWindow = pWindow;
 	window.Width = width;
 	window.Height = height;
+
+	std::cout << "Window resized, X: " << width << " Y: " << height << std::endl;
 }
 
 void DDM3::Window::MaximizeWindowCallback(GLFWwindow* /*pWindow*/, int /*maximized*/)
