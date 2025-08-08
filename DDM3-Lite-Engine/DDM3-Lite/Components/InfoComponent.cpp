@@ -11,6 +11,9 @@
 
 // Standard library includes
 #include <bitset>
+#include <windows.h>
+#include <psapi.h>
+#include <iostream>
 
 DDM3::InfoComponent::InfoComponent()
 	:Component()
@@ -67,6 +70,7 @@ void DDM3::InfoComponent::OnGUI()
 	{
 		ImGui::Text(m_DeltaTimeLabel.c_str());
 		ImGui::Text(m_VRamLabel.c_str());
+		ImGui::Text(m_MemoryLabel.c_str());
 
 		if (ImGui::Button("Start measurement"))
 		{
@@ -93,6 +97,7 @@ void DDM3::InfoComponent::QueryStats()
 
 	m_VRamLabel = std::string("VRAM usage: " + std::to_string(GetVRAMUsage()) + " MB");
 
+	m_MemoryLabel = std::string("Memory usage: " + std::to_string(GetMemoryUsage()) + " MB");
 }
 
 int DDM3::InfoComponent::GetVRAMUsage()
@@ -102,6 +107,19 @@ int DDM3::InfoComponent::GetVRAMUsage()
 	m_DxgiAdapter->QueryVideoMemoryInfo(0, DXGI_MEMORY_SEGMENT_GROUP_LOCAL, &info);
 
 	return info.CurrentUsage / 1024 / 1024;
+}
+
+int DDM3::InfoComponent::GetMemoryUsage()
+{
+	PROCESS_MEMORY_COUNTERS_EX pmc;
+	if (GetProcessMemoryInfo(GetCurrentProcess(), (PROCESS_MEMORY_COUNTERS*)&pmc, sizeof(pmc)))
+	{
+		SIZE_T memUsedBytes = pmc.PrivateUsage;
+		double memUsedMB = memUsedBytes / (1024.0 * 1024.0);
+		return memUsedMB;
+	}
+
+	return 0;
 }
 
 void DDM3::InfoComponent::StartMeasurement()

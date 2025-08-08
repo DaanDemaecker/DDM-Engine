@@ -33,6 +33,7 @@ namespace DDM3
 	private:
 		std::string m_DeltaTimeLabel{ "" };
 		std::string m_VRamLabel{ "" };
+		std::string m_MemoryLabel{ "" };
 
 		IDXGIAdapter3* m_DxgiAdapter{ nullptr };
 	
@@ -43,6 +44,8 @@ namespace DDM3
 		void QueryStats();
 
 		int GetVRAMUsage();
+
+		int GetMemoryUsage();
 
 		// Measurement variables and methods
 		const int m_SampleSize{200};
