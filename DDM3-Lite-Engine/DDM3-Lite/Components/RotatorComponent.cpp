@@ -6,7 +6,7 @@
 
 void DDM3::RotatorComponent::Update()
 {
-	constexpr float rotSpeed{ glm::radians(50.f) };
+	float rotSpeed{ glm::radians(m_RotationSpeed) };
 
 	float rotAmount{ rotSpeed * TimeManager::GetInstance().GetDeltaTime() };
 

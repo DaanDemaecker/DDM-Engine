@@ -10,6 +10,11 @@ namespace DDM3
 	public:
 		RotatorComponent() = default;
 		virtual void Update() override;
+
+		void SetRotSpeed(float newSpeed) { m_RotationSpeed = newSpeed; }
+
+	private:
+		float m_RotationSpeed{ 50.0f }; // Rotation speed in degrees per second
 	};
 
 }

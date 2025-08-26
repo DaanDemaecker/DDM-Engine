@@ -11,8 +11,8 @@
 
 // Standard library includes
 #include <bitset>
+#include "Psapi.h"
 #include <windows.h>
-#include <psapi.h>
 #include <iostream>
 
 DDM3::InfoComponent::InfoComponent()

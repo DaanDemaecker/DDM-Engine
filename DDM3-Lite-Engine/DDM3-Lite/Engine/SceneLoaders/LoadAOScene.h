@@ -43,6 +43,10 @@ namespace LoadAOScene
 
 	void SetupLight(DDM3::Scene* scene);
 
+	void SetupGroundPlane(DDM3::Scene* scene);
+
+	void SetupGear(DDM3::Scene* scene);
+
 	void LoadScene()
 	{
 		auto scene = DDM3::SceneManager::GetInstance().CreateScene("Test");
@@ -55,6 +59,10 @@ namespace LoadAOScene
 		//SetupRoom(scene.get());
 
 		//SetupVehicle(scene.get());
+
+		//SetupGear(scene.get());
+
+		//SetupGroundPlane(scene.get());
 
 		SetupInfoComponent(scene.get());
 
@@ -177,6 +185,13 @@ namespace LoadAOScene
 
 	void SetupVehicle(DDM3::Scene* scene)
 	{
+		auto switchManager = scene->GetSceneRoot()->CreateNewObject("Material switch manager");
+		switchManager->SetShowImGui(true);
+
+		auto switchManagerComponent = switchManager->AddComponent<DDM3::MaterialSwitchManager>();
+		switchManagerComponent->RegisterKey("Diffuse");
+		switchManagerComponent->RegisterKey("Default");
+
 		auto texturedMaterial = std::make_shared<DDM3::TexturedMaterial>("DeferredDiffuse");
 		
 		texturedMaterial->AddTexture("resources/images/vehicle_diffuse.png");
@@ -187,12 +202,20 @@ namespace LoadAOScene
 		auto pVehicleModel{ pVehicle->GetComponent<DDM3::MeshRenderComponent>() };
 		pVehicleModel->SetMaterial(texturedMaterial);
 		
+
+		auto defaultMaterial = std::make_shared<DDM3::Material>();
 		
 		auto pVehicleTransform{ pVehicle->GetTransform() };
 		pVehicleTransform->SetShowImGui(true);
 		pVehicleTransform->SetLocalPosition(3, 3, 0);
 		pVehicleTransform->SetLocalRotation(0.f, glm::radians(75.0f), 0.f);
-		pVehicleTransform->SetLocalScale(0.05f, 0.05f, 0.05f);
+		pVehicleTransform->SetLocalScale(0.5f, 0.5f, 0.5f);
+
+		auto pMaterialSwitcher = pVehicle->AddComponent<DDM3::MaterialSwitcher>();
+		pMaterialSwitcher->RegisterMaterial("Diffuse", texturedMaterial);
+		pMaterialSwitcher->RegisterMaterial("Default", defaultMaterial);
+
+		switchManagerComponent->RegisterMaterialSwitcher(pMaterialSwitcher);
 	}
 
 	void SetupInfoComponent(DDM3::Scene* scene)
@@ -244,5 +267,51 @@ namespace LoadAOScene
 		//pLight->AddComponent<D3D::RotatorComponent>();
 
 		scene->SetLight(pLightComponent);
+	}
+
+	void SetupGroundPlane(DDM3::Scene* scene)
+	{
+		std::shared_ptr<DDM3::Material> pFloorMaterial{ std::make_shared<DDM3::Material>() };
+
+
+		//std::shared_ptr<D3D::TexturedMaterial> pFloorMaterial{
+		//	std::make_shared<D3D::TexturedMaterial>(std::initializer_list<const std::string>{"resources/images/GroundPlane.png"}, "DiffuseUnshaded") };
+
+
+		auto pGroundPlane{ scene->CreateGameObject("Ground Plane") };
+		pGroundPlane->SetShowImGui(true);
+
+		auto pGroundplaneMesh{ DDM3::ResourceManager::GetInstance().LoadMesh("Resources/Models/Plane.obj") };
+
+		auto pGroundPlaneModel{ pGroundPlane->AddComponent<DDM3::MeshRenderComponent>() };
+		pGroundPlaneModel->SetShowImGui(true);
+		pGroundPlaneModel->SetMesh(pGroundplaneMesh);
+		pGroundPlaneModel->SetMaterial(pFloorMaterial);
+	}
+
+	void SetupGear(DDM3::Scene* scene)
+	{
+		std::shared_ptr<DDM3::Material> pGearMaterial{ std::make_shared<DDM3::Material>() };
+
+
+		//std::shared_ptr<D3D::TexturedMaterial> pFloorMaterial{
+		//	std::make_shared<D3D::TexturedMaterial>(std::initializer_list<const std::string>{"resources/images/GroundPlane.png"}, "DiffuseUnshaded") };
+
+
+		auto pGear{ scene->CreateGameObject("Gear") };
+		pGear->SetShowImGui(true);
+
+		auto rotator = pGear->AddComponent<DDM3::RotatorComponent>();
+		rotator->SetRotSpeed(10.0f);
+
+		auto pGearMesh{ DDM3::ResourceManager::GetInstance().LoadMesh("Resources/Models/Gear.obj") };
+
+		auto pGearModel{ pGear->AddComponent<DDM3::MeshRenderComponent>() };
+		pGearModel->SetShowImGui(true);
+		pGearModel->SetMesh(pGearMesh);
+		pGearModel->SetMaterial(pGearMaterial);
+
+		auto pGearTransform{ pGear->GetTransform() };
+		pGearTransform->SetShowImGui(true);
 	}
 }

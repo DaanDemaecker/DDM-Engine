@@ -48,20 +48,20 @@ void CalculateOutValue()
 
    float angle = 2*pi/directions;
 
-   float ao = 0;
+   float occlusion = 0;
 
    for(int i = 0; i < directions; ++i)
    {
         vec2 direction = normalize(vec2(cos(angle * i), sin(angle * i)));       
 
-        ao += ComputeAO(fragPos, normal, direction, scaledStep);
+        occlusion += ComputeAO(fragPos, normal, direction, scaledStep);
    }
 
-   ao /= directions;
+   occlusion /= directions;
 
-   ao = clamp(ao, 0, 1);
+   occlusion = clamp(occlusion, 0, 1);
 
-   outValue = 1 - ao;
+   outValue = 1 - occlusion;
 }
 
 
@@ -72,7 +72,7 @@ float ComputeAO(vec3 fragPos, vec3 normal, vec2 direction, vec2 stepSize)
     vec3 tangent = normalize(cross(leftDirection, normal));
 
     // Tangent angle to bias the dome upward
-    float tangentAngle = atan(-tangent.z, length(tangent.xy)); // + bias;
+    float tangentAngle = atan(-tangent.z, length(tangent.xy));
     float sinTangentAngle = sin(tangentAngle);
 
     float highestValue = -inf;

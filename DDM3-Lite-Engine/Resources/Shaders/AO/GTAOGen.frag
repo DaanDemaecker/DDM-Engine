@@ -15,7 +15,7 @@ void CalculateOutValue();
 vec2 CalculateHorizonAngles(vec3 fragPos, vec3 viewDirection, vec2 testDirection, vec2 stepsize);
 
 
-const int directions = 8; // Number of directions to test
+const int directions = 4; // Number of directions to test
 const int samples = 8; // Number of samples per direction
 const float pi = 3.14159265358979323846; // Pi constant
 const float inf = 1/0; // Constant representing infinity
@@ -37,12 +37,11 @@ void main()
 
 void CalculateOutValue()
 {
+    // Calculate necessary inputs
     vec3 position = texture(inPos, fragUV).xyz;
-
     vec3 viewDirection = normalize(-position);
     vec3 normal = -normalize(subpassLoad(inNormal).xyz);
-
-    float gamma = acos(clamp(dot(viewDirection, normal), -1.0, 1.0));
+    float gamma = acos(dot(viewDirection, normal));
 
 
     // Get the screen size and use it to calculate stepsize in UV space per sample
@@ -52,7 +51,7 @@ void CalculateOutValue()
 
    float angle = pi/directions;
 
-   float ao = 0;
+   float occlusion = 0;
 
    for(int i = 0; i < directions; ++i)
    {
@@ -63,12 +62,12 @@ void CalculateOutValue()
         float a = 0.25 * (-cos(2.0 * horizonAngles.x - gamma) + cos(gamma) + 2.0 * horizonAngles.x * sin(gamma))
                 + 0.25 * (-cos(2.0 * horizonAngles.y - gamma) + cos(gamma) + 2.0 * horizonAngles.y * sin(gamma));
 
-        ao += a;
+        occlusion += a;
    }
 
-   ao = (1/pi) * (ao/float(directions));
+   occlusion = (1/pi) * (occlusion/float(directions));
 
-   outValue = 1 - clamp(ao, 0.0, 1.0);
+   outValue = 1 - occlusion;
 
 }
 

@@ -51,25 +51,29 @@ void CalculateOutValue()
     vec3 randomVec = normalize(texture(noiseTexture, fragUV).xyz);
 
     // Create TBN change-of-basis matrix: from tangent-space to view-space
-    vec3 tangent = normalize(randomVec - normal * dot(randomVec, normal));
 
+    vec3 tangent = normalize(randomVec - normal * dot(randomVec, normal));
     vec3 biTangent = cross(normal, tangent);
     mat3 TBN = mat3(tangent, biTangent, normal);
 
     // iterate over the samples and calculate occlusion factor
     float occlusion = 0.0;
+
     for(int i = 0; i < sampleAmount; ++i)
     {
+      // The sampled vector in viewspace
       vec3 sampleVec = TBN * sampleList.samples[i].xyz;
 
+      // Move sampled vec to the correct position and scale to the radius of the testing dome
       sampleVec = pos + sampleVec * radius;
 
+      // Get sample position in screen space
       vec4 offset = vec4(sampleVec, 1.0);
       offset = projectionMatrix.projection * offset;
       offset.xyz /= offset.w;
       offset.xyz = offset.xyz * 0.5 + 0.5;
 
-      vec3 occluderPos = texture(inPos, offset.xy).rgb;
+      vec3 occluderPos = texture(inPos, offset.xy).xyz;
 
       float rangeCheck = smoothstep(0.0, 1.0, radius/length(pos - occluderPos));
 

@@ -355,46 +355,6 @@ void DDM3::SSAORenderer::SetupAttachments()
 
 	albedoAttachment->SetAttachmentDesc(albedoAttachmentDesc);
 
-	// normal attachment
-	auto normalAttachment = std::make_unique<Attachment>(swapchainImageAmount);
-	normalAttachment->SetFormat(colorAttachmentFormat);
-	normalAttachment->SetAttachmentType(Attachment::kAttachmentType_Color);
-	normalAttachment->SetIsInput(true);
-
-
-	VkAttachmentDescription normalAttachmentDesc{};
-	normalAttachmentDesc.flags = 0;
-	normalAttachmentDesc.format = colorAttachmentFormat;
-	normalAttachmentDesc.samples = VK_SAMPLE_COUNT_1_BIT;
-	normalAttachmentDesc.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-	normalAttachmentDesc.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	normalAttachmentDesc.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-	normalAttachmentDesc.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	normalAttachmentDesc.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	normalAttachmentDesc.finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-
-	normalAttachment->SetAttachmentDesc(normalAttachmentDesc);
-
-	// posiition attachment
-	auto positionAttachment = std::make_unique<Attachment>(swapchainImageAmount);
-	positionAttachment->SetFormat(colorAttachmentFormat);
-	positionAttachment->SetAttachmentType(Attachment::kAttachmentType_Color);
-	positionAttachment->SetIsInput(true);
-
-
-	VkAttachmentDescription positionAttachmentDesc{};
-	positionAttachmentDesc.flags = 0;
-	positionAttachmentDesc.format = colorAttachmentFormat;
-	positionAttachmentDesc.samples = VK_SAMPLE_COUNT_1_BIT;
-	positionAttachmentDesc.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-	positionAttachmentDesc.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	positionAttachmentDesc.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-	positionAttachmentDesc.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	positionAttachmentDesc.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	positionAttachmentDesc.finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-
-	positionAttachment->SetAttachmentDesc(positionAttachmentDesc);
-
 	// viewspace normal attachment
 	auto viewNormalAttachment = std::make_unique<Attachment>(swapchainImageAmount);
 	viewNormalAttachment->SetFormat(colorAttachmentFormat);
@@ -481,8 +441,6 @@ void DDM3::SSAORenderer::SetupAttachments()
 	m_pRenderpass->AddAttachment(std::move(backBufferAttachment));
 	m_pRenderpass->AddAttachment(std::move(depthAttachment));
 	m_pRenderpass->AddAttachment(std::move(albedoAttachment));
-	m_pRenderpass->AddAttachment(std::move(normalAttachment));
-	m_pRenderpass->AddAttachment(std::move(positionAttachment));
 	m_pRenderpass->AddAttachment(std::move(viewNormalAttachment));
 	m_pRenderpass->AddAttachment(std::move(viewPositionAttachment));
 	m_pRenderpass->AddAttachment(std::move(aoMapAttachment));
