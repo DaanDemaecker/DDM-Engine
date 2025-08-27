@@ -9,10 +9,10 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 cmake_policy(SET CMP0079 NEW)
 
-set(SOURCE_FOLDER_NAME "DDM3-Lite")
+set(SOURCE_FOLDER_NAME "DDM")
 
 
-set(EXECUTABLE_NAME "DDM3-Lite-Engine")
+set(EXECUTABLE_NAME "DDM-Engine")
 
 
 # Copy resources after Shaders
