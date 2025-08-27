@@ -97,8 +97,6 @@ void DDM::DDMEngine::Run(const std::function<void()>& load)
 
 		sceneManager.Cleanup();
 
-		sceneManager.PrepareRender();
-
 		renderer.Render();
 
 		if (input.GetKeyUp(GLFW_KEY_SPACE))

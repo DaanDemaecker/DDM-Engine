@@ -86,8 +86,6 @@ namespace DDM
 		// OnGui function
 		void OnGui();
 
-		void PrepareRender();
-
 		// Render the skybox
 		void RenderSkybox();
 

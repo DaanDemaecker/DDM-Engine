@@ -71,11 +71,6 @@ void DDM::Scene::PostUpdate()
 	m_pSceneRoot->PostUpdate();
 }
 
-void DDM::Scene::PrepareRender()
-{
-	m_pSceneRoot->PrepareRender();
-}
-
 void DDM::Scene::RenderSkyBox()
 {
 	if (m_pActiveCamera != nullptr)

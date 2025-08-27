@@ -44,8 +44,6 @@ namespace DDM
 
 		void PostUpdate();
 
-		void PrepareRender();
-
 		void RenderDepth() const;
 
 		void Render() const;

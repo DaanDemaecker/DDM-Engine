@@ -179,14 +179,6 @@ void DDM::SceneManager::OnGui()
     }
 }
 
-void DDM::SceneManager::PrepareRender()
-{
-    if (m_ActiveScene != nullptr)
-    {
-        m_ActiveScene->PrepareRender();
-    }
-}
-
 void DDM::SceneManager::RenderSkybox()
 {
     if (m_ActiveScene != nullptr)

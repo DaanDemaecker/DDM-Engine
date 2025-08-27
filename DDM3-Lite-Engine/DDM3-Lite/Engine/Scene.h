@@ -40,8 +40,6 @@ namespace DDM
 
 		void PostUpdate();
 
-		void PrepareRender();
-
 		void RenderSkyBox();
 
 		void RenderDepth() const;

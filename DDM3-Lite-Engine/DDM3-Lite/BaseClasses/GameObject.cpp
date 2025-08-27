@@ -205,22 +205,6 @@ void DDM::GameObject::PostUpdate()
 	}
 }
 
-void DDM::GameObject::PrepareRender()
-{
-	for (auto& component : m_pComponents)
-	{
-		component->PrepareRender();
-	}
-
-	for (auto& pChild : m_pChildren)
-	{
-		if (pChild->m_IsActive)
-		{
-			pChild->PrepareRender();
-		}
-	}
-}
-
 void DDM::GameObject::RenderDepth() const
 {
 	for (auto& component : m_pComponents)
