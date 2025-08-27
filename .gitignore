@@ -7,24 +7,24 @@
 *.sln.docstates
 
 # Build results
-DDM3-Lite-Engine/[Dd]ebug/
-DDM3-Lite-Engine/[Dd]ebugPublic/
-DDM3-Lite-Engine/[Rr]elease/
-DDM3-Lite-Engine/[Rr]eleases/
-DDM3-Lite-Engine/x64/
-DDM3-Lite-Engine/build/
-DDM3-Lite-Engine/bld/
-DDM3-Lite-Engine/.vs
+DDM-Engine/[Dd]ebug/
+DDM-Engine/[Dd]ebugPublic/
+DDM-Engine/[Rr]elease/
+DDM-Engine/[Rr]eleases/
+DDM-Engine/x64/
+DDM-Engine/build/
+DDM-Engine/bld/
+DDM-Engine/.vs
 [Bb]in/
 [Oo]bj/
 *.exe
-DDM3-Lite-Engine/out/
+DDM-Engine/out/
 
-DDM3-Lite-Engine/.vs/
+DDM-Engine/.vs/
 
-DDM3-Lite-Engine/3rdParty/Vulkan/Win32/shaderc_combined.lib
-DDM3-Lite-Engine/3rdParty/Vulkan/Win32/shaderc_combinedd.lib
-DDM3-Lite-Engine/3rdParty/Vulkan/x64/shaderc_combined.lib
-DDM3-Lite-Engine/3rdParty/Vulkan/x64/shaderc_combinedd.lib
+DDM-Engine/3rdParty/Vulkan/Win32/shaderc_combined.lib
+DDM-Engine/3rdParty/Vulkan/Win32/shaderc_combinedd.lib
+DDM-Engine/3rdParty/Vulkan/x64/shaderc_combined.lib
+DDM-Engine/3rdParty/Vulkan/x64/shaderc_combinedd.lib
 
 *d.lib
