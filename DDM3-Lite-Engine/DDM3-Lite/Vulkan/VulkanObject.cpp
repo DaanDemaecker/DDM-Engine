@@ -4,7 +4,7 @@
 #include "VulkanObject.h"
 
 // File includes
-#include "Engine/DDM3Engine.h"
+#include "Engine/DDMEngine.h"
 #include "Engine/Window.h"
 #include "Managers/SceneManager.h"
 #include "Managers/ConfigManager.h"

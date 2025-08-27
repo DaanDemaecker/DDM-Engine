@@ -1,5 +1,5 @@
 // File includes
-#include "DDM3Engine.h"
+#include "DDMEngine.h"
 
 #include "SceneLoaders/LoadModelLoaderScene.h"
 #include "SceneLoaders/LoadTestScene.h"
@@ -27,7 +27,7 @@ int main()
 	srand(time(NULL));
 
 	// Create the engine object and run it with the load function
-	DDM::DDM3Engine engine{};
+	DDM::DDMEngine engine{};
 
 	int activeRenderer{ activeRendererSSAO };
 

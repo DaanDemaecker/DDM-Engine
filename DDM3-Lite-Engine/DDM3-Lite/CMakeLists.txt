@@ -14,7 +14,7 @@ add_executable(${EXECUTABLE_NAME}
 "DataTypes/Materials/Material.cpp"
 "DataTypes/Materials/TexturedMaterial.cpp"
 "DataTypes/Mesh.cpp"
-"Engine/DDM3Engine.cpp"
+"Engine/DDMEngine.cpp"
 "Engine/main.cpp"
 "Engine/Scene.cpp"
 "Engine/Window.cpp"

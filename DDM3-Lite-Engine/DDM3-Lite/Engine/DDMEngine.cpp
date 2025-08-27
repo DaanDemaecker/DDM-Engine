@@ -1,7 +1,7 @@
 // D3DEngine.cpp
 
 // Header include
-#include "DDM3Engine.h"
+#include "DDMEngine.h"
 
 // File includes
 #include "Scene.h"
@@ -21,17 +21,17 @@
 #include <chrono>
 #include <thread>
 
-DDM::DDM3Engine::DDM3Engine()
+DDM::DDMEngine::DDMEngine()
 {
 }
 
-DDM::DDM3Engine::~DDM3Engine()
+DDM::DDMEngine::~DDMEngine()
 {
 	VulkanObject::GetInstance().Terminate();
 
 }
 
-void DDM::DDM3Engine::Run(const std::function<void()>& load)
+void DDM::DDMEngine::Run(const std::function<void()>& load)
 {
 	if (!m_Initialized)
 	{
