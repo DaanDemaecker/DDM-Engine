@@ -7,7 +7,7 @@
 
 #include "../../Includes/STBIncludes.h"
 
-DDM3::TexturedMaterial::TexturedMaterial(std::initializer_list<const std::string>&& filePaths, const std::string& pipelineName)
+DDM::TexturedMaterial::TexturedMaterial(std::initializer_list<const std::string>&& filePaths, const std::string& pipelineName)
 	:Material(pipelineName)
 {
 	m_pDescriptorObjects.resize(filePaths.size());
@@ -15,7 +15,7 @@ DDM3::TexturedMaterial::TexturedMaterial(std::initializer_list<const std::string
 	int index = 0;
 	for (const auto& filePath : filePaths)
 	{
-		m_pDescriptorObjects[index] = std::make_unique<DDM3::TextureDescriptorObject>();
+		m_pDescriptorObjects[index] = std::make_unique<DDM::TextureDescriptorObject>();
 		m_pDescriptorObjects[index]->AddTexture(filePath);
 		++index;
 	}
@@ -23,33 +23,33 @@ DDM3::TexturedMaterial::TexturedMaterial(std::initializer_list<const std::string
 	m_ShouldUpdateDescriptorSets = true;
 }
 
-DDM3::TexturedMaterial::TexturedMaterial(const std::string& pipelineName)
+DDM::TexturedMaterial::TexturedMaterial(const std::string& pipelineName)
 	:Material(pipelineName)
 {
 }
 
-DDM3::TexturedMaterial::TexturedMaterial(const std::string&& pipelineName)
+DDM::TexturedMaterial::TexturedMaterial(const std::string&& pipelineName)
 	:TexturedMaterial(pipelineName)
 {
 }
 
 
-void DDM3::TexturedMaterial::AddTexture(std::string& path)
+void DDM::TexturedMaterial::AddTexture(std::string& path)
 {
-	auto descriptorObject = std::make_unique<DDM3::TextureDescriptorObject>();
+	auto descriptorObject = std::make_unique<DDM::TextureDescriptorObject>();
 	descriptorObject->AddTexture(path);
 	m_pDescriptorObjects.push_back(std::move(descriptorObject));
 
 	m_ShouldUpdateDescriptorSets = true;
 }
 
-void DDM3::TexturedMaterial::AddTexture(std::string&& path)
+void DDM::TexturedMaterial::AddTexture(std::string&& path)
 {
 	// Pass function on
 	AddTexture(path);
 }
 
-void DDM3::TexturedMaterial::UpdateDescriptorSets(std::vector<VkDescriptorSet>& descriptorSets, std::vector<DescriptorObject*>& descriptorObjects)
+void DDM::TexturedMaterial::UpdateDescriptorSets(std::vector<VkDescriptorSet>& descriptorSets, std::vector<DescriptorObject*>& descriptorObjects)
 {
 	// Get pointer to the descriptorpool wrapper
 	auto descriptorPool = GetDescriptorPool();

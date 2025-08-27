@@ -3,22 +3,22 @@
 #include "TransformComponent.h"
 #include "Engine/Window.h"
 
-DDM3::CameraComponent::CameraComponent()
+DDM::CameraComponent::CameraComponent()
 {
 	m_FovAngle = glm::radians(m_DefaultAngleDegrees);
 }
 
-void DDM3::CameraComponent::SetFovAngleDegrees(float angle)
+void DDM::CameraComponent::SetFovAngleDegrees(float angle)
 {
 	m_FovAngle = glm::radians(angle);
 }
 
-void DDM3::CameraComponent::LateUpdate()
+void DDM::CameraComponent::LateUpdate()
 {
 	UpdateViewMatrix();
 }
 
-void DDM3::CameraComponent::UpdateUniformBuffer(UniformBufferObject& buffer, VkExtent2D extent)
+void DDM::CameraComponent::UpdateUniformBuffer(UniformBufferObject& buffer, VkExtent2D extent)
 {
 	// Set buffer view matrix
 	buffer.view = m_ViewMatrix;
@@ -42,11 +42,11 @@ void DDM3::CameraComponent::UpdateUniformBuffer(UniformBufferObject& buffer, VkE
 	keyPressedLastFrame = keyPressed;
 }
 
-void DDM3::CameraComponent::RenderSkybox()
+void DDM::CameraComponent::RenderSkybox()
 {
 	if (m_pSkyBox == nullptr)
 	{
-		m_pSkyBox = GetComponent<DDM3::SkyBoxComponent>();
+		m_pSkyBox = GetComponent<DDM::SkyBoxComponent>();
 	}
 
 	if (m_pSkyBox != nullptr)
@@ -55,27 +55,27 @@ void DDM3::CameraComponent::RenderSkybox()
 	}
 }
 
-glm::mat4& DDM3::CameraComponent::GetProjectionMatrix()
+glm::mat4& DDM::CameraComponent::GetProjectionMatrix()
 {
 	return m_ProjectionMatrix;
 }
 
-glm::mat4* DDM3::CameraComponent::GetProjectionMatrixPointer()
+glm::mat4* DDM::CameraComponent::GetProjectionMatrixPointer()
 {
 	return &m_ProjectionMatrix;
 }
 
-glm::mat4& DDM3::CameraComponent::GetViewMatrix()
+glm::mat4& DDM::CameraComponent::GetViewMatrix()
 {
 	return m_ViewMatrix;
 }
 
-glm::mat4* DDM3::CameraComponent::GetViewMatrixPointer()
+glm::mat4* DDM::CameraComponent::GetViewMatrixPointer()
 {
 	return &m_ViewMatrix;
 }
 
-void DDM3::CameraComponent::UpdateViewMatrix()
+void DDM::CameraComponent::UpdateViewMatrix()
 {
 	auto transform = GetTransform();
 
@@ -89,7 +89,7 @@ void DDM3::CameraComponent::UpdateViewMatrix()
 	m_ViewMatrix = rotationMatrix * translationMatrix;
 }
 
-void DDM3::CameraComponent::UpdateProjectionMatrix()
+void DDM::CameraComponent::UpdateProjectionMatrix()
 {
 	auto& windowStruct = Window::GetInstance().GetWindowStruct();
 
@@ -106,7 +106,7 @@ void DDM3::CameraComponent::UpdateProjectionMatrix()
 	m_ProjectionMatrix[2][3] *= -1;
 }
 
-void DDM3::CameraComponent::PrintTransform()
+void DDM::CameraComponent::PrintTransform()
 {
 	auto transform = GetTransform();
 

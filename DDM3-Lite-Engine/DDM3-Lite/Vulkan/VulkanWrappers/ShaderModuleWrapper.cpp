@@ -7,7 +7,7 @@
 // Standard library includes
 #include <stdexcept>
 
-DDM3::ShaderModuleWrapper::ShaderModuleWrapper(VkDevice device, const std::string& filePath)
+DDM::ShaderModuleWrapper::ShaderModuleWrapper(VkDevice device, const std::string& filePath)
 {
 	// Read the file into the shader code
 	m_ShaderCode = Utils::readFile(filePath);
@@ -25,7 +25,7 @@ DDM3::ShaderModuleWrapper::ShaderModuleWrapper(VkDevice device, const std::strin
 	ReadOutputVariables();
 }
 
-void DDM3::ShaderModuleWrapper::Cleanup(VkDevice device)
+void DDM::ShaderModuleWrapper::Cleanup(VkDevice device)
 {
 	// Destroy the reflected shadermodule
 	spvReflectDestroyShaderModule(&m_ReflectShaderModule);
@@ -33,7 +33,7 @@ void DDM3::ShaderModuleWrapper::Cleanup(VkDevice device)
 	vkDestroyShaderModule(device, m_ShaderModule, nullptr);
 }
 
-void DDM3::ShaderModuleWrapper::AddDescriptorSetLayoutBindings(std::vector<VkDescriptorSetLayoutBinding>& bindings, uint32_t& bindingIndex)
+void DDM::ShaderModuleWrapper::AddDescriptorSetLayoutBindings(std::vector<VkDescriptorSetLayoutBinding>& bindings, uint32_t& bindingIndex)
 {
 	// Read the shader stage from the shader module
 	auto stage{ static_cast<VkShaderStageFlagBits>(m_ReflectShaderModule.shader_stage) };
@@ -71,7 +71,7 @@ void DDM3::ShaderModuleWrapper::AddDescriptorSetLayoutBindings(std::vector<VkDes
 	}
 }
 
-void DDM3::ShaderModuleWrapper::AddDescriptorInfo(std::map<VkDescriptorType, int>& typeCount, std::map<int, int>& descriptorsPerBinding)
+void DDM::ShaderModuleWrapper::AddDescriptorInfo(std::map<VkDescriptorType, int>& typeCount, std::map<int, int>& descriptorsPerBinding)
 {
 	// Get the amount of descriptor bindings
 	auto amount{ m_ReflectShaderModule.descriptor_binding_count };
@@ -105,7 +105,7 @@ void DDM3::ShaderModuleWrapper::AddDescriptorInfo(std::map<VkDescriptorType, int
 	}
 }
 
-void DDM3::ShaderModuleWrapper::AddPushConstantRanges(std::vector<VkPushConstantRange>& pushConstantRanges)
+void DDM::ShaderModuleWrapper::AddPushConstantRanges(std::vector<VkPushConstantRange>& pushConstantRanges)
 {
 	auto index = pushConstantRanges.size();
 	auto ranges = m_ReflectShaderModule.push_constant_blocks;
@@ -123,7 +123,7 @@ void DDM3::ShaderModuleWrapper::AddPushConstantRanges(std::vector<VkPushConstant
 	}
 }
 
-bool DDM3::ShaderModuleWrapper::ShouldEnableBlend(int index) const
+bool DDM::ShaderModuleWrapper::ShouldEnableBlend(int index) const
 {
 	if (index < m_OutputVariables.size())
 	{
@@ -141,7 +141,7 @@ bool DDM3::ShaderModuleWrapper::ShouldEnableBlend(int index) const
 	return true;
 }
 
-void DDM3::ShaderModuleWrapper::CreateShaderModule(VkDevice device)
+void DDM::ShaderModuleWrapper::CreateShaderModule(VkDevice device)
 {
 	// Create modlue create info
 	VkShaderModuleCreateInfo createInfo{};
@@ -160,7 +160,7 @@ void DDM3::ShaderModuleWrapper::CreateShaderModule(VkDevice device)
 	}
 }
 
-void DDM3::ShaderModuleWrapper::ReflectShader()
+void DDM::ShaderModuleWrapper::ReflectShader()
 {
 	// Create the reflect shader module
 	SpvReflectResult result = spvReflectCreateShaderModule(m_ShaderCode.size() * sizeof(char), m_ShaderCode.data(), &m_ReflectShaderModule);
@@ -172,7 +172,7 @@ void DDM3::ShaderModuleWrapper::ReflectShader()
 	}
 }
 
-void DDM3::ShaderModuleWrapper::CreateShaderStageInfo()
+void DDM::ShaderModuleWrapper::CreateShaderStageInfo()
 {
 	// Set type to pipeline shader stage create info
 	m_ShaderstageCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
@@ -185,7 +185,7 @@ void DDM3::ShaderModuleWrapper::CreateShaderStageInfo()
 	m_ShaderstageCreateInfo.pName = m_ReflectShaderModule.entry_point_name;
 }
 
-void DDM3::ShaderModuleWrapper::ReadOutputVariables()
+void DDM::ShaderModuleWrapper::ReadOutputVariables()
 {
 	uint32_t outputAmount{};
 

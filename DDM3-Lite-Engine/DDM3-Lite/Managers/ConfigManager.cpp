@@ -8,13 +8,13 @@
 #include <stdexcept>
 #include <vector>
 
-DDM3::ConfigManager::ConfigManager()
+DDM::ConfigManager::ConfigManager()
 {
 	// Read the config file
 	ReadFile();
 }
 
-std::string DDM3::ConfigManager::GetString(const std::string& propertyName)
+std::string DDM::ConfigManager::GetString(const std::string& propertyName)
 {
 	// Check if file contains property, if not, return default string
 	if (m_JsonFile.HasMember(propertyName.c_str()) && m_JsonFile[propertyName.c_str()].IsString())
@@ -26,12 +26,12 @@ std::string DDM3::ConfigManager::GetString(const std::string& propertyName)
 	return m_DefaultString;
 }
 
-std::string DDM3::ConfigManager::GetString(const std::string&& propertyName)
+std::string DDM::ConfigManager::GetString(const std::string&& propertyName)
 {
 	return GetString(propertyName);
 }
 
-int DDM3::ConfigManager::GetInt(const std::string& propertyName)
+int DDM::ConfigManager::GetInt(const std::string& propertyName)
 {
 
 	// Check if file contains property, if not, return 0
@@ -45,12 +45,12 @@ int DDM3::ConfigManager::GetInt(const std::string& propertyName)
 	return 0;
 }
 
-int DDM3::ConfigManager::GetInt(const std::string&& propertyName)
+int DDM::ConfigManager::GetInt(const std::string&& propertyName)
 {
 	return GetInt(propertyName);
 }
 
-bool DDM3::ConfigManager::GetBool(const std::string& propertyName)
+bool DDM::ConfigManager::GetBool(const std::string& propertyName)
 {
 	// Check if file contains property, if not, return false
 	if (m_JsonFile.HasMember(propertyName.c_str()) && m_JsonFile[propertyName.c_str()].IsBool())
@@ -62,12 +62,12 @@ bool DDM3::ConfigManager::GetBool(const std::string& propertyName)
 	return false;
 }
 
-bool DDM3::ConfigManager::GetBool(const std::string&& propertyName)
+bool DDM::ConfigManager::GetBool(const std::string&& propertyName)
 {
 	return GetBool(propertyName);
 }
 
-float DDM3::ConfigManager::GetFloat(const std::string& propertyName)
+float DDM::ConfigManager::GetFloat(const std::string& propertyName)
 {
 	// Check if file contains property, if not, return 0
 	if (m_JsonFile.HasMember(propertyName.c_str()) && m_JsonFile[propertyName.c_str()].IsFloat())
@@ -79,12 +79,12 @@ float DDM3::ConfigManager::GetFloat(const std::string& propertyName)
 	return 0;
 }
 
-float DDM3::ConfigManager::GetFloat(const std::string&& propertyName)
+float DDM::ConfigManager::GetFloat(const std::string&& propertyName)
 {
 	return GetFloat(propertyName);
 }
 
-void DDM3::ConfigManager::ReadFile()
+void DDM::ConfigManager::ReadFile()
 {
 	FILE* pFile{};
 

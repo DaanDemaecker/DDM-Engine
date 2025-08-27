@@ -22,7 +22,7 @@
 
 #include "Engine/Window.h"
 
-DDM3::ForwardRenderer::ForwardRenderer()
+DDM::ForwardRenderer::ForwardRenderer()
 {
 	auto surface{ VulkanObject::GetInstance().GetSurface() };
 
@@ -48,13 +48,13 @@ DDM3::ForwardRenderer::ForwardRenderer()
 	InitImgui();
 }
 
-DDM3::ForwardRenderer::~ForwardRenderer()
+DDM::ForwardRenderer::~ForwardRenderer()
 {
 }
 
-void DDM3::ForwardRenderer::Render()
+void DDM::ForwardRenderer::Render()
 {
-	auto& vulkanObject{ DDM3::VulkanObject::GetInstance() };
+	auto& vulkanObject{ DDM::VulkanObject::GetInstance() };
 
 	auto currentFrame{ vulkanObject.GetCurrentFrame() };
 
@@ -134,7 +134,7 @@ void DDM3::ForwardRenderer::Render()
 	}
 }
 
-void DDM3::ForwardRenderer::RecordCommandBuffer(VkCommandBuffer& commandBuffer, uint32_t imageIndex)
+void DDM::ForwardRenderer::RecordCommandBuffer(VkCommandBuffer& commandBuffer, uint32_t imageIndex)
 {
 	VkCommandBufferBeginInfo beginInfo{};
 	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -181,10 +181,10 @@ void DDM3::ForwardRenderer::RecordCommandBuffer(VkCommandBuffer& commandBuffer, 
 	}
 }
 
-void DDM3::ForwardRenderer::RecreateSwapChain()
+void DDM::ForwardRenderer::RecreateSwapChain()
 {
 	// Get a reference to the window struct
-	auto& windowStruct{ DDM3::Window::GetInstance().GetWindowStruct() };
+	auto& windowStruct{ DDM::Window::GetInstance().GetWindowStruct() };
 
 	//Get the width and the height of the window
 	glfwGetFramebufferSize(windowStruct.pWindow, &windowStruct.Width, &windowStruct.Height);
@@ -197,7 +197,7 @@ void DDM3::ForwardRenderer::RecreateSwapChain()
 	}
 
 	// Wait until the device is idle
-	vkDeviceWaitIdle(DDM3::VulkanObject::GetInstance().GetDevice());
+	vkDeviceWaitIdle(DDM::VulkanObject::GetInstance().GetDevice());
 
 	// Create a single time command
 	auto commandBuffer{ VulkanObject::GetInstance().BeginSingleTimeCommands() };
@@ -206,7 +206,7 @@ void DDM3::ForwardRenderer::RecreateSwapChain()
 	std::vector<RenderpassWrapper*> renderpasses{ m_pRenderpass.get()};
 
 	// Recreate the swapchain
-	m_pSwapchainWrapper->RecreateSwapChain(DDM3::VulkanObject::GetInstance().GetGPUObject(), DDM3::VulkanObject::GetInstance().GetSurface(),
+	m_pSwapchainWrapper->RecreateSwapChain(DDM::VulkanObject::GetInstance().GetGPUObject(), DDM::VulkanObject::GetInstance().GetSurface(),
 		VulkanObject::GetInstance().GetImageManager(),
 		commandBuffer, renderpasses);
 
@@ -214,7 +214,7 @@ void DDM3::ForwardRenderer::RecreateSwapChain()
 	VulkanObject::GetInstance().EndSingleTimeCommands(commandBuffer);
 }
 
-void DDM3::ForwardRenderer::CreateRenderpass(VkFormat swapchainFormat)
+void DDM::ForwardRenderer::CreateRenderpass(VkFormat swapchainFormat)
 {
 	int swapchainImageAmount = m_pSwapchainWrapper->GetSwapchainImageAmount();
 
@@ -352,12 +352,12 @@ void DDM3::ForwardRenderer::CreateRenderpass(VkFormat swapchainFormat)
 	m_pSwapchainWrapper->AddFrameBuffers(m_pRenderpass.get());
 }
 
-void DDM3::ForwardRenderer::InitImgui()
+void DDM::ForwardRenderer::InitImgui()
 {
 	// Create ImGui vulkan init info
 	ImGui_ImplVulkan_InitInfo init_info = {};
 	// Give the vulkan instance
-	init_info.Instance = DDM3::VulkanObject::GetInstance().GetVulkanInstance();
+	init_info.Instance = DDM::VulkanObject::GetInstance().GetVulkanInstance();
 	// Give the physical device
 	init_info.PhysicalDevice = VulkanObject::GetInstance().GetPhysicalDevice();
 	// Give the logical device
@@ -382,28 +382,28 @@ void DDM3::ForwardRenderer::InitImgui()
 	// Create a single time command buffer
 	auto commandBuffer{ VulkanObject::GetInstance().BeginSingleTimeCommands() };
 	// Initialize ImGui
-	m_pImGuiWrapper = std::make_unique<DDM3::ImGuiWrapper>(init_info,
+	m_pImGuiWrapper = std::make_unique<DDM::ImGuiWrapper>(init_info,
 		VulkanObject::GetInstance().GetDevice(), static_cast<uint32_t>(VulkanObject::GetInstance().GetMaxFrames()), m_pRenderpass->GetRenderpass(), commandBuffer);
 	// End the single time command buffer
 	VulkanObject::GetInstance().EndSingleTimeCommands(commandBuffer);
 }
 
-void DDM3::ForwardRenderer::CleanupImgui()
+void DDM::ForwardRenderer::CleanupImgui()
 {
 	m_pImGuiWrapper = nullptr;
 }
 
-VkExtent2D DDM3::ForwardRenderer::GetExtent()
+VkExtent2D DDM::ForwardRenderer::GetExtent()
 {
 	return m_pSwapchainWrapper->GetExtent();
 }
 
-DDM3::RenderpassWrapper* DDM3::ForwardRenderer::GetDefaultRenderpass()
+DDM::RenderpassWrapper* DDM::ForwardRenderer::GetDefaultRenderpass()
 {
 	return m_pRenderpass.get();
 }
 
-void DDM3::ForwardRenderer::AddDefaultPipelines()
+void DDM::ForwardRenderer::AddDefaultPipelines()
 {
 	// Get config manager
 	auto& configManager{ ConfigManager::GetInstance() };

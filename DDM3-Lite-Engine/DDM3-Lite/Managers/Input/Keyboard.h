@@ -6,7 +6,7 @@
 // File includes
 #include "KeyBoardImpl.h"
 
-namespace DDM3
+namespace DDM
 {
 	class Keyboard final
 	{

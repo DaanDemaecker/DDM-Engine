@@ -7,7 +7,7 @@
 #include "../Includes/VulkanIncludes.h"
 #include "../Components/SkyBoxComponent.h"
 
-namespace DDM3
+namespace DDM
 {
 
 	class CameraComponent final : public Component

@@ -4,7 +4,7 @@
 #include "TextureDescriptorObject.h"
 #include "Vulkan/VulkanObject.h"
 
-DDM3::TextureDescriptorObject::TextureDescriptorObject()
+DDM::TextureDescriptorObject::TextureDescriptorObject()
 	:DescriptorObject(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER)
 {
 	auto& vulkanObject{ VulkanObject::GetInstance() };
@@ -13,7 +13,7 @@ DDM3::TextureDescriptorObject::TextureDescriptorObject()
 	m_PlaceholderImageInfo.sampler = vulkanObject.GetSampler();
 }
 
-void DDM3::TextureDescriptorObject::AddTextures(const Texture& texture)
+void DDM::TextureDescriptorObject::AddTextures(const Texture& texture)
 {
 	// Add the texture to the list of textures
 	m_Textures.push_back(texture);
@@ -21,7 +21,7 @@ void DDM3::TextureDescriptorObject::AddTextures(const Texture& texture)
 	SetupImageInfos();
 }
 
-void DDM3::TextureDescriptorObject::AddTextures(std::initializer_list<const std::string>& filePaths)
+void DDM::TextureDescriptorObject::AddTextures(std::initializer_list<const std::string>& filePaths)
 {
 	// Initialize index variable
 	int index{static_cast<int>(m_Textures.size()) - 1};
@@ -49,7 +49,7 @@ void DDM3::TextureDescriptorObject::AddTextures(std::initializer_list<const std:
 	SetupImageInfos();
 }
 
-void DDM3::TextureDescriptorObject::AddTexture(const std::string& filePath)
+void DDM::TextureDescriptorObject::AddTexture(const std::string& filePath)
 {
 	auto& renderer{ VulkanObject::GetInstance() };
 
@@ -61,19 +61,19 @@ void DDM3::TextureDescriptorObject::AddTexture(const std::string& filePath)
 }
 
 
-void DDM3::TextureDescriptorObject::Clear()
+void DDM::TextureDescriptorObject::Clear()
 {
 	m_Textures.clear();
 	
 	SetupImageInfos();
 }
 
-size_t DDM3::TextureDescriptorObject::GetTextureAmount() const
+size_t DDM::TextureDescriptorObject::GetTextureAmount() const
 {
 	return m_Textures.size();
 }
 
-DDM3::TextureDescriptorObject::~TextureDescriptorObject()
+DDM::TextureDescriptorObject::~TextureDescriptorObject()
 {
 	if (m_CleanupTextures)
 	{
@@ -87,7 +87,7 @@ DDM3::TextureDescriptorObject::~TextureDescriptorObject()
 	}
 }
 
-void DDM3::TextureDescriptorObject::AddDescriptorWrite(VkDescriptorSet descriptorSet, std::vector<VkWriteDescriptorSet>& descriptorWrites, int& binding, int amount, int /*index*/)
+void DDM::TextureDescriptorObject::AddDescriptorWrite(VkDescriptorSet descriptorSet, std::vector<VkWriteDescriptorSet>& descriptorWrites, int& binding, int amount, int /*index*/)
 {
 	for (int i{}; i < amount; i++)
 	{
@@ -117,7 +117,7 @@ void DDM3::TextureDescriptorObject::AddDescriptorWrite(VkDescriptorSet descripto
 	binding++;
 }
 
-void DDM3::TextureDescriptorObject::SetupImageInfos()
+void DDM::TextureDescriptorObject::SetupImageInfos()
 {
 	m_ImageInfos.clear();
 	// resize image infos

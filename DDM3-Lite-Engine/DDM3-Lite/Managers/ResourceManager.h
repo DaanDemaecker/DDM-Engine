@@ -11,20 +11,20 @@
 #include <memory>
 #include <string>
 
-namespace DDM3
+namespace DDM
 {
 	class ResourceManager final : public Singleton<ResourceManager>
 	{
 	public:
-		std::shared_ptr<DDM3::Mesh> LoadMesh(std::string&& filePath);
-		std::shared_ptr<DDM3::Mesh> LoadMesh(std::string& filePath);
+		std::shared_ptr<DDM::Mesh> LoadMesh(std::string&& filePath);
+		std::shared_ptr<DDM::Mesh> LoadMesh(std::string& filePath);
 
 	private:
 		// Default constructor
 		friend class Singleton<ResourceManager>;
 		ResourceManager();
 
-		std::shared_ptr<DDM3::Mesh> m_pDefaultMesh{};
+		std::shared_ptr<DDM::Mesh> m_pDefaultMesh{};
 
 
 		// Factory method to create Mesh instances

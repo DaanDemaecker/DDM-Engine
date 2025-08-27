@@ -10,7 +10,7 @@
 // Standard library includes
 #include <vector>
 
-namespace DDM3
+namespace DDM
 {
 	struct MultiShaderBuffer
 	{
@@ -73,15 +73,15 @@ namespace DDM3
 
 
 		MultiShaderBuffer m_MultiShaderBuffer{};
-		std::unique_ptr<DDM3::UboDescriptorObject<MultiShaderBuffer>> m_pMultiShaderBufferDescriptor{};
+		std::unique_ptr<DDM::UboDescriptorObject<MultiShaderBuffer>> m_pMultiShaderBufferDescriptor{};
 
-		std::unique_ptr<DDM3::TextureDescriptorObject> m_pDiffuseTextureObject{};
+		std::unique_ptr<DDM::TextureDescriptorObject> m_pDiffuseTextureObject{};
 
-		std::unique_ptr<DDM3::TextureDescriptorObject> m_pNormalTextureObject{};
+		std::unique_ptr<DDM::TextureDescriptorObject> m_pNormalTextureObject{};
 
-		std::unique_ptr<DDM3::TextureDescriptorObject> m_pGlossTextureObject{};
+		std::unique_ptr<DDM::TextureDescriptorObject> m_pGlossTextureObject{};
 
-		std::unique_ptr<DDM3::TextureDescriptorObject> m_pSpecularTextureObject{};
+		std::unique_ptr<DDM::TextureDescriptorObject> m_pSpecularTextureObject{};
 
 		void UpdateShaderBuffer();
 

@@ -12,7 +12,7 @@
 #include <functional>
 #include <map>
 
-namespace DDM3
+namespace DDM
 {
 	// Window struct
 	// Member variables:

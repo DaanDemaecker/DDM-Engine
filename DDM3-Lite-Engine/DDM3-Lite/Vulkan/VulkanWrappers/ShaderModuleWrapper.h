@@ -14,7 +14,7 @@
 #include <map>
 
 
-namespace DDM3
+namespace DDM
 {
 	class ShaderModuleWrapper
 	{

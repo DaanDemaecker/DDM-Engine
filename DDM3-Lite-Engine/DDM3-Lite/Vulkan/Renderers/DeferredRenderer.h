@@ -16,7 +16,7 @@
 #include <memory>
 #include <vector>
 
-namespace DDM3
+namespace DDM
 {
 	// Class forward declarations
 	class PipelineWrapper;

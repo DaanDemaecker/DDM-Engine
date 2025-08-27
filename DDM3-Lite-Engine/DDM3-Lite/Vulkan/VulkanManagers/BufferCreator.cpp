@@ -12,7 +12,7 @@
 // Standard library includes
 #include <stdexcept>
 
-void DDM3::BufferCreator::CreateBuffer(DDM3::GPUObject* pGPUObject, VkDeviceSize size,
+void DDM::BufferCreator::CreateBuffer(DDM::GPUObject* pGPUObject, VkDeviceSize size,
 	VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory)
 {
 	// Get device
@@ -61,7 +61,7 @@ void DDM3::BufferCreator::CreateBuffer(DDM3::GPUObject* pGPUObject, VkDeviceSize
 	vkBindBufferMemory(device, buffer, bufferMemory, 0);
 }
 
-void DDM3::BufferCreator::CopyBuffer(DDM3::GPUObject* pGPUObject, DDM3::CommandpoolManager* pCommandPoolManager, VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size)
+void DDM::BufferCreator::CopyBuffer(DDM::GPUObject* pGPUObject, DDM::CommandpoolManager* pCommandPoolManager, VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size)
 {
 	// Begin a single time command buffer
 	VkCommandBuffer commandBuffer = pCommandPoolManager->BeginSingleTimeCommands(pGPUObject->GetDevice());
@@ -78,12 +78,12 @@ void DDM3::BufferCreator::CopyBuffer(DDM3::GPUObject* pGPUObject, DDM3::Commandp
 	pCommandPoolManager->EndSingleTimeCommands(pGPUObject, commandBuffer);
 }
 
-void DDM3::BufferCreator::CreateVertexBuffer(DDM3::GPUObject* pGPUObject, DDM3::CommandpoolManager* pCommandPoolManager, std::vector<DDM3::Vertex>& vertices, VkBuffer& vertexBuffer, VkDeviceMemory& vertexBufferMemory)
+void DDM::BufferCreator::CreateVertexBuffer(DDM::GPUObject* pGPUObject, DDM::CommandpoolManager* pCommandPoolManager, std::vector<DDM::Vertex>& vertices, VkBuffer& vertexBuffer, VkDeviceMemory& vertexBufferMemory)
 {
 	auto device{ pGPUObject->GetDevice() };
 
 	// Calculate buffer size for vertices
-	VkDeviceSize bufferSize = sizeof(DDM3::Vertex) * vertices.size();
+	VkDeviceSize bufferSize = sizeof(DDM::Vertex) * vertices.size();
 
 	// Create staging buffer
 	VkBuffer stagingBuffer;
@@ -116,7 +116,7 @@ void DDM3::BufferCreator::CreateVertexBuffer(DDM3::GPUObject* pGPUObject, DDM3::
 
 }
 
-void DDM3::BufferCreator::CreateIndexBuffer(DDM3::GPUObject* pGPUObject, DDM3::CommandpoolManager* pCommandPoolManager, std::vector<uint32_t>& indices, VkBuffer& indexBuffer, VkDeviceMemory& indexBufferMemory)
+void DDM::BufferCreator::CreateIndexBuffer(DDM::GPUObject* pGPUObject, DDM::CommandpoolManager* pCommandPoolManager, std::vector<uint32_t>& indices, VkBuffer& indexBuffer, VkDeviceMemory& indexBufferMemory)
 {
 	auto device{ pGPUObject->GetDevice() };
 

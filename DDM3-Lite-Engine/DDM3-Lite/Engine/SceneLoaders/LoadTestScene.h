@@ -29,34 +29,34 @@ namespace LoadTestScene
 {
 	void SetupPipelines();
 
-	void SetupVehicle(DDM3::Scene* scene);
+	void SetupVehicle(DDM::Scene* scene);
 
-	void SetupVehicle2(DDM3::Scene* scene);
+	void SetupVehicle2(DDM::Scene* scene);
 
-	void SetupVikingRoom(DDM3::Scene* scene);
+	void SetupVikingRoom(DDM::Scene* scene);
 
-	void SetupGun(DDM3::Scene* scene);
+	void SetupGun(DDM::Scene* scene);
 
-	void SetupMario(DDM3::Scene* scene);
+	void SetupMario(DDM::Scene* scene);
 
-	void SetupAtrium(DDM3::Scene* scene);
+	void SetupAtrium(DDM::Scene* scene);
 
-	void SetupAtrium2(DDM3::Scene* scene);
+	void SetupAtrium2(DDM::Scene* scene);
 
-	void SetupSkull(DDM3::Scene* scene);
+	void SetupSkull(DDM::Scene* scene);
 
-	void SetupInfoComponent(DDM3::Scene* scene);
+	void SetupInfoComponent(DDM::Scene* scene);
 
-	void SetupCamera(DDM3::Scene* scen);
+	void SetupCamera(DDM::Scene* scen);
 
-	void SetupLight(DDM3::Scene* scene);
+	void SetupLight(DDM::Scene* scene);
 
-	void SetupGroundPlane(DDM3::Scene* scene);
+	void SetupGroundPlane(DDM::Scene* scene);
 
 	void loadTestScene()
 	{
-		auto scene = DDM3::SceneManager::GetInstance().CreateScene("Test");
-		DDM3::SceneManager::GetInstance().SetActiveScene(scene);
+		auto scene = DDM::SceneManager::GetInstance().CreateScene("Test");
+		DDM::SceneManager::GetInstance().SetActiveScene(scene);
 
 		SetupPipelines();
 
@@ -87,7 +87,7 @@ namespace LoadTestScene
 
 	void SetupPipelines()
 	{
-		auto& vulkanObject{ DDM3::VulkanObject::GetInstance() };
+		auto& vulkanObject{ DDM::VulkanObject::GetInstance() };
 
 		vulkanObject.AddGraphicsPipeline("Diffuse", { "Resources/Shaders/Diffuse.Vert.spv", "Resources/Shaders/Diffuse.Frag.spv" });
 		vulkanObject.AddGraphicsPipeline("NormalMap", { "Resources/Shaders/NormalMap.Vert.spv", "Resources/Shaders/NormalMap.Frag.spv" });
@@ -99,9 +99,9 @@ namespace LoadTestScene
 		vulkanObject.AddGraphicsPipeline("MultiShader", { "Resources/Shaders/MultiShader.Vert.spv", "Resources/Shaders/MultiShader.Frag.spv" });
 	}
 
-	void SetupVehicle(DDM3::Scene* scene)
+	void SetupVehicle(DDM::Scene* scene)
 	{
-		std::shared_ptr<DDM3::MultiMaterial> pVehicleMaterial{ std::make_shared<DDM3::MultiMaterial>() };
+		std::shared_ptr<DDM::MultiMaterial> pVehicleMaterial{ std::make_shared<DDM::MultiMaterial>() };
 
 		pVehicleMaterial->AddDiffuseTexture("resources/images/vehicle_diffuse.png");
 
@@ -115,9 +115,9 @@ namespace LoadTestScene
 		pVehicle->SetShowImGui(true);
 		//pVehicle->AddComponent<D3D::RotatorComponent>();
 
-		auto pVehicleMesh{ DDM3::ResourceManager::GetInstance().LoadMesh("Resources/Models/vehicle.obj") };
+		auto pVehicleMesh{ DDM::ResourceManager::GetInstance().LoadMesh("Resources/Models/vehicle.obj") };
 
-		auto pVehicleModel{ pVehicle->AddComponent<DDM3::MeshRenderComponent>() };
+		auto pVehicleModel{ pVehicle->AddComponent<DDM::MeshRenderComponent>() };
 		pVehicleModel->SetMesh(pVehicleMesh);
 		pVehicleModel->SetMaterial(pVehicleMaterial);
 
@@ -129,19 +129,19 @@ namespace LoadTestScene
 		pVehicleTransform->SetLocalScale(0.05f, 0.05f, 0.05f);
 	}
 
-	void SetupVehicle2(DDM3::Scene* scene)
+	void SetupVehicle2(DDM::Scene* scene)
 	{
-		std::shared_ptr<DDM3::MultiMaterial> pVehicleMaterial{ std::make_shared<DDM3::MultiMaterial>() };
+		std::shared_ptr<DDM::MultiMaterial> pVehicleMaterial{ std::make_shared<DDM::MultiMaterial>() };
 
 		pVehicleMaterial->AddDiffuseTexture("resources/images/vehicle_diffuse.png");
 
 		pVehicleMaterial->AddNormalMap("resources/images/vehicle_normal.png");
 
-		auto pVehicle{ DDM3::DDMModelLoader::GetInstance().LoadModel("Resources/Models/vehicle.obj", scene->GetSceneRoot())};
+		auto pVehicle{ DDM::DDMModelLoader::GetInstance().LoadModel("Resources/Models/vehicle.obj", scene->GetSceneRoot())};
 		pVehicle->SetShowImGui(true);
 		//pVehicle->AddComponent<D3D::RotatorComponent>();
 
-		auto pVehicleModel{ pVehicle->GetComponent<DDM3::MeshRenderComponent>() };
+		auto pVehicleModel{ pVehicle->GetComponent<DDM::MeshRenderComponent>() };
 		pVehicleModel->SetMaterial(pVehicleMaterial);
 
 
@@ -152,15 +152,15 @@ namespace LoadTestScene
 		pVehicleTransform->SetLocalScale(0.05f, 0.05f, 0.05f);
 	}
 
-	void SetupVikingRoom(DDM3::Scene* scene)
+	void SetupVikingRoom(DDM::Scene* scene)
 	{
-		std::shared_ptr<DDM3::TexturedMaterial> pVikingMaterial{ std::make_shared<DDM3::TexturedMaterial>(std::initializer_list<const std::string>{"resources/images/viking_room.png"}, "Diffuse") };
+		std::shared_ptr<DDM::TexturedMaterial> pVikingMaterial{ std::make_shared<DDM::TexturedMaterial>(std::initializer_list<const std::string>{"resources/images/viking_room.png"}, "Diffuse") };
 
 		auto pvikingRoom{ scene->CreateGameObject("Viking Room") };
 
-		auto pVikingRoomMesh{ DDM3::ResourceManager::GetInstance().LoadMesh("Resources/Models/viking_room.obj") };
+		auto pVikingRoomMesh{ DDM::ResourceManager::GetInstance().LoadMesh("Resources/Models/viking_room.obj") };
 
-		auto pVikingRoomModel{ pvikingRoom->AddComponent<DDM3::MeshRenderComponent>() };
+		auto pVikingRoomModel{ pvikingRoom->AddComponent<DDM::MeshRenderComponent>() };
 		pVikingRoomModel->SetMesh(pVikingRoomMesh);
 		pVikingRoomModel->SetMaterial(pVikingMaterial);
 
@@ -170,9 +170,9 @@ namespace LoadTestScene
 		pVikingTransform->SetLocalScale(0.75f, 0.75f, 0.75f);
 	}
 
-	void SetupGun(DDM3::Scene* scene)
+	void SetupGun(DDM::Scene* scene)
 	{
-		std::shared_ptr<DDM3::MultiMaterial> pGunMaterial{ std::make_shared<DDM3::MultiMaterial>() };
+		std::shared_ptr<DDM::MultiMaterial> pGunMaterial{ std::make_shared<DDM::MultiMaterial>() };
 
 		pGunMaterial->AddDiffuseTexture("resources/images/gun_BaseColor.png");
 
@@ -180,9 +180,9 @@ namespace LoadTestScene
 
 		auto pGun{ scene->CreateGameObject("Gun") };
 
-		auto pGunMesh{ DDM3::ResourceManager::GetInstance().LoadMesh("Resources/Models/gun.fbx") };
+		auto pGunMesh{ DDM::ResourceManager::GetInstance().LoadMesh("Resources/Models/gun.fbx") };
 
-		auto pGunModel{ pGun->AddComponent<DDM3::MeshRenderComponent>() };
+		auto pGunModel{ pGun->AddComponent<DDM::MeshRenderComponent>() };
 		pGunModel->SetMesh(pGunMesh);
 		pGunModel->SetMaterial(pGunMaterial);
 
@@ -192,9 +192,9 @@ namespace LoadTestScene
 		pGunTransform->SetLocalScale(0.5f, 0.5f, 0.5f);
 	}
 
-	void SetupMario(DDM3::Scene* scene)
+	void SetupMario(DDM::Scene* scene)
 	{
-		auto pMario = DDM3::DDMModelLoader::GetInstance().LoadModel("Resources/Models/MarioDancing.fbx", scene->GetSceneRoot());
+		auto pMario = DDM::DDMModelLoader::GetInstance().LoadModel("Resources/Models/MarioDancing.fbx", scene->GetSceneRoot());
 		
 		//auto pMarioTransform{ pMario->GetTransform() };
 		//pMarioTransform->SetLocalPosition(0.f, 0.f, 2);
@@ -203,23 +203,23 @@ namespace LoadTestScene
 	}
 
 
-	void SetupAtrium(DDM3::Scene* scene)
+	void SetupAtrium(DDM::Scene* scene)
 	{
-		DDM3::DDMModelLoader::GetInstance().LoadTexturedScene("Resources/Models/SponzaAtrium/Sponza.gltf", scene->GetSceneRoot());
+		DDM::DDMModelLoader::GetInstance().LoadTexturedScene("Resources/Models/SponzaAtrium/Sponza.gltf", scene->GetSceneRoot());
 	}
 
-	void SetupAtrium2(DDM3::Scene* scene)
+	void SetupAtrium2(DDM::Scene* scene)
 	{
 		auto switchManager = scene->GetSceneRoot()->CreateNewObject("Material switch manager");
 		switchManager->SetShowImGui(true);
 
-		auto switchManagerComponent = switchManager->AddComponent<DDM3::MaterialSwitchManager>();
+		auto switchManagerComponent = switchManager->AddComponent<DDM::MaterialSwitchManager>();
 		switchManagerComponent->RegisterKey("Diffuse");
 		switchManagerComponent->RegisterKey("Default");
 		switchManagerComponent->RegisterKey("DiffuseUnshaded");
 
 
-		auto& modelLoader = DDM3::DDMModelLoader::GetInstance();
+		auto& modelLoader = DDM::DDMModelLoader::GetInstance();
 
 		std::vector<std::unique_ptr<DDMML::Mesh>> pMeshes{};
 
@@ -230,29 +230,29 @@ namespace LoadTestScene
 		for (auto& pMesh : pMeshes)
 		{
 			auto pGameObject = scene->GetSceneRoot()->CreateNewObject(pMesh->GetName());
-			auto renderComponent = pGameObject->AddComponent<DDM3::MeshRenderComponent>();
+			auto renderComponent = pGameObject->AddComponent<DDM::MeshRenderComponent>();
 			renderComponent->SetMesh(pMesh.get());
 
 
-			auto texturedMaterial = std::make_shared<DDM3::TexturedMaterial>("Diffuse");
+			auto texturedMaterial = std::make_shared<DDM::TexturedMaterial>("Diffuse");
 			
 			for (auto& texture : pMesh->GetDiffuseTextureNames())
 			{
 				texturedMaterial->AddTexture(texture);
 			}
 			
-			auto diffuseUnshadedMaterial = std::make_shared<DDM3::TexturedMaterial>("DiffuseUnshaded");
+			auto diffuseUnshadedMaterial = std::make_shared<DDM::TexturedMaterial>("DiffuseUnshaded");
 			
 			for (auto& texture : pMesh->GetDiffuseTextureNames())
 			{
 				diffuseUnshadedMaterial->AddTexture(texture);
 			}
 
-			auto defaultMaterial = std::make_shared<DDM3::Material>();
+			auto defaultMaterial = std::make_shared<DDM::Material>();
 
 			renderComponent->SetMaterial(texturedMaterial);
 
-			auto pMaterialSwitcher = pGameObject->AddComponent<DDM3::MaterialSwitcher>();
+			auto pMaterialSwitcher = pGameObject->AddComponent<DDM::MaterialSwitcher>();
 			pMaterialSwitcher->RegisterMaterial("Diffuse", texturedMaterial);
 			pMaterialSwitcher->RegisterMaterial("Default", defaultMaterial);
 			pMaterialSwitcher->RegisterMaterial("DiffuseUnshaded", diffuseUnshadedMaterial);
@@ -262,58 +262,58 @@ namespace LoadTestScene
 		}
 	}
 
-	void SetupSkull(DDM3::Scene* scene)
+	void SetupSkull(DDM::Scene* scene)
 	{
 		auto switchManager = scene->GetSceneRoot()->CreateNewObject("Material switch manager");
 		switchManager->SetShowImGui(true);
 
-		auto switchManagerComponent = switchManager->AddComponent<DDM3::MaterialSwitchManager>();
+		auto switchManagerComponent = switchManager->AddComponent<DDM::MaterialSwitchManager>();
 		switchManagerComponent->RegisterKey("Diffuse");
 		switchManagerComponent->RegisterKey("Default");
 
 		auto pMesh = std::unique_ptr<DDMML::Mesh>(std::make_unique<DDMML::Mesh>());
 
-		DDM3::DDMModelLoader::GetInstance().LoadModel("Resources/Models/Skull/Scene.gltf", pMesh);
+		DDM::DDMModelLoader::GetInstance().LoadModel("Resources/Models/Skull/Scene.gltf", pMesh);
 
 		auto pGameObject = scene->GetSceneRoot()->CreateNewObject(pMesh->GetName());
-		auto renderComponent = pGameObject->AddComponent<DDM3::MeshRenderComponent>();
+		auto renderComponent = pGameObject->AddComponent<DDM::MeshRenderComponent>();
 		renderComponent->SetMesh(pMesh.get());
 
 
-		auto texturedMaterial = std::make_shared<DDM3::TexturedMaterial>("Diffuse");
+		auto texturedMaterial = std::make_shared<DDM::TexturedMaterial>("Diffuse");
 
 		for (auto& texture : pMesh->GetDiffuseTextureNames())
 		{
 			texturedMaterial->AddTexture(texture);
 		}
 
-		auto defaultMaterial = std::make_shared<DDM3::Material>();
+		auto defaultMaterial = std::make_shared<DDM::Material>();
 
 		renderComponent->SetMaterial(texturedMaterial);
 
-		auto pMaterialSwitcher = pGameObject->AddComponent<DDM3::MaterialSwitcher>();
+		auto pMaterialSwitcher = pGameObject->AddComponent<DDM::MaterialSwitcher>();
 		pMaterialSwitcher->RegisterMaterial("Diffuse", texturedMaterial);
 		pMaterialSwitcher->RegisterMaterial("Default", defaultMaterial);
 
 		switchManagerComponent->RegisterMaterialSwitcher(pMaterialSwitcher);
 	}
 
-	void SetupInfoComponent(DDM3::Scene* scene)
+	void SetupInfoComponent(DDM::Scene* scene)
 	{
 		auto pInfoObject{ scene->CreateGameObject("InfoComponent") };
 		pInfoObject->SetShowImGui(true);
 
-		auto pInfoComponent{ pInfoObject->AddComponent<DDM3::InfoComponent>() };
+		auto pInfoComponent{ pInfoObject->AddComponent<DDM::InfoComponent>() };
 		pInfoComponent->SetShowImGui(true);
 	}
 
-	void SetupCamera(DDM3::Scene* scene)
+	void SetupCamera(DDM::Scene* scene)
 	{
 		auto pCamera{ scene->CreateGameObject("Camera") };
 
-		pCamera->AddComponent<DDM3::SpectatorMovementComponent>();
+		pCamera->AddComponent<DDM::SpectatorMovementComponent>();
 
-		auto pCameraComponent{ pCamera->AddComponent<DDM3::CameraComponent>() };
+		auto pCameraComponent{ pCamera->AddComponent<DDM::CameraComponent>() };
 
 
 
@@ -326,7 +326,7 @@ namespace LoadTestScene
 
 		scene->SetCamera(pCameraComponent);
 
-		auto& configManager{ DDM3::ConfigManager::GetInstance() };
+		auto& configManager{ DDM::ConfigManager::GetInstance() };
 
 		// Set the vertex shader name
 		const std::string vertShaderName{configManager.GetString("SkyboxVertName")};
@@ -334,9 +334,9 @@ namespace LoadTestScene
 		const std::string fragShaderName{ configManager.GetString("SkyboxFragName") };
 
 		// Create the graphics pipeline for the skybox
-		DDM3::VulkanObject::GetInstance().AddGraphicsPipeline(configManager.GetString("SkyboxPipelineName"), {vertShaderName, fragShaderName}, false);
+		DDM::VulkanObject::GetInstance().AddGraphicsPipeline(configManager.GetString("SkyboxPipelineName"), {vertShaderName, fragShaderName}, false);
 
-		auto pSkyBox{ pCamera->AddComponent<DDM3::SkyBoxComponent>() };
+		auto pSkyBox{ pCamera->AddComponent<DDM::SkyBoxComponent>() };
 
 		pSkyBox->LoadSkybox(std::initializer_list<const std::string>{"resources/images/CubeMap/Sky_Right.png",
 			"resources/images/CubeMap/Sky_Left.png",
@@ -346,12 +346,12 @@ namespace LoadTestScene
 			"resources/images/CubeMap/Sky_Back.png"});
 	}
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
-	void SetupLight(DDM3::Scene* scene)
+	void SetupLight(DDM::Scene* scene)
 	{
 		auto pLight{ scene->CreateGameObject("Light") };
 		pLight->SetShowImGui(true);
 
-		auto pLightComponent{ pLight->AddComponent<DDM3::DirectionalLightComponent>() };
+		auto pLightComponent{ pLight->AddComponent<DDM::DirectionalLightComponent>() };
 		pLightComponent->SetShowImGui(true);
 
 		//pLightComponent->SetColor(glm::vec3{ 0, 0, 0 });
@@ -366,9 +366,9 @@ namespace LoadTestScene
 		scene->SetLight(pLightComponent);
 	}
 
-	void SetupGroundPlane(DDM3::Scene* scene)
+	void SetupGroundPlane(DDM::Scene* scene)
 	{
-		std::shared_ptr<DDM3::MultiMaterial> pFloorMaterial{ std::make_shared<DDM3::MultiMaterial>() };
+		std::shared_ptr<DDM::MultiMaterial> pFloorMaterial{ std::make_shared<DDM::MultiMaterial>() };
 
 
 		//std::shared_ptr<D3D::TexturedMaterial> pFloorMaterial{
@@ -379,9 +379,9 @@ namespace LoadTestScene
 		auto pGroundPlane{ scene->CreateGameObject("Ground Plane") };
 		pGroundPlane->SetShowImGui(true);
 
-		auto pGroundplaneMesh{ DDM3::ResourceManager::GetInstance().LoadMesh("Resources/Models/Plane.obj") };
+		auto pGroundplaneMesh{ DDM::ResourceManager::GetInstance().LoadMesh("Resources/Models/Plane.obj") };
 
-		auto pGroundPlaneModel{ pGroundPlane->AddComponent<DDM3::MeshRenderComponent>() };
+		auto pGroundPlaneModel{ pGroundPlane->AddComponent<DDM::MeshRenderComponent>() };
 		pGroundPlaneModel->SetShowImGui(true);
 		pGroundPlaneModel->SetMesh(pGroundplaneMesh);
 		pGroundPlaneModel->SetMaterial(pFloorMaterial);

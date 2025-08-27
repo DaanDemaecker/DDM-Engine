@@ -13,7 +13,7 @@
 #include <string>
 
 
-namespace DDM3
+namespace DDM
 {
     class TextureDescriptorObject final : public DescriptorObject
     {

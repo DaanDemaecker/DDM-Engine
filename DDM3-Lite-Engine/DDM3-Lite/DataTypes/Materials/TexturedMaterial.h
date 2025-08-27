@@ -7,7 +7,7 @@
 #include <initializer_list>
 #include <iostream>
 
-namespace DDM3
+namespace DDM
 {
 	class TexturedMaterial final : public Material
 	{

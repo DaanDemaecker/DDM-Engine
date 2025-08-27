@@ -12,7 +12,7 @@
 // Standard library includes
 #include <memory>
 
-namespace DDM3
+namespace DDM
 {
 	class Attachment final
 	{

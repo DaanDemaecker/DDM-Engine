@@ -3,7 +3,7 @@
 
 #include "../BaseClasses/Component.h"
 
-namespace DDM3
+namespace DDM
 {
 	class SpectatorMovementComponent final : public Component
 	{

@@ -13,7 +13,7 @@
 #include <map>
 #include <set>
 
-DDM3::GPUObject::GPUObject(InstanceWrapper* pInstanceWrapper, VkSurfaceKHR surface)
+DDM::GPUObject::GPUObject(InstanceWrapper* pInstanceWrapper, VkSurfaceKHR surface)
 {
 	// Pick the physical device
 	PickPhysicalDevice(pInstanceWrapper, surface);
@@ -22,25 +22,25 @@ DDM3::GPUObject::GPUObject(InstanceWrapper* pInstanceWrapper, VkSurfaceKHR surfa
 	CreateLogicalDevice(pInstanceWrapper, surface);
 }
 
-DDM3::GPUObject::~GPUObject()
+DDM::GPUObject::~GPUObject()
 {
 	CleanUp();
 }
 
 
-void DDM3::GPUObject::CleanUp()
+void DDM::GPUObject::CleanUp()
 {
 	// Destroy the logical device
 	vkDestroyDevice(m_Device, nullptr);
 }
 
-void DDM3::GPUObject::WaitIdle()
+void DDM::GPUObject::WaitIdle()
 {
 	// Wait until the device is idle
 	vkDeviceWaitIdle(m_Device);
 }
 
-void DDM3::GPUObject::PickPhysicalDevice(InstanceWrapper* pInstanceWrapper, VkSurfaceKHR surface)
+void DDM::GPUObject::PickPhysicalDevice(InstanceWrapper* pInstanceWrapper, VkSurfaceKHR surface)
 {
 	//Get number of physical devices that support Vulkan
 	uint32_t deviceCount = 0;
@@ -119,7 +119,7 @@ void DDM3::GPUObject::PickPhysicalDevice(InstanceWrapper* pInstanceWrapper, VkSu
 	std::memcpy(m_DeviceLuid, physDeviceIDProps.deviceLUID, VK_LUID_SIZE);
 }
 
-bool DDM3::GPUObject::IsDeviceSuitable(VkPhysicalDevice device, VkSurfaceKHR surface)
+bool DDM::GPUObject::IsDeviceSuitable(VkPhysicalDevice device, VkSurfaceKHR surface)
 {
 	// Get the queue families for the given physical device and surface
 	QueueFamilyIndices indices = VulkanUtils::FindQueueFamilies(device, surface);
@@ -154,7 +154,7 @@ bool DDM3::GPUObject::IsDeviceSuitable(VkPhysicalDevice device, VkSurfaceKHR sur
 }
 
 
-bool DDM3::GPUObject::CheckDeviceExtensionSupport(VkPhysicalDevice device)
+bool DDM::GPUObject::CheckDeviceExtensionSupport(VkPhysicalDevice device)
 {
 	//Check how many extensions this device supports
 	uint32_t extensionCount;
@@ -178,7 +178,7 @@ bool DDM3::GPUObject::CheckDeviceExtensionSupport(VkPhysicalDevice device)
 }
 
 
-void DDM3::GPUObject::CreateLogicalDevice(InstanceWrapper* pInstanceWrapper, VkSurfaceKHR surface)
+void DDM::GPUObject::CreateLogicalDevice(InstanceWrapper* pInstanceWrapper, VkSurfaceKHR surface)
 {
 	// Get the suited queue family indices
 	QueueFamilyIndices indices = VulkanUtils::FindQueueFamilies(m_PhysicalDevice, surface);

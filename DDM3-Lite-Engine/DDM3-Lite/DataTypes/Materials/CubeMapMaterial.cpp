@@ -10,13 +10,13 @@
 // Standard library includes
 #include <stdexcept>
 
-DDM3::CubeMapMaterial::CubeMapMaterial(const std::initializer_list<const std::string>&& filePaths)
+DDM::CubeMapMaterial::CubeMapMaterial(const std::initializer_list<const std::string>&& filePaths)
 	:CubeMapMaterial(filePaths)
 {
 
 }
 
-DDM3::CubeMapMaterial::CubeMapMaterial(const std::initializer_list<const std::string>& filePaths)
+DDM::CubeMapMaterial::CubeMapMaterial(const std::initializer_list<const std::string>& filePaths)
 	:Material(ConfigManager::GetInstance().GetString("SkyboxPipelineName"))
 {
 	Texture cubeTexture{};
@@ -29,7 +29,7 @@ DDM3::CubeMapMaterial::CubeMapMaterial(const std::initializer_list<const std::st
 	m_pDescriptorObject->AddTextures(cubeTexture);
 }
 
-void DDM3::CubeMapMaterial::UpdateDescriptorSets(std::vector<VkDescriptorSet>& descriptorSets, std::vector<DescriptorObject*>& descriptorObjects)
+void DDM::CubeMapMaterial::UpdateDescriptorSets(std::vector<VkDescriptorSet>& descriptorSets, std::vector<DescriptorObject*>& descriptorObjects)
 {
 	// Get pointer to the descriptorpool
 	auto descriptorPool = GetDescriptorPool();

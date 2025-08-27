@@ -67,10 +67,10 @@ VkFormat VulkanUtils::FindSupportedFormat(VkPhysicalDevice physicalDevice, const
 	throw std::runtime_error("failed to find supported format!");
 }
 
-DDM3::QueueFamilyIndices VulkanUtils::FindQueueFamilies(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface)
+DDM::QueueFamilyIndices VulkanUtils::FindQueueFamilies(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface)
 {
 	// Create quefamilyindices object
-	DDM3::QueueFamilyIndices indices;
+	DDM::QueueFamilyIndices indices;
 
 	// Create uint for amount of queuefamilies
 	uint32_t queueFamilyCount = 0;
@@ -189,10 +189,10 @@ VkSampleCountFlagBits VulkanUtils::GetMaxUsableSampleCount(VkPhysicalDevice phys
 	return VK_SAMPLE_COUNT_1_BIT;
 }
 
-DDM3::SwapChainSupportDetails VulkanUtils::QuerySwapChainSupport(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface)
+DDM::SwapChainSupportDetails VulkanUtils::QuerySwapChainSupport(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface)
 {
 	// Create swapchainsupport details object
-	DDM3::SwapChainSupportDetails details;
+	DDM::SwapChainSupportDetails details;
 
 	// Get surface capabilities
 	vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice, surface, &details.capabilities);

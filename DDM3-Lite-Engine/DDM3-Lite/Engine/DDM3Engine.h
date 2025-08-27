@@ -10,7 +10,7 @@
 #include <string>
 #include <functional>
 
-namespace DDM3
+namespace DDM
 {
 	class DDM3Engine
 	{
@@ -36,7 +36,7 @@ namespace DDM3
 	void DDM3Engine::Init()
 	{
 		// Create the window with the given width and height
-		DDM3::Window::GetInstance();
+		DDM::Window::GetInstance();
 
 		auto& vulkanObject = VulkanObject::GetInstance();
 

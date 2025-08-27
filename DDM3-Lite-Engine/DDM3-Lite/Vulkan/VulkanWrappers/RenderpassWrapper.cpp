@@ -11,28 +11,28 @@
 #include <stdexcept>
 #include <iostream>
 
-DDM3::RenderpassWrapper::RenderpassWrapper()
+DDM::RenderpassWrapper::RenderpassWrapper()
 {
 }
 
-DDM3::RenderpassWrapper::~RenderpassWrapper()
+DDM::RenderpassWrapper::~RenderpassWrapper()
 {
-	Cleanup(DDM3::VulkanObject::GetInstance().GetDevice());
+	Cleanup(DDM::VulkanObject::GetInstance().GetDevice());
 }
 
-void DDM3::RenderpassWrapper::Cleanup(VkDevice device)
+void DDM::RenderpassWrapper::Cleanup(VkDevice device)
 {
 	// Destroy the renderpass
 	vkDestroyRenderPass(device, m_RenderPass, nullptr);
 }
 
 
-void DDM3::RenderpassWrapper::AddAttachment(std::unique_ptr<Attachment> attachment)
+void DDM::RenderpassWrapper::AddAttachment(std::unique_ptr<Attachment> attachment)
 {
 	m_AttachmentList.push_back(std::move(attachment));
 }
 
-bool DDM3::RenderpassWrapper::IsColorResolveSet() const
+bool DDM::RenderpassWrapper::IsColorResolveSet() const
 {
 	for (auto& attachment : m_AttachmentList)
 	{
@@ -45,7 +45,7 @@ bool DDM3::RenderpassWrapper::IsColorResolveSet() const
 	return false;
 }
 
-void DDM3::RenderpassWrapper::BeginRenderPass(VkCommandBuffer commandBuffer, VkFramebuffer frameBuffer, VkExtent2D extent, bool clearDepth)
+void DDM::RenderpassWrapper::BeginRenderPass(VkCommandBuffer commandBuffer, VkFramebuffer frameBuffer, VkExtent2D extent, bool clearDepth)
 {
 
 	VkRenderPassBeginInfo renderPassInfo{};
@@ -83,17 +83,17 @@ void DDM3::RenderpassWrapper::BeginRenderPass(VkCommandBuffer commandBuffer, VkF
 	vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 }
 
-void DDM3::RenderpassWrapper::AddSubpass(std::unique_ptr<Subpass> subpass)
+void DDM::RenderpassWrapper::AddSubpass(std::unique_ptr<Subpass> subpass)
 {
 	m_pSubpasses.push_back(std::move(subpass));
 }
 
-void DDM3::RenderpassWrapper::AddDependency(VkSubpassDependency dependency)
+void DDM::RenderpassWrapper::AddDependency(VkSubpassDependency dependency)
 {
 	m_Dependencies.push_back(dependency);
 }
 
-void DDM3::RenderpassWrapper::CreateRenderPass()
+void DDM::RenderpassWrapper::CreateRenderPass()
 {
 	std::vector<VkAttachmentDescription> attachments(m_AttachmentList.size());
 

@@ -10,7 +10,7 @@
 // Standard library includes
 #include <memory>
 
-namespace DDM3
+namespace DDM
 {
 	// Class forward declarations
 	class Keyboard;

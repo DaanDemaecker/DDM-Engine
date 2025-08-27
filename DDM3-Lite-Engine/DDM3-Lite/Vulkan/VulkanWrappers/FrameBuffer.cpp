@@ -9,18 +9,18 @@
 #include "Vulkan/VulkanWrappers/Attachment.h"
 #include "Vulkan/VulkanWrappers/RenderpassWrapper.h"
 
-DDM3::FrameBuffer::FrameBuffer()
+DDM::FrameBuffer::FrameBuffer()
 {
 
 }
 
-DDM3::FrameBuffer::~FrameBuffer()
+DDM::FrameBuffer::~FrameBuffer()
 {
 	
 	vkDestroyFramebuffer(VulkanObject::GetInstance().GetDevice(), m_FrameBuffer, nullptr);
 }
 
-void DDM3::FrameBuffer::CreateFrameBuffer(int index, RenderpassWrapper* renderpass, VkExtent2D extent, VkImageView swapchainImage)
+void DDM::FrameBuffer::CreateFrameBuffer(int index, RenderpassWrapper* renderpass, VkExtent2D extent, VkImageView swapchainImage)
 {
 	if (m_FrameBuffer != VK_NULL_HANDLE)
 	{

@@ -6,7 +6,7 @@
 // File includes
 #include "Vulkan/VulkanObject.h"
 
-DDM3::InputAttachmentDescriptorObject::InputAttachmentDescriptorObject()
+DDM::InputAttachmentDescriptorObject::InputAttachmentDescriptorObject()
 	:DescriptorObject(VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT)
 {
 	auto& vulkanObject{ VulkanObject::GetInstance() };
@@ -15,7 +15,7 @@ DDM3::InputAttachmentDescriptorObject::InputAttachmentDescriptorObject()
 	m_PlaceholderImageInfo.sampler = vulkanObject.GetSampler();
 }
 
-void DDM3::InputAttachmentDescriptorObject::AddImageView(VkImageView imageView, VkImageLayout layout)
+void DDM::InputAttachmentDescriptorObject::AddImageView(VkImageView imageView, VkImageLayout layout)
 {
 	VkDescriptorImageInfo imageInfo{};
 	imageInfo.imageView = imageView;
@@ -25,12 +25,12 @@ void DDM3::InputAttachmentDescriptorObject::AddImageView(VkImageView imageView, 
 	m_ImageInfos.push_back(imageInfo);
 }
 
-void DDM3::InputAttachmentDescriptorObject::ClearImageViews()
+void DDM::InputAttachmentDescriptorObject::ClearImageViews()
 {
 	m_ImageInfos.clear();
 }
 
-void DDM3::InputAttachmentDescriptorObject::AddDescriptorWrite(VkDescriptorSet descriptorSet, std::vector<VkWriteDescriptorSet>& descriptorWrites, int& binding, int amount, int index)
+void DDM::InputAttachmentDescriptorObject::AddDescriptorWrite(VkDescriptorSet descriptorSet, std::vector<VkWriteDescriptorSet>& descriptorWrites, int& binding, int amount, int index)
 {
 	for (int i{}; i < amount; i++)
 	{

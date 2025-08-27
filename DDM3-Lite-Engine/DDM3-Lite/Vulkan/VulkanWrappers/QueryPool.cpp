@@ -7,7 +7,7 @@
 #include "Vulkan/VulkanObject.h"
 
 
-DDM3::QueryPool::QueryPool(int queryCount, VkQueryType queryType)
+DDM::QueryPool::QueryPool(int queryCount, VkQueryType queryType)
 	:m_QueryCount{queryCount}, m_QueryType{queryType}
 {
 	// Query query pool
@@ -16,13 +16,13 @@ DDM3::QueryPool::QueryPool(int queryCount, VkQueryType queryType)
 	m_QueryMessages.reserve(m_QueryCount);
 }
 
-DDM3::QueryPool::~QueryPool()
+DDM::QueryPool::~QueryPool()
 {
 	// Destroy query pool
 	vkDestroyQueryPool(VulkanObject::GetInstance().GetDevice(), m_QueryPool, nullptr);
 }
 
-void DDM3::QueryPool::ResetPool()
+void DDM::QueryPool::ResetPool()
 {
 	// Reset query pool
 	vkResetQueryPool(VulkanObject::GetInstance().GetDevice(), m_QueryPool, 0, m_QueryCount);
@@ -35,7 +35,7 @@ void DDM3::QueryPool::ResetPool()
 	m_QueryMessages.reserve(m_QueryCount);
 }
 
-void DDM3::QueryPool::WriteTimeStamp(VkCommandBuffer commandBuffer, VkPipelineStageFlagBits pipelineStage)
+void DDM::QueryPool::WriteTimeStamp(VkCommandBuffer commandBuffer, VkPipelineStageFlagBits pipelineStage)
 {
 	// Only write timestamp if query type is correct and current query is lower than querycount
 	if (m_QueryType == VK_QUERY_TYPE_TIMESTAMP && m_CurrentQuery < m_QueryCount)
@@ -46,7 +46,7 @@ void DDM3::QueryPool::WriteTimeStamp(VkCommandBuffer commandBuffer, VkPipelineSt
 	}
 }
 
-void DDM3::QueryPool::PrintTimestamps()
+void DDM::QueryPool::PrintTimestamps()
 {
 	// Only print if query type is correct
 	if (m_QueryType == VK_QUERY_TYPE_TIMESTAMP)
@@ -117,13 +117,13 @@ void DDM3::QueryPool::PrintTimestamps()
 	}
 }
 
-void DDM3::QueryPool::AddQueryMessage(const std::string& message)
+void DDM::QueryPool::AddQueryMessage(const std::string& message)
 {
 	// Add new message to list
 	m_QueryMessages.push_back(message);
 }
 
-void DDM3::QueryPool::SetupQueryPool()
+void DDM::QueryPool::SetupQueryPool()
 {
 	// Create info for query pool
 	VkQueryPoolCreateInfo createInfo{};

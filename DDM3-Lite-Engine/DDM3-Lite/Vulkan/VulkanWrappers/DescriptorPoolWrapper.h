@@ -14,7 +14,7 @@
 #include <map>
 #include <memory>
 
-namespace DDM3
+namespace DDM
 {
 	// Class forward declarations
 	class MeshRenderComponent;
@@ -27,7 +27,7 @@ namespace DDM3
 		// Constructor
 		// Parameters:
 		//     shaderModules: a vector of shaderModules of the different requested shader files
-		DescriptorPoolWrapper(std::vector<std::unique_ptr<DDM3::ShaderModuleWrapper>>& shaderModules);
+		DescriptorPoolWrapper(std::vector<std::unique_ptr<DDM::ShaderModuleWrapper>>& shaderModules);
 
 		// Delete default constructor
 		DescriptorPoolWrapper() = delete;
@@ -98,7 +98,7 @@ namespace DDM3
 		// Read the amount of bindings per type from the shader modules
 		// Parameters:
 		//     shaderModules: a vector of shaderModules of the different requested shader files
-		void ReadDescriptorTypeCount(std::vector<std::unique_ptr<DDM3::ShaderModuleWrapper>>& shaderModules);
+		void ReadDescriptorTypeCount(std::vector<std::unique_ptr<DDM::ShaderModuleWrapper>>& shaderModules);
 	};
 }
 

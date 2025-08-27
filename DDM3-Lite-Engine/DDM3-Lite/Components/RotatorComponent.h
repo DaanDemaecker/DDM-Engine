@@ -2,7 +2,7 @@
 
 #include "../BaseClasses/Component.h"
 
-namespace DDM3
+namespace DDM
 {
 
 	class RotatorComponent final : public Component

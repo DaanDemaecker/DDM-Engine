@@ -7,7 +7,7 @@
 // File includes
 #include "Includes/VulkanIncludes.h"
 
-namespace DDM3
+namespace DDM
 {
 	// Class forward declarations
 	class InstanceWrapper;

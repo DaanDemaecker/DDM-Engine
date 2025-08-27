@@ -7,7 +7,7 @@
 #include "Vulkan/VulkanObject.h"
 #include "Vulkan/VulkanManagers/ImageManager.h"
 
-DDM3::Attachment::Attachment(int swapchainImageAmount)
+DDM::Attachment::Attachment(int swapchainImageAmount)
 {
 	for (int i{}; i < swapchainImageAmount; ++i)
 	{
@@ -15,12 +15,12 @@ DDM3::Attachment::Attachment(int swapchainImageAmount)
 	}
 }
 
-DDM3::Attachment::~Attachment()
+DDM::Attachment::~Attachment()
 {
 	Cleanup();
 }
 
-void DDM3::Attachment::SetTexture(int index, VkImage image, VkImageView imageView)
+void DDM::Attachment::SetTexture(int index, VkImage image, VkImageView imageView)
 {
 	m_Textures[index]->image = image;
 	m_Textures[index]->imageView = imageView;
@@ -28,7 +28,7 @@ void DDM3::Attachment::SetTexture(int index, VkImage image, VkImageView imageVie
 	m_ResetOnSetup = false;
 }
 
-void DDM3::Attachment::SetupImage(int index, VkExtent2D extent, VkImageView swapchainImage)
+void DDM::Attachment::SetupImage(int index, VkExtent2D extent, VkImageView swapchainImage)
 {
 	if (!m_ResetOnSetup)
 		return;
@@ -49,12 +49,12 @@ void DDM3::Attachment::SetupImage(int index, VkExtent2D extent, VkImageView swap
 	}
 }
 
-VkClearColorValue DDM3::Attachment::GetClearColorValue() const
+VkClearColorValue DDM::Attachment::GetClearColorValue() const
 {
 	return m_ClearColorValue;
 }
 
-void DDM3::Attachment::SetupColorTexture(int index, VkExtent2D extent)
+void DDM::Attachment::SetupColorTexture(int index, VkExtent2D extent)
 {
 	auto& vulkanObject{ VulkanObject::GetInstance() };
 
@@ -72,7 +72,7 @@ void DDM3::Attachment::SetupColorTexture(int index, VkExtent2D extent)
 	m_Textures[index]->imageView = pImageManager->CreateImageView(vulkanObject.GetDevice(), m_Textures[index]->image, m_Format, VK_IMAGE_ASPECT_COLOR_BIT, 1);
 }
 
-void DDM3::Attachment::SetupDepthImage(int index, VkExtent2D extent)
+void DDM::Attachment::SetupDepthImage(int index, VkExtent2D extent)
 {
 	auto& vulkanObject{ VulkanObject::GetInstance() };
 
@@ -100,7 +100,7 @@ void DDM3::Attachment::SetupDepthImage(int index, VkExtent2D extent)
 	vulkanObject.EndSingleTimeCommands(commandBuffer);
 }
 
-void DDM3::Attachment::CleanupImage(int index)
+void DDM::Attachment::CleanupImage(int index)
 {
 	if (m_Textures[index])
 	{
@@ -108,7 +108,7 @@ void DDM3::Attachment::CleanupImage(int index)
 	}
 }
 
-void DDM3::Attachment::Cleanup()
+void DDM::Attachment::Cleanup()
 {
 	if (m_ResetOnSetup)
 	{

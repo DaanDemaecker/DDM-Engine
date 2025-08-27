@@ -13,7 +13,7 @@ namespace DDMML
 	class Mesh;
 }
 
-namespace DDM3
+namespace DDM
 {
 	class Material;
 	class Mesh;
@@ -52,7 +52,7 @@ namespace DDM3
 		// Vector of dirty flags for UBOs
 		std::vector<bool> m_UboChanged{};
 
-		std::unique_ptr<DDM3::UboDescriptorObject<UniformBufferObject>> m_pUboDescriptorObject{};
+		std::unique_ptr<DDM::UboDescriptorObject<UniformBufferObject>> m_pUboDescriptorObject{};
 
 		bool m_ShouldCreateDescriptorSets{ false };
 

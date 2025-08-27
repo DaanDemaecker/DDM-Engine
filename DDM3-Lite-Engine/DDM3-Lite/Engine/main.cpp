@@ -27,31 +27,31 @@ int main()
 	srand(time(NULL));
 
 	// Create the engine object and run it with the load function
-	DDM3::DDM3Engine engine{};
+	DDM::DDM3Engine engine{};
 
 	int activeRenderer{ activeRendererSSAO };
 
 	switch (activeRenderer)
 	{
 	case activeRendererForward:
-		engine.Init<DDM3::ForwardRenderer>();
+		engine.Init<DDM::ForwardRenderer>();
 		engine.Run(LoadTestScene::loadTestScene);
 		//engine.Run(LoadModelLoaderScene::LoadModelLoaderScene);
 		break;
 	case activeRendererDeffered:
-		engine.Init<DDM3::DeferredRenderer>();
+		engine.Init<DDM::DeferredRenderer>();
 		engine.Run(LoadDeferredScene::LoadScene);
 		break;
 	case activeRendererSSAO:
-		engine.Init<DDM3::SSAORenderer>();
+		engine.Init<DDM::SSAORenderer>();
 		engine.Run(LoadAOScene::LoadScene);
 		break;
 	case activeRendererHBAO:
-		engine.Init<DDM3::HBAORenderer>();
+		engine.Init<DDM::HBAORenderer>();
 		engine.Run(LoadAOScene::LoadScene);
 		break;
 	case activeRendererGTAO:
-		engine.Init<DDM3::GTAORenderer>();
+		engine.Init<DDM::GTAORenderer>();
 		engine.Run(LoadAOScene::LoadScene);
 		break;
 	default:

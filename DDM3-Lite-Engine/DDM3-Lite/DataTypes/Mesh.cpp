@@ -8,7 +8,7 @@
 #include "DDMModelLoader/DDMModelLoader.h"
 
 
-DDM3::Mesh::Mesh(DDMML::Mesh* pMesh)
+DDM::Mesh::Mesh(DDMML::Mesh* pMesh)
 {
 	m_Vertices.clear();
 	m_Indices.clear();
@@ -27,21 +27,21 @@ DDM3::Mesh::Mesh(DDMML::Mesh* pMesh)
 	m_IsTransparant = pMesh->GetIsTransparant();
 }
 
-DDM3::Mesh::Mesh(const std::string& filePath)
+DDM::Mesh::Mesh(const std::string& filePath)
 {
 	// Load the vertices and indices
-	DDM3::DDMModelLoader::GetInstance().LoadModel(filePath, m_Vertices, m_Indices);
+	DDM::DDMModelLoader::GetInstance().LoadModel(filePath, m_Vertices, m_Indices);
 
 	SetupBuffers();
 }
 
-DDM3::Mesh::~Mesh()
+DDM::Mesh::~Mesh()
 {
 	// Call cleanup function
 	Cleanup();
 }
 
-void DDM3::Mesh::Render(PipelineWrapper* pPipeline, VkDescriptorSet* descriptorSet)
+void DDM::Mesh::Render(PipelineWrapper* pPipeline, VkDescriptorSet* descriptorSet)
 {
 	// Get current commandbuffer
 	auto commandBuffer{ VulkanObject::GetInstance().GetCurrentCommandBuffer() };
@@ -70,10 +70,10 @@ void DDM3::Mesh::Render(PipelineWrapper* pPipeline, VkDescriptorSet* descriptorS
 	vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(m_Indices.size()), 1, 0, 0, 0);
 }
 
-void DDM3::Mesh::Cleanup()
+void DDM::Mesh::Cleanup()
 {
 	// Get reference to renderer
-	auto& renderer = DDM3::VulkanObject::GetInstance();
+	auto& renderer = DDM::VulkanObject::GetInstance();
 	// Get reference to device
 	auto device = renderer.GetDevice();
 
@@ -91,7 +91,7 @@ void DDM3::Mesh::Cleanup()
 	vkFreeMemory(device, m_VertexBufferMemory, nullptr);
 }
 
-void DDM3::Mesh::SetupBuffers()
+void DDM::Mesh::SetupBuffers()
 {	
 	// Get reference to the renderer
 	auto& renderer{ VulkanObject::GetInstance() };

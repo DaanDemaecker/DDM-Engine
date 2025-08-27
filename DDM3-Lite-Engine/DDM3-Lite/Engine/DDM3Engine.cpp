@@ -21,17 +21,17 @@
 #include <chrono>
 #include <thread>
 
-DDM3::DDM3Engine::DDM3Engine()
+DDM::DDM3Engine::DDM3Engine()
 {
 }
 
-DDM3::DDM3Engine::~DDM3Engine()
+DDM::DDM3Engine::~DDM3Engine()
 {
 	VulkanObject::GetInstance().Terminate();
 
 }
 
-void DDM3::DDM3Engine::Run(const std::function<void()>& load)
+void DDM::DDM3Engine::Run(const std::function<void()>& load)
 {
 	if (!m_Initialized)
 	{

@@ -16,7 +16,7 @@
 #include "DataTypes/DescriptorObjects/TextureDescriptorObject.h"
 
 
-namespace DDM3
+namespace DDM
 {
 	// Class forward declarations
 	class PipelineWrapper;

@@ -11,7 +11,7 @@
 
 class IDXGIAdapter3;
 
-namespace DDM3
+namespace DDM
 {
 	class InfoComponent final : public Component
 	{

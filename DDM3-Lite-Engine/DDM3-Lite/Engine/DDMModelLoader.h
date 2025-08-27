@@ -16,7 +16,7 @@
 #include <vector>
 #include <string>
 
-namespace DDM3
+namespace DDM
 {
 	class GameObject;
 

@@ -28,7 +28,7 @@
 
 #include "Vulkan/Renderers/AORenderers/AoRenderPasses.h"
 
-DDM3::SSAORenderer::SSAORenderer()
+DDM::SSAORenderer::SSAORenderer()
 {
 	auto surface{ VulkanObject::GetInstance().GetSurface() };
 
@@ -76,7 +76,7 @@ DDM3::SSAORenderer::SSAORenderer()
 
 }
 
-DDM3::SSAORenderer::~SSAORenderer()
+DDM::SSAORenderer::~SSAORenderer()
 {
 	auto device = VulkanObject::GetInstance().GetDevice();
 
@@ -97,9 +97,9 @@ DDM3::SSAORenderer::~SSAORenderer()
 }
 
 
-void DDM3::SSAORenderer::Render()
+void DDM::SSAORenderer::Render()
 {
-	auto& vulkanObject{ DDM3::VulkanObject::GetInstance() };
+	auto& vulkanObject{ DDM::VulkanObject::GetInstance() };
 
 	auto currentFrame{ vulkanObject.GetCurrentFrame() };
 
@@ -182,17 +182,17 @@ void DDM3::SSAORenderer::Render()
 	}
 }
 
-VkExtent2D DDM3::SSAORenderer::GetExtent()
+VkExtent2D DDM::SSAORenderer::GetExtent()
 {
 	return m_pSwapchainWrapper->GetExtent();
 }
 
-DDM3::RenderpassWrapper* DDM3::SSAORenderer::GetDefaultRenderpass()
+DDM::RenderpassWrapper* DDM::SSAORenderer::GetDefaultRenderpass()
 {
 	return m_pRenderpass.get();
 }
 
-void DDM3::SSAORenderer::AddDefaultPipelines()
+void DDM::SSAORenderer::AddDefaultPipelines()
 {
 	// Get config manager
 	auto& configManager{ ConfigManager::GetInstance() };
@@ -248,7 +248,7 @@ void DDM3::SSAORenderer::AddDefaultPipelines()
 	m_pAoBlurPipeline = vulkanObject.GetPipeline(aoBlurPipelineName);
 }
 
-void DDM3::SSAORenderer::CreateRenderpass()
+void DDM::SSAORenderer::CreateRenderpass()
 {
 	m_pRenderpass = std::make_unique<RenderpassWrapper>();
 
@@ -273,7 +273,7 @@ void DDM3::SSAORenderer::CreateRenderpass()
 	m_pSwapchainWrapper->AddFrameBuffers(m_pRenderpass.get());
 }
 
-void DDM3::SSAORenderer::SetupAttachments()
+void DDM::SSAORenderer::SetupAttachments()
 {
 	int swapchainImageAmount = m_pSwapchainWrapper->GetSwapchainImageAmount();
 
@@ -448,7 +448,7 @@ void DDM3::SSAORenderer::SetupAttachments()
 
 }
 
-void DDM3::SSAORenderer::SetupDepthPass()
+void DDM::SSAORenderer::SetupDepthPass()
 {
 	// Depth prepass depth buffer reference (read/write)
 	VkAttachmentReference depthAttachmentReference{};
@@ -462,7 +462,7 @@ void DDM3::SSAORenderer::SetupDepthPass()
 	m_pRenderpass->AddSubpass(std::move(depthPass));
 }
 
-void DDM3::SSAORenderer::SetupGBufferPass()
+void DDM::SSAORenderer::SetupGBufferPass()
 {
 	std::unique_ptr<Subpass> pGBufferPass{ std::make_unique<Subpass>() };
 
@@ -497,7 +497,7 @@ void DDM3::SSAORenderer::SetupGBufferPass()
 	m_pRenderpass->AddSubpass(std::move(pGBufferPass));
 }
 
-void DDM3::SSAORenderer::SetupAoGenPass()
+void DDM::SSAORenderer::SetupAoGenPass()
 {
 	std::unique_ptr<Subpass> pAoMapPass{ std::make_unique<Subpass>() };
 
@@ -531,7 +531,7 @@ void DDM3::SSAORenderer::SetupAoGenPass()
 	m_pRenderpass->AddSubpass(std::move(pAoMapPass));
 }
 
-void DDM3::SSAORenderer::SetupAoBlurPass()
+void DDM::SSAORenderer::SetupAoBlurPass()
 {
 	std::unique_ptr<Subpass> pBlurSubpass{ std::make_unique<Subpass>() };
 
@@ -551,7 +551,7 @@ void DDM3::SSAORenderer::SetupAoBlurPass()
 	m_pRenderpass->AddSubpass(std::move(pBlurSubpass));
 }
 
-void DDM3::SSAORenderer::SetupLightingPass()
+void DDM::SSAORenderer::SetupLightingPass()
 {
 	std::unique_ptr<Subpass> pLightingPass{ std::make_unique<Subpass>() };
 
@@ -599,7 +599,7 @@ void DDM3::SSAORenderer::SetupLightingPass()
 	m_pRenderpass->AddSubpass(std::move(pLightingPass));
 }
 
-void DDM3::SSAORenderer::SetupImGuiPass()
+void DDM::SSAORenderer::SetupImGuiPass()
 {
 	int swapchainImageAmount = m_pSwapchainWrapper->GetSwapchainImageAmount();
 
@@ -617,7 +617,7 @@ void DDM3::SSAORenderer::SetupImGuiPass()
 	m_pRenderpass->AddSubpass(std::move(imGuiSubpass));
 }
 
-void DDM3::SSAORenderer::SetupDependencies()
+void DDM::SSAORenderer::SetupDependencies()
 {
 	VkSubpassDependency depthToGbufferDependency{};
 	depthToGbufferDependency.srcSubpass = kSubpass_DEPTH;
@@ -672,7 +672,7 @@ void DDM3::SSAORenderer::SetupDependencies()
 	m_pRenderpass->AddDependency(lightingToImguiDependency);;
 }
 
-void DDM3::SSAORenderer::SetupDescriptorObjects()
+void DDM::SSAORenderer::SetupDescriptorObjects()
 {
 	SetupDescriptorObjectsAoGen();
 
@@ -684,7 +684,7 @@ void DDM3::SSAORenderer::SetupDescriptorObjects()
 	SetupDescriptorObjectsLighting();
 }
 
-void DDM3::SSAORenderer::SetupDescriptorObjectsAoGen()
+void DDM::SSAORenderer::SetupDescriptorObjectsAoGen()
 {
 	m_pAoGenInputDescriptorObjects.clear();
 
@@ -705,13 +705,13 @@ void DDM3::SSAORenderer::SetupDescriptorObjectsAoGen()
 	m_pAoGenInputDescriptorObjects.push_back(std::move(descriptorObject));
 }
 
-void DDM3::SSAORenderer::SetupDescriptorObjectsAoBlur()
+void DDM::SSAORenderer::SetupDescriptorObjectsAoBlur()
 {
 	m_pAoGenTextureDescriptorObject = std::make_unique<TextureDescriptorObject>();
 	m_pAoGenTextureDescriptorObject->SetCleanupTextures(false);
 }
 
-void DDM3::SSAORenderer::SetupDescriptorObjectsLighting()
+void DDM::SSAORenderer::SetupDescriptorObjectsLighting()
 {
 	m_pLightingInputDescriptorObjects.clear();
 
@@ -740,19 +740,19 @@ void DDM3::SSAORenderer::SetupDescriptorObjectsLighting()
 	m_pLightingInputDescriptorObjects.push_back(std::move(descriptorObject));
 }
 
-void DDM3::SSAORenderer::SetupPositionTexture()
+void DDM::SSAORenderer::SetupPositionTexture()
 {
 	m_pPositionTextureDescriptorObject = std::make_unique<TextureDescriptorObject>();
 	m_pPositionTextureDescriptorObject->SetCleanupTextures(false);
 }
 
-void DDM3::SSAORenderer::SetupNoiseTexture()
+void DDM::SSAORenderer::SetupNoiseTexture()
 {
 	m_pNoiseTextureDescriptorObject = std::make_unique<TextureDescriptorObject>();
 	m_pNoiseTextureDescriptorObject->AddTexture("Resources/Images/NoiseTexture2.png");
 }
 
-void DDM3::SSAORenderer::SetupSamples()
+void DDM::SSAORenderer::SetupSamples()
 {
 	auto maxFrames = VulkanObject::GetInstance().GetMaxFrames();
 
@@ -761,7 +761,7 @@ void DDM3::SSAORenderer::SetupSamples()
 	m_pSamplesDescriptorObject = std::make_unique<UboDescriptorObject<glm::vec4>>(m_SampleCount);
 }
 
-void DDM3::SSAORenderer::SetNewSamples()
+void DDM::SSAORenderer::SetNewSamples()
 {
 	for (int i{}; i < m_Samples.size(); ++i)
 	{
@@ -772,7 +772,7 @@ void DDM3::SSAORenderer::SetNewSamples()
 
 // Logic by Brian Will
 // https://www.youtube.com/watch?v=7hxrPKoELpo
-void DDM3::SSAORenderer::GetRandomVector(glm::vec4& vec, int index)
+void DDM::SSAORenderer::GetRandomVector(glm::vec4& vec, int index)
 {
 	vec.x = Utils::RandomFLoat(-1.0f, 1.0f);
 	vec.y = Utils::RandomFLoat(-1.0f, 1.0f);
@@ -787,18 +787,18 @@ void DDM3::SSAORenderer::GetRandomVector(glm::vec4& vec, int index)
 	vec *= Utils::Lerp(0.1f, 1.0f, scale * scale);
 }
 
-void DDM3::SSAORenderer::SetupProjectionViewMatrix()
+void DDM::SSAORenderer::SetupProjectionViewMatrix()
 {
 	m_pProjectionMatrixDescObject = std::make_unique<UboDescriptorObject<glm::mat4>>();
 	m_pViewMatrixDescObject = std::make_unique<UboDescriptorObject<glm::mat4>>();
 }
 
-void DDM3::SSAORenderer::InitImgui()
+void DDM::SSAORenderer::InitImgui()
 {
 	// Create ImGui vulkan init info
 	ImGui_ImplVulkan_InitInfo init_info = {};
 	// Give the vulkan instance
-	init_info.Instance = DDM3::VulkanObject::GetInstance().GetVulkanInstance();
+	init_info.Instance = DDM::VulkanObject::GetInstance().GetVulkanInstance();
 	// Give the physical device
 	init_info.PhysicalDevice = VulkanObject::GetInstance().GetPhysicalDevice();
 	// Give the logical device
@@ -824,18 +824,18 @@ void DDM3::SSAORenderer::InitImgui()
 	// Create a single time command buffer
 	auto commandBuffer{ VulkanObject::GetInstance().BeginSingleTimeCommands() };
 	// Initialize ImGui
-	m_pImGuiWrapper = std::make_unique<DDM3::ImGuiWrapper>(init_info,
+	m_pImGuiWrapper = std::make_unique<DDM::ImGuiWrapper>(init_info,
 		VulkanObject::GetInstance().GetDevice(), static_cast<uint32_t>(VulkanObject::GetInstance().GetMaxFrames()), m_pRenderpass->GetRenderpass(), commandBuffer);
 	// End the single time command buffer
 	VulkanObject::GetInstance().EndSingleTimeCommands(commandBuffer);
 }
 
-void DDM3::SSAORenderer::CleanupImgui()
+void DDM::SSAORenderer::CleanupImgui()
 {
 	m_pImGuiWrapper.reset();
 }
 
-void DDM3::SSAORenderer::RecordCommandBuffer(VkCommandBuffer& commandBuffer, uint32_t imageIndex)
+void DDM::SSAORenderer::RecordCommandBuffer(VkCommandBuffer& commandBuffer, uint32_t imageIndex)
 {
 	auto frame = VulkanObject::GetInstance().GetCurrentFrame();
 
@@ -953,10 +953,10 @@ void DDM3::SSAORenderer::RecordCommandBuffer(VkCommandBuffer& commandBuffer, uin
 	}
 }
 
-void DDM3::SSAORenderer::RecreateSwapChain()
+void DDM::SSAORenderer::RecreateSwapChain()
 {
 	// Get a reference to the window struct
-	auto& windowStruct{ DDM3::Window::GetInstance().GetWindowStruct() };
+	auto& windowStruct{ DDM::Window::GetInstance().GetWindowStruct() };
 
 	//Get the width and the height of the window
 	glfwGetFramebufferSize(windowStruct.pWindow, &windowStruct.Width, &windowStruct.Height);
@@ -969,7 +969,7 @@ void DDM3::SSAORenderer::RecreateSwapChain()
 	}
 
 	// Wait until the device is idle
-	vkDeviceWaitIdle(DDM3::VulkanObject::GetInstance().GetDevice());
+	vkDeviceWaitIdle(DDM::VulkanObject::GetInstance().GetDevice());
 
 	// Create a single time command
 	auto commandBuffer{ VulkanObject::GetInstance().BeginSingleTimeCommands() };
@@ -978,7 +978,7 @@ void DDM3::SSAORenderer::RecreateSwapChain()
 	std::vector<RenderpassWrapper*> renderpasses{ m_pRenderpass.get() };
 
 	// Recreate the swapchain
-	m_pSwapchainWrapper->RecreateSwapChain(DDM3::VulkanObject::GetInstance().GetGPUObject(), DDM3::VulkanObject::GetInstance().GetSurface(),
+	m_pSwapchainWrapper->RecreateSwapChain(DDM::VulkanObject::GetInstance().GetGPUObject(), DDM::VulkanObject::GetInstance().GetSurface(),
 		VulkanObject::GetInstance().GetImageManager(),
 		commandBuffer, renderpasses);
 
@@ -988,7 +988,7 @@ void DDM3::SSAORenderer::RecreateSwapChain()
 	ResetDescriptorSets();
 }
 
-void DDM3::SSAORenderer::ResetDescriptorSets()
+void DDM::SSAORenderer::ResetDescriptorSets()
 {
 	vkFreeDescriptorSets(VulkanObject::GetInstance().GetDevice(), m_LightingDescriptorPool, m_LightingDescriptorSets.size(), m_LightingDescriptorSets.data());
 
@@ -1004,7 +1004,7 @@ void DDM3::SSAORenderer::ResetDescriptorSets()
 	CreateDescriptorSets();
 }
 
-void DDM3::SSAORenderer::CreateDescriptorSetLayouts()
+void DDM::SSAORenderer::CreateDescriptorSetLayouts()
 {
 	CreateAoGenDescriptorSetLayout();
 	if (m_ShouldBlur)
@@ -1015,7 +1015,7 @@ void DDM3::SSAORenderer::CreateDescriptorSetLayouts()
 	CreateLightingDescriptorSetLayout();
 }
 
-void DDM3::SSAORenderer::CreateAoGenDescriptorSetLayout()
+void DDM::SSAORenderer::CreateAoGenDescriptorSetLayout()
 {
 	// Create vector of descriptorsetlayoutbindings the size of the sum of vertexUbos, fragmentUbos and textureamount;
 	std::vector<VkDescriptorSetLayoutBinding> bindings{};
@@ -1092,7 +1092,7 @@ void DDM3::SSAORenderer::CreateAoGenDescriptorSetLayout()
 	}
 }
 
-void DDM3::SSAORenderer::CreateAoBlurDescriptorSetLayout()
+void DDM::SSAORenderer::CreateAoBlurDescriptorSetLayout()
 {
 	// Create vector of descriptorsetlayoutbindings the size of the sum of vertexUbos, fragmentUbos and textureamount;
 	std::vector<VkDescriptorSetLayoutBinding> bindings{};
@@ -1124,7 +1124,7 @@ void DDM3::SSAORenderer::CreateAoBlurDescriptorSetLayout()
 	}
 }
 
-void DDM3::SSAORenderer::CreateLightingDescriptorSetLayout()
+void DDM::SSAORenderer::CreateLightingDescriptorSetLayout()
 {
 	// Create vector of descriptorsetlayoutbindings the size of the sum of vertexUbos, fragmentUbos and textureamount;
 	std::vector<VkDescriptorSetLayoutBinding> bindings{};
@@ -1170,7 +1170,7 @@ void DDM3::SSAORenderer::CreateLightingDescriptorSetLayout()
 	}
 }
 
-void DDM3::SSAORenderer::CreateDescriptorPools()
+void DDM::SSAORenderer::CreateDescriptorPools()
 {
 	CreateAoGenDescriptorPool();
 
@@ -1182,7 +1182,7 @@ void DDM3::SSAORenderer::CreateDescriptorPools()
 	CreateLightingDescriptorPool();
 }
 
-void DDM3::SSAORenderer::CreateAoGenDescriptorPool()
+void DDM::SSAORenderer::CreateAoGenDescriptorPool()
 {
 	// Get a reference to the vulkan object
 	auto& vulkanObject{ VulkanObject::GetInstance() };
@@ -1249,7 +1249,7 @@ void DDM3::SSAORenderer::CreateAoGenDescriptorPool()
 	}
 }
 
-void DDM3::SSAORenderer::CreateAoBlurDescriptorPool()
+void DDM::SSAORenderer::CreateAoBlurDescriptorPool()
 {
 	// Get a reference to the vulkan object
 	auto& vulkanObject{ VulkanObject::GetInstance() };
@@ -1287,7 +1287,7 @@ void DDM3::SSAORenderer::CreateAoBlurDescriptorPool()
 	}
 }
 
-void DDM3::SSAORenderer::CreateLightingDescriptorPool()
+void DDM::SSAORenderer::CreateLightingDescriptorPool()
 {
 	// Get a reference to the renderer
 	auto& vulkanObject{ VulkanObject::GetInstance() };
@@ -1338,7 +1338,7 @@ void DDM3::SSAORenderer::CreateLightingDescriptorPool()
 	}
 }
 
-void DDM3::SSAORenderer::CreateDescriptorSets()
+void DDM::SSAORenderer::CreateDescriptorSets()
 {
 	CreateAoGenDescriptorSets();
 
@@ -1350,7 +1350,7 @@ void DDM3::SSAORenderer::CreateDescriptorSets()
 	CreateLightingDescriptorSets();
 }
 
-void DDM3::SSAORenderer::CreateAoGenDescriptorSets()
+void DDM::SSAORenderer::CreateAoGenDescriptorSets()
 {
 	// Get a reference to the renderer for later use
 	auto& renderer{ VulkanObject::GetInstance() };
@@ -1380,7 +1380,7 @@ void DDM3::SSAORenderer::CreateAoGenDescriptorSets()
 	}
 }
 
-void DDM3::SSAORenderer::CreateAoBlurDescriptorSets()
+void DDM::SSAORenderer::CreateAoBlurDescriptorSets()
 {
 	// Get a reference to the renderer for later use
 	auto& renderer{ VulkanObject::GetInstance() };
@@ -1410,7 +1410,7 @@ void DDM3::SSAORenderer::CreateAoBlurDescriptorSets()
 	}
 }
 
-void DDM3::SSAORenderer::CreateLightingDescriptorSets()
+void DDM::SSAORenderer::CreateLightingDescriptorSets()
 {
 	// Get a reference to the renderer for later use
 	auto& renderer{ VulkanObject::GetInstance() };
@@ -1440,7 +1440,7 @@ void DDM3::SSAORenderer::CreateLightingDescriptorSets()
 	}
 }
 
-void DDM3::SSAORenderer::UpdateDescriptorSets(int frame, int swapchainIndex)
+void DDM::SSAORenderer::UpdateDescriptorSets(int frame, int swapchainIndex)
 {
 	UpdateAoGenDescriptorSets(frame, swapchainIndex);
 
@@ -1452,7 +1452,7 @@ void DDM3::SSAORenderer::UpdateDescriptorSets(int frame, int swapchainIndex)
 	UpdateLightingDescriptorSets(frame);
 }
 
-void DDM3::SSAORenderer::UpdateAoGenDescriptorSets(int frame, int swapchainIndex)
+void DDM::SSAORenderer::UpdateAoGenDescriptorSets(int frame, int swapchainIndex)
 {
 	// Create a vector of descriptor writes
 	std::vector<VkWriteDescriptorSet> descriptorWrites{};
@@ -1493,7 +1493,7 @@ void DDM3::SSAORenderer::UpdateAoGenDescriptorSets(int frame, int swapchainIndex
 	vkUpdateDescriptorSets(VulkanObject::GetInstance().GetDevice(), static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
 }
 
-void DDM3::SSAORenderer::UpdateAoBlurDescriptorSets(int frame, int swapchainIndex)
+void DDM::SSAORenderer::UpdateAoBlurDescriptorSets(int frame, int swapchainIndex)
 {
 	// Create a vector of descriptor writes
 	std::vector<VkWriteDescriptorSet> descriptorWrites{};
@@ -1514,7 +1514,7 @@ void DDM3::SSAORenderer::UpdateAoBlurDescriptorSets(int frame, int swapchainInde
 
 }
 
-void DDM3::SSAORenderer::UpdateLightingDescriptorSets(int frame)
+void DDM::SSAORenderer::UpdateLightingDescriptorSets(int frame)
 {
 	// Create a vector of descriptor writes
 	std::vector<VkWriteDescriptorSet> descriptorWrites{};

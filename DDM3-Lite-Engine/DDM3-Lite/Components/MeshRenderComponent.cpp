@@ -8,14 +8,14 @@
 #include "Vulkan/VulkanWrappers/PipelineWrapper.h"
 #include "DDMModelLoader/Mesh.h"
 
-DDM3::MeshRenderComponent::MeshRenderComponent()
+DDM::MeshRenderComponent::MeshRenderComponent()
 {
-	m_pMaterial = std::make_shared<DDM3::Material>();
+	m_pMaterial = std::make_shared<DDM::Material>();
 
-	m_pUboDescriptorObject = std::make_unique<DDM3::UboDescriptorObject<UniformBufferObject>>();
+	m_pUboDescriptorObject = std::make_unique<DDM::UboDescriptorObject<UniformBufferObject>>();
 }
 
-void DDM3::MeshRenderComponent::EarlyUpdate()
+void DDM::MeshRenderComponent::EarlyUpdate()
 {
 	if (m_ShouldCreateDescriptorSets)
 	{
@@ -31,7 +31,7 @@ void DDM3::MeshRenderComponent::EarlyUpdate()
 	UpdateUniformBuffer(VulkanObject::GetInstance().GetCurrentFrame());
 }
 
-void DDM3::MeshRenderComponent::SetMesh(std::shared_ptr<Mesh> pMesh)
+void DDM::MeshRenderComponent::SetMesh(std::shared_ptr<Mesh> pMesh)
 {
 	if (m_Initialized)
 	{
@@ -49,7 +49,7 @@ void DDM3::MeshRenderComponent::SetMesh(std::shared_ptr<Mesh> pMesh)
 	m_IsTransparant = pMesh->IsTransparant();
 }
 
-void DDM3::MeshRenderComponent::SetMesh(DDMML::Mesh* pMesh)
+void DDM::MeshRenderComponent::SetMesh(DDMML::Mesh* pMesh)
 {
 	if (m_Initialized)
 	{
@@ -63,7 +63,7 @@ void DDM3::MeshRenderComponent::SetMesh(DDMML::Mesh* pMesh)
 	m_IsTransparant = pMesh->GetIsTransparant();
 }
 
-void DDM3::MeshRenderComponent::SetMaterial(std::shared_ptr<Material> pMaterial)
+void DDM::MeshRenderComponent::SetMaterial(std::shared_ptr<Material> pMaterial)
 {
 	m_pMaterial->GetDescriptorPool()->RemoveModel(this);
 	m_pMaterial = pMaterial;
@@ -71,7 +71,7 @@ void DDM3::MeshRenderComponent::SetMaterial(std::shared_ptr<Material> pMaterial)
 	m_ShouldCreateDescriptorSets = true;
 }
 
-void DDM3::MeshRenderComponent::RenderDepth()
+void DDM::MeshRenderComponent::RenderDepth()
 {
 	if (m_IsTransparant || m_pMesh == nullptr)
 		return;
@@ -81,7 +81,7 @@ void DDM3::MeshRenderComponent::RenderDepth()
 	m_pMesh->Render(VulkanObject::GetInstance().GetPipeline("Depth"), &m_DepthDescriptorSets[frame]);
 }
 
-void DDM3::MeshRenderComponent::Render()
+void DDM::MeshRenderComponent::Render()
 {
 	if (m_IsTransparant || m_pMesh == nullptr)
 		return;
@@ -91,7 +91,7 @@ void DDM3::MeshRenderComponent::Render()
 	m_pMesh->Render(GetPipeline(), &m_DescriptorSets[frame]);
 }
 
-void DDM3::MeshRenderComponent::RenderTransparancy()
+void DDM::MeshRenderComponent::RenderTransparancy()
 {
 	if (!m_IsTransparant || m_pMesh == nullptr)
 		return;
@@ -101,12 +101,12 @@ void DDM3::MeshRenderComponent::RenderTransparancy()
 	m_pMesh->Render(GetPipeline(), &m_DescriptorSets[frame]);
 }
 
-void DDM3::MeshRenderComponent::OnGUI()
+void DDM::MeshRenderComponent::OnGUI()
 {
 	m_pMaterial->OnGUI();
 }
 
-void DDM3::MeshRenderComponent::CreateUniformBuffers()
+void DDM::MeshRenderComponent::CreateUniformBuffers()
 {
 	// Get reference to renderer
 	auto& renderer = VulkanObject::GetInstance();
@@ -119,7 +119,7 @@ void DDM3::MeshRenderComponent::CreateUniformBuffers()
 	m_UboChanged.resize(frames);
 }
 
-void DDM3::MeshRenderComponent::CreateDescriptorSets()
+void DDM::MeshRenderComponent::CreateDescriptorSets()
 {
 	if (m_pMaterial == nullptr)
 	{
@@ -135,7 +135,7 @@ void DDM3::MeshRenderComponent::CreateDescriptorSets()
 	UpdateDescriptorSets();
 }
 
-void DDM3::MeshRenderComponent::UpdateDescriptorSets()
+void DDM::MeshRenderComponent::UpdateDescriptorSets()
 {
 	std::vector<DescriptorObject*> descriptors{ m_pUboDescriptorObject.get() };
 
@@ -145,7 +145,7 @@ void DDM3::MeshRenderComponent::UpdateDescriptorSets()
 	UpdateDepthDescriptorSets();
 }
 
-void DDM3::MeshRenderComponent::UpdateUniformBuffer(uint32_t frame)
+void DDM::MeshRenderComponent::UpdateUniformBuffer(uint32_t frame)
 {
 	auto transform{ GetTransform() };
 
@@ -163,7 +163,7 @@ void DDM3::MeshRenderComponent::UpdateUniformBuffer(uint32_t frame)
 	m_pUboDescriptorObject->UpdateUboBuffer(&m_Ubos[frame], frame);
 }
 
-DDM3::PipelineWrapper* DDM3::MeshRenderComponent::GetPipeline()
+DDM::PipelineWrapper* DDM::MeshRenderComponent::GetPipeline()
 {
 	if (m_pMaterial != nullptr)
 	{
@@ -173,7 +173,7 @@ DDM3::PipelineWrapper* DDM3::MeshRenderComponent::GetPipeline()
 	return VulkanObject::GetInstance().GetPipeline();
 }
 
-void DDM3::MeshRenderComponent::CreateDepthDescriptorSets()
+void DDM::MeshRenderComponent::CreateDepthDescriptorSets()
 {
 	// Get pointer to the descriptorpool wrapper
 	auto descriptorPool = VulkanObject::GetInstance().GetPipeline("Depth")->GetDescriptorPool();
@@ -187,7 +187,7 @@ void DDM3::MeshRenderComponent::CreateDepthDescriptorSets()
 	m_ShouldCreateDescriptorSets = false;
 }
 
-void DDM3::MeshRenderComponent::UpdateDepthDescriptorSets()
+void DDM::MeshRenderComponent::UpdateDepthDescriptorSets()
 {
 	// Get pointer to the descriptorpool wrapper
 	auto descriptorPool = VulkanObject::GetInstance().GetPipeline("Depth")->GetDescriptorPool();
@@ -203,7 +203,7 @@ void DDM3::MeshRenderComponent::UpdateDepthDescriptorSets()
 	descriptorPool->UpdateDescriptorSets(m_DepthDescriptorSets, descriptors);
 }
 
-void DDM3::MeshRenderComponent::CreateDefaultMaterial()
+void DDM::MeshRenderComponent::CreateDefaultMaterial()
 {
 	m_pMaterial = std::make_shared<Material>();
 }

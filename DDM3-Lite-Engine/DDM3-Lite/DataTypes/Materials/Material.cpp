@@ -5,13 +5,13 @@
 #include "../../Includes/STBIncludes.h"
 #include "../../Vulkan/VulkanWrappers/PipelineWrapper.h"
 
-DDM3::Material::Material(const std::string& pipelineName)
+DDM::Material::Material(const std::string& pipelineName)
 {
 	// Get the requested pipeline from the renderer
 	m_pPipeline = VulkanObject::GetInstance().GetPipeline(pipelineName);
 }
 
-DDM3::Material& DDM3::Material::operator=(DDM3::Material&& other)
+DDM::Material& DDM::Material::operator=(DDM::Material&& other)
 {
 	m_pPipeline = other.m_pPipeline;
 	m_ShouldUpdateDescriptorSets = other.m_ShouldUpdateDescriptorSets;
@@ -19,12 +19,12 @@ DDM3::Material& DDM3::Material::operator=(DDM3::Material&& other)
 	return *this;
 }
 
-DDM3::PipelineWrapper* DDM3::Material::GetPipeline()
+DDM::PipelineWrapper* DDM::Material::GetPipeline()
 {
 	return m_pPipeline;
 }
 
-void DDM3::Material::CreateDescriptorSets(MeshRenderComponent* pModel, std::vector<VkDescriptorSet>& descriptorSets)
+void DDM::Material::CreateDescriptorSets(MeshRenderComponent* pModel, std::vector<VkDescriptorSet>& descriptorSets)
 {
 	// Get pointer to the descriptorpool wrapper
 	auto descriptorPool = GetDescriptorPool();
@@ -34,7 +34,7 @@ void DDM3::Material::CreateDescriptorSets(MeshRenderComponent* pModel, std::vect
 	descriptorPool->CreateDescriptorSets(GetDescriptorLayout(), descriptorSets);
 }
 
-void DDM3::Material::UpdateDescriptorSets(std::vector<VkDescriptorSet>& descriptorSets, std::vector<DescriptorObject*>& descriptorObjects)
+void DDM::Material::UpdateDescriptorSets(std::vector<VkDescriptorSet>& descriptorSets, std::vector<DescriptorObject*>& descriptorObjects)
 {
 	// Get pointer to the descriptorpool wrapper
 	auto descriptorPool = GetDescriptorPool();
@@ -56,12 +56,12 @@ void DDM3::Material::UpdateDescriptorSets(std::vector<VkDescriptorSet>& descript
 	m_ShouldUpdateDescriptorSets = false;
 }
 
-VkDescriptorSetLayout DDM3::Material::GetDescriptorLayout()
+VkDescriptorSetLayout DDM::Material::GetDescriptorLayout()
 {
 	return m_pPipeline->GetDescriptorSetLayout();
 }
 
-DDM3::DescriptorPoolWrapper* DDM3::Material::GetDescriptorPool()
+DDM::DescriptorPoolWrapper* DDM::Material::GetDescriptorPool()
 {
 	return m_pPipeline->GetDescriptorPool();
 }

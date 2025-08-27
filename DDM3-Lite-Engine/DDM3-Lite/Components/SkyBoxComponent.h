@@ -13,7 +13,7 @@
 #include <initializer_list>
 
 
-namespace DDM3
+namespace DDM
 {
 	class SkyBoxComponent final : public MeshRenderComponent
 	{

@@ -13,7 +13,7 @@
 #include "DataTypes/DescriptorObjects/DescriptorObject.h"
 
 
-DDM3::DescriptorPoolWrapper::DescriptorPoolWrapper(std::vector<std::unique_ptr<DDM3::ShaderModuleWrapper>>& shaderModules)
+DDM::DescriptorPoolWrapper::DescriptorPoolWrapper(std::vector<std::unique_ptr<DDM::ShaderModuleWrapper>>& shaderModules)
 {
 	// Read the number of bindings per type
 	ReadDescriptorTypeCount(shaderModules);
@@ -22,13 +22,13 @@ DDM3::DescriptorPoolWrapper::DescriptorPoolWrapper(std::vector<std::unique_ptr<D
 	InitDescriptorPool();
 }
 
-DDM3::DescriptorPoolWrapper::~DescriptorPoolWrapper()
+DDM::DescriptorPoolWrapper::~DescriptorPoolWrapper()
 {
 	Cleanup(VulkanObject::GetInstance().GetDevice());
 }
 
 
-void DDM3::DescriptorPoolWrapper::Cleanup(VkDevice device)
+void DDM::DescriptorPoolWrapper::Cleanup(VkDevice device)
 {
 	if (m_DescriptorPool != VK_NULL_HANDLE)
 	{
@@ -41,7 +41,7 @@ void DDM3::DescriptorPoolWrapper::Cleanup(VkDevice device)
 	}
 }
 
-void DDM3::DescriptorPoolWrapper::AddModel(MeshRenderComponent* pModel)
+void DDM::DescriptorPoolWrapper::AddModel(MeshRenderComponent* pModel)
 {
 	// Check if the model is already in the vector, if not add it
 	if (std::find(m_pModels.begin(), m_pModels.end(), pModel) == m_pModels.end())
@@ -51,7 +51,7 @@ void DDM3::DescriptorPoolWrapper::AddModel(MeshRenderComponent* pModel)
 	}
 }
 
-void DDM3::DescriptorPoolWrapper::RemoveModel(MeshRenderComponent* pModel)
+void DDM::DescriptorPoolWrapper::RemoveModel(MeshRenderComponent* pModel)
 {
 	// Remove model from vector
 	if (std::find(m_pModels.begin(), m_pModels.end(), pModel) != m_pModels.end())
@@ -61,7 +61,7 @@ void DDM3::DescriptorPoolWrapper::RemoveModel(MeshRenderComponent* pModel)
 	}
 }
 
-void DDM3::DescriptorPoolWrapper::CreateDescriptorSets(VkDescriptorSetLayout layout, std::vector<VkDescriptorSet>& descriptorSets)
+void DDM::DescriptorPoolWrapper::CreateDescriptorSets(VkDescriptorSetLayout layout, std::vector<VkDescriptorSet>& descriptorSets)
 {
 	// Check if the amount of already allocated descriptorsets is larger or equal to the max amoount, if it is, resize and return
 	if (m_AllocatedDescriptorSets >= m_MaxDescriptorSets)
@@ -101,7 +101,7 @@ void DDM3::DescriptorPoolWrapper::CreateDescriptorSets(VkDescriptorSetLayout lay
 	m_AllocatedDescriptorSets++;
 }
 
-void DDM3::DescriptorPoolWrapper::UpdateDescriptorSets(std::vector<VkDescriptorSet>& descriptorSets, std::vector<DescriptorObject*>& descriptorObjects)
+void DDM::DescriptorPoolWrapper::UpdateDescriptorSets(std::vector<VkDescriptorSet>& descriptorSets, std::vector<DescriptorObject*>& descriptorObjects)
 {
 	// Loop trough all the descriptor sets
 	for (int i{}; i < static_cast<int>(descriptorSets.size()); i++)
@@ -125,7 +125,7 @@ void DDM3::DescriptorPoolWrapper::UpdateDescriptorSets(std::vector<VkDescriptorS
 	}
 }
 
-void DDM3::DescriptorPoolWrapper::ResizeDescriptorPool()
+void DDM::DescriptorPoolWrapper::ResizeDescriptorPool()
 {
 	vkDeviceWaitIdle(VulkanObject::GetInstance().GetDevice());
 
@@ -152,7 +152,7 @@ void DDM3::DescriptorPoolWrapper::ResizeDescriptorPool()
 	}
 }
 
-void DDM3::DescriptorPoolWrapper::ReadDescriptorTypeCount(std::vector<std::unique_ptr<DDM3::ShaderModuleWrapper>>& shaderModules)
+void DDM::DescriptorPoolWrapper::ReadDescriptorTypeCount(std::vector<std::unique_ptr<DDM::ShaderModuleWrapper>>& shaderModules)
 {
 	// Loop trough all shader modules and add the descriptor count
 	for (auto& shaderModule : shaderModules)
@@ -161,7 +161,7 @@ void DDM3::DescriptorPoolWrapper::ReadDescriptorTypeCount(std::vector<std::uniqu
 	}
 }
 
-void DDM3::DescriptorPoolWrapper::InitDescriptorPool()
+void DDM::DescriptorPoolWrapper::InitDescriptorPool()
 {
 	// Get a reference to the renderer
 	auto& renderer{ VulkanObject::GetInstance() };

@@ -8,27 +8,27 @@
 #include "Includes/ImGuiIncludes.h"
 
 
-DDM3::MaterialSwitchManager::MaterialSwitchManager()
+DDM::MaterialSwitchManager::MaterialSwitchManager()
 {
 	SetShowImGui(true);
 }
 
-DDM3::MaterialSwitchManager::~MaterialSwitchManager()
+DDM::MaterialSwitchManager::~MaterialSwitchManager()
 {
 
 }
 
-void DDM3::MaterialSwitchManager::RegisterKey(std::string& key)
+void DDM::MaterialSwitchManager::RegisterKey(std::string& key)
 {
 	m_AvailableKeys.push_back(key);
 }
 
-void DDM3::MaterialSwitchManager::RegisterKey(std::string&& key)
+void DDM::MaterialSwitchManager::RegisterKey(std::string&& key)
 {
 	RegisterKey(key);
 }
 
-void DDM3::MaterialSwitchManager::SetCurrentKey(std::string& key)
+void DDM::MaterialSwitchManager::SetCurrentKey(std::string& key)
 {
 	for (int i = 0; i < m_AvailableKeys.size(); ++i)
 	{
@@ -42,18 +42,18 @@ void DDM3::MaterialSwitchManager::SetCurrentKey(std::string& key)
 	SwitchMaterial(m_CurrentKey);
 }
 
-void DDM3::MaterialSwitchManager::SetCurrentKey(std::string&& key)
+void DDM::MaterialSwitchManager::SetCurrentKey(std::string&& key)
 {
 	SetCurrentKey(key);
 }
 
-void DDM3::MaterialSwitchManager::RegisterMaterialSwitcher(std::shared_ptr<MaterialSwitcher> pMaterialSwitcher)
+void DDM::MaterialSwitchManager::RegisterMaterialSwitcher(std::shared_ptr<MaterialSwitcher> pMaterialSwitcher)
 {
 	m_pMaterialSwitchers.push_back(pMaterialSwitcher);
 }
 
 
-void DDM3::MaterialSwitchManager::OnGUI()
+void DDM::MaterialSwitchManager::OnGUI()
 {
 	auto cStringList = std::vector<const char*>();
 
@@ -81,7 +81,7 @@ void DDM3::MaterialSwitchManager::OnGUI()
 	}
 }
 
-void DDM3::MaterialSwitchManager::SwitchMaterial(int key)
+void DDM::MaterialSwitchManager::SwitchMaterial(int key)
 {
 	for (auto& switcher : m_pMaterialSwitchers)
 	{

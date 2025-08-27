@@ -13,7 +13,7 @@
 #include <map>
 #include <string>
 
-namespace DDM3
+namespace DDM
 {
 	class MeshRenderComponent;
 	class Material;

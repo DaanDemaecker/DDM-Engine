@@ -12,7 +12,7 @@
 #include <string>
 
 
-namespace DDM3
+namespace DDM
 {
 	class ConfigManager : public Singleton<ConfigManager>
 	{

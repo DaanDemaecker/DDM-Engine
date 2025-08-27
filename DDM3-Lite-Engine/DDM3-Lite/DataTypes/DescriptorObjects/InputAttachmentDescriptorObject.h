@@ -10,7 +10,7 @@
 
 // Standard library includes
 
-namespace DDM3
+namespace DDM
 {
 	class InputAttachmentDescriptorObject final : public DescriptorObject
 	{

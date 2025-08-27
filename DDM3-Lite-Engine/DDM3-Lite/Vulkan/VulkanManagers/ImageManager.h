@@ -11,7 +11,7 @@
 // Standard library includes
 #include <iostream>
 
-namespace DDM3
+namespace DDM
 {
 	// Class forward declarations
 	class GPUObject;

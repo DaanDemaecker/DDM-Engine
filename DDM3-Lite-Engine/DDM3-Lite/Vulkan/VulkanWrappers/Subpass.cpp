@@ -4,40 +4,40 @@
 
 #include <iostream>
 
-DDM3::Subpass::~Subpass()
+DDM::Subpass::~Subpass()
 {
 }
 
-VkSubpassDescription DDM3::Subpass::GetDescription()
+VkSubpassDescription DDM::Subpass::GetDescription()
 {
 	SetupDescription();
 
 	return m_Description;
 }
 
-void DDM3::Subpass::AddInputReference(VkAttachmentReference reference)
+void DDM::Subpass::AddInputReference(VkAttachmentReference reference)
 {
 	m_InputAttachmentRefs.push_back(reference);
 }
 
-void DDM3::Subpass::AddReference(VkAttachmentReference reference)
+void DDM::Subpass::AddReference(VkAttachmentReference reference)
 {
 	m_AttachmentReferences.push_back(reference);
 }
 
-void DDM3::Subpass::AddDepthRef(VkAttachmentReference reference)
+void DDM::Subpass::AddDepthRef(VkAttachmentReference reference)
 {
 	m_DepthAttachmentRef = reference;
 	m_DepthRefSet = true;
 }
 
-void DDM3::Subpass::AddResolveRef(VkAttachmentReference reference)
+void DDM::Subpass::AddResolveRef(VkAttachmentReference reference)
 {
 	m_ResolveAttachmentRef = reference;
 	m_ResolveSet = true;
 }
 
-void DDM3::Subpass::SetupDescription()
+void DDM::Subpass::SetupDescription()
 {
 
 	m_Description.flags = 0;

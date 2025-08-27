@@ -11,47 +11,47 @@
 #include "DataTypes/Structs.h"
 
 
-DDM3::VulkanCore::VulkanCore()
+DDM::VulkanCore::VulkanCore()
 {
 	// Intialize instance wrapper
-	m_pInstance = std::make_unique<DDM3::InstanceWrapper>();
+	m_pInstance = std::make_unique<DDM::InstanceWrapper>();
 
 	InstanceWrapper* pInstance = m_pInstance.get();
 
 	// Initialize surface
-	m_pSurface = std::make_unique<DDM3::SurfaceWrapper>(pInstance);
+	m_pSurface = std::make_unique<DDM::SurfaceWrapper>(pInstance);
 
 	// Initialize gpu object
-	m_pGpuObject = std::make_unique<DDM3::GPUObject>(m_pInstance.get(), m_pSurface->GetSurface());
+	m_pGpuObject = std::make_unique<DDM::GPUObject>(m_pInstance.get(), m_pSurface->GetSurface());
 	
 }
 
-VkInstance DDM3::VulkanCore::GetVulkanInstance()
+VkInstance DDM::VulkanCore::GetVulkanInstance()
 {
 	return m_pInstance->GetInstance();
 }
 
-VkSurfaceKHR DDM3::VulkanCore::GetSurface()
+VkSurfaceKHR DDM::VulkanCore::GetSurface()
 {
 	return m_pSurface->GetSurface();
 }
 
-DDM3::GPUObject* DDM3::VulkanCore::GetGpuObject()
+DDM::GPUObject* DDM::VulkanCore::GetGpuObject()
 {
 	return m_pGpuObject.get();
 }
 
-VkPhysicalDevice DDM3::VulkanCore::GetPhysicalDevice()
+VkPhysicalDevice DDM::VulkanCore::GetPhysicalDevice()
 {
 	return m_pGpuObject->GetPhysicalDevice();
 }
 
-VkDevice DDM3::VulkanCore::GetDevice()
+VkDevice DDM::VulkanCore::GetDevice()
 {
 	return m_pGpuObject->GetDevice();
 }
 
-const DDM3::QueueObject& DDM3::VulkanCore::GetQueueObject()
+const DDM::QueueObject& DDM::VulkanCore::GetQueueObject()
 {
 	return m_pGpuObject->GetQueueObject();
 }

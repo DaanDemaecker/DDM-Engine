@@ -11,7 +11,7 @@
 #include <vector>
 #include <memory>
 
-namespace DDM3
+namespace DDM
 {
 	class RenderpassWrapper;
 

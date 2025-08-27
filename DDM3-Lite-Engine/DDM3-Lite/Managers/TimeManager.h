@@ -7,7 +7,7 @@
 // File includes
 #include "Engine/Singleton.h"
 
-namespace DDM3
+namespace DDM
 {
 	class TimeManager final : public Singleton<TimeManager>
 	{

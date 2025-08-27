@@ -21,8 +21,8 @@
 #include <stdexcept>
 #include <algorithm>
 
-DDM3::SwapchainWrapper::SwapchainWrapper(GPUObject* pGPUObject, VkSurfaceKHR surface,
-	DDM3::ImageManager* pImageManager, VkSampleCountFlagBits msaaSamples)
+DDM::SwapchainWrapper::SwapchainWrapper(GPUObject* pGPUObject, VkSurfaceKHR surface,
+	DDM::ImageManager* pImageManager, VkSampleCountFlagBits msaaSamples)
 {
 	// Initialize the swapchain
 	CreateSwapChain(pGPUObject, surface);
@@ -30,7 +30,7 @@ DDM3::SwapchainWrapper::SwapchainWrapper(GPUObject* pGPUObject, VkSurfaceKHR sur
 	CreateSwapchainImageViews(pGPUObject->GetDevice(), pImageManager);
 }
 
-DDM3::SwapchainWrapper::~SwapchainWrapper()
+DDM::SwapchainWrapper::~SwapchainWrapper()
 {
 	for (auto& framebufferList : m_Framebuffers)
 	{
@@ -43,7 +43,7 @@ DDM3::SwapchainWrapper::~SwapchainWrapper()
 	Cleanup(VulkanObject::GetInstance().GetDevice());
 }
 
-void DDM3::SwapchainWrapper::SetupImageViews(GPUObject* pGPUObject, DDM3::ImageManager* pImageManager,
+void DDM::SwapchainWrapper::SetupImageViews(GPUObject* pGPUObject, DDM::ImageManager* pImageManager,
 	VkCommandBuffer commandBuffer, RenderpassWrapper* renderPass)
 {
 	for (int i{}; i < m_SwapChainImages.size(); ++i)
@@ -65,7 +65,7 @@ void DDM3::SwapchainWrapper::SetupImageViews(GPUObject* pGPUObject, DDM3::ImageM
 	CreateFramebuffers(pGPUObject->GetDevice(), renderPass);
 }
 
-void DDM3::SwapchainWrapper::AddFrameBuffers(RenderpassWrapper* renderpass)
+void DDM::SwapchainWrapper::AddFrameBuffers(RenderpassWrapper* renderpass)
 {
 	m_Framebuffers[renderpass] = std::vector<std::unique_ptr<FrameBuffer>>();
 
@@ -79,8 +79,8 @@ void DDM3::SwapchainWrapper::AddFrameBuffers(RenderpassWrapper* renderpass)
 	}
 }
 
-void DDM3::SwapchainWrapper::SetupSwapchain(GPUObject* pGPUObject, VkSurfaceKHR surface,
-	DDM3::ImageManager* pImageManager, VkCommandBuffer commandBuffer, std::vector<RenderpassWrapper*>& renderpasses)
+void DDM::SwapchainWrapper::SetupSwapchain(GPUObject* pGPUObject, VkSurfaceKHR surface,
+	DDM::ImageManager* pImageManager, VkCommandBuffer commandBuffer, std::vector<RenderpassWrapper*>& renderpasses)
 {
 	// Initalize the swapchain
 	CreateSwapChain(pGPUObject, surface);
@@ -94,13 +94,13 @@ void DDM3::SwapchainWrapper::SetupSwapchain(GPUObject* pGPUObject, VkSurfaceKHR 
 	}
 }
 
-void DDM3::SwapchainWrapper::CreateSwapChain(GPUObject* pGPUObject, VkSurfaceKHR surface)
+void DDM::SwapchainWrapper::CreateSwapChain(GPUObject* pGPUObject, VkSurfaceKHR surface)
 {
 	// Get device
 	auto device{ pGPUObject->GetDevice() };
 
 	// Get swapchain support details
-	DDM3::SwapChainSupportDetails swapChainSupport = VulkanUtils::QuerySwapChainSupport(pGPUObject->GetPhysicalDevice(), surface);
+	DDM::SwapChainSupportDetails swapChainSupport = VulkanUtils::QuerySwapChainSupport(pGPUObject->GetPhysicalDevice(), surface);
 	// Get the format for the swapchain surface
 	VkSurfaceFormatKHR surfaceFormat = ChooseSwapSurfaceFormat(swapChainSupport.formats);
 	// Get presentmode for the swapchain
@@ -140,7 +140,7 @@ void DDM3::SwapchainWrapper::CreateSwapChain(GPUObject* pGPUObject, VkSurfaceKHR
 	createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
 	// Get the queuefamily indices
-	DDM3::QueueFamilyIndices indices = VulkanUtils::FindQueueFamilies(pGPUObject->GetPhysicalDevice(), surface);
+	DDM::QueueFamilyIndices indices = VulkanUtils::FindQueueFamilies(pGPUObject->GetPhysicalDevice(), surface);
 	// Create array of graphics and present family indices
 	uint32_t queueFamilyIndices[] = { indices.graphicsFamily.value(), indices.presentFamily.value() };
 
@@ -197,7 +197,7 @@ void DDM3::SwapchainWrapper::CreateSwapChain(GPUObject* pGPUObject, VkSurfaceKHR
 	m_SwapChainExtent = extent;
 }
 
-void DDM3::SwapchainWrapper::CreateSwapchainImageViews(VkDevice device, DDM3::ImageManager* pImageManager)
+void DDM::SwapchainWrapper::CreateSwapchainImageViews(VkDevice device, DDM::ImageManager* pImageManager)
 {
 	// Resize image views to the size of images
 	m_SwapChainImageViews.resize(m_SwapChainImages.size());
@@ -210,7 +210,7 @@ void DDM3::SwapchainWrapper::CreateSwapchainImageViews(VkDevice device, DDM3::Im
 	}
 }
 
-void DDM3::SwapchainWrapper::Cleanup(VkDevice device)
+void DDM::SwapchainWrapper::Cleanup(VkDevice device)
 {
 	// Loop trough the amount of image views
 	for (size_t i = 0; i < m_SwapChainImageViews.size(); ++i)
@@ -227,8 +227,8 @@ void DDM3::SwapchainWrapper::Cleanup(VkDevice device)
 
 }
 
-void DDM3::SwapchainWrapper::RecreateSwapChain(GPUObject* pGPUObject, VkSurfaceKHR surface,
-	DDM3::ImageManager* pImageManager, VkCommandBuffer commandBuffer, std::vector<RenderpassWrapper*>& renderpasses)
+void DDM::SwapchainWrapper::RecreateSwapChain(GPUObject* pGPUObject, VkSurfaceKHR surface,
+	DDM::ImageManager* pImageManager, VkCommandBuffer commandBuffer, std::vector<RenderpassWrapper*>& renderpasses)
 {
 	// Call cleanup function to destroy all allocated objects
 	Cleanup(pGPUObject->GetDevice());
@@ -237,23 +237,23 @@ void DDM3::SwapchainWrapper::RecreateSwapChain(GPUObject* pGPUObject, VkSurfaceK
 	SetupSwapchain(pGPUObject, surface, pImageManager, commandBuffer, renderpasses);
 }
 
-VkFramebuffer DDM3::SwapchainWrapper::GetFrameBuffer(uint32_t index, RenderpassWrapper* renderpass)
+VkFramebuffer DDM::SwapchainWrapper::GetFrameBuffer(uint32_t index, RenderpassWrapper* renderpass)
 {
 	return m_Framebuffers[renderpass][index]->GetFrameBuffer();
 }
 
-VkImage DDM3::SwapchainWrapper::GetSwapchainImage(int index)
+VkImage DDM::SwapchainWrapper::GetSwapchainImage(int index)
 {
 	return m_SwapChainImages[index];
 }
 
-int DDM3::SwapchainWrapper::GetSwapchainImageAmount()
+int DDM::SwapchainWrapper::GetSwapchainImageAmount()
 {
 	return m_ImageAmount;
 }
 
 
-VkExtent2D DDM3::SwapchainWrapper::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities)
+VkExtent2D DDM::SwapchainWrapper::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities)
 {
 	// If the width of the current extent isn't equal to the maximum uint32_t, return the current extent
 	if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max())
@@ -284,7 +284,7 @@ VkExtent2D DDM3::SwapchainWrapper::ChooseSwapExtent(const VkSurfaceCapabilitiesK
 	}
 }
 
-void DDM3::SwapchainWrapper::CreateFramebuffers(VkDevice device, RenderpassWrapper* renderpass)
+void DDM::SwapchainWrapper::CreateFramebuffers(VkDevice device, RenderpassWrapper* renderpass)
 {
 	if (!m_Framebuffers.contains(renderpass))
 		return;
@@ -296,7 +296,7 @@ void DDM3::SwapchainWrapper::CreateFramebuffers(VkDevice device, RenderpassWrapp
 	}
 }
 
-VkSurfaceFormatKHR DDM3::SwapchainWrapper::ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats)
+VkSurfaceFormatKHR DDM::SwapchainWrapper::ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats)
 {
 	// Loop trough the available formats
 	for (const auto& availableFormat : availableFormats)
@@ -312,7 +312,7 @@ VkSurfaceFormatKHR DDM3::SwapchainWrapper::ChooseSwapSurfaceFormat(const std::ve
 	return availableFormats[0];
 }
 
-VkPresentModeKHR DDM3::SwapchainWrapper::ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes)
+VkPresentModeKHR DDM::SwapchainWrapper::ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes)
 {
 	// Loop trough the available presentModes
 	for (const auto& availablePresentMode : availablePresentModes)

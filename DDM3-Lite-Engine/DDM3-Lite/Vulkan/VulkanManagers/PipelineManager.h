@@ -15,7 +15,7 @@
 #include <initializer_list>
 #include <memory>
 
-namespace DDM3
+namespace DDM
 {
 	// Class forward declarations
 	class PipelineWrapper;

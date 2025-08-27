@@ -7,7 +7,7 @@
 // Standard library includes
 #include <vector>
 
-namespace DDM3
+namespace DDM
 {
 	class KeyBoardImpl
 	{

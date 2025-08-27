@@ -31,7 +31,7 @@
 #include "Components/CameraComponent.h"
 #include "DataTypes/DescriptorObjects/UboDescriptorObject.h"
 
-DDM3::HBAORenderer::HBAORenderer()
+DDM::HBAORenderer::HBAORenderer()
 {
 	auto surface{ VulkanObject::GetInstance().GetSurface() };
 
@@ -68,7 +68,7 @@ DDM3::HBAORenderer::HBAORenderer()
 	SetupPositionTexture();
 }
 
-DDM3::HBAORenderer::~HBAORenderer()
+DDM::HBAORenderer::~HBAORenderer()
 {
 	auto device = VulkanObject::GetInstance().GetDevice();
 
@@ -88,9 +88,9 @@ DDM3::HBAORenderer::~HBAORenderer()
 }
 
 
-void DDM3::HBAORenderer::Render()
+void DDM::HBAORenderer::Render()
 {
-	auto& vulkanObject{ DDM3::VulkanObject::GetInstance() };
+	auto& vulkanObject{ DDM::VulkanObject::GetInstance() };
 
 	auto currentFrame{ vulkanObject.GetCurrentFrame() };
 
@@ -178,17 +178,17 @@ void DDM3::HBAORenderer::Render()
 	}
 }
 
-VkExtent2D DDM3::HBAORenderer::GetExtent()
+VkExtent2D DDM::HBAORenderer::GetExtent()
 {
 	return m_pSwapchainWrapper->GetExtent();
 }
 
-DDM3::RenderpassWrapper* DDM3::HBAORenderer::GetDefaultRenderpass()
+DDM::RenderpassWrapper* DDM::HBAORenderer::GetDefaultRenderpass()
 {
 	return m_pRenderpass.get();
 }
 
-void DDM3::HBAORenderer::AddDefaultPipelines()
+void DDM::HBAORenderer::AddDefaultPipelines()
 {
 	// Get config manager
 	auto& configManager{ ConfigManager::GetInstance() };
@@ -244,7 +244,7 @@ void DDM3::HBAORenderer::AddDefaultPipelines()
 	m_pAoBlurPipeline = vulkanObject.GetPipeline(aoBlurPipelineName);
 }
 
-void DDM3::HBAORenderer::CreateRenderpass()
+void DDM::HBAORenderer::CreateRenderpass()
 {
 	m_pRenderpass = std::make_unique<RenderpassWrapper>();
 
@@ -269,7 +269,7 @@ void DDM3::HBAORenderer::CreateRenderpass()
 	m_pSwapchainWrapper->AddFrameBuffers(m_pRenderpass.get());
 }
 
-void DDM3::HBAORenderer::SetupAttachments()
+void DDM::HBAORenderer::SetupAttachments()
 {
 	int swapchainImageAmount = m_pSwapchainWrapper->GetSwapchainImageAmount();
 
@@ -444,7 +444,7 @@ void DDM3::HBAORenderer::SetupAttachments()
 
 }
 
-void DDM3::HBAORenderer::SetupDepthPass()
+void DDM::HBAORenderer::SetupDepthPass()
 {
 	// Depth prepass depth buffer reference (read/write)
 	VkAttachmentReference depthAttachmentReference{};
@@ -458,7 +458,7 @@ void DDM3::HBAORenderer::SetupDepthPass()
 	m_pRenderpass->AddSubpass(std::move(depthPass));
 }
 
-void DDM3::HBAORenderer::SetupGBufferPass()
+void DDM::HBAORenderer::SetupGBufferPass()
 {
 	std::unique_ptr<Subpass> pGBufferPass{ std::make_unique<Subpass>() };
 
@@ -493,7 +493,7 @@ void DDM3::HBAORenderer::SetupGBufferPass()
 	m_pRenderpass->AddSubpass(std::move(pGBufferPass));
 }
 
-void DDM3::HBAORenderer::SetupAoGenPass()
+void DDM::HBAORenderer::SetupAoGenPass()
 {
 	std::unique_ptr<Subpass> pAoMapPass{ std::make_unique<Subpass>() };
 
@@ -527,7 +527,7 @@ void DDM3::HBAORenderer::SetupAoGenPass()
 	m_pRenderpass->AddSubpass(std::move(pAoMapPass));
 }
 
-void DDM3::HBAORenderer::SetupAoBlurPass()
+void DDM::HBAORenderer::SetupAoBlurPass()
 {
 	std::unique_ptr<Subpass> pBlurSubpass{ std::make_unique<Subpass>() };
 
@@ -547,7 +547,7 @@ void DDM3::HBAORenderer::SetupAoBlurPass()
 	m_pRenderpass->AddSubpass(std::move(pBlurSubpass));
 }
 
-void DDM3::HBAORenderer::SetupLightingPass()
+void DDM::HBAORenderer::SetupLightingPass()
 {
 	std::unique_ptr<Subpass> pLightingPass{ std::make_unique<Subpass>() };
 
@@ -595,7 +595,7 @@ void DDM3::HBAORenderer::SetupLightingPass()
 	m_pRenderpass->AddSubpass(std::move(pLightingPass));
 }
 
-void DDM3::HBAORenderer::SetupImGuiPass()
+void DDM::HBAORenderer::SetupImGuiPass()
 {
 	int swapchainImageAmount = m_pSwapchainWrapper->GetSwapchainImageAmount();
 
@@ -613,7 +613,7 @@ void DDM3::HBAORenderer::SetupImGuiPass()
 	m_pRenderpass->AddSubpass(std::move(imGuiSubpass));
 }
 
-void DDM3::HBAORenderer::SetupDependencies()
+void DDM::HBAORenderer::SetupDependencies()
 {
 	VkSubpassDependency depthToGbufferDependency{};
 	depthToGbufferDependency.srcSubpass = kSubpass_DEPTH;
@@ -668,7 +668,7 @@ void DDM3::HBAORenderer::SetupDependencies()
 	m_pRenderpass->AddDependency(lightingToImguiDependency);;
 }
 
-void DDM3::HBAORenderer::SetupDescriptorObjects()
+void DDM::HBAORenderer::SetupDescriptorObjects()
 {
 	SetupDescriptorObjectsAoGen();
 
@@ -677,7 +677,7 @@ void DDM3::HBAORenderer::SetupDescriptorObjects()
 	SetupDescriptorObjectsLighting();
 }
 
-void DDM3::HBAORenderer::SetupDescriptorObjectsAoGen()
+void DDM::HBAORenderer::SetupDescriptorObjectsAoGen()
 {
 	m_pAoGenInputDescriptorObjects.clear();
 
@@ -698,13 +698,13 @@ void DDM3::HBAORenderer::SetupDescriptorObjectsAoGen()
 	m_pAoGenInputDescriptorObjects.push_back(std::move(descriptorObject));
 }
 
-void DDM3::HBAORenderer::SetupDescriptorObjectsAoBlur()
+void DDM::HBAORenderer::SetupDescriptorObjectsAoBlur()
 {
 	m_pAoGenTextureDescriptorObject = std::make_unique<TextureDescriptorObject>();
 	m_pAoGenTextureDescriptorObject->SetCleanupTextures(false);
 }
 
-void DDM3::HBAORenderer::SetupDescriptorObjectsLighting()
+void DDM::HBAORenderer::SetupDescriptorObjectsLighting()
 {
 	m_pLightingInputDescriptorObjects.clear();
 
@@ -744,18 +744,18 @@ void DDM3::HBAORenderer::SetupDescriptorObjectsLighting()
 }
 
 
-void DDM3::HBAORenderer::SetupPositionTexture()
+void DDM::HBAORenderer::SetupPositionTexture()
 {
 	m_pPositionTextureDescriptorObject = std::make_unique<TextureDescriptorObject>();
 	m_pPositionTextureDescriptorObject->SetCleanupTextures(false);
 }
 
-void DDM3::HBAORenderer::InitImgui()
+void DDM::HBAORenderer::InitImgui()
 {
 	// Create ImGui vulkan init info
 	ImGui_ImplVulkan_InitInfo init_info = {};
 	// Give the vulkan instance
-	init_info.Instance = DDM3::VulkanObject::GetInstance().GetVulkanInstance();
+	init_info.Instance = DDM::VulkanObject::GetInstance().GetVulkanInstance();
 	// Give the physical device
 	init_info.PhysicalDevice = VulkanObject::GetInstance().GetPhysicalDevice();
 	// Give the logical device
@@ -781,18 +781,18 @@ void DDM3::HBAORenderer::InitImgui()
 	// Create a single time command buffer
 	auto commandBuffer{ VulkanObject::GetInstance().BeginSingleTimeCommands() };
 	// Initialize ImGui
-	m_pImGuiWrapper = std::make_unique<DDM3::ImGuiWrapper>(init_info,
+	m_pImGuiWrapper = std::make_unique<DDM::ImGuiWrapper>(init_info,
 		VulkanObject::GetInstance().GetDevice(), static_cast<uint32_t>(VulkanObject::GetInstance().GetMaxFrames()), m_pRenderpass->GetRenderpass(), commandBuffer);
 	// End the single time command buffer
 	VulkanObject::GetInstance().EndSingleTimeCommands(commandBuffer);
 }
 
-void DDM3::HBAORenderer::CleanupImgui()
+void DDM::HBAORenderer::CleanupImgui()
 {
 	m_pImGuiWrapper.reset();
 }
 
-void DDM3::HBAORenderer::RecordCommandBuffer(VkCommandBuffer& commandBuffer, uint32_t imageIndex)
+void DDM::HBAORenderer::RecordCommandBuffer(VkCommandBuffer& commandBuffer, uint32_t imageIndex)
 {
 	auto frame = VulkanObject::GetInstance().GetCurrentFrame();
 
@@ -907,10 +907,10 @@ void DDM3::HBAORenderer::RecordCommandBuffer(VkCommandBuffer& commandBuffer, uin
 	}
 }
 
-void DDM3::HBAORenderer::RecreateSwapChain()
+void DDM::HBAORenderer::RecreateSwapChain()
 {
 	// Get a reference to the window struct
-	auto& windowStruct{ DDM3::Window::GetInstance().GetWindowStruct() };
+	auto& windowStruct{ DDM::Window::GetInstance().GetWindowStruct() };
 
 	//Get the width and the height of the window
 	glfwGetFramebufferSize(windowStruct.pWindow, &windowStruct.Width, &windowStruct.Height);
@@ -923,7 +923,7 @@ void DDM3::HBAORenderer::RecreateSwapChain()
 	}
 
 	// Wait until the device is idle
-	vkDeviceWaitIdle(DDM3::VulkanObject::GetInstance().GetDevice());
+	vkDeviceWaitIdle(DDM::VulkanObject::GetInstance().GetDevice());
 
 	// Create a single time command
 	auto commandBuffer{ VulkanObject::GetInstance().BeginSingleTimeCommands() };
@@ -932,7 +932,7 @@ void DDM3::HBAORenderer::RecreateSwapChain()
 	std::vector<RenderpassWrapper*> renderpasses{ m_pRenderpass.get() };
 
 	// Recreate the swapchain
-	m_pSwapchainWrapper->RecreateSwapChain(DDM3::VulkanObject::GetInstance().GetGPUObject(), DDM3::VulkanObject::GetInstance().GetSurface(),
+	m_pSwapchainWrapper->RecreateSwapChain(DDM::VulkanObject::GetInstance().GetGPUObject(), DDM::VulkanObject::GetInstance().GetSurface(),
 		VulkanObject::GetInstance().GetImageManager(),
 		commandBuffer, renderpasses);
 
@@ -942,7 +942,7 @@ void DDM3::HBAORenderer::RecreateSwapChain()
 	ResetDescriptorSets();
 }
 
-void DDM3::HBAORenderer::ResetDescriptorSets()
+void DDM::HBAORenderer::ResetDescriptorSets()
 {
 	vkFreeDescriptorSets(VulkanObject::GetInstance().GetDevice(), m_LightingDescriptorPool, m_LightingDescriptorSets.size(), m_LightingDescriptorSets.data());
 
@@ -955,7 +955,7 @@ void DDM3::HBAORenderer::ResetDescriptorSets()
 	CreateDescriptorSets();
 }
 
-void DDM3::HBAORenderer::CreateDescriptorSetLayouts()
+void DDM::HBAORenderer::CreateDescriptorSetLayouts()
 {
 	CreateAoGenDescriptorSetLayout();
 
@@ -964,7 +964,7 @@ void DDM3::HBAORenderer::CreateDescriptorSetLayouts()
 	CreateLightingDescriptorSetLayout();
 }
 
-void DDM3::HBAORenderer::CreateAoGenDescriptorSetLayout()
+void DDM::HBAORenderer::CreateAoGenDescriptorSetLayout()
 {
 	// Create vector of descriptorsetlayoutbindings the size of the sum of vertexUbos, fragmentUbos and textureamount;
 	std::vector<VkDescriptorSetLayoutBinding> bindings{};
@@ -1010,7 +1010,7 @@ void DDM3::HBAORenderer::CreateAoGenDescriptorSetLayout()
 	}
 }
 
-void DDM3::HBAORenderer::CreateAoBlurDescriptorSetLayout()
+void DDM::HBAORenderer::CreateAoBlurDescriptorSetLayout()
 {
 	// Create vector of descriptorsetlayoutbindings the size of the sum of vertexUbos, fragmentUbos and textureamount;
 	std::vector<VkDescriptorSetLayoutBinding> bindings{};
@@ -1042,7 +1042,7 @@ void DDM3::HBAORenderer::CreateAoBlurDescriptorSetLayout()
 	}
 }
 
-void DDM3::HBAORenderer::CreateLightingDescriptorSetLayout()
+void DDM::HBAORenderer::CreateLightingDescriptorSetLayout()
 {
 	// Create vector of descriptorsetlayoutbindings the size of the sum of vertexUbos, fragmentUbos and textureamount;
 	std::vector<VkDescriptorSetLayoutBinding> bindings{};
@@ -1088,7 +1088,7 @@ void DDM3::HBAORenderer::CreateLightingDescriptorSetLayout()
 	}
 }
 
-void DDM3::HBAORenderer::CreateDescriptorPools()
+void DDM::HBAORenderer::CreateDescriptorPools()
 {
 	CreateAoGenDescriptorPool();
 
@@ -1097,7 +1097,7 @@ void DDM3::HBAORenderer::CreateDescriptorPools()
 	CreateLightingDescriptorPool();
 }
 
-void DDM3::HBAORenderer::CreateAoGenDescriptorPool()
+void DDM::HBAORenderer::CreateAoGenDescriptorPool()
 {
 	// Get a reference to the vulkan object
 	auto& vulkanObject{ VulkanObject::GetInstance() };
@@ -1164,7 +1164,7 @@ void DDM3::HBAORenderer::CreateAoGenDescriptorPool()
 	}
 }
 
-void DDM3::HBAORenderer::CreateAoBlurDescriptorPool()
+void DDM::HBAORenderer::CreateAoBlurDescriptorPool()
 {
 	// Get a reference to the vulkan object
 	auto& vulkanObject{ VulkanObject::GetInstance() };
@@ -1202,7 +1202,7 @@ void DDM3::HBAORenderer::CreateAoBlurDescriptorPool()
 	}
 }
 
-void DDM3::HBAORenderer::CreateLightingDescriptorPool()
+void DDM::HBAORenderer::CreateLightingDescriptorPool()
 {
 	// Get a reference to the renderer
 	auto& vulkanObject{ VulkanObject::GetInstance() };
@@ -1244,7 +1244,7 @@ void DDM3::HBAORenderer::CreateLightingDescriptorPool()
 	}
 }
 
-void DDM3::HBAORenderer::CreateDescriptorSets()
+void DDM::HBAORenderer::CreateDescriptorSets()
 {
 	CreateAoGenDescriptorSets();
 
@@ -1253,7 +1253,7 @@ void DDM3::HBAORenderer::CreateDescriptorSets()
 	CreateLightingDescriptorSets();
 }
 
-void DDM3::HBAORenderer::CreateAoGenDescriptorSets()
+void DDM::HBAORenderer::CreateAoGenDescriptorSets()
 {
 	// Get a reference to the renderer for later use
 	auto& renderer{ VulkanObject::GetInstance() };
@@ -1283,7 +1283,7 @@ void DDM3::HBAORenderer::CreateAoGenDescriptorSets()
 	}
 }
 
-void DDM3::HBAORenderer::CreateAoBlurDescriptorSets()
+void DDM::HBAORenderer::CreateAoBlurDescriptorSets()
 {
 	// Get a reference to the renderer for later use
 	auto& renderer{ VulkanObject::GetInstance() };
@@ -1313,7 +1313,7 @@ void DDM3::HBAORenderer::CreateAoBlurDescriptorSets()
 	}
 }
 
-void DDM3::HBAORenderer::CreateLightingDescriptorSets()
+void DDM::HBAORenderer::CreateLightingDescriptorSets()
 {
 	// Get a reference to the renderer for later use
 	auto& renderer{ VulkanObject::GetInstance() };
@@ -1343,7 +1343,7 @@ void DDM3::HBAORenderer::CreateLightingDescriptorSets()
 	}
 }
 
-void DDM3::HBAORenderer::UpdateDescriptorSets(int frame, int swapchainIndex)
+void DDM::HBAORenderer::UpdateDescriptorSets(int frame, int swapchainIndex)
 {
 	UpdateAoGenDescriptorSets(frame, swapchainIndex);
 
@@ -1352,7 +1352,7 @@ void DDM3::HBAORenderer::UpdateDescriptorSets(int frame, int swapchainIndex)
 	UpdateLightingDescriptorSets(frame);
 }
 
-void DDM3::HBAORenderer::UpdateAoGenDescriptorSets(int frame, int swapchainIndex)
+void DDM::HBAORenderer::UpdateAoGenDescriptorSets(int frame, int swapchainIndex)
 {
 	// Create a vector of descriptor writes
 	std::vector<VkWriteDescriptorSet> descriptorWrites{};
@@ -1378,7 +1378,7 @@ void DDM3::HBAORenderer::UpdateAoGenDescriptorSets(int frame, int swapchainIndex
 	vkUpdateDescriptorSets(VulkanObject::GetInstance().GetDevice(), static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
 }
 
-void DDM3::HBAORenderer::UpdateAoBlurDescriptorSets(int frame, int swapchainIndex)
+void DDM::HBAORenderer::UpdateAoBlurDescriptorSets(int frame, int swapchainIndex)
 {
 	// Create a vector of descriptor writes
 	std::vector<VkWriteDescriptorSet> descriptorWrites{};
@@ -1399,7 +1399,7 @@ void DDM3::HBAORenderer::UpdateAoBlurDescriptorSets(int frame, int swapchainInde
 
 }
 
-void DDM3::HBAORenderer::UpdateLightingDescriptorSets(int frame)
+void DDM::HBAORenderer::UpdateLightingDescriptorSets(int frame)
 {
 	// Create a vector of descriptor writes
 	std::vector<VkWriteDescriptorSet> descriptorWrites{};

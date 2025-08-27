@@ -15,7 +15,7 @@ namespace DDMML
 	class Mesh;
 }
 
-namespace DDM3
+namespace DDM
 {
 	// Class forward declarations
 	class ResourceManager;

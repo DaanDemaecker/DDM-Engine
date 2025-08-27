@@ -12,7 +12,7 @@
 // Standard library include
 #include <stdexcept>
 
-DDM3::PipelineWrapper::PipelineWrapper(VkDevice device, VkRenderPass renderPass,
+DDM::PipelineWrapper::PipelineWrapper(VkDevice device, VkRenderPass renderPass,
 	VkSampleCountFlagBits sampleCount,
 	std::initializer_list<const std::string>& filePaths, bool hasDepthStencil, bool writesToDepth, int subpass)
 {
@@ -20,12 +20,12 @@ DDM3::PipelineWrapper::PipelineWrapper(VkDevice device, VkRenderPass renderPass,
 	CreatePipeline(device, renderPass, sampleCount, filePaths, hasDepthStencil, writesToDepth, subpass);
 }
 
-DDM3::PipelineWrapper::~PipelineWrapper()
+DDM::PipelineWrapper::~PipelineWrapper()
 {
 	Cleanup(VulkanObject::GetInstance().GetDevice());
 }
 
-void DDM3::PipelineWrapper::Cleanup(VkDevice device)
+void DDM::PipelineWrapper::Cleanup(VkDevice device)
 {
 	// Clean up the descriptor pool
 	m_pDescriptorPool->Cleanup(device);
@@ -52,27 +52,27 @@ void DDM3::PipelineWrapper::Cleanup(VkDevice device)
 	}
 }
 
-DDM3::DescriptorPoolWrapper* DDM3::PipelineWrapper::GetDescriptorPool()
+DDM::DescriptorPoolWrapper* DDM::PipelineWrapper::GetDescriptorPool()
 {
 	// Get descriptorpoolwrapper
 	return m_pDescriptorPool.get();
 }
 
-void DDM3::PipelineWrapper::CreatePipeline(VkDevice device, VkRenderPass renderPass,
+void DDM::PipelineWrapper::CreatePipeline(VkDevice device, VkRenderPass renderPass,
 	VkSampleCountFlagBits sampleCount,
 	std::initializer_list<const std::string>& filePaths, bool hasDepthStencil, bool writesToDepth, int subpass)
 {
 	int attachmentCount = 0;
 
 	// Create a vector of shader modules the size of the filepaths list
-	std::vector<std::unique_ptr<DDM3::ShaderModuleWrapper>> shaderModuleWrappers(filePaths.size());
+	std::vector<std::unique_ptr<DDM::ShaderModuleWrapper>> shaderModuleWrappers(filePaths.size());
 
 	int index{};
 
 	// Loop trough the file paths and create a shader module for it
 	for (auto& filePath : filePaths)
 	{
-		shaderModuleWrappers[index] = std::make_unique<DDM3::ShaderModuleWrapper>(device, filePath);
+		shaderModuleWrappers[index] = std::make_unique<DDM::ShaderModuleWrapper>(device, filePath);
 
 		if (shaderModuleWrappers[index]->GetShaderStage() == VK_SHADER_STAGE_FRAGMENT_BIT)
 		{
@@ -248,7 +248,7 @@ void DDM3::PipelineWrapper::CreatePipeline(VkDevice device, VkRenderPass renderP
 
 }
 
-void DDM3::PipelineWrapper::CreateDescriptorSetLayout(VkDevice device, std::vector<std::unique_ptr<DDM3::ShaderModuleWrapper>>& shaderModules)
+void DDM::PipelineWrapper::CreateDescriptorSetLayout(VkDevice device, std::vector<std::unique_ptr<DDM::ShaderModuleWrapper>>& shaderModules)
 {
 	// Create vector of descriptorsetlayoutbindings the size of the sum of vertexUbos, fragmentUbos and textureamount;
 	std::vector<VkDescriptorSetLayoutBinding> bindings{};
@@ -278,7 +278,7 @@ void DDM3::PipelineWrapper::CreateDescriptorSetLayout(VkDevice device, std::vect
 	}
 }
 
-void DDM3::PipelineWrapper::SetupVertexInputState(VkPipelineVertexInputStateCreateInfo& vertexInputInfo, VkVertexInputBindingDescription* bindingDescription, std::vector<VkVertexInputAttributeDescription>& attributeDescriptions)
+void DDM::PipelineWrapper::SetupVertexInputState(VkPipelineVertexInputStateCreateInfo& vertexInputInfo, VkVertexInputBindingDescription* bindingDescription, std::vector<VkVertexInputAttributeDescription>& attributeDescriptions)
 {
 	// Set type to pipeline vertex input state create info
 	vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
@@ -292,7 +292,7 @@ void DDM3::PipelineWrapper::SetupVertexInputState(VkPipelineVertexInputStateCrea
 	vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
 }
 
-void DDM3::PipelineWrapper::SetupRasterizer(VkPipelineRasterizationStateCreateInfo& rasterizer)
+void DDM::PipelineWrapper::SetupRasterizer(VkPipelineRasterizationStateCreateInfo& rasterizer)
 {
 	// Set type to rasterization state create info
 	rasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
@@ -318,7 +318,7 @@ void DDM3::PipelineWrapper::SetupRasterizer(VkPipelineRasterizationStateCreateIn
 	rasterizer.depthBiasSlopeFactor = 0.0f;
 }
 
-void DDM3::PipelineWrapper::SetMultisampleStateCreateInfo(VkPipelineMultisampleStateCreateInfo& multisampling, VkSampleCountFlagBits& sampleCount)
+void DDM::PipelineWrapper::SetMultisampleStateCreateInfo(VkPipelineMultisampleStateCreateInfo& multisampling, VkSampleCountFlagBits& sampleCount)
 {
 	// Set type to multisample state create info
 	multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
@@ -336,7 +336,7 @@ void DDM3::PipelineWrapper::SetMultisampleStateCreateInfo(VkPipelineMultisampleS
 	multisampling.alphaToOneEnable = VK_FALSE;
 }
 
-void DDM3::PipelineWrapper::SetDepthStencilStateCreateInfo(VkPipelineDepthStencilStateCreateInfo& depthStencil,
+void DDM::PipelineWrapper::SetDepthStencilStateCreateInfo(VkPipelineDepthStencilStateCreateInfo& depthStencil,
 	bool hasDepthStencil, bool writesToDepth)
 {
 	// Set type to depth stencil state create info
@@ -361,7 +361,7 @@ void DDM3::PipelineWrapper::SetDepthStencilStateCreateInfo(VkPipelineDepthStenci
 	depthStencil.back = {};
 }
 
-void DDM3::PipelineWrapper::SetColorBlendAttachmentState(VkPipelineColorBlendAttachmentState& colorBlendAttachment)
+void DDM::PipelineWrapper::SetColorBlendAttachmentState(VkPipelineColorBlendAttachmentState& colorBlendAttachment)
 {
 	// Set color write mask to rgba
 	colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
@@ -379,7 +379,7 @@ void DDM3::PipelineWrapper::SetColorBlendAttachmentState(VkPipelineColorBlendAtt
 	colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
 }
 
-void DDM3::PipelineWrapper::SetColorblendStateCreateInfo(VkPipelineColorBlendStateCreateInfo& colorBlending, VkPipelineColorBlendAttachmentState* colorBlendAttachment, int attachmentCount)
+void DDM::PipelineWrapper::SetColorblendStateCreateInfo(VkPipelineColorBlendStateCreateInfo& colorBlending, VkPipelineColorBlendAttachmentState* colorBlendAttachment, int attachmentCount)
 {
 	// Set type to pipeline color blend state create info
 	colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
@@ -398,9 +398,9 @@ void DDM3::PipelineWrapper::SetColorblendStateCreateInfo(VkPipelineColorBlendSta
 	colorBlending.blendConstants[3] = 0.0f;
 }
 
-void DDM3::PipelineWrapper::SetPipelineLayoutCreateInfo(VkPipelineLayoutCreateInfo& pipelineLayoutInfo,
+void DDM::PipelineWrapper::SetPipelineLayoutCreateInfo(VkPipelineLayoutCreateInfo& pipelineLayoutInfo,
 	std::vector<VkPushConstantRange>& pushConstantRanges,
-	std::vector<std::unique_ptr<DDM3::ShaderModuleWrapper>>& shaderModules)
+	std::vector<std::unique_ptr<DDM::ShaderModuleWrapper>>& shaderModules)
 {
 	// Set type to pipeline layout create info
 	pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;

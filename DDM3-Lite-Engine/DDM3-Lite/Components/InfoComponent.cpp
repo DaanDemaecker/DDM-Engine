@@ -15,7 +15,7 @@
 #include <windows.h>
 #include <iostream>
 
-DDM3::InfoComponent::InfoComponent()
+DDM::InfoComponent::InfoComponent()
 	:Component()
 {
 	// Code taken from:
@@ -41,15 +41,15 @@ DDM3::InfoComponent::InfoComponent()
 	dxgiFactory->Release();
 }
 
-DDM3::InfoComponent::~InfoComponent()
+DDM::InfoComponent::~InfoComponent()
 {
 	m_DxgiAdapter->Release();
 }
 
-void DDM3::InfoComponent::Update()
+void DDM::InfoComponent::Update()
 {
 	m_Frames++;
-	m_DeltaTimeMS += DDM3::TimeManager::GetInstance().GetDeltaTimeMS();
+	m_DeltaTimeMS += DDM::TimeManager::GetInstance().GetDeltaTimeMS();
 
 	if (m_Frames >= m_FramesPerUpdate)
 	{
@@ -62,7 +62,7 @@ void DDM3::InfoComponent::Update()
 	}
 }
 
-void DDM3::InfoComponent::OnGUI()
+void DDM::InfoComponent::OnGUI()
 {
 	ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_Framed;
 
@@ -89,7 +89,7 @@ void DDM3::InfoComponent::OnGUI()
 	}
 }
 
-void DDM3::InfoComponent::QueryStats()
+void DDM::InfoComponent::QueryStats()
 {
 	m_DeltaTimeLabel = std::string("Delta time: " + std::to_string(m_DeltaTimeMS / m_Frames) + " ms");
 	m_Frames = 0;
@@ -100,7 +100,7 @@ void DDM3::InfoComponent::QueryStats()
 	m_MemoryLabel = std::string("Memory usage: " + std::to_string(GetMemoryUsage()) + " MB");
 }
 
-int DDM3::InfoComponent::GetVRAMUsage()
+int DDM::InfoComponent::GetVRAMUsage()
 {
 
 	DXGI_QUERY_VIDEO_MEMORY_INFO info = {};
@@ -109,7 +109,7 @@ int DDM3::InfoComponent::GetVRAMUsage()
 	return info.CurrentUsage / 1024 / 1024;
 }
 
-int DDM3::InfoComponent::GetMemoryUsage()
+int DDM::InfoComponent::GetMemoryUsage()
 {
 	PROCESS_MEMORY_COUNTERS_EX pmc;
 	if (GetProcessMemoryInfo(GetCurrentProcess(), (PROCESS_MEMORY_COUNTERS*)&pmc, sizeof(pmc)))
@@ -122,7 +122,7 @@ int DDM3::InfoComponent::GetMemoryUsage()
 	return 0;
 }
 
-void DDM3::InfoComponent::StartMeasurement()
+void DDM::InfoComponent::StartMeasurement()
 {
 	std::cout << "Starting measurement" << std::endl;
 
@@ -135,7 +135,7 @@ void DDM3::InfoComponent::StartMeasurement()
 	m_VRAMMeasurements[m_CurrentMeasurement].reserve(m_SampleSize);
 }
 
-void DDM3::InfoComponent::EndMeasurement()
+void DDM::InfoComponent::EndMeasurement()
 {
 	std::cout << "Ending measurement" << std::endl;
 
@@ -144,13 +144,13 @@ void DDM3::InfoComponent::EndMeasurement()
 	m_CurrentMeasurementFrame = 0;
 }
 
-void DDM3::InfoComponent::AddMeasurement()
+void DDM::InfoComponent::AddMeasurement()
 {
 	++m_CurrentMeasurementFrame;
 
 	if (m_CurrentMeasurement < m_DeltaTimeMeasurements.size())
 	{
-		m_DeltaTimeMeasurements[m_CurrentMeasurement].emplace_back(DDM3::TimeManager::GetInstance().GetDeltaTimeMS());
+		m_DeltaTimeMeasurements[m_CurrentMeasurement].emplace_back(DDM::TimeManager::GetInstance().GetDeltaTimeMS());
 	}
 
 	if (m_CurrentMeasurement < m_DeltaTimeMeasurements.size())
@@ -165,14 +165,14 @@ void DDM3::InfoComponent::AddMeasurement()
 	}
 }
 
-void DDM3::InfoComponent::RenderDeltaTimePlot()
+void DDM::InfoComponent::RenderDeltaTimePlot()
 {
 	ImGui::Text("Delta time plot");
 	RenderPlot(m_DeltaTimeMeasurements);
 }
 
 
-void DDM3::InfoComponent::RenderPlot(const std::vector<std::vector<float>>& samples)
+void DDM::InfoComponent::RenderPlot(const std::vector<std::vector<float>>& samples)
 {
 	std::vector<const float*> values{};
 	std::vector<ImU32> colors{};
@@ -221,7 +221,7 @@ void DDM3::InfoComponent::RenderPlot(const std::vector<std::vector<float>>& samp
 	ImGui::Plot("plotter", plot);
 }
 
-ImColor DDM3::InfoComponent::GetColorFromIndex(int index)
+ImColor DDM::InfoComponent::GetColorFromIndex(int index)
 {
 	std::bitset<3> colorBitset{ static_cast<uint64_t>(index) };
 

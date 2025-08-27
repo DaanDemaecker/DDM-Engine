@@ -5,7 +5,7 @@
 #include "Includes/VulkanIncludes.h"
 #include "DataTypes/Structs.h"
 
-namespace DDM3
+namespace DDM
 {
 	// Class forward declarations
 	class ImageManager;
@@ -43,14 +43,14 @@ namespace DDM3
 		//     swapchainExtent: the extent of the swapchain, for use of the image size
 		//     pImageManager: pointer to the image manager
 		void CreateColorResources(GPUObject* pGPUObject, VkFormat format,
-			VkExtent2D swapchainExtent, DDM3::ImageManager* pImageManager);
+			VkExtent2D swapchainExtent, DDM::ImageManager* pImageManager);
 
 		// Initialize the depth image for the swapchain
 		// Parameters:
 		//     pGPUObject: pointer to the GPU Object
 		//     swapchainExtent: the extent of the swapchain, for use of the image size
 		//     pImageManager: pointer to the image manager
-		void CreateDepthResources(GPUObject* pGPUObject, VkExtent2D swapchainExtent, DDM3::ImageManager* pImageManager, VkCommandBuffer commandBuffer);
+		void CreateDepthResources(GPUObject* pGPUObject, VkExtent2D swapchainExtent, DDM::ImageManager* pImageManager, VkCommandBuffer commandBuffer);
 
 		// Get the imageView for the color image
 		VkImageView GetColorImageView() const { return m_ColorImage.imageView; }

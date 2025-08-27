@@ -9,12 +9,12 @@
 #include "../Engine/Window.h"
 #include "Managers/InputManager.h"
 
-DDM3::SpectatorMovementComponent::SpectatorMovementComponent()
+DDM::SpectatorMovementComponent::SpectatorMovementComponent()
 {
 
 }
 
-void DDM3::SpectatorMovementComponent::Update()
+void DDM::SpectatorMovementComponent::Update()
 {
 	if (m_pTransform == nullptr)
 	{

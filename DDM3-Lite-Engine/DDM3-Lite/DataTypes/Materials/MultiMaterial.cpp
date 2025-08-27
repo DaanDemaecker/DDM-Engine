@@ -6,34 +6,34 @@
 
 #include <algorithm>
 
-DDM3::MultiMaterial::MultiMaterial()
+DDM::MultiMaterial::MultiMaterial()
 	:Material("MultiShader")
 {
-	m_pMultiShaderBufferDescriptor = std::make_unique<DDM3::UboDescriptorObject<MultiShaderBuffer>>();
+	m_pMultiShaderBufferDescriptor = std::make_unique<DDM::UboDescriptorObject<MultiShaderBuffer>>();
 
-	m_pDiffuseTextureObject = std::make_unique<DDM3::TextureDescriptorObject>();
+	m_pDiffuseTextureObject = std::make_unique<DDM::TextureDescriptorObject>();
 
-	m_pNormalTextureObject = std::make_unique<DDM3::TextureDescriptorObject>();
+	m_pNormalTextureObject = std::make_unique<DDM::TextureDescriptorObject>();
 
-	m_pGlossTextureObject = std::make_unique<DDM3::TextureDescriptorObject>();
+	m_pGlossTextureObject = std::make_unique<DDM::TextureDescriptorObject>();
 
-	m_pSpecularTextureObject = std::make_unique<DDM3::TextureDescriptorObject>();
+	m_pSpecularTextureObject = std::make_unique<DDM::TextureDescriptorObject>();
 
 	UpdateShaderBuffer();
 
 
 
-	auto boundCallback = std::bind(&DDM3::MultiMaterial::DropFileCallback, this, std::placeholders::_1, std::placeholders::_2);
+	auto boundCallback = std::bind(&DDM::MultiMaterial::DropFileCallback, this, std::placeholders::_1, std::placeholders::_2);
 
 	Window::GetInstance().AddCallback(this, boundCallback);
 }
 
-DDM3::MultiMaterial::~MultiMaterial()
+DDM::MultiMaterial::~MultiMaterial()
 {
 	Window::GetInstance().RemoveCallback(this);
 }
 
-void DDM3::MultiMaterial::OnGUI()
+void DDM::MultiMaterial::OnGUI()
 {
 	ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_Framed;
 
@@ -56,7 +56,7 @@ void DDM3::MultiMaterial::OnGUI()
 	UpdateShaderBuffer();
 }
 
-void DDM3::MultiMaterial::UpdateDescriptorSets(std::vector<VkDescriptorSet>& descriptorSets, std::vector<DescriptorObject*>& descriptorObjects)
+void DDM::MultiMaterial::UpdateDescriptorSets(std::vector<VkDescriptorSet>& descriptorSets, std::vector<DescriptorObject*>& descriptorObjects)
 {
 	// Get pointer to the descriptorpool wrapper
 	auto descriptorPool = GetDescriptorPool();
@@ -88,7 +88,7 @@ void DDM3::MultiMaterial::UpdateDescriptorSets(std::vector<VkDescriptorSet>& des
 	m_ShouldUpdateDescriptorSets = false;
 }
 
-void DDM3::MultiMaterial::AddDiffuseTexture(std::string& filePath)
+void DDM::MultiMaterial::AddDiffuseTexture(std::string& filePath)
 {
 	m_pDiffuseTextureObject->AddTexture(filePath);
 
@@ -100,12 +100,12 @@ void DDM3::MultiMaterial::AddDiffuseTexture(std::string& filePath)
 	UpdateShaderBuffer();
 }
 
-void DDM3::MultiMaterial::AddDiffuseTexture(std::string&& filePath)
+void DDM::MultiMaterial::AddDiffuseTexture(std::string&& filePath)
 {
 	AddDiffuseTexture(filePath);
 }
 
-void DDM3::MultiMaterial::AddNormalMap(std::string& filePath)
+void DDM::MultiMaterial::AddNormalMap(std::string& filePath)
 {
 	m_pNormalTextureObject->AddTexture(filePath);
 
@@ -117,17 +117,17 @@ void DDM3::MultiMaterial::AddNormalMap(std::string& filePath)
 	UpdateShaderBuffer();
 }
 
-void DDM3::MultiMaterial::AddNormalMap(std::string&& filePath)
+void DDM::MultiMaterial::AddNormalMap(std::string&& filePath)
 {
 	AddNormalMap(filePath);
 }
 
-void DDM3::MultiMaterial::AddGlossTextures(std::initializer_list<const std::string>&& filePaths)
+void DDM::MultiMaterial::AddGlossTextures(std::initializer_list<const std::string>&& filePaths)
 {
 	AddGlossTextures(filePaths);
 }
 
-void DDM3::MultiMaterial::AddGlossTextures(std::initializer_list<const std::string>& filePaths)
+void DDM::MultiMaterial::AddGlossTextures(std::initializer_list<const std::string>& filePaths)
 {
 	m_pGlossTextureObject->AddTextures(filePaths);
 
@@ -139,12 +139,12 @@ void DDM3::MultiMaterial::AddGlossTextures(std::initializer_list<const std::stri
 	UpdateShaderBuffer();
 }
 
-void DDM3::MultiMaterial::AddSpecularTextures(std::initializer_list<const std::string>&& filePaths)
+void DDM::MultiMaterial::AddSpecularTextures(std::initializer_list<const std::string>&& filePaths)
 {
 	AddSpecularTextures(filePaths);
 }
 
-void DDM3::MultiMaterial::AddSpecularTextures(std::initializer_list<const std::string>& filePaths)
+void DDM::MultiMaterial::AddSpecularTextures(std::initializer_list<const std::string>& filePaths)
 {
 	m_pSpecularTextureObject->AddTextures(filePaths);
 
@@ -156,9 +156,9 @@ void DDM3::MultiMaterial::AddSpecularTextures(std::initializer_list<const std::s
 	UpdateShaderBuffer();
 }
 
-void DDM3::MultiMaterial::UpdateShaderBuffer()
+void DDM::MultiMaterial::UpdateShaderBuffer()
 {
-	auto& renderer{ DDM3::VulkanObject::GetInstance() };
+	auto& renderer{ DDM::VulkanObject::GetInstance() };
 
 	for (int frame{}; frame < renderer.GetMaxFrames(); frame++)
 	{
@@ -166,7 +166,7 @@ void DDM3::MultiMaterial::UpdateShaderBuffer()
 	}
 }
 
-void DDM3::MultiMaterial::DropFileCallback(int count, const char** paths)
+void DDM::MultiMaterial::DropFileCallback(int count, const char** paths)
 {
 	if (count > 0)
 	{
@@ -190,7 +190,7 @@ void DDM3::MultiMaterial::DropFileCallback(int count, const char** paths)
 
 }
 
-void DDM3::MultiMaterial::SetFileName(char* text, int textLength, const char* path)
+void DDM::MultiMaterial::SetFileName(char* text, int textLength, const char* path)
 {
 	std::fill(text, text + textLength, 0);
 
@@ -208,7 +208,7 @@ void DDM3::MultiMaterial::SetFileName(char* text, int textLength, const char* pa
 	}
 }
 
-void DDM3::MultiMaterial::DiffuseGui()
+void DDM::MultiMaterial::DiffuseGui()
 {
 	bool placeHolder{ false };
 
@@ -250,7 +250,7 @@ void DDM3::MultiMaterial::DiffuseGui()
 	}
 }
 
-void DDM3::MultiMaterial::NormalMapGui()
+void DDM::MultiMaterial::NormalMapGui()
 {
 
 	bool placeHolder{ false };
@@ -293,7 +293,7 @@ void DDM3::MultiMaterial::NormalMapGui()
 	}
 }
 
-void DDM3::MultiMaterial::GlossMapGui()
+void DDM::MultiMaterial::GlossMapGui()
 {
 	bool placeHolder{ false };
 
@@ -335,7 +335,7 @@ void DDM3::MultiMaterial::GlossMapGui()
 	}
 }
 
-void DDM3::MultiMaterial::SpecularMapGui()
+void DDM::MultiMaterial::SpecularMapGui()
 {
 	bool placeHolder{ false };
 

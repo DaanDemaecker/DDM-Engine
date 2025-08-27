@@ -42,7 +42,7 @@ namespace VulkanUtils
 		// Parameters:
 		//     physicalDevice: handle of the VkPhysicalDevice
 		//     surface: handle of the VkSurfaceKHR
-	DDM3::QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface);
+	DDM::QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface);
 
 	// Check if a certain extension is supported
 		// Parameters:
@@ -53,6 +53,6 @@ namespace VulkanUtils
 		// Parameters:
 		//     physicalDevice: handle of the VkPhysicalDevice
 		//     surface: handle of the VkSurfaceKHR
-	DDM3::SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface);
+	DDM::SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface);
 }
 #endif // !VulkanUtilsIncluded

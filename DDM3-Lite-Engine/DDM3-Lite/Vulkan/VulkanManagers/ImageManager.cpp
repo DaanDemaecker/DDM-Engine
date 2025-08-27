@@ -19,18 +19,18 @@
 #include <stdexcept>
 #include <cmath>
 
-DDM3::ImageManager::ImageManager(GPUObject* pGPUObject, CommandpoolManager* pCommandPoolManager)
+DDM::ImageManager::ImageManager(GPUObject* pGPUObject, CommandpoolManager* pCommandPoolManager)
 	:m_DefaultTextureName{ ConfigManager::GetInstance().GetString("DefaultTextureName") }
 {
 	CreateDefaultResources(pGPUObject, pCommandPoolManager);
 }
 
-DDM3::ImageManager::~ImageManager()
+DDM::ImageManager::~ImageManager()
 {
 	Cleanup(VulkanObject::GetInstance().GetDevice());
 }
 
-void DDM3::ImageManager::CreateDefaultResources(GPUObject* pGPUObject, CommandpoolManager* pCommandPoolManager)
+void DDM::ImageManager::CreateDefaultResources(GPUObject* pGPUObject, CommandpoolManager* pCommandPoolManager)
 {
 	// Create the default texture sampler
 	CreateTextureSampler(pGPUObject, m_TextureSampler, m_DefaultTexture.mipLevels);
@@ -40,7 +40,7 @@ void DDM3::ImageManager::CreateDefaultResources(GPUObject* pGPUObject, Commandpo
 	m_DefaultTexture.imageView = CreateImageView(pGPUObject->GetDevice(), m_DefaultTexture.image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, m_DefaultTexture.mipLevels);
 }
 
-VkImageView DDM3::ImageManager::CreateImageView(VkDevice device, VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels)
+VkImageView DDM::ImageManager::CreateImageView(VkDevice device, VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels)
 {
 	// Create image view create info
 	VkImageViewCreateInfo viewInfo{};
@@ -76,7 +76,7 @@ VkImageView DDM3::ImageManager::CreateImageView(VkDevice device, VkImage image, 
 	return imageView;
 }
 
-void DDM3::ImageManager::CreateCubeTexture(GPUObject* pGPUObject, Texture& cubeTexture, const std::initializer_list<const std::string>& textureNames, CommandpoolManager* pCommandPoolManager)
+void DDM::ImageManager::CreateCubeTexture(GPUObject* pGPUObject, Texture& cubeTexture, const std::initializer_list<const std::string>& textureNames, CommandpoolManager* pCommandPoolManager)
 {
 	// Get device
 	auto device{ pGPUObject->GetDevice() };
@@ -276,7 +276,7 @@ void DDM3::ImageManager::CreateCubeTexture(GPUObject* pGPUObject, Texture& cubeT
 	}
 }
 
-void DDM3::ImageManager::CreateTextureSampler(GPUObject* pGPUObject, VkSampler& sampler, uint32_t miplevels)
+void DDM::ImageManager::CreateTextureSampler(GPUObject* pGPUObject, VkSampler& sampler, uint32_t miplevels)
 {
 	// Create sampler create info
 	VkSamplerCreateInfo samplerInfo{};
@@ -327,7 +327,7 @@ void DDM3::ImageManager::CreateTextureSampler(GPUObject* pGPUObject, VkSampler& 
 	}
 }
 
-void DDM3::ImageManager::Cleanup(VkDevice device)
+void DDM::ImageManager::Cleanup(VkDevice device)
 {
 	// Destroy the sampler
 	vkDestroySampler(device, m_TextureSampler, nullptr);
@@ -335,7 +335,7 @@ void DDM3::ImageManager::Cleanup(VkDevice device)
 	m_DefaultTexture.Cleanup(device);
 }
 
-void DDM3::ImageManager::CopyBufferToImage(VkCommandBuffer commandBuffer, VkBuffer buffer, VkImage image, uint32_t width, uint32_t height, uint32_t layerCount)
+void DDM::ImageManager::CopyBufferToImage(VkCommandBuffer commandBuffer, VkBuffer buffer, VkImage image, uint32_t width, uint32_t height, uint32_t layerCount)
 {
 	// Create buffer image copy
 	VkBufferImageCopy region{};
@@ -369,7 +369,7 @@ void DDM3::ImageManager::CopyBufferToImage(VkCommandBuffer commandBuffer, VkBuff
 	vkCmdCopyBufferToImage(commandBuffer, buffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
 }
 
-void DDM3::ImageManager::GenerateMipmaps(VkPhysicalDevice physicalDevice, VkCommandBuffer commandBuffer, VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels)
+void DDM::ImageManager::GenerateMipmaps(VkPhysicalDevice physicalDevice, VkCommandBuffer commandBuffer, VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels)
 {
 	// Create format properties object
 	VkFormatProperties formatProperties{};
@@ -507,7 +507,7 @@ void DDM3::ImageManager::GenerateMipmaps(VkPhysicalDevice physicalDevice, VkComm
 		1, &barrier);
 }
 
-void DDM3::ImageManager::CreateTextureImage(GPUObject* pGPUObject, DDM3::Texture& texture, const std::string& textureName, DDM3::CommandpoolManager* pCommandPoolManager)
+void DDM::ImageManager::CreateTextureImage(GPUObject* pGPUObject, DDM::Texture& texture, const std::string& textureName, DDM::CommandpoolManager* pCommandPoolManager)
 {
 	// Get device
 	auto device{ pGPUObject->GetDevice() };
@@ -587,7 +587,7 @@ void DDM3::ImageManager::CreateTextureImage(GPUObject* pGPUObject, DDM3::Texture
 	pCommandPoolManager->EndSingleTimeCommands(pGPUObject, commandBuffer);
 }
 
-void DDM3::ImageManager::CreateImage(GPUObject* pGPUObject, uint32_t width, uint32_t height, uint32_t mipLevels, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, Texture& texture)
+void DDM::ImageManager::CreateImage(GPUObject* pGPUObject, uint32_t width, uint32_t height, uint32_t mipLevels, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, Texture& texture)
 {
 	// Get device
 	auto device{ pGPUObject->GetDevice() };
@@ -657,7 +657,7 @@ void DDM3::ImageManager::CreateImage(GPUObject* pGPUObject, uint32_t width, uint
 }
 
 
-void DDM3::ImageManager::TransitionImageLayout(VkImage image, VkCommandBuffer commandBuffer, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t mipLevels, uint32_t layerCount)
+void DDM::ImageManager::TransitionImageLayout(VkImage image, VkCommandBuffer commandBuffer, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t mipLevels, uint32_t layerCount)
 {
 	// Create memory barrier
 	VkImageMemoryBarrier barrier{};
@@ -772,7 +772,7 @@ void DDM3::ImageManager::TransitionImageLayout(VkImage image, VkCommandBuffer co
 	);
 }
 
-bool DDM3::ImageManager::HasStencilComponent(VkFormat format)
+bool DDM::ImageManager::HasStencilComponent(VkFormat format)
 {
 	return format == VK_FORMAT_D32_SFLOAT_S8_UINT || format == VK_FORMAT_D24_UNORM_S8_UINT;
 }

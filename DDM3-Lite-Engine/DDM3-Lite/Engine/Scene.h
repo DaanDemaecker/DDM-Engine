@@ -4,7 +4,7 @@
 // File includes
 #include "Managers/SceneManager.h"
 
-namespace DDM3
+namespace DDM
 {
 	class GameObject;
 	class CameraComponent;

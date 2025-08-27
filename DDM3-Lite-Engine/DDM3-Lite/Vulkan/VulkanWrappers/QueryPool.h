@@ -14,7 +14,7 @@
 #include <vector>
 
 
-namespace DDM3
+namespace DDM
 {
 	class QueryPool final
 	{

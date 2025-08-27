@@ -13,7 +13,7 @@
 #include <iostream>
 #include <vector>
 
-namespace DDM3
+namespace DDM
 {
 	// Class forward declarations
 	class Scene;

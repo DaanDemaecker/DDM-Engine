@@ -4,7 +4,7 @@
 #ifndef _AO_RENDER_PASSES_
 #define _AO_RENDER_PASSES_
 
-namespace DDM3
+namespace DDM
 {
 	enum
 	{

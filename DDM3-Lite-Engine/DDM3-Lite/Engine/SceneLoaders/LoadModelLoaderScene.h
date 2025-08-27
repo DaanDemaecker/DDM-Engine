@@ -13,16 +13,16 @@ namespace LoadModelLoaderScene
 {
 	void SetupPipelines();
 
-	void SetupCamera(DDM3::Scene* scene);
+	void SetupCamera(DDM::Scene* scene);
 
-	void SetupLight(DDM3::Scene* scene);
+	void SetupLight(DDM::Scene* scene);
 
-	void SetupModelLoader(DDM3::Scene* scene);
+	void SetupModelLoader(DDM::Scene* scene);
 
 	void LoadModelLoaderScene()
 	{
-		auto scene = DDM3::SceneManager::GetInstance().CreateScene("ModelLoader");
-		DDM3::SceneManager::GetInstance().SetActiveScene(scene);
+		auto scene = DDM::SceneManager::GetInstance().CreateScene("ModelLoader");
+		DDM::SceneManager::GetInstance().SetActiveScene(scene);
 
 		SetupPipelines();
 		
@@ -35,7 +35,7 @@ namespace LoadModelLoaderScene
 
 	void SetupPipelines()
 	{
-		auto& renderer{ DDM3::VulkanObject::GetInstance() };
+		auto& renderer{ DDM::VulkanObject::GetInstance() };
 		
 		renderer.AddGraphicsPipeline("Diffuse", { "Resources/Shaders/Diffuse.Vert.spv", "Resources/Shaders/Diffuse.Frag.spv" });
 		renderer.AddGraphicsPipeline("NormalMap", { "Resources/Shaders/NormalMap.Vert.spv", "Resources/Shaders/NormalMap.Frag.spv" });
@@ -49,13 +49,13 @@ namespace LoadModelLoaderScene
 
 	}
 
-	void SetupCamera(DDM3::Scene* scene)
+	void SetupCamera(DDM::Scene* scene)
 	{
 		auto pCamera{ scene->CreateGameObject("Camera") };
 
-		pCamera->AddComponent<DDM3::SpectatorMovementComponent>();
+		pCamera->AddComponent<DDM::SpectatorMovementComponent>();
 
-		auto pCameraComponent{ pCamera->AddComponent<DDM3::CameraComponent>() };
+		auto pCameraComponent{ pCamera->AddComponent<DDM::CameraComponent>() };
 
 		auto pCameraTransform{ pCamera->GetTransform() };
 		pCameraTransform->SetLocalPosition(0, 1, 0);
@@ -64,7 +64,7 @@ namespace LoadModelLoaderScene
 
 		scene->SetCamera(pCameraComponent);
 
-		auto& configManager{ DDM3::ConfigManager::GetInstance() };
+		auto& configManager{ DDM::ConfigManager::GetInstance() };
 
 		// Set the vertex shader name
 		const std::string vertShaderName{ configManager.GetString("SkyboxVertName") };
@@ -72,9 +72,9 @@ namespace LoadModelLoaderScene
 		const std::string fragShaderName{ configManager.GetString("SkyboxFragName") };
 
 		// Create the graphics pipeline for the skybox
-		DDM3::VulkanObject::GetInstance().AddGraphicsPipeline(configManager.GetString("SkyboxPipelineName"), { vertShaderName, fragShaderName }, false);
+		DDM::VulkanObject::GetInstance().AddGraphicsPipeline(configManager.GetString("SkyboxPipelineName"), { vertShaderName, fragShaderName }, false);
 
-		auto pSkyBox{ pCamera->AddComponent<DDM3::SkyBoxComponent>() };
+		auto pSkyBox{ pCamera->AddComponent<DDM::SkyBoxComponent>() };
 
 		pSkyBox->LoadSkybox(std::initializer_list<const std::string>{"resources/images/CubeMap/Sky_Right.png",
 			"resources/images/CubeMap/Sky_Left.png",
@@ -84,13 +84,13 @@ namespace LoadModelLoaderScene
 			"resources/images/CubeMap/Sky_Back.png"});
 	}
 
-	void SetupLight(DDM3::Scene* scene)
+	void SetupLight(DDM::Scene* scene)
 	{
 		auto pLight{ scene->CreateGameObject("Light") };
 
 		pLight->SetShowImGui(true);
 
-		auto pLightComponent{ pLight->AddComponent<DDM3::DirectionalLightComponent>() };
+		auto pLightComponent{ pLight->AddComponent<DDM::DirectionalLightComponent>() };
 		pLightComponent->SetShowImGui(true);
 
 		//pLightComponent->SetColor(glm::vec3{ 0, 0, 0 });
@@ -106,12 +106,12 @@ namespace LoadModelLoaderScene
 		scene->SetLight(pLightComponent);
 	}
 
-	void SetupModelLoader(DDM3::Scene* scene)
+	void SetupModelLoader(DDM::Scene* scene)
 	{
 		auto pModelLoader{ scene->CreateGameObject("ModelLoader") };
 		pModelLoader->SetShowImGui(true);
 
-		auto pModelLoaderComponent{pModelLoader->AddComponent<DDM3::ModelLoaderComponent>()};
+		auto pModelLoaderComponent{pModelLoader->AddComponent<DDM::ModelLoaderComponent>()};
 		pModelLoaderComponent->SetShowImGui(true);
 	}
 }

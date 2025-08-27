@@ -11,7 +11,7 @@
 #include <vector>
 #include <iostream>
 
-namespace DDM3
+namespace DDM
 {
 	class InstanceWrapper final
 	{

@@ -11,7 +11,7 @@
 // Standard library includes
 #include <vector>
 
-namespace DDM3
+namespace DDM
 {
 	// Templated class so that the user can choose what the descriptor holds
 	template <typename T>
@@ -163,7 +163,7 @@ namespace DDM3
 	inline void UboDescriptorObject<T>::Cleanup()
 	{
 		// Get reference to renderer
-		auto& renderer = DDM3::VulkanObject::GetInstance();
+		auto& renderer = DDM::VulkanObject::GetInstance();
 		// Get reference to device
 		auto device = renderer.GetDevice();
 

@@ -13,7 +13,7 @@
 #include <array>
 #include <string>
 
-namespace DDM3
+namespace DDM
 {
 	// Struct needed for vulkan setup
 	struct QueueFamilyIndices
@@ -267,9 +267,9 @@ namespace std
 
 	// Hash function needed to make an unordered map of vertices
 
-	template<> struct hash<DDM3::Vertex>
+	template<> struct hash<DDM::Vertex>
 	{
-		size_t operator()(DDM3::Vertex const& vertex) const
+		size_t operator()(DDM::Vertex const& vertex) const
 		{
 			return ((hash<glm::vec3>()(vertex.pos) ^
 				(hash<glm::vec3>()(vertex.color) << 1)) >> 1) ^

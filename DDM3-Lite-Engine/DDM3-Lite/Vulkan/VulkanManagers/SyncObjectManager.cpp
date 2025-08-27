@@ -9,18 +9,18 @@
 // Standard library includes
 #include <stdexcept>
 
-DDM3::SyncObjectManager::SyncObjectManager(VkDevice device, uint32_t maxFrames)
+DDM::SyncObjectManager::SyncObjectManager(VkDevice device, uint32_t maxFrames)
 {
 	// Initialize the sync objects
 	CreateSyncObjects(device, maxFrames);
 }
 
-DDM3::SyncObjectManager::~SyncObjectManager()
+DDM::SyncObjectManager::~SyncObjectManager()
 {
 	Cleanup(VulkanObject::GetInstance().GetDevice());
 }
 
-void DDM3::SyncObjectManager::Cleanup(VkDevice device)
+void DDM::SyncObjectManager::Cleanup(VkDevice device)
 {
 	// Loop trough the amount of fences and semaphores
 	for (size_t i = 0; i < m_ImageAvailableSemaphores.size(); ++i)
@@ -34,7 +34,7 @@ void DDM3::SyncObjectManager::Cleanup(VkDevice device)
 	}
 }
 
-void DDM3::SyncObjectManager::CreateSyncObjects(VkDevice device, uint32_t maxFrames)
+void DDM::SyncObjectManager::CreateSyncObjects(VkDevice device, uint32_t maxFrames)
 {
 	// Resize image available semaphore to the amound of frames
 	m_ImageAvailableSemaphores.resize(maxFrames);

@@ -13,7 +13,7 @@
 #include <functional>
 #include <iostream>
 
-DDM3::KeyBoardImpl::KeyBoardImpl()
+DDM::KeyBoardImpl::KeyBoardImpl()
 {
 	m_Pressed.resize(GLFW_KEY_LAST+1);
 
@@ -22,9 +22,9 @@ DDM3::KeyBoardImpl::KeyBoardImpl()
 	m_Up.resize(m_Pressed.size());
 }
 
-void DDM3::KeyBoardImpl::Update()
+void DDM::KeyBoardImpl::Update()
 {
-	auto window = DDM3::Window::GetInstance().GetWindowStruct().pWindow;
+	auto window = DDM::Window::GetInstance().GetWindowStruct().pWindow;
 
 	std::vector<bool> currentState;
 	currentState.resize(m_Pressed.size());
@@ -47,17 +47,17 @@ void DDM3::KeyBoardImpl::Update()
 	m_Pressed = std::move(currentState);
 }
 
-bool DDM3::KeyBoardImpl::IsPressed(int button)
+bool DDM::KeyBoardImpl::IsPressed(int button)
 {
 	return m_Pressed[button];
 }
 
-bool DDM3::KeyBoardImpl::IsUp(int button)
+bool DDM::KeyBoardImpl::IsUp(int button)
 {
 	return m_Up[button];
 }
 
-bool DDM3::KeyBoardImpl::IsDown(int button)
+bool DDM::KeyBoardImpl::IsDown(int button)
 {
 	return m_Down[button];
 }

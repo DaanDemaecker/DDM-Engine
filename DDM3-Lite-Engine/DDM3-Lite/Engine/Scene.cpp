@@ -10,9 +10,9 @@
 #include "Components/DirectionalLightComponent.h"
 #include "Components/TransformComponent.h"
 
-unsigned int DDM3::Scene::m_IdCounter = 0;
+unsigned int DDM::Scene::m_IdCounter = 0;
 
-DDM3::Scene::Scene(const std::string& name) : m_Name(name)
+DDM::Scene::Scene(const std::string& name) : m_Name(name)
 {
 	m_pSceneRoot = std::make_unique<GameObject>("Scene Root");
 	m_pSceneRoot->Init();
@@ -26,93 +26,93 @@ DDM3::Scene::Scene(const std::string& name) : m_Name(name)
 	m_pDefaultLightComponent = m_pDefaultLight->AddComponent<DirectionalLightComponent>();
 }
 
-DDM3::GameObject* DDM3::Scene::CreateGameObject(const std::string& name)
+DDM::GameObject* DDM::Scene::CreateGameObject(const std::string& name)
 {
 	return m_pSceneRoot->CreateNewObject(name);
 }
 
-void DDM3::Scene::OnSceneLoad()
+void DDM::Scene::OnSceneLoad()
 {
 	m_pSceneRoot->OnSceneLoad();
 }
 
-void DDM3::Scene::OnSceneUnload()
+void DDM::Scene::OnSceneUnload()
 {
 	m_pSceneRoot->OnSceneUnload();
 }
 
-void DDM3::Scene::StartFrame()
+void DDM::Scene::StartFrame()
 {
 	m_pSceneRoot->StartFrame();
 }
 
-void DDM3::Scene::EarlyUpdate()
+void DDM::Scene::EarlyUpdate()
 {
 	m_pSceneRoot->EarlyUpdate();
 }
 
-void DDM3::Scene::Update()
+void DDM::Scene::Update()
 {
 	m_pSceneRoot->Update();
 }
 
-void DDM3::Scene::FixedUpdate()
+void DDM::Scene::FixedUpdate()
 {
 	m_pSceneRoot->FixedUpdate();
 }
 
-void DDM3::Scene::LateUpdate()
+void DDM::Scene::LateUpdate()
 {
 	m_pSceneRoot->LateUpdate();
 }
 
-void DDM3::Scene::PostUpdate()
+void DDM::Scene::PostUpdate()
 {
 	m_pSceneRoot->PostUpdate();
 }
 
-void DDM3::Scene::PrepareRender()
+void DDM::Scene::PrepareRender()
 {
 	m_pSceneRoot->PrepareRender();
 }
 
-void DDM3::Scene::RenderSkyBox()
+void DDM::Scene::RenderSkyBox()
 {
 	if (m_pActiveCamera != nullptr)
 		m_pActiveCamera->RenderSkybox();
 }
 
-void DDM3::Scene::RenderDepth() const
+void DDM::Scene::RenderDepth() const
 {
 	m_pSceneRoot->RenderDepth();
 }
 
-void DDM3::Scene::Render() const
+void DDM::Scene::Render() const
 {
 	m_pSceneRoot->Render();
 }
 
-void DDM3::Scene::RenderTransparancy() const
+void DDM::Scene::RenderTransparancy() const
 {
 	m_pSceneRoot->RenderTransparancy();
 }
 
-void DDM3::Scene::OngGUI() const
+void DDM::Scene::OngGUI() const
 {
 	m_pSceneRoot->OnGUI();
 }
 
-void DDM3::Scene::Cleanup()
+void DDM::Scene::Cleanup()
 {
 	m_pSceneRoot->Cleanup();
 }
 
-void DDM3::Scene::SetCamera(std::shared_ptr<CameraComponent> pCamera)
+void DDM::Scene::SetCamera(std::shared_ptr<CameraComponent> pCamera)
 {
 	m_pActiveCamera = pCamera;
 }
 
-const std::shared_ptr<DDM3::CameraComponent> DDM3::Scene::GetCamera() const
+const std::shared_ptr<DDM::CameraComponent> DDM::Scene::GetCamera() const
 {
 	if (m_pActiveCamera != nullptr)
 		return m_pActiveCamera;
@@ -120,12 +120,12 @@ const std::shared_ptr<DDM3::CameraComponent> DDM3::Scene::GetCamera() const
 	return m_pDefaultCameraComponent;
 }
 
-void DDM3::Scene::SetLight(std::shared_ptr<DirectionalLightComponent> pLight)
+void DDM::Scene::SetLight(std::shared_ptr<DirectionalLightComponent> pLight)
 {
 	m_pActiveLight = pLight;
 }
 
-const std::shared_ptr<DDM3::DirectionalLightComponent> DDM3::Scene::GetLight() const
+const std::shared_ptr<DDM::DirectionalLightComponent> DDM::Scene::GetLight() const
 {
 	if (m_pActiveLight != nullptr)
 		return m_pActiveLight;
@@ -133,7 +133,7 @@ const std::shared_ptr<DDM3::DirectionalLightComponent> DDM3::Scene::GetLight() c
 	return m_pDefaultLightComponent;
 }
 
-DDM3::GameObject* DDM3::Scene::GetSceneRoot()
+DDM::GameObject* DDM::Scene::GetSceneRoot()
 {
 	return m_pSceneRoot.get();
 }

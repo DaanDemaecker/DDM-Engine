@@ -14,7 +14,7 @@
 #include <memory>
 #include <unordered_map>
 
-namespace DDM3
+namespace DDM
 {
 	// Class forward declarations
 	class ImageManager;
@@ -32,7 +32,7 @@ namespace DDM3
 		//     surface: handle of the VkSurfaceKHR
 		//     pImageManager: pointer to the image manager
 		//     msaaSamples: max amount of samples per pixel
-		SwapchainWrapper(GPUObject* pGPUObject, VkSurfaceKHR surface, DDM3::ImageManager* pImageManager, VkSampleCountFlagBits msaaSamples);
+		SwapchainWrapper(GPUObject* pGPUObject, VkSurfaceKHR surface, DDM::ImageManager* pImageManager, VkSampleCountFlagBits msaaSamples);
 
 		// Delete default constructor
 		SwapchainWrapper() = delete;
@@ -52,7 +52,7 @@ namespace DDM3
 		//     pImageManager: pointer to the image manager
 		//     commandBuffer: commandbuffer that will be used to create depth image
 		//     renderPass: the renderpass that will be used with this swapchain
-		void SetupImageViews(GPUObject* pGPUObject, DDM3::ImageManager* pImageManager,
+		void SetupImageViews(GPUObject* pGPUObject, DDM::ImageManager* pImageManager,
 			VkCommandBuffer commandBuffer, RenderpassWrapper* renderPass);
 
 		void AddFrameBuffers(RenderpassWrapper* renderpass);
@@ -71,7 +71,7 @@ namespace DDM3
 		//     commandBuffer: commandbuffer that will be used to create depth image
 		//     renderpass: the renderpass that will be used with this swapchain
 		void RecreateSwapChain(GPUObject* pGPUObject, VkSurfaceKHR surface,
-			DDM3::ImageManager* pImageManager, VkCommandBuffer commandBuffer, std::vector<RenderpassWrapper*>& renderpasses);
+			DDM::ImageManager* pImageManager, VkCommandBuffer commandBuffer, std::vector<RenderpassWrapper*>& renderpasses);
 
 		// Get the swapchain
 		VkSwapchainKHR GetSwapchain() const { return m_SwapChain; }
@@ -125,7 +125,7 @@ namespace DDM3
 		//     commandBuffer: commandbuffer needed for creation of depth image
 		//     renderpass: the renderpass used with this swapchain
 		void SetupSwapchain(GPUObject* pGPUObject, VkSurfaceKHR surface,
-			DDM3::ImageManager* pImageManager, VkCommandBuffer commandBuffer, std::vector<RenderpassWrapper*>& renderpasses);
+			DDM::ImageManager* pImageManager, VkCommandBuffer commandBuffer, std::vector<RenderpassWrapper*>& renderpasses);
 
 		// Create the swapchain
 		// Parameters:

@@ -11,19 +11,19 @@
 // Standard library includes
 #include <stdexcept>
 
-DDM3::SurfaceWrapper::SurfaceWrapper(InstanceWrapper* instance)
+DDM::SurfaceWrapper::SurfaceWrapper(InstanceWrapper* instance)
 {
 	m_Instance = instance;
 	// Create the surface
 	CreateSurface(instance->GetInstance());
 }
 
-DDM3::SurfaceWrapper::~SurfaceWrapper()
+DDM::SurfaceWrapper::~SurfaceWrapper()
 {
 	Cleanup(m_Instance->GetInstance());
 }
 
-void DDM3::SurfaceWrapper::Cleanup(VkInstance instance)
+void DDM::SurfaceWrapper::Cleanup(VkInstance instance)
 {
 	if (m_Surface != VK_NULL_HANDLE)
 	{
@@ -33,7 +33,7 @@ void DDM3::SurfaceWrapper::Cleanup(VkInstance instance)
 	}
 }
 
-void DDM3::SurfaceWrapper::CreateSurface(VkInstance instance)
+void DDM::SurfaceWrapper::CreateSurface(VkInstance instance)
 {
 	// Create the window surface
 	if (glfwCreateWindowSurface(instance, Window::GetInstance().GetWindowStruct().pWindow, nullptr, &m_Surface) != VK_SUCCESS)
