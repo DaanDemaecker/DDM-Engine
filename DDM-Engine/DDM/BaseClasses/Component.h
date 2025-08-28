@@ -1,3 +1,4 @@
+// Component.h
 // This class will serve as the base for any component created
 
 #ifndef _COMPONENT_
