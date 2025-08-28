@@ -772,7 +772,7 @@ void DDM::SSAORenderer::SetNewSamples()
 
 // Logic by Brian Will
 // https://www.youtube.com/watch?v=7hxrPKoELpo
-void DDM::SSAORenderer::GetRandomVector(glm::vec4& vec, int index)
+void DDM::SSAORenderer::GetRandomVector(glm::vec4& vec, int index) const
 {
 	vec.x = Utils::RandomFLoat(-1.0f, 1.0f);
 	vec.y = Utils::RandomFLoat(-1.0f, 1.0f);

@@ -147,7 +147,7 @@ namespace DDM
 
 		void SetNewSamples();
 
-		void GetRandomVector(glm::vec4& vec, int index);
+		void GetRandomVector(glm::vec4& vec, int index) const;
 
 		void SetupProjectionViewMatrix();
 

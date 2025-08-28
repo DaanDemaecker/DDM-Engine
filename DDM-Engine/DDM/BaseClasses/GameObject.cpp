@@ -289,17 +289,6 @@ void DDM::GameObject::OnGUI()
 	}
 }
 
-void DDM::GameObject::Cleanup()
-{
-	for (auto& pChild : m_pChildren)
-	{
-		if (pChild->m_IsActive)
-		{
-			pChild->Cleanup();
-		}
-	}
-}
-
 void DDM::GameObject::Destroy()
 {
 	m_ShouldDestroy = true;

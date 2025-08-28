@@ -97,11 +97,6 @@ void DDM::Scene::OngGUI() const
 	m_pSceneRoot->OnGUI();
 }
 
-void DDM::Scene::Cleanup()
-{
-	m_pSceneRoot->Cleanup();
-}
-
 void DDM::Scene::SetCamera(std::shared_ptr<CameraComponent> pCamera)
 {
 	m_pActiveCamera = pCamera;

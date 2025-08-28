@@ -211,14 +211,6 @@ void DDM::SceneManager::RenderTransparancy() const
     }
 }
 
-void DDM::SceneManager::Cleanup()
-{
-    if (m_ActiveScene != nullptr)
-    {
-        m_ActiveScene->Cleanup();
-    }
-}
-
 const std::shared_ptr<DDM::CameraComponent> DDM::SceneManager::GetCamera() const
 {
     if (m_ActiveScene != nullptr)

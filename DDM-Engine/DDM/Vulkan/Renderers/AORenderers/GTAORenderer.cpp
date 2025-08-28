@@ -28,7 +28,6 @@
 
 #include "Vulkan/Renderers/AORenderers/AoRenderPasses.h"
 
-#include "Components/CameraComponent.h"
 #include "DataTypes/DescriptorObjects/UboDescriptorObject.h"
 
 DDM::GTAORenderer::GTAORenderer()

@@ -97,9 +97,6 @@ namespace DDM
 		// Render transparant object
 		void RenderTransparancy() const;
 
-		// Clean up the frame
-		void Cleanup();
-
 		// Get a pointer to the active camera
 		const std::shared_ptr<CameraComponent> GetCamera() const;
 

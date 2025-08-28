@@ -51,8 +51,6 @@ namespace DDM
 
 		void OngGUI() const;
 
-		void Cleanup();
-
 		void SetCamera(std::shared_ptr<CameraComponent> pCamera);
 
 		const std::shared_ptr<CameraComponent> GetCamera() const;
