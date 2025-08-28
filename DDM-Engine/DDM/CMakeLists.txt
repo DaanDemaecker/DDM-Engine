@@ -71,8 +71,15 @@ add_executable(${EXECUTABLE_NAME}
 # Include directories specific to this target
 target_include_directories(${EXECUTABLE_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
+if (MSVC)
+  # Use CMake's built-in property to set warning level cleanly
+  set_property(TARGET ${EXECUTABLE_NAME} PROPERTY MSVC_WARNING_LEVEL 4)
 
-# Suppress warning C26459 for this specific target
-if(MSVC)
-    target_compile_options(${EXECUTABLE_NAME} PRIVATE /wd26459)
+  # Treat warnings as errors
+  target_compile_options(${EXECUTABLE_NAME} PRIVATE /WX)
+
+  # Suppress warning C26459 just for this target
+  target_compile_options(${EXECUTABLE_NAME} PRIVATE /wd26459)
+else()
+  target_compile_options(${EXECUTABLE_NAME} PRIVATE -Wall -Wextra -Wpedantic -Werror)
 endif()

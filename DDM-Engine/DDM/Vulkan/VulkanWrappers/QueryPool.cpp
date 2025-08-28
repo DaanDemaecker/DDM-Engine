@@ -93,7 +93,7 @@ void DDM::QueryPool::PrintTimestamps()
 				uint64_t rawTimeStamp2 = timeStamps[index - 2];
 				double timestampNs2 = rawTimeStamp2 * timestampPeriod;
 
-				double deltaTime = rawTimeStamp - rawTimeStamp2;
+				double deltaTime = static_cast<double>(rawTimeStamp - rawTimeStamp2);
 				deltaTime *= timestampPeriod;
 
 				std::cout << "DeltaTime: " << deltaTime << " nanoseconds" << std::endl;

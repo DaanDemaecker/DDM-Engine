@@ -106,17 +106,17 @@ int DDM::InfoComponent::GetVRAMUsage()
 	DXGI_QUERY_VIDEO_MEMORY_INFO info = {};
 	m_DxgiAdapter->QueryVideoMemoryInfo(0, DXGI_MEMORY_SEGMENT_GROUP_LOCAL, &info);
 
-	return info.CurrentUsage / 1024 / 1024;
+	return static_cast<int>(info.CurrentUsage / 1024 / 1024);
 }
 
 int DDM::InfoComponent::GetMemoryUsage()
 {
-	PROCESS_MEMORY_COUNTERS_EX pmc;
+	PROCESS_MEMORY_COUNTERS_EX pmc{};
 	if (GetProcessMemoryInfo(GetCurrentProcess(), (PROCESS_MEMORY_COUNTERS*)&pmc, sizeof(pmc)))
 	{
 		SIZE_T memUsedBytes = pmc.PrivateUsage;
 		double memUsedMB = memUsedBytes / (1024.0 * 1024.0);
-		return memUsedMB;
+		return static_cast<int>(memUsedMB);
 	}
 
 	return 0;
@@ -155,7 +155,7 @@ void DDM::InfoComponent::AddMeasurement()
 
 	if (m_CurrentMeasurement < m_DeltaTimeMeasurements.size())
 	{
-		m_VRAMMeasurements[m_CurrentMeasurement].emplace_back(GetVRAMUsage());
+		m_VRAMMeasurements[m_CurrentMeasurement].emplace_back(static_cast<float>(GetVRAMUsage()));
 	}
 
 
@@ -199,12 +199,12 @@ void DDM::InfoComponent::RenderPlot(const std::vector<std::vector<float>>& sampl
 
 		if (sample.size() > maxSamples)
 		{
-			maxSamples = sample.size();
+			maxSamples = static_cast<int>(sample.size());
 		}
 	}
 
 
-	ImGui::PlotConfig::Values plotValues{nullptr, nullptr, m_SampleSize, 0, 0, values.data(), values.size(), colors.data()};
+	ImGui::PlotConfig::Values plotValues{nullptr, nullptr, m_SampleSize, 0, 0, values.data(), static_cast<int>(values.size()), colors.data()};
 
 	ImGui::PlotConfig plot{};
 
@@ -213,7 +213,7 @@ void DDM::InfoComponent::RenderPlot(const std::vector<std::vector<float>>& sampl
 
 	plot.frame_size = ImVec2{ width, height };
 	plot.values = plotValues;
-	plot.scale = ImGui::PlotConfig::Scale(0, maxElement);
+	plot.scale = ImGui::PlotConfig::Scale(0, static_cast<float>(maxElement));
 
 	plot.grid_y = ImGui::PlotConfig::Grid{ true, 1};
 

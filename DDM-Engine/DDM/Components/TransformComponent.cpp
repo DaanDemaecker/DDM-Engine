@@ -37,9 +37,9 @@ void DDM::TransformComponent::OnGUI()
 
 		if (ImGui::TreeNodeEx("Scale", flags))
 		{
-			ImGui::SliderFloat("x", &m_LocalScale.x, 0.001, 2);
-			ImGui::SliderFloat("y", &m_LocalScale.y, 0.001, 2);
-			ImGui::SliderFloat("z", &m_LocalScale.z, 0.001, 2);
+			ImGui::SliderFloat("x", &m_LocalScale.x, 0.001f, 2.0f);
+			ImGui::SliderFloat("y", &m_LocalScale.y, 0.001f, 2.0f);
+			ImGui::SliderFloat("z", &m_LocalScale.z, 0.001f, 2.0f);
 			ImGui::TreePop();
 		}
 		ImGui::TreePop();

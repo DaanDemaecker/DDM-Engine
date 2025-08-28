@@ -1,19 +1,19 @@
 # Set cmake version
-cmake_minimum_required(VERSION 3.11)
+cmake_minimum_required(VERSION 3.15)
 
 # Project name
 project(DDM3-LITE-ENGINE)
+
+# Root folder name of project
+set(SOURCE_FOLDER_NAME "DDM")
+
+# Name of the executable target
+set(EXECUTABLE_NAME "DDM-Engine")
 
 # C++ standard
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 cmake_policy(SET CMP0079 NEW)
-
-set(SOURCE_FOLDER_NAME "DDM")
-
-
-set(EXECUTABLE_NAME "DDM-Engine")
-
 
 # Copy resources after Shaders
 add_custom_target(copy_resources ALL)
@@ -31,7 +31,7 @@ add_custom_command(
 )
 
 
-
+# Copy config file
 add_custom_target(configFile ALL)
 add_custom_command(
 	TARGET configFile POST_BUILD
@@ -41,6 +41,7 @@ add_custom_command(
 	$<TARGET_FILE_DIR:${EXECUTABLE_NAME}>
 )
 
+# Add subdirectories
 add_subdirectory(${SOURCE_FOLDER_NAME})
 add_subdirectory(3rdParty)
 add_subdirectory(Resources)

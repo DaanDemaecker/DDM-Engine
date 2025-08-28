@@ -70,7 +70,7 @@ void DDM::MaterialSwitchManager::OnGUI()
 
 	if (ImGui::TreeNodeEx("Material switcher", flags))
 	{
-		ImGui::ListBox(m_Label.c_str(), &m_CurrentKey, cStringList.data(), cStringList.size());
+		ImGui::ListBox(m_Label.c_str(), &m_CurrentKey, cStringList.data(), static_cast<int>(cStringList.size()));
 		ImGui::TreePop();
 	}
 

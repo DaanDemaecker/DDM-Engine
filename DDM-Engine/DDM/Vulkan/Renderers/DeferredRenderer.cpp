@@ -53,7 +53,7 @@ DDM::DeferredRenderer::DeferredRenderer()
 
 
 	// Initialize the sync objects
-	m_pSyncObjectManager = std::make_unique<SyncObjectManager>(pGPUObject->GetDevice(), VulkanObject::GetInstance().GetMaxFrames());
+	m_pSyncObjectManager = std::make_unique<SyncObjectManager>(pGPUObject->GetDevice(), static_cast<uint32_t>(VulkanObject::GetInstance().GetMaxFrames()));
 
 	InitImgui();
 }
@@ -674,7 +674,7 @@ void DDM::DeferredRenderer::RecreateSwapChain()
 
 void DDM::DeferredRenderer::ResetDescriptorSets()
 {
-	vkFreeDescriptorSets(VulkanObject::GetInstance().GetDevice(), m_DescriptorPool, m_DescriptorSets.size(), m_DescriptorSets.data());
+	vkFreeDescriptorSets(VulkanObject::GetInstance().GetDevice(), m_DescriptorPool, static_cast<uint32_t>(m_DescriptorSets.size()), m_DescriptorSets.data());
 
 	SetupDescriptorObjects();
 
@@ -735,7 +735,7 @@ void DDM::DeferredRenderer::CreateDescriptorPool()
 		// Set the type of the poolsize
 		descriptorPoolSize.type = VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT;
 		// Calculate the amount of descriptors needed from this type
-		descriptorPoolSize.descriptorCount = frames;
+		descriptorPoolSize.descriptorCount = static_cast<uint32_t>(frames);
 
 		// Add the descriptor poolsize to the vector
 		poolSizes.push_back(descriptorPoolSize);

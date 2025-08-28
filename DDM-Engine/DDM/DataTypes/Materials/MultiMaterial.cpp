@@ -92,7 +92,7 @@ void DDM::MultiMaterial::AddDiffuseTexture(std::string& filePath)
 {
 	m_pDiffuseTextureObject->AddTexture(filePath);
 
-	m_MultiShaderBuffer.diffuseAmount = m_pDiffuseTextureObject->GetTextureAmount();
+	m_MultiShaderBuffer.diffuseAmount = static_cast<int>(m_pDiffuseTextureObject->GetTextureAmount());
 	m_MultiShaderBuffer.diffuseEnabled = true;
 
 	m_ShouldUpdateDescriptorSets = true;
@@ -109,7 +109,7 @@ void DDM::MultiMaterial::AddNormalMap(std::string& filePath)
 {
 	m_pNormalTextureObject->AddTexture(filePath);
 
-	m_MultiShaderBuffer.normalAmount = m_pNormalTextureObject->GetTextureAmount();
+	m_MultiShaderBuffer.normalAmount = static_cast<int>(m_pNormalTextureObject->GetTextureAmount());
 	m_MultiShaderBuffer.normalEnabled = true;
 
 	m_ShouldUpdateDescriptorSets = true;
@@ -131,7 +131,7 @@ void DDM::MultiMaterial::AddGlossTextures(std::initializer_list<const std::strin
 {
 	m_pGlossTextureObject->AddTextures(filePaths);
 
-	m_MultiShaderBuffer.glossAmount = m_pGlossTextureObject->GetTextureAmount();
+	m_MultiShaderBuffer.glossAmount = static_cast<int>(m_pGlossTextureObject->GetTextureAmount());
 	m_MultiShaderBuffer.glossEnabled = true;
 
 	m_ShouldUpdateDescriptorSets = true;
@@ -148,7 +148,7 @@ void DDM::MultiMaterial::AddSpecularTextures(std::initializer_list<const std::st
 {
 	m_pSpecularTextureObject->AddTextures(filePaths);
 
-	m_MultiShaderBuffer.specularAmount = m_pSpecularTextureObject->GetTextureAmount();
+	m_MultiShaderBuffer.specularAmount = static_cast<int>(m_pSpecularTextureObject->GetTextureAmount());
 	m_MultiShaderBuffer.specularEnabled = true;
 
 	m_ShouldUpdateDescriptorSets = true;

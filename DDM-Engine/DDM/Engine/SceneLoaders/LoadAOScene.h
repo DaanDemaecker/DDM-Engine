@@ -238,7 +238,7 @@ namespace LoadAOScene
 
 
 		auto pCameraTransform{ pCamera->GetTransform() };
-		pCameraTransform->SetLocalPosition(8, 1.5, -0.3);
+		pCameraTransform->SetLocalPosition(8.f, 1.5f, -0.3f);
 		pCameraTransform->SetLocalRotation(0.0f, glm::radians(90.0f), 0.0f);
 
 		//pCameraTransform->SetLocalPosition(3.82492f, 5.96203f, -3.80923);

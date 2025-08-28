@@ -42,9 +42,9 @@ void DDM::Subpass::SetupDescription()
 
 	m_Description.flags = 0;
 	m_Description.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-	m_Description.inputAttachmentCount = m_InputAttachmentRefs.size();
+	m_Description.inputAttachmentCount = static_cast<uint32_t>(m_InputAttachmentRefs.size());
 	m_Description.pInputAttachments = m_InputAttachmentRefs.size() > 0 ? m_InputAttachmentRefs.data() : nullptr;
-	m_Description.colorAttachmentCount = m_AttachmentReferences.size();
+	m_Description.colorAttachmentCount = static_cast<uint32_t>(m_AttachmentReferences.size());
 	m_Description.pColorAttachments = m_AttachmentReferences.size() > 0 ? m_AttachmentReferences.data() : nullptr;
 	m_Description.pResolveAttachments = m_ResolveSet ? &m_ResolveAttachmentRef : nullptr;
 	m_Description.pDepthStencilAttachment = m_DepthRefSet ? &m_DepthAttachmentRef : nullptr;

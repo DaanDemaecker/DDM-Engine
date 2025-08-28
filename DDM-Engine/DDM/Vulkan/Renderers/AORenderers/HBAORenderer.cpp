@@ -51,7 +51,7 @@ DDM::HBAORenderer::HBAORenderer()
 
 
 	// Initialize the sync objects
-	m_pSyncObjectManager = std::make_unique<SyncObjectManager>(pGPUObject->GetDevice(), VulkanObject::GetInstance().GetMaxFrames());
+	m_pSyncObjectManager = std::make_unique<SyncObjectManager>(pGPUObject->GetDevice(), static_cast<uint32_t>(VulkanObject::GetInstance().GetMaxFrames()));
 
 	InitImgui();
 
@@ -944,11 +944,11 @@ void DDM::HBAORenderer::RecreateSwapChain()
 
 void DDM::HBAORenderer::ResetDescriptorSets()
 {
-	vkFreeDescriptorSets(VulkanObject::GetInstance().GetDevice(), m_LightingDescriptorPool, m_LightingDescriptorSets.size(), m_LightingDescriptorSets.data());
+	vkFreeDescriptorSets(VulkanObject::GetInstance().GetDevice(), m_LightingDescriptorPool, static_cast<uint32_t>(m_LightingDescriptorSets.size()), m_LightingDescriptorSets.data());
 
-	vkFreeDescriptorSets(VulkanObject::GetInstance().GetDevice(), m_AoGenDescriptorPool, m_AoGenDescriptorSets.size(), m_AoGenDescriptorSets.data());
+	vkFreeDescriptorSets(VulkanObject::GetInstance().GetDevice(), m_AoGenDescriptorPool, static_cast<uint32_t>(m_AoGenDescriptorSets.size()), m_AoGenDescriptorSets.data());
 
-	vkFreeDescriptorSets(VulkanObject::GetInstance().GetDevice(), m_AoBlurDescriptorPool, m_AoBlurDescriptorSets.size(), m_AoBlurDescriptorSets.data());
+	vkFreeDescriptorSets(VulkanObject::GetInstance().GetDevice(), m_AoBlurDescriptorPool, static_cast<uint32_t>(m_AoBlurDescriptorSets.size()), m_AoBlurDescriptorSets.data());
 
 	SetupDescriptorObjects();
 
@@ -1115,7 +1115,7 @@ void DDM::HBAORenderer::CreateAoGenDescriptorPool()
 		// Set the type of the poolsize
 		descriptorPoolSize.type = VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT;
 		// Calculate the amount of descriptors needed from this type
-		descriptorPoolSize.descriptorCount = frames;
+		descriptorPoolSize.descriptorCount = static_cast<uint32_t>(frames);
 
 		// Add the descriptor poolsize to the vector
 		poolSizes.push_back(descriptorPoolSize);
@@ -1123,25 +1123,25 @@ void DDM::HBAORenderer::CreateAoGenDescriptorPool()
 
 	VkDescriptorPoolSize posTextureDescriptorpoolSize{};
 	posTextureDescriptorpoolSize.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-	posTextureDescriptorpoolSize.descriptorCount = frames;
+	posTextureDescriptorpoolSize.descriptorCount = static_cast<uint32_t>(frames);
 
 	poolSizes.push_back(posTextureDescriptorpoolSize);
 
 	VkDescriptorPoolSize noiseTextureDescriptorpoolSize{};
 	noiseTextureDescriptorpoolSize.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-	noiseTextureDescriptorpoolSize.descriptorCount = frames;
+	noiseTextureDescriptorpoolSize.descriptorCount = static_cast<uint32_t>(frames);
 
 	poolSizes.push_back(noiseTextureDescriptorpoolSize);
 
 	VkDescriptorPoolSize samplesDescriptorPoolSize{};
 	samplesDescriptorPoolSize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-	samplesDescriptorPoolSize.descriptorCount = frames;
+	samplesDescriptorPoolSize.descriptorCount = static_cast<uint32_t>(frames);
 
 	poolSizes.push_back(samplesDescriptorPoolSize);
 
 	VkDescriptorPoolSize projectionMatrixPoolSize{};
 	projectionMatrixPoolSize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-	projectionMatrixPoolSize.descriptorCount = frames;
+	projectionMatrixPoolSize.descriptorCount = static_cast<uint32_t>(frames);
 
 	poolSizes.push_back(projectionMatrixPoolSize);
 
@@ -1178,7 +1178,7 @@ void DDM::HBAORenderer::CreateAoBlurDescriptorPool()
 
 	VkDescriptorPoolSize aogGenTextureDescriptorpoolSize{};
 	aogGenTextureDescriptorpoolSize.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-	aogGenTextureDescriptorpoolSize.descriptorCount = frames;
+	aogGenTextureDescriptorpoolSize.descriptorCount = static_cast<uint32_t>(frames);
 
 	poolSizes.push_back(aogGenTextureDescriptorpoolSize);
 
@@ -1220,7 +1220,7 @@ void DDM::HBAORenderer::CreateLightingDescriptorPool()
 		// Set the type of the poolsize
 		descriptorPoolSize.type = VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT;
 		// Calculate the amount of descriptors needed from this type
-		descriptorPoolSize.descriptorCount = frames;
+		descriptorPoolSize.descriptorCount = static_cast<uint32_t>(frames);
 
 		// Add the descriptor poolsize to the vector
 		poolSizes.push_back(descriptorPoolSize);

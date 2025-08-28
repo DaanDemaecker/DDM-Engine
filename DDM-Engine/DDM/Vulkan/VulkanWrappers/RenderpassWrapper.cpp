@@ -118,11 +118,11 @@ void DDM::RenderpassWrapper::CreateRenderPass()
 	// Set pAttachments as pointer to date of attachments
 	renderPassInfo.pAttachments = attachments.data();
 	// Set subpasscount to 1
-	renderPassInfo.subpassCount = subpasses.size();
+	renderPassInfo.subpassCount = static_cast<uint32_t>(subpasses.size());
 	// Give pointer to subpass count
 	renderPassInfo.pSubpasses = subpasses.data();
 	// Set dependency count to 1
-	renderPassInfo.dependencyCount = m_Dependencies.size();
+	renderPassInfo.dependencyCount = static_cast<uint32_t>(m_Dependencies.size());
 	// Give pointer to dependency
 	renderPassInfo.pDependencies = m_Dependencies.data();
 

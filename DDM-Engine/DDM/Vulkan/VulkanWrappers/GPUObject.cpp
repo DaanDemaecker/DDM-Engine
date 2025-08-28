@@ -66,7 +66,7 @@ void DDM::GPUObject::PickPhysicalDevice(InstanceWrapper* pInstanceWrapper, VkSur
 	
 
 	// Loop trough all available physical devices
-	for (int i = 0; i < deviceCount; ++i)
+	for (uint32_t i = 0; i < deviceCount; ++i)
 	{
 		// Check if the device is suitable
 		if (IsDeviceSuitable(devices[i], surface))
@@ -75,7 +75,7 @@ void DDM::GPUObject::PickPhysicalDevice(InstanceWrapper* pInstanceWrapper, VkSur
 
 			// Set the physical device to the current one and break the loop
 			VkDeviceSize memorySize = 0;
-			for (int j{}; j < memoryProperties.memoryHeapCount; ++j)
+			for (uint32_t j{}; j < memoryProperties.memoryHeapCount; ++j)
 			{
 				if (memoryProperties.memoryHeaps[j].flags & VK_MEMORY_HEAP_DEVICE_LOCAL_BIT)
 				{

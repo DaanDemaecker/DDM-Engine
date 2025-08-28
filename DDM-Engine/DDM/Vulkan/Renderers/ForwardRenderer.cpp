@@ -43,7 +43,7 @@ DDM::ForwardRenderer::ForwardRenderer()
 	VulkanObject::GetInstance().EndSingleTimeCommands(commandBuffer);
 
 	// Initialize the sync objects
-	m_pSyncObjectManager = std::make_unique<SyncObjectManager>(pGPUObject->GetDevice(),VulkanObject::GetInstance().GetMaxFrames() );
+	m_pSyncObjectManager = std::make_unique<SyncObjectManager>(pGPUObject->GetDevice(), static_cast<uint32_t>(VulkanObject::GetInstance().GetMaxFrames()));
 
 	InitImgui();
 }

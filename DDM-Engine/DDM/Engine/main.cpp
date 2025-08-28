@@ -24,7 +24,7 @@ enum
 int main()
 {
 	// Seed random number generator
-	srand(time(NULL));
+	srand(static_cast<uint16_t>(time(NULL)));
 
 	// Create the engine object and run it with the load function
 	DDM::DDMEngine engine{};
