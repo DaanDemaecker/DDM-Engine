@@ -5,7 +5,7 @@
 
 //File includes
 #include "Managers/TimeManager.h"
-#include <Includes/DXGIIncludes.h>
+#include "Includes/DXGIIncludes.h"
 #include "Vulkan/VulkanObject.h"
 #include "Vulkan/VulkanWrappers/GPUObject.h"
 
@@ -21,44 +21,54 @@ DDM::InfoComponent::InfoComponent()
 	// Code taken from:
 	// https://asawicki.info/news_1695_there_is_a_way_to_query_gpu_memory_usage_in_vulkan_-_use_dxgi.html
 
+	// Create DXGI factory
 	IDXGIFactory4* dxgiFactory = nullptr;
 	CreateDXGIFactory2(0, IID_PPV_ARGS(&dxgiFactory));
 
+	// Fetch LUID of vulkan physical device
+	auto vulkanLUID = VulkanObject::GetInstance().GetGPUObject()->GetDeviceLuid();
+
+	// Loop through adapters until one is found that matches the vulkan physical device
 	IDXGIAdapter1* tmpDxgiAdapter = nullptr;
 	UINT adapterIndex = 0;
 	while (dxgiFactory->EnumAdapters1(adapterIndex, &tmpDxgiAdapter) != DXGI_ERROR_NOT_FOUND)
 	{
+		// Get description of current adapter
 		DXGI_ADAPTER_DESC1 desc;
 		tmpDxgiAdapter->GetDesc1(&desc);
-		if (memcmp(&desc.AdapterLuid, VulkanObject::GetInstance().GetGPUObject()->GetDeviceLuid(), VK_LUID_SIZE) == 0)
+
+		// Check if LUID matches the LUID of the vulkan device
+		if (memcmp(&desc.AdapterLuid, vulkanLUID, VK_LUID_SIZE) == 0)
 		{
+			// If it matches, save current adapter
 			tmpDxgiAdapter->QueryInterface(IID_PPV_ARGS(&m_DxgiAdapter));
 		}
+
+		// Release current adapter and increment index
 		tmpDxgiAdapter->Release();
 		++adapterIndex;
 	}
 
+	// Release factory
 	dxgiFactory->Release();
 }
 
 DDM::InfoComponent::~InfoComponent()
 {
+	// Release adapter
 	m_DxgiAdapter->Release();
 }
 
 void DDM::InfoComponent::Update()
 {
+	// Increase framecount and deltatime stat
 	m_Frames++;
 	m_DeltaTimeMS += DDM::TimeManager::GetInstance().GetDeltaTimeMS();
 
+	// If amount of frames since last update superceeds amount of frames per update, query stats
 	if (m_Frames >= m_FramesPerUpdate)
 	{
 		QueryStats();
-	}
-
-	if (m_IsMeasuring)
-	{
-		AddMeasurement();
 	}
 }
 
@@ -66,24 +76,13 @@ void DDM::InfoComponent::OnGUI()
 {
 	ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_Framed;
 
-	if (ImGui::TreeNodeEx("Info window", flags))
+	// Start tree
+	if (ImGui::TreeNodeEx("Info", flags))
 	{
+		// Text for delta time, vram and memory
 		ImGui::Text(m_DeltaTimeLabel.c_str());
 		ImGui::Text(m_VRamLabel.c_str());
 		ImGui::Text(m_MemoryLabel.c_str());
-
-		if (ImGui::Button("Start measurement"))
-		{
-			if (!m_IsMeasuring)
-			{
-				StartMeasurement();
-			}
-		}
-
-		if (m_DeltaTimeMeasurements.size() > 0)
-		{
-			RenderDeltaTimePlot();
-		}
 
 		ImGui::TreePop();
 	}
@@ -91,143 +90,40 @@ void DDM::InfoComponent::OnGUI()
 
 void DDM::InfoComponent::QueryStats()
 {
+	// Update delta time label and reset values
 	m_DeltaTimeLabel = std::string("Delta time: " + std::to_string(m_DeltaTimeMS / m_Frames) + " ms");
+
 	m_Frames = 0;
 	m_DeltaTimeMS = 0;
 
+	// Update VRAM label
 	m_VRamLabel = std::string("VRAM usage: " + std::to_string(GetVRAMUsage()) + " MB");
 
+	// Update memory labem
 	m_MemoryLabel = std::string("Memory usage: " + std::to_string(GetMemoryUsage()) + " MB");
 }
 
 int DDM::InfoComponent::GetVRAMUsage()
 {
-
+	// Query video memory info
 	DXGI_QUERY_VIDEO_MEMORY_INFO info = {};
 	m_DxgiAdapter->QueryVideoMemoryInfo(0, DXGI_MEMORY_SEGMENT_GROUP_LOCAL, &info);
 
+	// Convert usage from bits to megabytes and return
 	return static_cast<int>(info.CurrentUsage / 1024 / 1024);
 }
 
 int DDM::InfoComponent::GetMemoryUsage()
 {
+	// Query memory info
 	PROCESS_MEMORY_COUNTERS_EX pmc{};
 	if (GetProcessMemoryInfo(GetCurrentProcess(), (PROCESS_MEMORY_COUNTERS*)&pmc, sizeof(pmc)))
 	{
+		// Convert usage from bits to megabytes and return
 		SIZE_T memUsedBytes = pmc.PrivateUsage;
 		double memUsedMB = memUsedBytes / (1024.0 * 1024.0);
 		return static_cast<int>(memUsedMB);
 	}
 
 	return 0;
-}
-
-void DDM::InfoComponent::StartMeasurement()
-{
-	std::cout << "Starting measurement" << std::endl;
-
-	m_IsMeasuring = true;
-
-	m_DeltaTimeMeasurements.push_back(std::vector<float>());
-	m_DeltaTimeMeasurements[m_CurrentMeasurement].reserve(m_SampleSize);
-
-	m_VRAMMeasurements.push_back(std::vector<float>());
-	m_VRAMMeasurements[m_CurrentMeasurement].reserve(m_SampleSize);
-}
-
-void DDM::InfoComponent::EndMeasurement()
-{
-	std::cout << "Ending measurement" << std::endl;
-
-	m_IsMeasuring = false;
-	m_CurrentMeasurement++;
-	m_CurrentMeasurementFrame = 0;
-}
-
-void DDM::InfoComponent::AddMeasurement()
-{
-	++m_CurrentMeasurementFrame;
-
-	if (m_CurrentMeasurement < m_DeltaTimeMeasurements.size())
-	{
-		m_DeltaTimeMeasurements[m_CurrentMeasurement].emplace_back(DDM::TimeManager::GetInstance().GetDeltaTimeMS());
-	}
-
-	if (m_CurrentMeasurement < m_DeltaTimeMeasurements.size())
-	{
-		m_VRAMMeasurements[m_CurrentMeasurement].emplace_back(static_cast<float>(GetVRAMUsage()));
-	}
-
-
-	if (m_CurrentMeasurementFrame >= m_SampleSize)
-	{
-		EndMeasurement();
-	}
-}
-
-void DDM::InfoComponent::RenderDeltaTimePlot()
-{
-	ImGui::Text("Delta time plot");
-	RenderPlot(m_DeltaTimeMeasurements);
-}
-
-
-void DDM::InfoComponent::RenderPlot(const std::vector<std::vector<float>>& samples)
-{
-	std::vector<const float*> values{};
-	std::vector<ImU32> colors{};
-
-	for (int i{}; i<samples.size(); ++i)
-	{
-		colors.push_back(GetColorFromIndex(i+1));
-		if (samples[i].size() > 0)
-		{
-			values.push_back(samples[i].data());
-		}
-	}
-
-	int maxElement{};
-
-	int maxSamples{};
-
-	for (auto& sample : samples)
-	{
-		if (sample.size() > 0)
-		{
-			maxElement = std::max(maxElement, static_cast<int>(*std::max_element(sample.begin(), sample.end())));
-		}
-
-		if (sample.size() > maxSamples)
-		{
-			maxSamples = static_cast<int>(sample.size());
-		}
-	}
-
-
-	ImGui::PlotConfig::Values plotValues{nullptr, nullptr, m_SampleSize, 0, 0, values.data(), static_cast<int>(values.size()), colors.data()};
-
-	ImGui::PlotConfig plot{};
-
-	float width{ 400 };
-	float height{ 200 };
-
-	plot.frame_size = ImVec2{ width, height };
-	plot.values = plotValues;
-	plot.scale = ImGui::PlotConfig::Scale(0, static_cast<float>(maxElement));
-
-	plot.grid_y = ImGui::PlotConfig::Grid{ true, 1};
-
-
-	ImGui::Plot("plotter", plot);
-}
-
-ImColor DDM::InfoComponent::GetColorFromIndex(int index)
-{
-	std::bitset<3> colorBitset{ static_cast<uint64_t>(index) };
-
-	float r = colorBitset.test(0) ? 1.0f : 0.0f;
-	float g = colorBitset.test(1) ? 1.0f : 0.0f;
-	float b = colorBitset.test(2) ? 1.0f : 0.0f;
-
-	return ImColor(r, g, b);
 }
