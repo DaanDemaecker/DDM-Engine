@@ -3,7 +3,7 @@
 #include "../Scene.h"
 #include "../../Components/SpectatorMovementComponent.h"
 #include "Components/Camera.h"
-#include "../../Components/SkyBoxComponent.h"
+#include "Components/SkyBox.h"
 #include "../../Components/TransformComponent.h"
 #include "Components/Light/LightComponent.h"
 #include "Components/ModelLoader.h"
@@ -45,8 +45,6 @@ namespace LoadModelLoaderScene
 		renderer.AddGraphicsPipeline("Specular", { "Resources/Shaders/Specular.Vert.spv", "Resources/Shaders/Specular.Frag.spv" });
 		renderer.AddGraphicsPipeline("DiffNormSpec", { "Resources/Shaders/DiffNormSpec.Vert.spv", "Resources/Shaders/DiffNormSpec.Frag.spv" });
 		renderer.AddGraphicsPipeline("MultiShader", { "Resources/Shaders/MultiShader.Vert.spv", "Resources/Shaders/MultiShader.Frag.spv" });
-		renderer.AddGraphicsPipeline("Skinned", { "Resources/Shaders/Skinned.Vert.spv", "Resources/Shaders/MultiShader.Frag.spv" });
-
 	}
 
 	void SetupCamera(DDM::Scene* scene)

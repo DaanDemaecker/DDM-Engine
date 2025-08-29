@@ -9,7 +9,7 @@
 #include "../../DataTypes/Mesh.h"
 #include "../../Components/TransformComponent.h"
 #include "../Scene.h"
-#include "../../Components/SkyBoxComponent.h"
+#include "Components/SkyBox.h"
 
 #include "Components/Camera.h"
 #include "Components/Light/LightComponent.h"

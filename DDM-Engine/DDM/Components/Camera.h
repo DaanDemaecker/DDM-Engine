@@ -10,7 +10,7 @@
 // File includes
 #include "DataTypes/Structs.h"
 #include "Includes/VulkanIncludes.h"
-#include "Components/SkyBoxComponent.h"
+#include "Components/Skybox.h"
 
 namespace DDM
 {
