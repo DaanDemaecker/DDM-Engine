@@ -7,7 +7,7 @@
 #include "../Engine/Scene.h"
 #include "../DataTypes/Mesh.h"
 #include "../DataTypes/Materials/MultiMaterial.h"
-#include "../Components/MeshRenderComponent.h"
+#include "Components/MeshRenderer.h"
 #include "../Components/TransformComponent.h"
 #include "../Engine/Window.h"
 #include "../Managers/ResourceManager.h"

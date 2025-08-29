@@ -2,7 +2,7 @@
 #include "Vulkan/VulkanObject.h"
 #include "../../Utils/Utils.h"
 #include "../../Vulkan/VulkanWrappers/DescriptorPoolWrapper.h"
-#include "../../Components/MeshRenderComponent.h"
+#include "Components/MeshRenderer.h"
 #include "../../Vulkan/VulkanWrappers/PipelineWrapper.h"
 
 #include "../../Includes/STBIncludes.h"

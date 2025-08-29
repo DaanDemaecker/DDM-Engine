@@ -4,7 +4,7 @@
 #include "MaterialSwitcher.h"
 
 // File includes
-#include "Components/MeshRenderComponent.h"
+#include "Components/MeshRenderer.h"
 #include "DataTypes/Materials/Material.h"
 
 

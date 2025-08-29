@@ -4,9 +4,18 @@
 #include "ResourceManager.h"
 
 // File includes
+#include "Vulkan/VulkanObject.h"
+
 #include "Managers/ConfigManager.h"
 
-#include "Vulkan/VulkanObject.h"
+#include "DataTypes/Materials/Material.h"
+
+DDM::ResourceManager::ResourceManager()
+{
+	m_pDefaultMesh = CreateMesh(ConfigManager::GetInstance().GetString("DefaultModelName"));
+
+	m_pDefaultMaterial = std::make_shared<DDM::Material>();
+}
 
 std::shared_ptr<DDM::Mesh> DDM::ResourceManager::LoadMesh(std::string&& filePath)
 {
@@ -30,9 +39,9 @@ std::shared_ptr<DDM::Mesh> DDM::ResourceManager::LoadMesh(std::string& filePath)
 	}
 }
 
-DDM::ResourceManager::ResourceManager()
+std::shared_ptr<DDM::Material> DDM::ResourceManager::GetDefaultMaterial() const
 {
-	m_pDefaultMesh = CreateMesh(ConfigManager::GetInstance().GetString("DefaultModelName"));
+	return m_pDefaultMaterial;
 }
 
 std::shared_ptr<DDM::Mesh> DDM::ResourceManager::CreateMesh(const std::string& filePath)

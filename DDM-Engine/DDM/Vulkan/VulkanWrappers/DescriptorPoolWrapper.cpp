@@ -8,7 +8,7 @@
 
 #include "ShaderModuleWrapper.h"
 
-#include "Components/MeshRenderComponent.h" 
+#include "Components/MeshRenderer.h" 
 
 #include "DataTypes/DescriptorObjects/DescriptorObject.h"
 

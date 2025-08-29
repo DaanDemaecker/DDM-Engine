@@ -55,8 +55,7 @@ namespace DDM
 		/// Update uniform buffer with camera transform
 		/// </summary>
 		/// <param name="buffer: ">reference to the uniform buffer object to update</param>
-		/// <param name="extent: ">extent of the swapchain</param>
-		void UpdateUniformBuffer(UniformBufferObject& buffer, VkExtent2D extent);
+		void UpdateUniformBuffer(UniformBufferObject& buffer);
 		
 		/// <summary>
 		/// Render the skybox

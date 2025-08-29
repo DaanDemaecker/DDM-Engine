@@ -13,11 +13,15 @@
 
 namespace DDM
 {
+	class Material;
+
 	class ResourceManager final : public Singleton<ResourceManager>
 	{
 	public:
 		std::shared_ptr<DDM::Mesh> LoadMesh(std::string&& filePath);
 		std::shared_ptr<DDM::Mesh> LoadMesh(std::string& filePath);
+
+		std::shared_ptr<Material> GetDefaultMaterial() const;
 
 	private:
 		// Default constructor
@@ -26,6 +30,7 @@ namespace DDM
 
 		std::shared_ptr<DDM::Mesh> m_pDefaultMesh{};
 
+		std::shared_ptr<Material> m_pDefaultMaterial{};
 
 		// Factory method to create Mesh instances
 		std::shared_ptr<Mesh> CreateMesh(const std::string& filePath);

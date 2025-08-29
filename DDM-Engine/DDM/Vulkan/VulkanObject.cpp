@@ -29,7 +29,7 @@
 #include "VulkanWrappers/ImGuiWrapper.h"
 #include "VulkanManagers/SyncObjectManager.h"
 
-#include "Components/MeshRenderComponent.h"
+#include "Components/MeshRenderer.h"
 #include "Components/Camera.h"
 #include "Components/TransformComponent.h"
 #include "Components/Light/LightComponent.h"
@@ -148,7 +148,7 @@ void DDM::VulkanObject::UpdateUniformBuffer(UniformBufferObject& buffer)
 	if (pCamera == nullptr)
 		return;
 
-	pCamera->UpdateUniformBuffer(buffer, m_pRenderer->GetExtent());
+	pCamera->UpdateUniformBuffer(buffer);
 }
 
 DDM::DescriptorObject* DDM::VulkanObject::GetLightDescriptor()

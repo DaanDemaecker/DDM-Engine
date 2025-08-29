@@ -2,7 +2,7 @@
 #define SkyBoxIncluded
 
 // File includes
-#include "MeshRenderComponent.h"
+#include "Components/MeshRenderer.h"
 #include "../DataTypes/Mesh.h"
 #include "../DataTypes/Materials/Material.h"
 #include "../DataTypes/DescriptorObjects/UboDescriptorObject.h"

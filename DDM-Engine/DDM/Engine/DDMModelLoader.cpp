@@ -5,7 +5,7 @@
 
 // File includes
 #include "BaseClasses/GameObject.h"
-#include "Components/MeshRenderComponent.h"
+#include "Components/MeshRenderer.h"
 #include "DataTypes/Materials/MultiMaterial.h"
 
 DDM::DDMModelLoader::DDMModelLoader()

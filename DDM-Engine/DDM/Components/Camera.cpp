@@ -28,7 +28,7 @@ void DDM::Camera::LateUpdate()
 	UpdateViewMatrix();
 }
 
-void DDM::Camera::UpdateUniformBuffer(UniformBufferObject& buffer, VkExtent2D extent)
+void DDM::Camera::UpdateUniformBuffer(UniformBufferObject& buffer)
 {
 	// Set buffer view matrix
 	buffer.view = m_ViewMatrix;

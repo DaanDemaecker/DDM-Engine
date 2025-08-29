@@ -5,7 +5,7 @@
 #include "../../DataTypes/Materials/TexturedMaterial.h"
 #include "../../DataTypes/Materials/MultiMaterial.h"
 
-#include "../../Components/MeshRenderComponent.h"
+#include "Components/MeshRenderer.h"
 #include "../../DataTypes/Mesh.h"
 #include "../../Components/TransformComponent.h"
 #include "../Scene.h"
