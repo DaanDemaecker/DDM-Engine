@@ -9,7 +9,7 @@
 #include "BaseClasses/GameObject.h"
 
 #include "Components/Camera.h"
-#include "Components/DirectionalLightComponent.h"
+#include "Components/Light/LightComponent.h"
 
 void DDM::SceneManager::EndProgram()
 {
@@ -225,7 +225,7 @@ const std::shared_ptr<DDM::Camera> DDM::SceneManager::GetCamera() const
     return nullptr;
 }
 
-const std::shared_ptr<DDM::DirectionalLightComponent> DDM::SceneManager::GetGlobalLight() const
+const std::shared_ptr<DDM::LightComponent> DDM::SceneManager::GetGlobalLight() const
 {
     if (m_ActiveScene != nullptr)
     {
@@ -236,5 +236,5 @@ const std::shared_ptr<DDM::DirectionalLightComponent> DDM::SceneManager::GetGlob
         return m_NextActiveScene->GetLight();
     }
 
-    return std::shared_ptr<DirectionalLightComponent>();
+    return std::shared_ptr<LightComponent>();
 }

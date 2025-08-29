@@ -32,7 +32,7 @@
 #include "Components/MeshRenderComponent.h"
 #include "Components/Camera.h"
 #include "Components/TransformComponent.h"
-#include "Components/DirectionalLightComponent.h"
+#include "Components/Light/LightComponent.h"
 
 #include "Vulkan/VulkanWrappers/VulkanCore.h"
 

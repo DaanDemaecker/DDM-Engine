@@ -1,9 +1,13 @@
 #version 450
 
 layout(binding = 1) uniform UniformLightObject {
+    int type;
+	float intensity;
+	float range;
+	float angle;
     vec3 direction;
-    vec3 color;
-    float intensity;
+    vec3 position;
+	vec3 color;
 } light;
 
 layout(binding = 2) uniform sampler2D texSampler;
@@ -26,6 +30,9 @@ float GetObservedArea(vec3 normal);
 vec3 CalculateNormal();
 
 vec4 CalculateSpecular(vec3 normal, vec3 viewDirection);
+
+float minOA = 0.02;
+float maxOA = 1;
 
 void main()
 {
@@ -50,8 +57,20 @@ void main()
 
 float GetObservedArea(vec3 normal)
 {
-    float dotProduct = dot(normal, -light.direction);
-    float observedArea = clamp(dotProduct, 0, 1);
+	// Set default light direction to downward
+	vec3 lightDirection = vec3(0, -1, 0);
+
+	// If the light is a directional light, use its direction
+	if(light.type == 0)
+	{
+		lightDirection = normalize(light.direction);
+	}
+
+	// Calculate dot product between normal and negative light direction
+	float dotProduct = dot(normal, -lightDirection);
+
+	// Clamp dot product and return it
+    float observedArea = clamp(dotProduct, minOA, maxOA);
     return observedArea;
 }
 

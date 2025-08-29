@@ -18,7 +18,7 @@ namespace DDM
 	// Class forward declarations
 	class Scene;
 	class Camera;
-	class DirectionalLightComponent;
+	class LightComponent;
 
 	class SceneManager : public Singleton<SceneManager>
 	{
@@ -101,7 +101,7 @@ namespace DDM
 		const std::shared_ptr<Camera> GetCamera() const;
 
 		// Get a pointer to the active global light
-		const std::shared_ptr<DirectionalLightComponent> GetGlobalLight() const;
+		const std::shared_ptr<LightComponent> GetGlobalLight() const;
 
 	private:
 		// Default constructor

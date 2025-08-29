@@ -12,7 +12,7 @@
 #include "../../Components/SkyBoxComponent.h"
 
 #include "Components/Camera.h"
-#include "../../Components/DirectionalLightComponent.h"
+#include "Components/Light/LightComponent.h"
 
 #include "../../Components/RotatorComponent.h"
 #include "../../Components/SpectatorMovementComponent.h"
@@ -254,7 +254,7 @@ namespace LoadAOScene
 		auto pLight{ scene->CreateGameObject("Light") };
 		pLight->SetShowImGui(true);
 
-		auto pLightComponent{ pLight->AddComponent<DDM::DirectionalLightComponent>() };
+		auto pLightComponent{ pLight->AddComponent<DDM::LightComponent>() };
 		pLightComponent->SetShowImGui(true);
 
 		//pLightComponent->SetColor(glm::vec3{ 0, 0, 0 });

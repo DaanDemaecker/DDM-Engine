@@ -1,11 +1,11 @@
 #include "Vulkan/VulkanObject.h"
-#include "../Managers/SceneManager.h"
+#include "Managers/SceneManager.h"
 #include "../Scene.h"
 #include "../../Components/SpectatorMovementComponent.h"
 #include "Components/Camera.h"
 #include "../../Components/SkyBoxComponent.h"
 #include "../../Components/TransformComponent.h"
-#include "../../Components/DirectionalLightComponent.h"
+#include "Components/Light/LightComponent.h"
 #include "../../Components/ModelLoaderComponent.h"
 #include "../../Managers/ConfigManager.h"
 
@@ -90,7 +90,7 @@ namespace LoadModelLoaderScene
 
 		pLight->SetShowImGui(true);
 
-		auto pLightComponent{ pLight->AddComponent<DDM::DirectionalLightComponent>() };
+		auto pLightComponent{ pLight->AddComponent<DDM::LightComponent>() };
 		pLightComponent->SetShowImGui(true);
 
 		//pLightComponent->SetColor(glm::vec3{ 0, 0, 0 });

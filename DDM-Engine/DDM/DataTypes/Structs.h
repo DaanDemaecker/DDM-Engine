@@ -245,21 +245,6 @@ namespace DDM
 		// Transformation needed to put modle in projection space
 		glm::mat4 proj{};
 	};
-
-#pragma warning(push)
-	// Disable warning C4324
-#pragma warning(disable : 4324)
-	// Directional light object
-	struct DirectionalLightStruct
-	{
-		// Direction of light
-		alignas(16) glm::vec3 direction{ 1, 0, 0 };
-		// Color of light
-		alignas(16) glm::vec3 color{ 1, 1, 1 };
-		// Intensity of light
-		alignas(4) float intensity{ 1 };
-	};
-#pragma warning(pop)
 }
 
 namespace std

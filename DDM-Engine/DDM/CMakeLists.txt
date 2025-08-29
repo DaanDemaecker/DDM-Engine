@@ -3,7 +3,7 @@ add_executable(${EXECUTABLE_NAME}
 
 "BaseClasses/GameObject.cpp"
 "Components/Camera.cpp"
-"Components/DirectionalLightComponent.cpp"
+"Components/Light/LightComponent.cpp"
 "Components/MeshRenderComponent.cpp"
 "Components/RotatorComponent.cpp"
 "Components/SkyBoxComponent.cpp"
@@ -65,7 +65,7 @@ add_executable(${EXECUTABLE_NAME}
  "Vulkan/Renderers/AORenderers/SSAORenderer.cpp"
  "Vulkan/Renderers/AORenderers/HBAORenderer.cpp"
  "Vulkan/Renderers/AORenderers/GTAORenderer.cpp"
- "Vulkan/VulkanWrappers/QueryPool.cpp")
+ "Vulkan/VulkanWrappers/QueryPool.cpp" "Components/Light/Light.h")
 
 
 # Include directories specific to this target

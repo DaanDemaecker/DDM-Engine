@@ -1,9 +1,13 @@
 #version 450
 
 layout(binding = 1) uniform UniformLightObject {
+    int type;
+	float intensity;
+	float range;
+	float angle;
     vec3 direction;
-    vec3 color;
-    float intensity;
+    vec3 position;
+	vec3 color;
 } light;
 
 layout(binding = 2) uniform sampler2D texSampler;
