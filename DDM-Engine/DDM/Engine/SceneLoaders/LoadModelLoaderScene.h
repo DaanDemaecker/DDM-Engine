@@ -2,7 +2,7 @@
 #include "../Managers/SceneManager.h"
 #include "../Scene.h"
 #include "../../Components/SpectatorMovementComponent.h"
-#include "../../Components/CameraComponent.h"
+#include "Components/Camera.h"
 #include "../../Components/SkyBoxComponent.h"
 #include "../../Components/TransformComponent.h"
 #include "../../Components/DirectionalLightComponent.h"
@@ -55,7 +55,7 @@ namespace LoadModelLoaderScene
 
 		pCamera->AddComponent<DDM::SpectatorMovementComponent>();
 
-		auto pCameraComponent{ pCamera->AddComponent<DDM::CameraComponent>() };
+		auto pCameraComponent{ pCamera->AddComponent<DDM::Camera>() };
 
 		auto pCameraTransform{ pCamera->GetTransform() };
 		pCameraTransform->SetLocalPosition(0, 1, 0);

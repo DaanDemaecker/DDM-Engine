@@ -8,7 +8,7 @@
 
 #include "BaseClasses/GameObject.h"
 
-#include "Components/CameraComponent.h"
+#include "Components/Camera.h"
 #include "Components/DirectionalLightComponent.h"
 
 void DDM::SceneManager::EndProgram()
@@ -211,7 +211,7 @@ void DDM::SceneManager::RenderTransparancy() const
     }
 }
 
-const std::shared_ptr<DDM::CameraComponent> DDM::SceneManager::GetCamera() const
+const std::shared_ptr<DDM::Camera> DDM::SceneManager::GetCamera() const
 {
     if (m_ActiveScene != nullptr)
     {

@@ -7,7 +7,7 @@
 namespace DDM
 {
 	class GameObject;
-	class CameraComponent;
+	class Camera;
 	class DirectionalLightComponent;
 
 	class Scene final
@@ -51,9 +51,9 @@ namespace DDM
 
 		void OngGUI() const;
 
-		void SetCamera(std::shared_ptr<CameraComponent> pCamera);
+		void SetCamera(std::shared_ptr<Camera> pCamera);
 
-		const std::shared_ptr<CameraComponent> GetCamera() const;
+		const std::shared_ptr<Camera> GetCamera() const;
 
 		void SetLight(std::shared_ptr<DirectionalLightComponent> pLight);
 
@@ -71,10 +71,10 @@ namespace DDM
 
 		std::unique_ptr<GameObject> m_pSceneRoot{};
 
-		std::shared_ptr<CameraComponent> m_pActiveCamera{};
+		std::shared_ptr<Camera> m_pActiveCamera{};
 
 		std::unique_ptr<GameObject> m_pDefaultCamera{};
-		std::shared_ptr<CameraComponent> m_pDefaultCameraComponent{};
+		std::shared_ptr<Camera> m_pDefaultCameraComponent{};
 
 
 		std::shared_ptr<DirectionalLightComponent> m_pActiveLight{};

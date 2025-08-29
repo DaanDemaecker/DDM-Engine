@@ -30,7 +30,7 @@
 #include "VulkanManagers/SyncObjectManager.h"
 
 #include "Components/MeshRenderComponent.h"
-#include "Components/CameraComponent.h"
+#include "Components/Camera.h"
 #include "Components/TransformComponent.h"
 #include "Components/DirectionalLightComponent.h"
 

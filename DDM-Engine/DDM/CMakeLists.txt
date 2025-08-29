@@ -2,7 +2,7 @@
 add_executable(${EXECUTABLE_NAME}
 
 "BaseClasses/GameObject.cpp"
-"Components/CameraComponent.cpp"
+"Components/Camera.cpp"
 "Components/DirectionalLightComponent.cpp"
 "Components/MeshRenderComponent.cpp"
 "Components/RotatorComponent.cpp"

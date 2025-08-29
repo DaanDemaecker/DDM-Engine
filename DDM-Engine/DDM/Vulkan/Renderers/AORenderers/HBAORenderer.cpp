@@ -24,7 +24,7 @@
 #include "Managers/ConfigManager.h"
 
 #include "Utils/Utils.h"
-#include "Components/CameraComponent.h"
+#include "Components/Camera.h"
 
 #include "Vulkan/Renderers/AORenderers/AoRenderPasses.h"
 
@@ -1416,7 +1416,7 @@ void DDM::HBAORenderer::UpdateLightingDescriptorSets(int frame)
 
 	if (camera != nullptr)
 	{
-		m_pViewMatrixDescObject->UpdateUboBuffer(camera->GetViewMatrixPointer(), frame);
+		m_pViewMatrixDescObject->UpdateUboBuffer(camera->GetViewMatrixPtr(), frame);
 	}
 
 	m_pViewMatrixDescObject->AddDescriptorWrite(m_LightingDescriptorSets[frame], descriptorWrites, binding, 1, frame);

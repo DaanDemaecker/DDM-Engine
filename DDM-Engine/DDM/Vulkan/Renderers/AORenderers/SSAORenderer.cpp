@@ -24,7 +24,7 @@
 #include "Managers/ConfigManager.h"
 
 #include "Utils/Utils.h"
-#include "Components/CameraComponent.h"
+#include "Components/Camera.h"
 
 #include "Vulkan/Renderers/AORenderers/AoRenderPasses.h"
 
@@ -1483,7 +1483,7 @@ void DDM::SSAORenderer::UpdateAoGenDescriptorSets(int frame, int swapchainIndex)
 
 	if (camera != nullptr)
 	{
-		m_pProjectionMatrixDescObject->UpdateUboBuffer(camera->GetProjectionMatrixPointer(), frame);
+		m_pProjectionMatrixDescObject->UpdateUboBuffer(camera->GetProjectionMatrixPtr(), frame);
 	}
 
 	m_pProjectionMatrixDescObject->AddDescriptorWrite(m_AoGenDescriptorSets[frame], descriptorWrites, binding, 1, frame);
@@ -1532,7 +1532,7 @@ void DDM::SSAORenderer::UpdateLightingDescriptorSets(int frame)
 
 	if (camera != nullptr)
 	{
-		m_pViewMatrixDescObject->UpdateUboBuffer(camera->GetViewMatrixPointer(), frame);
+		m_pViewMatrixDescObject->UpdateUboBuffer(camera->GetViewMatrixPtr(), frame);
 	}
 
 	m_pViewMatrixDescObject->AddDescriptorWrite(m_LightingDescriptorSets[frame], descriptorWrites, binding, 1, frame);

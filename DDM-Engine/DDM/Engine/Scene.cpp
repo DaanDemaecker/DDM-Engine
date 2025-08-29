@@ -6,7 +6,7 @@
 // File includes
 #include "BaseClasses/GameObject.h"
 
-#include "Components/CameraComponent.h"
+#include "Components/Camera.h"
 #include "Components/DirectionalLightComponent.h"
 #include "Components/TransformComponent.h"
 
@@ -19,7 +19,7 @@ DDM::Scene::Scene(const std::string& name) : m_Name(name)
 
 	m_pDefaultCamera = std::make_unique<GameObject>("Default Camera");
 	m_pDefaultCamera->Init();
-	m_pDefaultCameraComponent = m_pDefaultCamera->AddComponent<CameraComponent>();
+	m_pDefaultCameraComponent = m_pDefaultCamera->AddComponent<Camera>();
 
 	m_pDefaultLight = std::make_unique<GameObject>("Default Light");
 	m_pDefaultLight->Init();
@@ -97,12 +97,12 @@ void DDM::Scene::OngGUI() const
 	m_pSceneRoot->OnGUI();
 }
 
-void DDM::Scene::SetCamera(std::shared_ptr<CameraComponent> pCamera)
+void DDM::Scene::SetCamera(std::shared_ptr<Camera> pCamera)
 {
 	m_pActiveCamera = pCamera;
 }
 
-const std::shared_ptr<DDM::CameraComponent> DDM::Scene::GetCamera() const
+const std::shared_ptr<DDM::Camera> DDM::Scene::GetCamera() const
 {
 	if (m_pActiveCamera != nullptr)
 		return m_pActiveCamera;
