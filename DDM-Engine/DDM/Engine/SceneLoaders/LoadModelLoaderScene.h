@@ -6,7 +6,7 @@
 #include "../../Components/SkyBoxComponent.h"
 #include "../../Components/TransformComponent.h"
 #include "Components/Light/LightComponent.h"
-#include "../../Components/ModelLoaderComponent.h"
+#include "Components/ModelLoader.h"
 #include "../../Managers/ConfigManager.h"
 
 namespace LoadModelLoaderScene
@@ -111,7 +111,7 @@ namespace LoadModelLoaderScene
 		auto pModelLoader{ scene->CreateGameObject("ModelLoader") };
 		pModelLoader->SetShowImGui(true);
 
-		auto pModelLoaderComponent{pModelLoader->AddComponent<DDM::ModelLoaderComponent>()};
+		auto pModelLoaderComponent{pModelLoader->AddComponent<DDM::ModelLoader>()};
 		pModelLoaderComponent->SetShowImGui(true);
 	}
 }

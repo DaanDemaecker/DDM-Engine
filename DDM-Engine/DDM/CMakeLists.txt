@@ -45,7 +45,7 @@ add_executable(${EXECUTABLE_NAME}
 "Vulkan/VulkanUtils.cpp"
 "Vulkan/Renderers/ForwardRenderer.cpp"
 "DataTypes/Materials/MultiMaterial.cpp"
-"Components/ModelLoaderComponent.cpp"
+"Components/ModelLoader.cpp"
 "Managers/ResourceManager.cpp"
 "Managers/InputManager.cpp"
 "Managers/Input/KeyboardImpl.cpp"

@@ -35,8 +35,8 @@ int main()
 	{
 	case activeRendererForward:
 		engine.Init<DDM::ForwardRenderer>();
-		engine.Run(LoadTestScene::loadTestScene);
-		//engine.Run(LoadModelLoaderScene::LoadModelLoaderScene);
+		//engine.Run(LoadTestScene::loadTestScene);
+		engine.Run(LoadModelLoaderScene::LoadModelLoaderScene);
 		break;
 	case activeRendererDeffered:
 		engine.Init<DDM::DeferredRenderer>();
