@@ -1,8 +1,8 @@
 // ModelLoaderComponent.h
 // This component will let the user load models trough imgui
 
-#ifndef ModelLoaderComponentIncluded
-#define ModelLoaderComponentIncluded
+#ifndef _MODEL_LOADER_
+#define _MODEL_LOADER_
 
 // Parent include
 #include "BaseClasses/Component.h"
@@ -53,4 +53,4 @@ namespace DDM
 		void LoadObject();
 	};
 }
-#endif // !ModelLoaderComponentIncluded
+#endif // !_MODEL_LOADER_

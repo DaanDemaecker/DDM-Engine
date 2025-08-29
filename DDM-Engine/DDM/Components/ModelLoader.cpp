@@ -96,7 +96,7 @@ void DDM::ModelLoader::DropFileCallback(int count, const char** paths)
 	// Clear the filepath
 	std::fill(std::begin(m_FilePath), std::end(m_FilePath), 0);
 
-	// Copy the first path to the filepath
+	// Copy the first path to m_FilePath
 	auto filePath = paths[0];
 
 	for (int i{}; i < 125; i++)

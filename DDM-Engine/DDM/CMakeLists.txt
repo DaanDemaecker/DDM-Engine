@@ -5,7 +5,7 @@ add_executable(${EXECUTABLE_NAME}
 "Components/Camera.cpp"
 "Components/Light/LightComponent.cpp"
 "Components/MeshRenderer.cpp"
-"Components/RotatorComponent.cpp"
+"Components/Rotator.cpp"
 "Components/SkyBoxComponent.cpp"
 "Components/SpectatorMovementComponent.cpp"
 "Components/TransformComponent.cpp"

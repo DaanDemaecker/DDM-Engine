@@ -14,7 +14,7 @@
 #include "Components/Camera.h"
 #include "Components/Light/LightComponent.h"
 
-#include "../../Components/RotatorComponent.h"
+#include "Components/Rotator.h"
 #include "../../Components/SpectatorMovementComponent.h"
 
 #include "../../Managers/ResourceManager.h"
