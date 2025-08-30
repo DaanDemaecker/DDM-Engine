@@ -15,7 +15,7 @@
 #include "Components/Light/LightComponent.h"
 
 #include "Components/Rotator.h"
-#include "../../Components/SpectatorMovementComponent.h"
+#include "Components/SpectatorMovement.h"
 
 #include "../../Managers/ResourceManager.h"
 #include "../../Managers/ConfigManager.h"
@@ -392,7 +392,7 @@ namespace LoadDeferredScene
 	{
 		auto pCamera{ scene->CreateGameObject("Camera") };
 
-		pCamera->AddComponent<DDM::SpectatorMovementComponent>();
+		pCamera->AddComponent<DDM::SpectatorMovement>();
 
 		auto pCameraComponent{ pCamera->AddComponent<DDM::Camera>() };
 

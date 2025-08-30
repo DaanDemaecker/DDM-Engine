@@ -1,0 +1,49 @@
+// SpectatorMovement.h
+// This component will allow the user to move the camera around by using the keyboard and mouse
+
+#ifndef _SPECTATOR_MOVEMENT_
+#define _SPECTATOR_MOVEMENT_
+
+// Parent include
+#include "BaseClasses/Component.h"
+
+namespace DDM
+{
+	class SpectatorMovement final : public Component
+	{
+	public:
+		/// <summary>
+		/// Constructor
+		/// </summary>
+		SpectatorMovement();
+
+		/// <summary>
+		/// Default destructor
+		/// </summary>
+		~SpectatorMovement() = default;
+
+		/// <summary>
+		/// Update function
+		/// </summary>
+		virtual void Update() override;
+
+	private:
+		// Pointer to the transform component of the owning game object
+		TransformComponent* m_pTransform{ nullptr };
+
+		// Movement speed per second
+		const float m_Speed{5.f};
+
+		// Angular speed per pixel
+		const float m_AngularSpeed{ 0.01f };
+
+		// Total pitch
+		float m_TotalPitch{};
+
+		// Total yaw
+		float m_TotalYaw{};
+	};
+}
+
+
+#endif // !_SPECTATOR_MOVEMENT_

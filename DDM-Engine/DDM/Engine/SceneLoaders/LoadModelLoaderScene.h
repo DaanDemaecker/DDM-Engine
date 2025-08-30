@@ -1,7 +1,7 @@
 #include "Vulkan/VulkanObject.h"
 #include "Managers/SceneManager.h"
 #include "../Scene.h"
-#include "../../Components/SpectatorMovementComponent.h"
+#include "Components/SpectatorMovement.h"
 #include "Components/Camera.h"
 #include "Components/SkyBox.h"
 #include "../../Components/TransformComponent.h"
@@ -51,7 +51,7 @@ namespace LoadModelLoaderScene
 	{
 		auto pCamera{ scene->CreateGameObject("Camera") };
 
-		pCamera->AddComponent<DDM::SpectatorMovementComponent>();
+		pCamera->AddComponent<DDM::SpectatorMovement>();
 
 		auto pCameraComponent{ pCamera->AddComponent<DDM::Camera>() };
 
