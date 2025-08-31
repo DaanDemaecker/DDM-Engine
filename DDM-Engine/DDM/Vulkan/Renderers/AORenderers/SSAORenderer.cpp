@@ -1469,7 +1469,7 @@ void DDM::SSAORenderer::UpdateAoGenDescriptorSets(int frame, int swapchainIndex)
 	m_pPositionTextureDescriptorObject->Clear();
 
 	auto& posTexture = m_pRenderpass->GetAttachmentList()[kAttachment_GBUFFER_VIEWPOS]->GetTextureRef(swapchainIndex);
-	m_pPositionTextureDescriptorObject->AddTextures(posTexture);
+	m_pPositionTextureDescriptorObject->AddTexture(posTexture);
 
 	m_pPositionTextureDescriptorObject->AddDescriptorWrite(m_AoGenDescriptorSets[frame], descriptorWrites, binding, 1, frame);
 
@@ -1503,7 +1503,7 @@ void DDM::SSAORenderer::UpdateAoBlurDescriptorSets(int frame, int swapchainIndex
 
 
 	auto& aoGenTexture = m_pRenderpass->GetAttachmentList()[kAttachment_AO_MAP]->GetTextureRef(swapchainIndex);
-	m_pAoGenTextureDescriptorObject->AddTextures(aoGenTexture);
+	m_pAoGenTextureDescriptorObject->AddTexture(aoGenTexture);
 
 	m_pAoGenTextureDescriptorObject->AddDescriptorWrite(m_AoBlurDescriptorSets[frame], descriptorWrites, binding, 1, frame);
 

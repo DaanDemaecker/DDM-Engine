@@ -5,76 +5,19 @@
 #include "Vulkan/VulkanObject.h"
 
 DDM::TextureDescriptorObject::TextureDescriptorObject()
+// Type of this object is combined image sampler
 	:DescriptorObject(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER)
 {
+	// Set up placeholder image info
 	auto& vulkanObject{ VulkanObject::GetInstance() };
 	m_PlaceholderImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 	m_PlaceholderImageInfo.imageView = vulkanObject.GetDefaultImageView();
 	m_PlaceholderImageInfo.sampler = vulkanObject.GetSampler();
 }
 
-void DDM::TextureDescriptorObject::AddTextures(const Texture& texture)
-{
-	// Add the texture to the list of textures
-	m_Textures.push_back(texture);
-
-	SetupImageInfos();
-}
-
-void DDM::TextureDescriptorObject::AddTextures(std::initializer_list<const std::string>& filePaths)
-{
-	// Initialize index variable
-	int index{static_cast<int>(m_Textures.size()) - 1};
-
-	if (index < 0)
-	{
-		index = 0;
-	}
-
-	// Resize textures to textureAmount
-	m_Textures.resize(filePaths.size() + m_Textures.size());
-
-	auto& renderer{ VulkanObject::GetInstance() };
-
-	// Loop trough all filePaths
-	for (const auto& path : filePaths)
-	{
-		// Create texture
-		renderer.CreateTexture(m_Textures[index], path);
-
-		// Increment index
-		++index;
-	}
-
-	SetupImageInfos();
-}
-
-void DDM::TextureDescriptorObject::AddTexture(const std::string& filePath)
-{
-	auto& renderer{ VulkanObject::GetInstance() };
-
-	m_Textures.resize(m_Textures.size() + 1);
-
-	renderer.CreateTexture(m_Textures[m_Textures.size() - 1], filePath);
-
-	SetupImageInfos();
-}
-
-
-void DDM::TextureDescriptorObject::Clear()
-{
-	m_Textures.clear();
-	
-	SetupImageInfos();
-}
-
-size_t DDM::TextureDescriptorObject::GetTextureAmount() const
-{
-	return m_Textures.size();
-}
-
 DDM::TextureDescriptorObject::~TextureDescriptorObject()
 {
+	// Only clean up textures if it is indicated
 	if (m_CleanupTextures)
 	{
 		// Get the device and clean up all the textures
@@ -87,8 +30,64 @@ DDM::TextureDescriptorObject::~TextureDescriptorObject()
 	}
 }
 
+void DDM::TextureDescriptorObject::AddTexture(const Texture& texture)
+{
+	// Add the texture to the list of textures
+	m_Textures.push_back(texture);
+
+	// Indicate that image infos should be set up
+	m_AreImageInfosSetup = false;
+}
+
+void DDM::TextureDescriptorObject::AddTextures(std::initializer_list<const std::string>& filePaths)
+{
+	// Loop through all filepaths and add them to the list
+	for (const auto& filePath : filePaths)
+	{
+		AddTexture(filePath);
+	}
+}
+
+void DDM::TextureDescriptorObject::AddTexture(const std::string& filePath)
+{
+	// Get the vulkan object
+	auto& vulkanObject{ VulkanObject::GetInstance() };
+
+	// Increase textures list size by 1
+	m_Textures.resize(m_Textures.size() + 1);
+
+	// Create new texture
+	vulkanObject.CreateTexture(m_Textures[m_Textures.size() - 1], filePath);
+
+	// Indicate that image infos should be set up
+	m_AreImageInfosSetup = false;
+}
+
+
+void DDM::TextureDescriptorObject::Clear()
+{
+	// Clear list
+	m_Textures.clear();
+	
+	// Indicate that image infos should be set up
+	m_AreImageInfosSetup = false;
+}
+
+size_t DDM::TextureDescriptorObject::GetTextureAmount() const
+{
+	// Return size of textures
+	return m_Textures.size();
+}
+
 void DDM::TextureDescriptorObject::AddDescriptorWrite(VkDescriptorSet descriptorSet, std::vector<VkWriteDescriptorSet>& descriptorWrites, int& binding, int amount, int /*index*/)
 {
+	// If image infos need to be set up, do so
+	if (!m_AreImageInfosSetup)
+	{
+		SetupImageInfos();
+	}
+
+	// Loop through the amount of textures in the array
 	for (int i{}; i < amount; i++)
 	{
 		VkWriteDescriptorSet descriptorWrite{};
@@ -101,43 +100,47 @@ void DDM::TextureDescriptorObject::AddDescriptorWrite(VkDescriptorSet descriptor
 		descriptorWrite.descriptorType = m_Type;
 		descriptorWrite.descriptorCount = 1;
 
+		// If one is available, set pImageInfo to the correct one from the array
 		if (m_ImageInfos.size() >= i + 1)
 		{
 			descriptorWrite.pImageInfo = &m_ImageInfos[i];
 		}
+		// If none are available, set pImageInfo to placeholder
 		else
 		{
 			descriptorWrite.pImageInfo = &m_PlaceholderImageInfo;
 		}
+
+		// Set destination descriptor set to the one given
 		descriptorWrite.dstSet = descriptorSet;
 
+		// Add to the list
 		descriptorWrites.push_back(descriptorWrite);
 	}
 
+	// Increase binding
 	binding++;
 }
 
 void DDM::TextureDescriptorObject::SetupImageInfos()
 {
+	// Clear list
 	m_ImageInfos.clear();
+
 	// resize image infos
 	m_ImageInfos.resize(m_Textures.size());
 
-	// Get the sampler
-	auto& sampler{ VulkanObject::GetInstance().GetSampler() };
-
-	int index{};
-
 	// Loop trough all the textures
-	for (auto& texture : m_Textures)
+	for (int i{}; i < m_Textures.size(); ++i)
 	{
 		// Set image layout to shader read optimal
-		m_ImageInfos[index].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+		m_ImageInfos[i].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 		// Set correct image view
-		m_ImageInfos[index].imageView = texture.imageView;
+		m_ImageInfos[i].imageView = m_Textures[i].imageView;
 		// Set sampler
-		m_ImageInfos[index].sampler = sampler;
-
-		index++;
+		m_ImageInfos[i].sampler = m_PlaceholderImageInfo.sampler;
 	}
+
+	// Indicate that image infos are set up
+	m_AreImageInfosSetup = true;
 }

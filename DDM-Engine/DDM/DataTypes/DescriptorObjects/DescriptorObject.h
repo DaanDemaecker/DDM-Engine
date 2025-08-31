@@ -47,7 +47,7 @@ namespace DDM
 		/// <param name="descriptorSet: ">current descriptorset connected to this descriptor object</param>
 		/// <param name="descriptorWrites: ">list of descriptorWrites to add to</param>
 		/// <param name="binding: ">current binding in the shader files</param>
-		/// <param name="amount: ">amount of descriptors for the current binding</param>
+		/// <param name="amount: ">amount of elements in the array at this binding</param>
 		/// <param name="index">index of the current frame in flight</param>
 		virtual void AddDescriptorWrite(VkDescriptorSet descriptorSet, std::vector<VkWriteDescriptorSet>& descriptorWrites, int& binding, int amount, int index) = 0;
 

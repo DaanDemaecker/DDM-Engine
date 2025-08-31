@@ -26,7 +26,7 @@ DDM::CubeMapMaterial::CubeMapMaterial(const std::initializer_list<const std::str
 
 	// Create the descriptor object and give the cube texture by value
 	m_pDescriptorObject = std::make_unique<TextureDescriptorObject>();
-	m_pDescriptorObject->AddTextures(cubeTexture);
+	m_pDescriptorObject->AddTexture(cubeTexture);
 }
 
 void DDM::CubeMapMaterial::UpdateDescriptorSets(std::vector<VkDescriptorSet>& descriptorSets, std::vector<DescriptorObject*>& descriptorObjects)
