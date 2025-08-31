@@ -13,7 +13,7 @@
 namespace DDM
 {
 	// Class forward declarations
-	class TransformComponent;
+	class Transform;
 
 	class Component
 	{
@@ -121,7 +121,7 @@ namespace DDM
 		/// Get the transform component of the owning game object
 		/// </summary>
 		/// <returns>Pointer to the transform component</returns>
-		std::shared_ptr<TransformComponent> GetTransform() { return m_pOwner->GetTransform(); }
+		std::shared_ptr<Transform> GetTransform() { return m_pOwner->GetTransform(); }
 
 		/// <summary>
 		/// Check if component is active

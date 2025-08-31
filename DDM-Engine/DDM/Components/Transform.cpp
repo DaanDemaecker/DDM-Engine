@@ -4,7 +4,7 @@
 
 #include <math.h>
 
-void DDM::TransformComponent::OnGUI()
+void DDM::Transform::OnGUI()
 {
 	ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_Framed;
 
@@ -50,29 +50,29 @@ void DDM::TransformComponent::OnGUI()
 	SetScaleDirtyFlag();
 }
 
-void DDM::TransformComponent::SetLocalPosition(float x, float y, float z)
+void DDM::Transform::SetLocalPosition(float x, float y, float z)
 {
 	SetLocalPosition(glm::vec3{ x, y, z });
 }
 
-void DDM::TransformComponent::SetLocalPosition(const glm::vec3& pos)
+void DDM::Transform::SetLocalPosition(const glm::vec3& pos)
 {
 	m_LocalPosition = pos;
 
 	SetPositionDirtyFlag();
 }
 
-void DDM::TransformComponent::Translate(float x, float y, float z)
+void DDM::Transform::Translate(float x, float y, float z)
 {
 	Translate(glm::vec3{ x, y, z });
 }
 
-void DDM::TransformComponent::Translate(const glm::vec3& dir)
+void DDM::Transform::Translate(const glm::vec3& dir)
 {
 	SetLocalPosition(m_LocalPosition + dir);
 }
 
-glm::vec3 DDM::TransformComponent::GetWorldPosition()
+glm::vec3 DDM::Transform::GetWorldPosition()
 {
 	// Get the parent's position
 	glm::vec3 parentPosition = GetParentPosition();
@@ -92,17 +92,17 @@ glm::vec3 DDM::TransformComponent::GetWorldPosition()
 	return finalPosition;
 }
 
-void DDM::TransformComponent::SetWorldPosition(float x, float y, float z)
+void DDM::Transform::SetWorldPosition(float x, float y, float z)
 {
 	SetWorldPosition(glm::vec3{ x, y, z });
 }
 
-void DDM::TransformComponent::SetWorldPosition(const glm::vec3& pos)
+void DDM::Transform::SetWorldPosition(const glm::vec3& pos)
 {
 	SetLocalPosition(pos - (GetWorldPosition() - m_LocalPosition));
 }
 
-void DDM::TransformComponent::SetPositionDirtyFlag() const
+void DDM::Transform::SetPositionDirtyFlag() const
 {
 	for (auto& pChild : GetOwner()->GetChildren())
 	{
@@ -112,58 +112,58 @@ void DDM::TransformComponent::SetPositionDirtyFlag() const
 	}
 }
 
-void DDM::TransformComponent::SetLocalRotation(float x, float y, float z)
+void DDM::Transform::SetLocalRotation(float x, float y, float z)
 {
 	SetLocalRotation(glm::vec3{ x, y ,z });
 }
 
-void DDM::TransformComponent::SetLocalRotation(const glm::vec3& rot)
+void DDM::Transform::SetLocalRotation(const glm::vec3& rot)
 {
 	m_LocalRotation = glm::quat(rot);
 
 	SetRotationDirtyFlag();
 }
 
-void DDM::TransformComponent::SetLocalRotation(const glm::vec3&& rot)
+void DDM::Transform::SetLocalRotation(const glm::vec3&& rot)
 {
 	SetLocalRotation(rot);
 }
 
-void DDM::TransformComponent::SetLocalRotation(const glm::quat& rot)
+void DDM::Transform::SetLocalRotation(const glm::quat& rot)
 {
 	m_LocalRotation = rot;
 
 	SetRotationDirtyFlag();
 }
 
-void DDM::TransformComponent::SetLocalRotation(const glm::quat&& rot)
+void DDM::Transform::SetLocalRotation(const glm::quat&& rot)
 {
 	SetLocalRotation(rot);
 }
 
-void DDM::TransformComponent::Rotate(glm::vec3& axis, float angle)
+void DDM::Transform::Rotate(glm::vec3& axis, float angle)
 {
 	m_LocalRotation = glm::rotate(m_LocalRotation, angle, axis);
 
 	SetRotationDirtyFlag();
 }
 
-void DDM::TransformComponent::Rotate(glm::vec3&& axis, float angle)
+void DDM::Transform::Rotate(glm::vec3&& axis, float angle)
 {
 	Rotate(axis, angle);
 }
 
-glm::quat DDM::TransformComponent::GetWorldRotation()
+glm::quat DDM::Transform::GetWorldRotation()
 {
 	return GetParentRotation() * m_LocalRotation;
 }
 
-void DDM::TransformComponent::SetWorldRotation(float x, float y, float z)
+void DDM::Transform::SetWorldRotation(float x, float y, float z)
 {
 	SetWorldRotation(glm::vec3{x, y, z});
 }
 
-void DDM::TransformComponent::SetWorldRotation(const glm::vec3& rot)
+void DDM::Transform::SetWorldRotation(const glm::vec3& rot)
 {
 	// Calculate the rotation needed to achieve the desired world rotation
 	glm::quat worldRotation = glm::quat(rot);
@@ -178,7 +178,7 @@ void DDM::TransformComponent::SetWorldRotation(const glm::vec3& rot)
 	SetLocalRotation(localRotation);
 }
 
-void DDM::TransformComponent::SetRotationDirtyFlag() const
+void DDM::Transform::SetRotationDirtyFlag() const
 {
 	for (auto& pChild : GetOwner()->GetChildren())
 	{
@@ -188,34 +188,34 @@ void DDM::TransformComponent::SetRotationDirtyFlag() const
 	}
 }
 
-void DDM::TransformComponent::SetLocalScale(float x, float y, float z)
+void DDM::Transform::SetLocalScale(float x, float y, float z)
 {
 	SetLocalScale(glm::vec3{ x, y, z });
 }
 
-void DDM::TransformComponent::SetLocalScale(const glm::vec3& scale)
+void DDM::Transform::SetLocalScale(const glm::vec3& scale)
 {
 	m_LocalScale = scale;
 
 	SetScaleDirtyFlag();
 }
 
-glm::vec3 DDM::TransformComponent::GetWorldScale()
+glm::vec3 DDM::Transform::GetWorldScale()
 {
 	return GetParentScale() * m_LocalScale;
 }
 
-void DDM::TransformComponent::SetWorldScale(float x, float y, float z)
+void DDM::Transform::SetWorldScale(float x, float y, float z)
 {
 	SetWorldScale(glm::vec3(x, y, z));
 }
 
-void DDM::TransformComponent::SetWorldScale(const glm::vec3 scale)
+void DDM::Transform::SetWorldScale(const glm::vec3 scale)
 {
 	SetLocalScale(scale/(GetWorldScale()/m_LocalScale));
 }
 
-void DDM::TransformComponent::SetScaleDirtyFlag() const
+void DDM::Transform::SetScaleDirtyFlag() const
 {
 	for (auto& pChild : GetOwner()->GetChildren())
 	{
@@ -225,7 +225,7 @@ void DDM::TransformComponent::SetScaleDirtyFlag() const
 	}
 }
 
-glm::vec3 DDM::TransformComponent::GetForward()
+glm::vec3 DDM::Transform::GetForward()
 {
 	// Create the rotation matrix from the quaternion
 	glm::mat4 rotationMatrix = glm::mat4_cast(GetWorldRotation());
@@ -239,7 +239,7 @@ glm::vec3 DDM::TransformComponent::GetForward()
 	return finalRotatedVector;
 }
 
-glm::vec3 DDM::TransformComponent::GetUp()
+glm::vec3 DDM::Transform::GetUp()
 {
 	// Create the rotation matrix from the quaternion
 	glm::mat4 rotationMatrix = glm::mat4_cast(GetWorldRotation());
@@ -253,7 +253,7 @@ glm::vec3 DDM::TransformComponent::GetUp()
 	return finalRotatedVector;
 }
 
-glm::vec3 DDM::TransformComponent::GetRight()
+glm::vec3 DDM::Transform::GetRight()
 {
 	// Create the rotation matrix from the quaternion
 	glm::mat4 rotationMatrix = glm::mat4_cast(GetWorldRotation());
@@ -269,7 +269,7 @@ glm::vec3 DDM::TransformComponent::GetRight()
 	return finalRotatedVector;
 }
 
-glm::vec3& DDM::TransformComponent::GetParentPosition()
+glm::vec3& DDM::Transform::GetParentPosition()
 {
 	if (GetOwner() == nullptr || GetOwner()->GetParent() == nullptr)
 	{
@@ -285,7 +285,7 @@ glm::vec3& DDM::TransformComponent::GetParentPosition()
 	return m_ParentWorldPosition;
 }
 
-glm::quat& DDM::TransformComponent::GetParentRotation()
+glm::quat& DDM::Transform::GetParentRotation()
 {
 	if (GetOwner() == nullptr || GetOwner()->GetParent() == nullptr)
 	{
@@ -301,7 +301,7 @@ glm::quat& DDM::TransformComponent::GetParentRotation()
 	return m_ParentWorldRotation;
 }
 
-glm::vec3& DDM::TransformComponent::GetParentScale()
+glm::vec3& DDM::Transform::GetParentScale()
 {
 	if (GetOwner() == nullptr || GetOwner()->GetParent() == nullptr)
 	{

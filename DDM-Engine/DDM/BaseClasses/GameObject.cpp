@@ -88,7 +88,7 @@ void DDM::GameObject::SetParent(GameObject* pParent, bool worldPositionStays)
 void DDM::GameObject::Init()
 {
 	// Add a transform component by default
-	m_pTransform = AddComponent<TransformComponent>();
+	m_pTransform = AddComponent<Transform>();
 }
 
 void DDM::GameObject::OnSceneLoad()

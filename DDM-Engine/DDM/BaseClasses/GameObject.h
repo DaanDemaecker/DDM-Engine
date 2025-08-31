@@ -14,7 +14,7 @@ namespace DDM
 {
 	// Class forward declarations
 	class Component;
-	class TransformComponent;
+	class Transform;
 
 	class GameObject final
 	{
@@ -206,7 +206,7 @@ namespace DDM
 		/// Get the transform component
 		/// </summary>
 		/// <returns>Pointer to the transform component</returns>
-		std::shared_ptr<TransformComponent> GetTransform() { return m_pTransform; }
+		std::shared_ptr<Transform> GetTransform() { return m_pTransform; }
 
 		/// <summary>
 		/// Get the name of this object
@@ -249,7 +249,7 @@ namespace DDM
 		std::vector<std::unique_ptr<GameObject>> m_pChildrenToAdd{};
 
 		// Pointer to transform component
-		std::shared_ptr<TransformComponent> m_pTransform{};
+		std::shared_ptr<Transform> m_pTransform{};
 
 		// List of components attached to this object
 		std::vector<std::shared_ptr<Component>> m_pComponents{};

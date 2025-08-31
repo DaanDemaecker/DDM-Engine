@@ -30,7 +30,7 @@ void DDM::SpectatorMovement::Update()
 	if (m_pTransform == nullptr)
 	{
 		// Get transform component
-		m_pTransform = GetComponent<TransformComponent>().get();
+		m_pTransform = GetComponent<Transform>().get();
 		
 		// Extract rotation and convert to eulerangles
 		auto rotation = m_pTransform->GetWorldRotation();

@@ -29,7 +29,7 @@ namespace DDM
 
 	private:
 		// Pointer to the transform component of the owning game object
-		TransformComponent* m_pTransform{ nullptr };
+		Transform* m_pTransform{ nullptr };
 
 		// Speed increase
 		float m_IncreaseFactor{ 1.1f };

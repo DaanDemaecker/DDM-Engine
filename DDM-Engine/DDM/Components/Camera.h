@@ -14,7 +14,7 @@
 
 namespace DDM
 {
-	class TransformComponent;
+	class Transform;
 
 	class Camera final : public Component
 	{
@@ -102,7 +102,7 @@ namespace DDM
 		// Pointer to skybox component
 		std::shared_ptr<SkyBoxComponent> m_pSkyBox{};
 
-		std::shared_ptr<TransformComponent> m_pTransform{};
+		std::shared_ptr<Transform> m_pTransform{};
 
 		/// <summary>
 		/// Update the view matrix

@@ -5,11 +5,11 @@
 
 namespace DDM
 {
-	class TransformComponent final : public Component
+	class Transform final : public Component
 	{
 	public:
-		TransformComponent() = default;
-		~TransformComponent() = default;
+		Transform() = default;
+		~Transform() = default;
 
 		virtual void OnGUI() override;
 
