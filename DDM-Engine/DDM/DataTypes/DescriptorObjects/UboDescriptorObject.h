@@ -1,8 +1,8 @@
-// DescriptorObject.h
+// UboDescriptorObject.h
 // This class will handle the buffers, memory and descriptor set updates of Uniform Buffer Objects
 
-#ifndef DescriptorObjectIncluded
-#define DescriptorObjectIncluded
+#ifndef _UBO_DESCRIPTOR_OBJECT_
+#define _UBO_DESCRIPTOR_OBJECT_
 
 // File includes
 #include "DescriptorObject.h"
@@ -18,23 +18,32 @@ namespace DDM
 	class UboDescriptorObject final : public DescriptorObject
 	{
 	public:
+		/// <summary>
+		/// Constructor
+		/// </summary>
+		/// <param name="arraySize: ">amount of objects in the array, if no array, set to 1</param>
 		UboDescriptorObject(int arraySize = 1);
 
+		/// <summary>
+		/// Destructor
+		/// </summary>
 		virtual ~UboDescriptorObject();
 
-		// Add the descriptor write objects to the list of descriptorWrites
-		// Parameters:
-		//     descriptorSet: the current descriptorset connected to this descriptor object
-		//     descriptorWrites: the list of descriptorWrites this function will add to
-		//     binding: the current binding in the shader files
-		//     amount: the amount of descriptors for the current binding
-		//     index: the current frame index of the renderer
+		/// <summary>
+		/// Add the descriptor write objets to the list of descriptorWrites
+		/// </summary>
+		/// <param name="descriptorSet: ">current descriptorset connected to this descriptor object</param>
+		/// <param name="descriptorWrites: ">list of descriptorWrites to add to</param>
+		/// <param name="binding: ">current binding in the shader files</param>
+		/// <param name="amount: ">amount of elements in the array at this binding</param>
+		/// <param name="index">index of the current frame in flight</param>
 		virtual void AddDescriptorWrite(VkDescriptorSet descriptorSet, std::vector<VkWriteDescriptorSet>& descriptorWrites, int& binding, int amount, int index) override;
 
-		// Update the buffer of the object
-		// Parameters:
-		//     uboObject: a reference of the object in question
-		//     frame: the index of the current frame
+		/// <summary>
+		/// Update the buffer of the object
+		/// </summary>
+		/// <param name="uboObjects: ">a reference of the object in question</param>
+		/// <param name="frame: ">index of the current frame in flight</param>
 		void UpdateUboBuffer(T* uboObjects, uint32_t frame);
 
 	private:
@@ -45,28 +54,35 @@ namespace DDM
 		// Pointers to mapped UBOs
 		std::vector<void*> m_UbosMapped{};
 
+		// Size of the array
 		int m_ArraySize{};
 
 		// BufferInfos
 		std::vector<VkDescriptorBufferInfo> m_BufferInfos{};
 
-		// Set up the buffers
+		/// <summary>
+		/// Set up the buffers
+		/// </summary>
 		void SetupBuffers();
 
-		// Set up the buffer infos
+		/// <summary>
+		/// Set up buffer infos
+		/// </summary>
 		void SetupBufferInfos();
 
-		// Clean up
+		/// <summary>
+		/// Clean up allocated objects
+		/// </summary>
 		void Cleanup();
 	};
 
 
 	template<typename T>
 	inline UboDescriptorObject<T>::UboDescriptorObject(int arraySize)
-		:DescriptorObject(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER)
+		// Type of this object is unifrom buffer
+		:DescriptorObject(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER),
+		m_ArraySize{arraySize}
 	{
-
-		m_ArraySize = arraySize;
 		// Set up the buffers and buffer infos
 		SetupBuffers();
 		SetupBufferInfos();
@@ -100,9 +116,11 @@ namespace DDM
 		// Give the correct descriptorset
 		descriptorWrite.dstSet = descriptorSet;
 
+		// Add to list
 		descriptorWrites.push_back(descriptorWrite);
 
-		binding++;
+		// Increase binding
+		++binding;
 	}
 
 	template<typename T>
@@ -181,4 +199,4 @@ namespace DDM
 	}
 }
 
-#endif // !DescriptorObjectIncluded
+#endif // !_UBO_DESCRIPTOR_OBJECT_

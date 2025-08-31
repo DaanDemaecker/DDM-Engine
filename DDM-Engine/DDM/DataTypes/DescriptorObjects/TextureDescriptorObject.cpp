@@ -5,7 +5,7 @@
 #include "Vulkan/VulkanObject.h"
 
 DDM::TextureDescriptorObject::TextureDescriptorObject()
-// Type of this object is combined image sampler
+	// Type of this object is combined image sampler
 	:DescriptorObject(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER)
 {
 	// Set up placeholder image info
