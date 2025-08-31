@@ -4,7 +4,7 @@
 #include "GameObject.h"
 
 // File includes
-#include "Components/TransformComponent.h"
+#include "Components/Transform.h"
 #include "Includes/ImGuiIncludes.h"
 
 DDM::GameObject::~GameObject()

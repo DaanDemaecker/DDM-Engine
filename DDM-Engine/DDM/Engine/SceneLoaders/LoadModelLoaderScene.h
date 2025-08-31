@@ -4,7 +4,7 @@
 #include "Components/SpectatorMovement.h"
 #include "Components/Camera.h"
 #include "Components/SkyBox.h"
-#include "../../Components/TransformComponent.h"
+#include "Components/Transform.h"
 #include "Components/Light/LightComponent.h"
 #include "Components/ModelLoader.h"
 #include "../../Managers/ConfigManager.h"

@@ -15,7 +15,7 @@
 #include "DataTypes/Materials/MultiMaterial.h"
 
 #include "Components/MeshRenderer.h"
-#include "Components/TransformComponent.h"
+#include "Components/Transform.h"
 
 // Standard library includes
 #include <iostream>

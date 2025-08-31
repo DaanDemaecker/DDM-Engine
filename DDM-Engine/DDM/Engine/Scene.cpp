@@ -8,7 +8,7 @@
 
 #include "Components/Camera.h"
 #include "Components/Light/LightComponent.h"
-#include "Components/TransformComponent.h"
+#include "Components/Transform.h"
 
 unsigned int DDM::Scene::m_IdCounter = 0;
 

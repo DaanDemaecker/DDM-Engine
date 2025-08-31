@@ -4,7 +4,7 @@
 #include "SpectatorMovement.h"
 
 // File includes
-#include "Components/TransformComponent.h"
+#include "Components/Transform.h"
 
 #include "Includes/GLMIncludes.h"
 

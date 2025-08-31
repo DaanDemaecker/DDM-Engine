@@ -12,7 +12,7 @@
 #include "DataTypes/DescriptorObjects/TextureDescriptorObject.h"	
 #include "DataTypes/Materials/CubeMapMaterial.h"
 
-#include "Components/TransformComponent.h"
+#include "Components/Transform.h"
 
 #include "Managers/ResourceManager.h"
 #include "Managers/ConfigManager.h"

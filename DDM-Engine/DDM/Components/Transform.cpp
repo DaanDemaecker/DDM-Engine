@@ -1,4 +1,4 @@
-#include "TransformComponent.h"
+#include "Transform.h"
 #include "../Includes/GLFWIncludes.h"
 #include "../Includes/ImGuiIncludes.h"
 

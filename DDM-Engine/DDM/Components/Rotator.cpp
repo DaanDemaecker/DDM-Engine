@@ -8,7 +8,7 @@
 
 #include "Managers/TimeManager.h"
 
-#include "Components/TransformComponent.h"
+#include "Components/Transform.h"
 
 void DDM::RotatorComponent::Update()
 {

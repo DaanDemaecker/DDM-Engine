@@ -7,7 +7,7 @@
 
 #include "Components/MeshRenderer.h"
 #include "../../DataTypes/Mesh.h"
-#include "../../Components/TransformComponent.h"
+#include "Components/Transform.h"
 #include "../Scene.h"
 #include "Components/SkyBox.h"
 

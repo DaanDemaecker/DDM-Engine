@@ -4,7 +4,7 @@
 #include "LightComponent.h"
 
 // File includes
-#include "Components/TransformComponent.h"
+#include "Components/Transform.h"
 #include "Includes/GLMIncludes.h"
 #include "Includes/ImGuiIncludes.h"
 

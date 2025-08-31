@@ -31,7 +31,7 @@
 
 #include "Components/MeshRenderer.h"
 #include "Components/Camera.h"
-#include "Components/TransformComponent.h"
+#include "Components/Transform.h"
 #include "Components/Light/LightComponent.h"
 
 #include "Vulkan/VulkanWrappers/VulkanCore.h"

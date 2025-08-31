@@ -8,7 +8,7 @@ add_executable(${EXECUTABLE_NAME}
 "Components/Rotator.cpp"
 "Components/SkyBox.cpp"
 "Components/SpectatorMovement.cpp"
-"Components/TransformComponent.cpp"
+"Components/Transform.cpp"
 "DataTypes/DescriptorObjects/TextureDescriptorObject.cpp"
 "DataTypes/Materials/CubeMapMaterial.cpp"
 "DataTypes/Materials/Material.cpp"
