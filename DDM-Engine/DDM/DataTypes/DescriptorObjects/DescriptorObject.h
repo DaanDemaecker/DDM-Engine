@@ -2,11 +2,11 @@
 // This class will serve as the base class for descriptor object classes
 // Descriptor object classes will be needed to automate descriptor set updating
 
-#ifndef DescriptorBufferIncluded
-#define DescriptorBufferIncluded
+#ifndef _DESCRIPTOR_OBJECT_
+#define _DESCRIPTOR_OBJECT_
 
 // File includes
-#include "../../Includes/VulkanIncludes.h"
+#include "Includes/VulkanIncludes.h"
 
 // Standard libary includes
 #include <vector>
@@ -16,9 +16,10 @@ namespace DDM
 	class DescriptorObject
 	{
 	public:
-		// Constructor
-		// Parameters:
-		//     type: the type of descriptor this object will ohld
+		/// <summary>
+		/// Constructor
+		/// </summary>
+		/// <param name="type:">type of descriptor this object will hold</param>
 		DescriptorObject(VkDescriptorType type)
 			:m_Type{ type }
 		{
@@ -28,23 +29,26 @@ namespace DDM
 		// Delete default constructor
 		DescriptorObject() = delete;
 
-		// Default destructor
+		/// <summary>
+		/// Default destructor
+		/// </summary>
 		virtual ~DescriptorObject() = default;
 
-		// Delete all copy and move functions
+		// Rule of 5
 		DescriptorObject(DescriptorObject& other) = delete;
 		DescriptorObject(DescriptorObject&& other) = delete;
 
 		DescriptorObject& operator=(DescriptorObject& other) = delete;
 		DescriptorObject& operator=(DescriptorObject&& other) = delete;
 
-		// Add the descriptor write objects to the list of descriptorWrites
-		// Parameters:
-		//     descriptorSet: the current descriptorset connected to this descriptor object
-		//     descriptorWrites: the list of descriptorWrites this function will add to
-		//     binding: the current binding in the shader files
-		//     amount: the amount of descriptors for the current binding
-		//     index: the current frame index of the renderer
+		/// <summary>
+		/// Add the descriptor write objets to the list of descriptorWrites
+		/// </summary>
+		/// <param name="descriptorSet: ">current descriptorset connected to this descriptor object</param>
+		/// <param name="descriptorWrites: ">list of descriptorWrites to add to</param>
+		/// <param name="binding: ">current binding in the shader files</param>
+		/// <param name="amount: ">amount of descriptors for the current binding</param>
+		/// <param name="index">index of the current frame in flight</param>
 		virtual void AddDescriptorWrite(VkDescriptorSet descriptorSet, std::vector<VkWriteDescriptorSet>& descriptorWrites, int& binding, int amount, int index) = 0;
 
 	protected:
@@ -53,4 +57,4 @@ namespace DDM
 
 	};
 }
-#endif // !DescriptorBufferIncluded
+#endif // !_DESCRIPTOR_OBJECT_
