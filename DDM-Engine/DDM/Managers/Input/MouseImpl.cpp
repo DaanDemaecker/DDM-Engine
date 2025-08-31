@@ -13,6 +13,8 @@
 #include <functional>
 #include <iostream>
 
+std::queue<glm::vec2> DDM::MouseImpl::m_MouseScroll = std::queue<glm::vec2>();
+
 DDM::MouseImpl::MouseImpl()
 {
 	m_Pressed.resize(GLFW_MOUSE_BUTTON_LAST + 1);
@@ -20,6 +22,8 @@ DDM::MouseImpl::MouseImpl()
 	m_Down.resize(m_Pressed.size());
 
 	m_Up.resize(m_Pressed.size());
+
+	glfwSetScrollCallback(Window::GetInstance().GetWindowStruct().pWindow, DDM::MouseImpl::MouseScrollCallback);
 }
 
 void DDM::MouseImpl::Update()
@@ -31,7 +35,7 @@ void DDM::MouseImpl::Update()
 
 	for (int key = GLFW_MOUSE_BUTTON_1; key <= GLFW_MOUSE_BUTTON_LAST; ++key)
 	{
-		currentState[key] = glfwGetKey(window, key) == GLFW_PRESS;
+		currentState[key] = glfwGetMouseButton(window, key) == GLFW_PRESS;
 	}
 
 	std::vector<bool> changes;
@@ -51,11 +55,18 @@ void DDM::MouseImpl::Update()
 
 	glfwGetCursorPos(window, &x, &y);
 
+	
+
 	m_MouseDelta.x = static_cast<float>(x - m_MousePos.x);
 	m_MouseDelta.y = static_cast<float>(y - m_MousePos.y);
 
 	m_MousePos.x = static_cast<float>(x);
 	m_MousePos.y = static_cast<float>(y);
+
+	if (!m_MouseScroll.empty())
+	{
+		m_MouseScroll.pop();
+	}
 }
 
 bool DDM::MouseImpl::IsPressed(int button)
@@ -71,4 +82,17 @@ bool DDM::MouseImpl::IsUp(int button)
 bool DDM::MouseImpl::IsDown(int button)
 {
 	return m_Down[button];
+}
+
+const glm::vec2& DDM::MouseImpl::GetScrollDelta()
+{
+	if (m_MouseScroll.empty())
+		return m_EmptyVec;
+
+	return m_MouseScroll.front();
+}
+
+void DDM::MouseImpl::MouseScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
+{
+	m_MouseScroll.push(glm::vec2(xoffset, yoffset));
 }

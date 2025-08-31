@@ -85,12 +85,23 @@ void DDM::SpectatorMovement::Update()
 
 
 	// If right mouse button is pressed rotate camera
-	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
+	if (input.GetMouseButtonPressed(GLFW_MOUSE_BUTTON_RIGHT))
 	{
-		if (input.GetMouseButtonDown(GLFW_MOUSE_BUTTON_RIGHT))
+		// Retrieve scroll delta
+		auto& scrollDelta = input.GetScrollDelta();
+		
+		// If scrolled down, slow down camera
+		if (scrollDelta.y < 0)
 		{
-			std::cout << "Mouse button right pressed" << std::endl;
+			m_Speed /= m_IncreaseFactor;
 		}
+		// If scrolled up, speed up camera
+		else if (scrollDelta.y > 0)
+		{
+			m_Speed *= m_IncreaseFactor;
+		}
+
+
 
 		// Retrieve mouse delta
 		auto& mouseDelta = input.GetMouseDelta();

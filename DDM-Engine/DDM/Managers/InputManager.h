@@ -35,9 +35,11 @@ namespace DDM
 
 		bool GetMouseButtonUp(int button);
 
-		glm::vec2& GetMousePos();
+		const glm::vec2& GetMousePos();
 
-		glm::vec2& GetMouseDelta();
+		const glm::vec2& GetMouseDelta();
+
+		const glm::vec2& GetScrollDelta();
 	private:
 		friend class Singleton<InputManager>;
 		InputManager();

@@ -65,7 +65,7 @@ add_executable(${EXECUTABLE_NAME}
  "Vulkan/Renderers/AORenderers/SSAORenderer.cpp"
  "Vulkan/Renderers/AORenderers/HBAORenderer.cpp"
  "Vulkan/Renderers/AORenderers/GTAORenderer.cpp"
- "Vulkan/VulkanWrappers/QueryPool.cpp" "Components/Light/Light.h")
+ "Vulkan/VulkanWrappers/QueryPool.cpp" "Components/Light/Light.h" "Managers/Input/Mouse.cpp")
 
 
 # Include directories specific to this target

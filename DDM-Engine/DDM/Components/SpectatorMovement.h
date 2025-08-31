@@ -31,8 +31,11 @@ namespace DDM
 		// Pointer to the transform component of the owning game object
 		TransformComponent* m_pTransform{ nullptr };
 
+		// Speed increase
+		float m_IncreaseFactor{ 1.1f };
+
 		// Movement speed per second
-		const float m_Speed{5.f};
+		float m_Speed{5.f};
 
 		// Angular speed per pixel
 		const float m_AngularSpeed{ 0.01f };

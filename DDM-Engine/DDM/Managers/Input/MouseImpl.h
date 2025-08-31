@@ -9,6 +9,10 @@
 
 // Standard library includes
 #include <vector>
+#include <queue>
+
+
+struct GLFWwindow;
 
 namespace DDM
 {
@@ -33,9 +37,11 @@ namespace DDM
 
 		bool IsDown(int button);
 
-		glm::vec2& GetMousePos() { return m_MousePos; }
-
-		glm::vec2& GetMouseDelta() { return m_MouseDelta; }
+		const glm::vec2& GetMousePos() { return m_MousePos; }
+		 
+		const glm::vec2& GetMouseDelta() { return m_MouseDelta; }
+		 
+		const glm::vec2& GetScrollDelta();
 
 	private:
 		std::vector<bool> m_Pressed;
@@ -44,6 +50,12 @@ namespace DDM
 
 		glm::vec2 m_MousePos{};
 		glm::vec2 m_MouseDelta{};
+
+		static std::queue<glm::vec2> m_MouseScroll;
+
+		const glm::vec2 m_EmptyVec{};
+
+		static void MouseScrollCallback(GLFWwindow* window, double xoffset, double yoffset);
 	};
 }
 #endif // !MouseImplIncluded

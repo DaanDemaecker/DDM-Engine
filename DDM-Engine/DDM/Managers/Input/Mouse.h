@@ -4,20 +4,22 @@
 #define MouseIncluded
 
 // File includes
-#include "MouseImpl.h"
+#include "Includes/GLMIncludes.h"
+
+// Standard library includes
+#include <memory>
 
 namespace DDM
 {
+	class MouseImpl;
+
 	class Mouse final
 	{
 	public:
-		Mouse()
-		{
-			m_pImpl = std::make_unique<MouseImpl>();
-		}
+		Mouse();
 
 
-		~Mouse() = default;
+		~Mouse();
 
 		Mouse(const Mouse& other) = delete;
 		Mouse(Mouse&& other) = delete;
@@ -25,29 +27,19 @@ namespace DDM
 		Mouse& operator=(const Mouse& other) = delete;
 		Mouse& operator=(Mouse&& other) = delete;
 
-		void Update()
-		{
-			m_pImpl->Update();
-		}
+		void Update();
 
-		bool IsPressed(int button)
-		{
-			return m_pImpl->IsPressed(button);
-		}
+		bool IsPressed(int button);
 
-		bool IsUp(int button)
-		{
-			return m_pImpl->IsUp(button);
-		}
+		bool IsUp(int button);
 
-		bool IsDown(int button)
-		{
-			return m_pImpl->IsDown(button);
-		}
+		bool IsDown(int button);
 
-		glm::vec2& GetMousePos(){ return m_pImpl->GetMousePos(); }
+		const glm::vec2& GetMousePos();
 
-		glm::vec2& GetMouseDelta() { return m_pImpl->GetMouseDelta(); }
+		const glm::vec2& GetMouseDelta();
+
+		const glm::vec2& GetScrollDelta();
 
 	private:
 		std::unique_ptr<MouseImpl> m_pImpl;

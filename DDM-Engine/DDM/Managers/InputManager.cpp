@@ -58,12 +58,17 @@ bool DDM::InputManager::GetMouseButtonUp(int button)
     return m_pMouse->IsUp(button);
 }
 
-glm::vec2& DDM::InputManager::GetMousePos()
+const glm::vec2& DDM::InputManager::GetMousePos()
 {
     return m_pMouse->GetMousePos();
 }
 
-glm::vec2& DDM::InputManager::GetMouseDelta()
+const glm::vec2& DDM::InputManager::GetMouseDelta()
 {
     return m_pMouse->GetMouseDelta();
+}
+
+const glm::vec2& DDM::InputManager::GetScrollDelta()
+{
+    return m_pMouse->GetScrollDelta();
 }
