@@ -28,7 +28,7 @@ add_executable(${EXECUTABLE_NAME}
 "Vulkan/SpirVReflect/spirv_reflect.cpp"
 "Vulkan/VulkanManagers/BufferCreator.cpp"
 "Vulkan/VulkanManagers/CommandpoolManager.cpp"
-"Vulkan/VulkanManagers/ImageManager.cpp"
+"Vulkan/VulkanManagers/ImageManager/ImageManager.cpp"
 "Vulkan/VulkanManagers/ImageViewManager.cpp"
 "Vulkan/VulkanManagers/PipelineManager.cpp"
 "Vulkan/VulkanManagers/SyncObjectManager.cpp"
@@ -65,7 +65,9 @@ add_executable(${EXECUTABLE_NAME}
  "Vulkan/Renderers/AORenderers/SSAORenderer.cpp"
  "Vulkan/Renderers/AORenderers/HBAORenderer.cpp"
  "Vulkan/Renderers/AORenderers/GTAORenderer.cpp"
- "Vulkan/VulkanWrappers/QueryPool.cpp" "Components/Light/Light.h" "Managers/Input/Mouse.cpp")
+ "Vulkan/VulkanWrappers/QueryPool.cpp"
+ "Managers/Input/Mouse.cpp"
+ "Vulkan/VulkanManagers/ImageManager/STBImage.cpp")
 
 
 # Include directories specific to this target

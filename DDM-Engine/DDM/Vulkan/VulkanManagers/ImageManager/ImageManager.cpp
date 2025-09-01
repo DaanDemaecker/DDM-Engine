@@ -10,8 +10,8 @@
 
 #include "Managers/ConfigManager.h"
 
-#include "BufferCreator.h"
-#include "CommandpoolManager.h"
+#include "Vulkan/VulkanManagers/BufferCreator.h"
+#include "Vulkan/VulkanManagers/CommandpoolManager.h"
 
 #include "Vulkan/VulkanWrappers/GPUObject.h"
 

@@ -4,7 +4,7 @@
 #include "ImageViewManager.h"
 
 // File includes
-#include "ImageManager.h"
+#include "Vulkan/VulkanManagers/ImageManager/ImageManager.h"
 #include "Vulkan/VulkanUtils.h"
 #include "Vulkan/VulkanWrappers/GPUObject.h"
 #include "Vulkan/VulkanObject.h"

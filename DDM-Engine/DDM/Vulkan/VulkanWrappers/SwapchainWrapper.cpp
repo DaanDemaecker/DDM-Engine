@@ -9,7 +9,7 @@
 #include "GPUObject.h"
 
 #include "Vulkan/VulkanManagers/ImageViewManager.h"
-#include "Vulkan/VulkanManagers/ImageManager.h"
+#include "Vulkan/VulkanManagers/ImageManager/ImageManager.h"
 
 #include "Vulkan/VulkanWrappers/FrameBuffer.h"
 #include "Vulkan/VulkanWrappers/RenderpassWrapper.h"

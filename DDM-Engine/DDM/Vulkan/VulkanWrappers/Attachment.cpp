@@ -5,7 +5,7 @@
 
 // File includes
 #include "Vulkan/VulkanObject.h"
-#include "Vulkan/VulkanManagers/ImageManager.h"
+#include "Vulkan/VulkanManagers/ImageManager/ImageManager.h"
 
 DDM::Attachment::Attachment(int swapchainImageAmount)
 {

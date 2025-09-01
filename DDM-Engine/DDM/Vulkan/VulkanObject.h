@@ -9,7 +9,7 @@
 #include "Engine/Singleton.h"
 #include "DataTypes/Structs.h"
 #include "Vulkan/Renderers/Renderer.h"
-#include "Vulkan/VulkanManagers/ImageManager.h"
+#include "Vulkan/VulkanManagers/ImageManager/ImageManager.h"
 #include "Vulkan/VulkanWrappers/VulkanCore.h"
 
 // Standard library includes

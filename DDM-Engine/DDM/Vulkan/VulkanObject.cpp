@@ -19,7 +19,7 @@
 #include "Vulkan/VulkanWrappers/SurfaceWrapper.h"
 #include "Vulkan/VulkanManagers/CommandpoolManager.h"
 #include "Vulkan/VulkanManagers/BufferCreator.h"
-#include "Vulkan/VulkanManagers/ImageManager.h"
+#include "Vulkan/VulkanManagers/ImageManager/ImageManager.h"
 #include "Vulkan/VulkanWrappers/SwapchainWrapper.h"
 #include "Vulkan/VulkanWrappers/RenderpassWrapper.h"
 #include "Vulkan/VulkanManagers/PipelineManager.h"
