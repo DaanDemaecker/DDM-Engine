@@ -4,7 +4,8 @@
 #include "ImageManager.h"
 
 // File includes
-#include "Includes/STBIncludes.h"
+#include "Vulkan/VulkanManagers/ImageManager/STBImage.h"
+
 #include "Vulkan/VulkanUtils.h"
 #include "Vulkan/VulkanObject.h"
 
@@ -91,24 +92,13 @@ void DDM::ImageManager::CreateCubeTexture(GPUObject* pGPUObject, Texture& cubeTe
 		throw std::runtime_error("6 or more images are required for a cube map");
 	}
 
-	// Initialize texture width, height and channels
-	int texWidth{};
-	int texHeight{};
-	int texChannels{};
+	std::unique_ptr<STBImage> pImage = std::make_unique<STBImage>(*(textureNames.begin()));
 
-	// Load in the first image of the list to get the width, height and channel amount
-	stbi_uc* pixels = stbi_load(textureNames.begin()->c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
-
-	// If pixels failed to load in, throw runtime error
-	if (!pixels)
-	{
-		throw std::runtime_error("Failed to load texture image!");
-	}
 
 	// Set miplevels to 1 as cube textures generally don't need them
 	cubeTexture.mipLevels = 1;
 	// Calculate the size of a single image
-	VkDeviceSize faceSize = texWidth * texHeight * texChannels;
+	VkDeviceSize faceSize = pImage->GetWidth() * pImage->GetHeight() * pImage->GetChannels();
 	// Calcualte the size of the entire cubemap
 	VkDeviceSize cubeSize = faceSize * imageCount;
 
@@ -127,22 +117,14 @@ void DDM::ImageManager::CreateCubeTexture(GPUObject* pGPUObject, Texture& cubeTe
 	// Map the memory of the staging buffer memory to the data pointer
 	vkMapMemory(device, stagingBufferMemory, 0, cubeSize, 0, &data);
 	// Copy the data from the pixels to the data pointer
-	memcpy(data, pixels, static_cast<size_t>(faceSize));
-
-	// Free the pixels
-	stbi_image_free(pixels);
+	memcpy(data, pImage->GetPixels(), static_cast<size_t>(faceSize));
 
 	// Loop trough all the other images and load them in
 	for (uint32_t i = 1; i < imageCount; i++)
 	{
-		// Load in the pixels
-		pixels = stbi_load((textureNames.begin() + i)->c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+		const std::string& textureName{ *(textureNames.begin() + i) };
 
-		// If pixels failed to load in, throw runtime error
-		if (!pixels)
-		{
-			throw std::runtime_error("Failed to load texture image!");
-		}
+		pImage = std::make_unique<STBImage>(textureName);
 
 		// Cast the void ptr to a char*
 		char* mem_offset{ reinterpret_cast<char*>(data) };
@@ -151,11 +133,7 @@ void DDM::ImageManager::CreateCubeTexture(GPUObject* pGPUObject, Texture& cubeTe
 		mem_offset += i * faceSize;
 
 		// Copy the memory of the pixels with the correct offset
-		memcpy(mem_offset, pixels, static_cast<size_t>(faceSize));
-
-
-		// Free the pixels
-		stbi_image_free(pixels);
+		memcpy(mem_offset, pImage->GetPixels(), static_cast<size_t>(faceSize));
 	}
 
 	// Create image create info
@@ -167,7 +145,7 @@ void DDM::ImageManager::CreateCubeTexture(GPUObject* pGPUObject, Texture& cubeTe
 	// Set the format to R8G8B8A8
 	imageCreateInfo.format = VK_FORMAT_R8G8B8A8_SRGB;
 	// Set the width and height of the texture as the extent
-	imageCreateInfo.extent = { static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight), 1 };
+	imageCreateInfo.extent = { static_cast<uint32_t>(pImage->GetWidth()), static_cast<uint32_t>(pImage->GetHeight()), 1 };
 	// Give the miplevels
 	imageCreateInfo.mipLevels = cubeTexture.mipLevels;
 	// Set arrayLayers to the amount of textures
@@ -230,7 +208,7 @@ void DDM::ImageManager::CreateCubeTexture(GPUObject* pGPUObject, Texture& cubeTe
 	commandBuffer = pCommandPoolManager->BeginSingleTimeCommands(device);
 	// Coppy staging buffer to texture image
 	CopyBufferToImage(commandBuffer, stagingBuffer, cubeTexture.image,
-		static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight), imageCount);
+		static_cast<uint32_t>(pImage->GetWidth()), static_cast<uint32_t>(pImage->GetHeight()), imageCount);
 	// End single time command buffer
 	pCommandPoolManager->EndSingleTimeCommands(pGPUObject, commandBuffer);
 
@@ -512,23 +490,17 @@ void DDM::ImageManager::CreateTextureImage(GPUObject* pGPUObject, DDM::Texture& 
 	// Get device
 	auto device{ pGPUObject->GetDevice() };
 
-	// Create ints for texture width, texture height and texture channels
-	int texWidth, texHeight, texChannels;
-
 	// Load pixels of image
-	stbi_uc* pixels = stbi_load(textureName.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+	std::unique_ptr<STBImage> pImage = std::make_unique<STBImage>(textureName);
+	
+	int texWidth = pImage->GetWidth();
+	int texHeight = pImage->GetHeight();
 
 	// Calculate max amount of miplevels based on texwidth and texheight
 	texture.mipLevels = static_cast<uint32_t>(std::floor(std::log2(std::max(texWidth, texHeight)))) + 1;
 
 	// Calculate the image size
 	VkDeviceSize imageSize = static_cast<uint64_t>(texWidth) * static_cast<uint64_t>(texHeight) * static_cast<uint64_t>(4);
-
-	// If pixels didn't load correctly, throw runtime error
-	if (!pixels)
-	{
-		throw std::runtime_error("failed to load texture image!");
-	}
 
 	// Create staging buffer object
 	VkBuffer stagingBuffer{};
@@ -545,12 +517,9 @@ void DDM::ImageManager::CreateTextureImage(GPUObject* pGPUObject, DDM::Texture& 
 	// Map the memory of the staging buffer memory to the data pointer
 	vkMapMemory(device, stagingBufferMemory, 0, imageSize, 0, &data);
 	// Copy the data from the pixels to the data pointer
-	memcpy(data, pixels, static_cast<size_t>(imageSize));
+	memcpy(data, pImage->GetPixels(), static_cast<size_t>(imageSize));
 	// Unmap the memory of the staging buffer
 	vkUnmapMemory(device, stagingBufferMemory);
-
-	// Free the pixels
-	stbi_image_free(pixels);
 
 	// Create the image
 	CreateImage(pGPUObject, texWidth, texHeight, texture.mipLevels, VK_SAMPLE_COUNT_1_BIT, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL,

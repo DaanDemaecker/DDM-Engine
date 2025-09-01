@@ -9,13 +9,13 @@
 // Standard library includes
 #include <stdexcept>
 
-DDM::STBImage::STBImage(std::string&& filePath)
+DDM::STBImage::STBImage(const std::string&& filePath)
 	// Propagate to lvalue constructor
 	:STBImage(filePath)
 {
 }
 
-DDM::STBImage::STBImage(std::string& filePath)
+DDM::STBImage::STBImage(const std::string& filePath)
 {
 	// Load in the image
 	m_Pixels = stbi_load(filePath.c_str(), &m_TexWidth, &m_TexHeight, &m_TexChannels, STBI_rgb_alpha);

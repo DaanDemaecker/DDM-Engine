@@ -19,18 +19,25 @@ namespace DDM
 		/// Constructor
 		/// </summary>
 		/// <param name="filePath: ">path to the image to load in</param>
-		STBImage(std::string&& filePath);
+		STBImage(const std::string&& filePath);
 		
 		/// <summary>
 		/// Constructor
 		/// </summary>
 		/// <param name="filePath: ">path to the image to load in</param>
-		STBImage(std::string& filePath);
+		STBImage(const std::string& filePath);
 
 		/// <summary>
 		/// Destructor
 		/// </summary>
 		~STBImage();
+
+		// Rule of five
+		STBImage(STBImage&) = delete;
+		STBImage(STBImage&&) = delete;
+
+		STBImage& operator=(STBImage&) = delete;
+		STBImage& operator=(STBImage&&) = delete;
 
 		/// <summary>
 		/// Get the width of the image
