@@ -6,7 +6,6 @@
 
 // File includes
 #include "Includes/VulkanIncludes.h"
-#include "DataTypes/Structs.h"
 
 // Standard library includes
 #include <iostream>
@@ -17,6 +16,7 @@ namespace DDM
 	class GPUObject;
 	class BufferCreator;
 	class CommandpoolManager;
+	class Image;
 
 
 	class ImageManager final
@@ -46,7 +46,7 @@ namespace DDM
 		void Cleanup(VkDevice device);
 
 		// Get the default image view
-		VkImageView& GetDefaultImageView() { return m_DefaultTexture.imageView; }
+		VkImageView GetDefaultImageView();
 
 		// Get the standard image sampler
 		VkSampler& GetSampler() { return m_TextureSampler; }
@@ -73,13 +73,15 @@ namespace DDM
 			VkImage image, VkFormat imageFormat,
 			int32_t texWidth, int32_t texHeight, uint32_t mipLevels);
 
+		std::shared_ptr<Image> CreateTextureImage(const std::string& textureName);
+
 		// Create a given texture image
 		// Parameters:
 		//     pGPUObject : a pointer to the GPU object 
 		//     texture: reference to the texture that will be created
 		//     textureName: filepath to the texture
 		//     pCommandPoolManager: pointer to the commandpool manager
-		void CreateTextureImage(GPUObject* pGPUObject, Texture& texture,
+		void CreateTextureImage(GPUObject* pGPUObject, std::shared_ptr<Image> texture,
 			const std::string& textureName, CommandpoolManager* pCommandPoolManager);
 
 		// Create a given cube texture image
@@ -88,7 +90,7 @@ namespace DDM
 		//     cubeTexture: reference to the texture that will be created
 		//     textureNames: filepaths to the texture that make up the faces of the cube
 		//     pCommandPoolManager: pointer to the commandpool manager
-		void CreateCubeTexture(GPUObject* pGPUObject, Texture& cubeTexture,
+		void CreateCubeTexture(GPUObject* pGPUObject, std::shared_ptr<Image> cubeTexture,
 			const std::initializer_list<const std::string>& textureNames, CommandpoolManager* pCommandPoolManager);
 
 		// Create a texture sampler
@@ -122,7 +124,6 @@ namespace DDM
 
 		// Create an image
 		// Parameters:
-		//     pGPUObject : a pointer to the GPU object 
 		//     width: the width of the image
 		//     height: the height of the image
 		//     mipLevels: the amount of mipmaps
@@ -132,10 +133,9 @@ namespace DDM
 		//     usage: the usage for the image
 		//     properties: the requested properties for the image
 		//     texture: reference to the texture to be created
-		void CreateImage(GPUObject* pGPUObject,
-			uint32_t width, uint32_t height, uint32_t mipLevels,
+		void CreateImage(uint32_t width, uint32_t height, uint32_t mipLevels,
 			VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling,
-			VkImageUsageFlags usage, VkMemoryPropertyFlags properties, Texture& texture);
+			VkImageUsageFlags usage, VkMemoryPropertyFlags properties, std::shared_ptr<Image> texture);
 
 		// Create the default textures
 		// Parameters:
@@ -144,7 +144,7 @@ namespace DDM
 		void CreateDefaultResources(GPUObject* pGPUObject, CommandpoolManager* pCommandPoolManager);
 	private:
 		// The default texture
-		Texture m_DefaultTexture{};
+		std::shared_ptr<Image> m_pDefaultTexture{};
 
 		// The textpath to the default texture
 		const std::string m_DefaultTextureName;

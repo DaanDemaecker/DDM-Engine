@@ -685,14 +685,14 @@ void DDM::HBAORenderer::SetupDescriptorObjectsAoGen()
 	// Normal texture
 	auto descriptorObject{ std::make_unique<InputAttachmentDescriptorObject>() };
 
-	descriptorObject->AddImageView(attachments[kAttachment_GBUFFER_VIEWNORMAL]->GetTexture(0)->imageView, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+	descriptorObject->AddImageView(attachments[kAttachment_GBUFFER_VIEWNORMAL]->GetTexture(0)->GetImageView(), VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
 	m_pAoGenInputDescriptorObjects.push_back(std::move(descriptorObject));
 
 	// Depth texture
 	descriptorObject = std::make_unique<InputAttachmentDescriptorObject>();
 
-	descriptorObject->AddImageView(attachments[kAttachment_DEPTH]->GetTexture(0)->imageView, VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL);
+	descriptorObject->AddImageView(attachments[kAttachment_DEPTH]->GetTexture(0)->GetImageView(), VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL);
 
 	m_pAoGenInputDescriptorObjects.push_back(std::move(descriptorObject));
 }
@@ -700,7 +700,6 @@ void DDM::HBAORenderer::SetupDescriptorObjectsAoGen()
 void DDM::HBAORenderer::SetupDescriptorObjectsAoBlur()
 {
 	m_pAoGenTextureDescriptorObject = std::make_unique<TextureDescriptorObject>();
-	m_pAoGenTextureDescriptorObject->SetCleanupTextures(false);
 }
 
 void DDM::HBAORenderer::SetupDescriptorObjectsLighting()
@@ -712,28 +711,28 @@ void DDM::HBAORenderer::SetupDescriptorObjectsLighting()
 	// ALbedo attachment
 	auto descriptorObject{ std::make_unique<InputAttachmentDescriptorObject>() };
 
-	descriptorObject->AddImageView(attachments[kAttachment_GBUFFER_ALBEDO]->GetTexture(0)->imageView, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+	descriptorObject->AddImageView(attachments[kAttachment_GBUFFER_ALBEDO]->GetTexture(0)->GetImageView(), VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
 	m_pLightingInputDescriptorObjects.push_back(std::move(descriptorObject));
 
 	// View normal attachment
 	descriptorObject = std::make_unique<InputAttachmentDescriptorObject>();
 
-	descriptorObject->AddImageView(attachments[kAttachment_GBUFFER_VIEWNORMAL]->GetTexture(0)->imageView, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+	descriptorObject->AddImageView(attachments[kAttachment_GBUFFER_VIEWNORMAL]->GetTexture(0)->GetImageView(), VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
 	m_pLightingInputDescriptorObjects.push_back(std::move(descriptorObject));
 
 	// View position attachment
 	descriptorObject = std::make_unique<InputAttachmentDescriptorObject>();
 
-	descriptorObject->AddImageView(attachments[kAttachment_GBUFFER_VIEWPOS]->GetTexture(0)->imageView, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+	descriptorObject->AddImageView(attachments[kAttachment_GBUFFER_VIEWPOS]->GetTexture(0)->GetImageView(), VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
 	m_pLightingInputDescriptorObjects.push_back(std::move(descriptorObject));
 
 	// Ao map attachment
 	descriptorObject = std::make_unique<InputAttachmentDescriptorObject>();
 
-	descriptorObject->AddImageView(attachments[kAttachment_AO_BLURRED]->GetTexture(0)->imageView, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+	descriptorObject->AddImageView(attachments[kAttachment_AO_BLURRED]->GetTexture(0)->GetImageView(), VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
 	m_pLightingInputDescriptorObjects.push_back(std::move(descriptorObject));
 
@@ -746,7 +745,6 @@ void DDM::HBAORenderer::SetupDescriptorObjectsLighting()
 void DDM::HBAORenderer::SetupPositionTexture()
 {
 	m_pPositionTextureDescriptorObject = std::make_unique<TextureDescriptorObject>();
-	m_pPositionTextureDescriptorObject->SetCleanupTextures(false);
 }
 
 void DDM::HBAORenderer::InitImgui()
@@ -1367,7 +1365,7 @@ void DDM::HBAORenderer::UpdateAoGenDescriptorSets(int frame, int swapchainIndex)
 
 	m_pPositionTextureDescriptorObject->Clear();
 
-	auto& posTexture = m_pRenderpass->GetAttachmentList()[kAttachment_GBUFFER_VIEWPOS]->GetTextureRef(swapchainIndex);
+	auto posTexture = m_pRenderpass->GetAttachmentList()[kAttachment_GBUFFER_VIEWPOS]->GetTextureSharedPtr(swapchainIndex);
 	m_pPositionTextureDescriptorObject->AddTexture(posTexture);
 
 	m_pPositionTextureDescriptorObject->AddDescriptorWrite(m_AoGenDescriptorSets[frame], descriptorWrites, binding, 1, frame);
@@ -1386,7 +1384,7 @@ void DDM::HBAORenderer::UpdateAoBlurDescriptorSets(int frame, int swapchainIndex
 	int binding{};
 
 
-	auto& aoGenTexture = m_pRenderpass->GetAttachmentList()[kAttachment_AO_MAP]->GetTextureRef(swapchainIndex);
+	auto aoGenTexture = m_pRenderpass->GetAttachmentList()[kAttachment_AO_MAP]->GetTextureSharedPtr(swapchainIndex);
 	m_pAoGenTextureDescriptorObject->AddTexture(aoGenTexture);
 
 	m_pAoGenTextureDescriptorObject->AddDescriptorWrite(m_AoBlurDescriptorSets[frame], descriptorWrites, binding, 1, frame);

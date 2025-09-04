@@ -31,6 +31,7 @@ namespace DDM
     class PipelineWrapper;
     class ImageManager;
     class CommandpoolManager;
+    class Image;
 
     class VulkanObject final : public Singleton<VulkanObject>
     {
@@ -65,7 +66,7 @@ namespace DDM
         
         VkPhysicalDevice GetPhysicalDevice();
 
-        VkImageView& GetDefaultImageView();
+        VkImageView GetDefaultImageView();
 
         VkSampler& GetSampler();
 
@@ -109,13 +110,13 @@ namespace DDM
         // Parameters:
         //     texture: reference to the texture object that will hold the texture
         //     textureName: textpath to the image
-        void CreateTexture(Texture& texture, const std::string& textureName);
+        void CreateTexture(std::shared_ptr<Image> texture, const std::string& textureName);
 
         // Create a cube texture
         // Parameters:
         //     cubeTexture: reference to the texture object
         //     textureNames: a list of the file paths for the cube faces in order: right,left,up,down,front,back
-        void CreateCubeTexture(Texture& cubeTexture, const std::initializer_list<std::string const>& textureNames);
+        void CreateCubeTexture(std::shared_ptr<Image> cubeTexture, const std::initializer_list<std::string const>& textureNames);
 
         void UpdateUniformBuffer(UniformBufferObject& buffer);
 
@@ -149,6 +150,8 @@ namespace DDM
 
 
        void DrawQuad(VkCommandBuffer commandBuffer);
+
+       BufferCreator* GetBufferCreator();
 
     private:
         // Constructor

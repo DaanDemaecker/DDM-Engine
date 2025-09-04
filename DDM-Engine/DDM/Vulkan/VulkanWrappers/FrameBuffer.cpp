@@ -35,7 +35,7 @@ void DDM::FrameBuffer::CreateFrameBuffer(int index, RenderpassWrapper* renderpas
 
 	for (auto& attachment : attachmentList)
 	{
-			attachments.push_back(attachment->GetTexture(index)->imageView);
+			attachments.push_back(attachment->GetTexture(index)->GetImageView());
 	}
 
 

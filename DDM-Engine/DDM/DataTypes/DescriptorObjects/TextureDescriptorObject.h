@@ -7,7 +7,6 @@
 
 // File includes
 #include "DescriptorObject.h"
-#include "DataTypes/Structs.h"
 
 // Standard includes
 #include <initializer_list>
@@ -16,6 +15,8 @@
 
 namespace DDM
 {
+    class Image;
+
     class TextureDescriptorObject final : public DescriptorObject
     {
     public:
@@ -32,8 +33,8 @@ namespace DDM
         /// <summary>
         /// Add a texture to the list
         /// </summary>
-        /// <param name="texture: ">reference to the texture to add</param>
-        void AddTexture(const Texture& texture);
+        /// <param name="texture: ">shared pointer to the texture to add</param>
+        void AddTexture(std::shared_ptr<Image> pTexture);
 
         /// <summary>
         /// Add a list of textures
@@ -59,12 +60,6 @@ namespace DDM
         size_t GetTextureAmount() const;
 
         /// <summary>
-        /// Indicate wether the textures should be cleaned up at the end
-        /// </summary>
-        /// <param name="cleanupTextures: ">indicates wether to clean up textures</param>
-        void SetCleanupTextures(bool cleanupTextures) { m_CleanupTextures = cleanupTextures; }
-
-        /// <summary>
         /// Add the descriptor write objets to the list of descriptorWrites
         /// </summary>
         /// <param name="descriptorSet: ">current descriptorset connected to this descriptor object</param>
@@ -77,11 +72,8 @@ namespace DDM
         // Indicates wether the image infos are set up
         bool m_AreImageInfosSetup{ true };
 
-        // Indicates wether textures should be cleaned up at the end
-        bool m_CleanupTextures{ true };
-
         // List of the textures
-        std::vector<Texture> m_Textures{};
+        std::vector<std::shared_ptr<Image>> m_Textures{};
 
         // List of image info per texture
         std::vector<VkDescriptorImageInfo> m_ImageInfos{};

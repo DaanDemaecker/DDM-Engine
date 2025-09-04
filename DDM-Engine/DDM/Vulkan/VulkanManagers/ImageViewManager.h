@@ -3,13 +3,13 @@
 
 //File includes
 #include "Includes/VulkanIncludes.h"
-#include "DataTypes/Structs.h"
 
 namespace DDM
 {
 	// Class forward declarations
 	class ImageManager;
 	class GPUObject;
+	class Image;
 
 	class ImageViewManager final
 	{
@@ -31,11 +31,6 @@ namespace DDM
 		ImageViewManager& operator=(ImageViewManager& other) = delete;
 		ImageViewManager& operator=(ImageViewManager&& other) = delete;
 
-		// Clean up allocated objects
-		// Parameters:
-		//     device: handle to the VkDevice
-		void Cleanup(VkDevice device);
-
 		// Initialize the color image for the swapchain
 		// Parameters:
 		//     pGPUObject: pointer to the GPU Object
@@ -53,24 +48,24 @@ namespace DDM
 		void CreateDepthResources(GPUObject* pGPUObject, VkExtent2D swapchainExtent, DDM::ImageManager* pImageManager, VkCommandBuffer commandBuffer);
 
 		// Get the imageView for the color image
-		VkImageView GetColorImageView() const { return m_ColorImage.imageView; }
+		VkImageView GetColorImageView() const;
 		// Get the imageView for the depth image
-		VkImageView GetDepthImageView() const { return m_DepthImage.imageView; }
+		VkImageView GetDepthImageView() const;
 		// Get the max amount of samples per pixel
 		VkSampleCountFlagBits GetMsaaSamples() const { return m_MsaaSamples; }
 
-		const std::vector<Texture>& GetColorImages() const { return m_ColorImages; }
+		const std::vector<std::shared_ptr<Image>>& GetColorImages() const;
 
 	private:
 		// Max amount of samples per pixel, initialize as 1
 		VkSampleCountFlagBits m_MsaaSamples = VK_SAMPLE_COUNT_1_BIT;
 
-		std::vector<Texture> m_ColorImages{};
+		std::vector<std::shared_ptr<Image>> m_pColorImages{};
 
 		// Texture struct for the color image
-		Texture m_ColorImage{};
+		std::shared_ptr<Image> m_pColorImage{};
 
 		// Texture struct for the depth image
-		Texture m_DepthImage{};
+		std::shared_ptr<Image> m_pDepthImage{};
 	};
 }

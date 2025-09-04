@@ -19,7 +19,7 @@ DDM::CubeMapMaterial::CubeMapMaterial(const std::initializer_list<const std::str
 DDM::CubeMapMaterial::CubeMapMaterial(const std::initializer_list<const std::string>& filePaths)
 	:Material(ConfigManager::GetInstance().GetString("SkyboxPipelineName"))
 {
-	Texture cubeTexture{};
+	std::shared_ptr<Image> cubeTexture{std::make_shared<Image>()};
 
 	// Create the cube texture
 	VulkanObject::GetInstance().CreateCubeTexture(cubeTexture, filePaths);

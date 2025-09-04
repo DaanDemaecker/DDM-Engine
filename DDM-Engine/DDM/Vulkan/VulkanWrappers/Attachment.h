@@ -7,7 +7,7 @@
 // File includes
 #include "Includes/VulkanIncludes.h"
 
-#include "DataTypes/Structs.h"
+#include "DataTypes/Image.h"
 
 // Standard library includes
 #include <memory>
@@ -31,13 +31,11 @@ namespace DDM
 
 		void SetAttachmentDesc(VkAttachmentDescription desc) { m_AttachmentDesc = desc; }
 
-		std::shared_ptr<Texture> GetTextureSharedPtr(int swapchainIndex) const { return m_Textures[swapchainIndex]; }
+		std::shared_ptr<Image> GetTextureSharedPtr(int swapchainIndex) const { return m_Textures[swapchainIndex]; }
 
-		const Texture* GetTexture(int swapchainIndex) const { return m_Textures[swapchainIndex].get(); };
+		const Image* GetTexture(int swapchainIndex) const { return m_Textures[swapchainIndex].get(); };;
 
-		const Texture& GetTextureRef(int swapchainIndex) const { return *(m_Textures[swapchainIndex].get()); };
-
-		void SetTexture(std::shared_ptr<Texture> texture, int index) { m_Textures[index] = texture; m_ResetOnSetup = false; }
+		void SetTexture(std::shared_ptr<Image> texture, int index) { m_Textures[index] = texture; m_ResetOnSetup = false; }
 
 		void SetTexture(int index, VkImage image, VkImageView imageView);
 
@@ -77,16 +75,14 @@ namespace DDM
 
 		VkAttachmentDescription m_AttachmentDesc{};
 
-		std::vector<std::shared_ptr<Texture>> m_Textures{};
+		std::vector<std::shared_ptr<Image>> m_Textures{};
 
 		VkFormat m_Format{};
 
 		VkClearColorValue m_ClearColorValue{0,0,0,1};
-		VkClearDepthStencilValue m_ClearDepthstencilValue{ 1, 0};
+		VkClearDepthStencilValue m_ClearDepthstencilValue{1, 0};
 
 		bool m_ResetOnSetup{ true };
-
-		void Cleanup();
 
 
 		void SetupColorTexture(int index, VkExtent2D extent);

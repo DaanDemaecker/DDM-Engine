@@ -15,6 +15,7 @@
 #include "Vulkan/VulkanManagers/CommandpoolManager.h"
 
 #include "Vulkan/VulkanWrappers/GPUObject.h"
+#include "DataTypes/Image.h"
 
 // Standard library includes
 #include <stdexcept>
@@ -33,12 +34,14 @@ DDM::ImageManager::~ImageManager()
 
 void DDM::ImageManager::CreateDefaultResources(GPUObject* pGPUObject, CommandpoolManager* pCommandPoolManager)
 {
+	m_pDefaultTexture = std::make_shared<Image>();
+
 	// Create the default texture sampler
-	CreateTextureSampler(pGPUObject, m_TextureSampler, m_DefaultTexture.mipLevels);
+	CreateTextureSampler(pGPUObject, m_TextureSampler, m_pDefaultTexture->GetMipLevels());
 	// Create the default texture image
-	CreateTextureImage(pGPUObject, m_DefaultTexture, m_DefaultTextureName, pCommandPoolManager);
+	CreateTextureImage(pGPUObject, m_pDefaultTexture, m_DefaultTextureName, pCommandPoolManager);
 	// Create the default texture image view
-	m_DefaultTexture.imageView = CreateImageView(pGPUObject->GetDevice(), m_DefaultTexture.image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, m_DefaultTexture.mipLevels);
+	m_pDefaultTexture->SetImageView(CreateImageView(pGPUObject->GetDevice(), m_pDefaultTexture->GetImage(), VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, m_pDefaultTexture->GetMipLevels()));
 }
 
 VkImageView DDM::ImageManager::CreateImageView(VkDevice device, VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels)
@@ -77,7 +80,7 @@ VkImageView DDM::ImageManager::CreateImageView(VkDevice device, VkImage image, V
 	return imageView;
 }
 
-void DDM::ImageManager::CreateCubeTexture(GPUObject* pGPUObject, Texture& cubeTexture, const std::initializer_list<const std::string>& textureNames, CommandpoolManager* pCommandPoolManager)
+void DDM::ImageManager::CreateCubeTexture(GPUObject* pGPUObject, std::shared_ptr<Image> cubeTexture, const std::initializer_list<const std::string>& textureNames, CommandpoolManager* pCommandPoolManager)
 {
 	// Get device
 	auto device{ pGPUObject->GetDevice() };
@@ -96,7 +99,7 @@ void DDM::ImageManager::CreateCubeTexture(GPUObject* pGPUObject, Texture& cubeTe
 
 
 	// Set miplevels to 1 as cube textures generally don't need them
-	cubeTexture.mipLevels = 1;
+	cubeTexture->SetMipLevels(1);
 	// Calculate the size of a single image
 	VkDeviceSize faceSize = pImage->GetWidth() * pImage->GetHeight() * pImage->GetChannels();
 	// Calcualte the size of the entire cubemap
@@ -147,7 +150,7 @@ void DDM::ImageManager::CreateCubeTexture(GPUObject* pGPUObject, Texture& cubeTe
 	// Set the width and height of the texture as the extent
 	imageCreateInfo.extent = { static_cast<uint32_t>(pImage->GetWidth()), static_cast<uint32_t>(pImage->GetHeight()), 1 };
 	// Give the miplevels
-	imageCreateInfo.mipLevels = cubeTexture.mipLevels;
+	imageCreateInfo.mipLevels = cubeTexture->GetMipLevels();
 	// Set arrayLayers to the amount of textures
 	imageCreateInfo.arrayLayers = imageCount;
 	// Set samples to 1 bit
@@ -163,8 +166,12 @@ void DDM::ImageManager::CreateCubeTexture(GPUObject* pGPUObject, Texture& cubeTe
 	// Set flags to cube compatible
 	imageCreateInfo.flags = VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT;
 
+	VkImage cubeImage{};
+	VkDeviceMemory cubeImageMemory{};
+	VkImageView cubeImageView{};
+
 	// Create the image
-	if (vkCreateImage(device, &imageCreateInfo, nullptr, &cubeTexture.image) != VK_SUCCESS)
+	if (vkCreateImage(device, &imageCreateInfo, nullptr, &cubeImage) != VK_SUCCESS)
 	{
 		throw std::runtime_error("Failed to create cube map image!");
 	}
@@ -172,7 +179,7 @@ void DDM::ImageManager::CreateCubeTexture(GPUObject* pGPUObject, Texture& cubeTe
 	// Create memory requirements object
 	VkMemoryRequirements memoryRequirements;
 	// Get the memory requirements
-	vkGetImageMemoryRequirements(device, cubeTexture.image, &memoryRequirements);
+	vkGetImageMemoryRequirements(device, cubeImage, &memoryRequirements);
 
 	// Create allocate info
 	VkMemoryAllocateInfo allocateInfo = {};
@@ -184,14 +191,14 @@ void DDM::ImageManager::CreateCubeTexture(GPUObject* pGPUObject, Texture& cubeTe
 	allocateInfo.memoryTypeIndex = VulkanUtils::FindMemoryType(pGPUObject->GetPhysicalDevice(), memoryRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
 	// Allocate the memory
-	if (vkAllocateMemory(device, &allocateInfo, nullptr, &cubeTexture.imageMemory) != VK_SUCCESS)
+	if (vkAllocateMemory(device, &allocateInfo, nullptr, &cubeImageMemory) != VK_SUCCESS)
 	{
 		// If unsuccessful, throw runtime error
 		throw std::runtime_error("Failed to allocate memory for cube map image!");
 	}
 
 	// Bind the memory
-	vkBindImageMemory(device, cubeTexture.image, cubeTexture.imageMemory, 0);
+	vkBindImageMemory(device, cubeImage, cubeImageMemory, 0);
 
 
 	// Create a command buffer object
@@ -200,14 +207,14 @@ void DDM::ImageManager::CreateCubeTexture(GPUObject* pGPUObject, Texture& cubeTe
 	// Get single time command buffer
 	commandBuffer = pCommandPoolManager->BeginSingleTimeCommands(device);
 	// Transition the image layout from undifined to transfer destination optimal
-	TransitionImageLayout(cubeTexture.image, commandBuffer, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, cubeTexture.mipLevels, imageCount);
+	TransitionImageLayout(cubeImage, commandBuffer, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, cubeTexture->GetMipLevels(), imageCount);
 	// End single time command buffer
 	pCommandPoolManager->EndSingleTimeCommands(pGPUObject, commandBuffer);
 
 	// Get new single time command buffer
 	commandBuffer = pCommandPoolManager->BeginSingleTimeCommands(device);
 	// Coppy staging buffer to texture image
-	CopyBufferToImage(commandBuffer, stagingBuffer, cubeTexture.image,
+	CopyBufferToImage(commandBuffer, stagingBuffer, cubeImage,
 		static_cast<uint32_t>(pImage->GetWidth()), static_cast<uint32_t>(pImage->GetHeight()), imageCount);
 	// End single time command buffer
 	pCommandPoolManager->EndSingleTimeCommands(pGPUObject, commandBuffer);
@@ -215,7 +222,7 @@ void DDM::ImageManager::CreateCubeTexture(GPUObject* pGPUObject, Texture& cubeTe
 	// Get single time command buffer
 	commandBuffer = pCommandPoolManager->BeginSingleTimeCommands(device);
 	// Transition the image layout from undifined to transfer destination optimal
-	TransitionImageLayout(cubeTexture.image, commandBuffer, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, cubeTexture.mipLevels, imageCount);
+	TransitionImageLayout(cubeImage, commandBuffer, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, cubeTexture->GetMipLevels(), imageCount);
 	// End single time command buffer
 	pCommandPoolManager->EndSingleTimeCommands(pGPUObject, commandBuffer);
 
@@ -230,7 +237,7 @@ void DDM::ImageManager::CreateCubeTexture(GPUObject* pGPUObject, Texture& cubeTe
 	// Set type to image view create info
 	viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
 	// Give handle of image
-	viewInfo.image = cubeTexture.image;
+	viewInfo.image = cubeImage;
 	// Set view type to 2D
 	viewInfo.viewType = VK_IMAGE_VIEW_TYPE_CUBE;
 	// Give handle of requested format
@@ -240,18 +247,22 @@ void DDM::ImageManager::CreateCubeTexture(GPUObject* pGPUObject, Texture& cubeTe
 	// Set base mip level to 0
 	viewInfo.subresourceRange.baseMipLevel = 0;
 	// Set levelcount to the amount of miplevels
-	viewInfo.subresourceRange.levelCount = cubeTexture.mipLevels;
+	viewInfo.subresourceRange.levelCount = cubeTexture->GetMipLevels();
 	// Set base array layer to 0
 	viewInfo.subresourceRange.baseArrayLayer = 0;
 	// Set layercount to 1
 	viewInfo.subresourceRange.layerCount = imageCount;
 
 	// Create image view
-	if (vkCreateImageView(device, &viewInfo, nullptr, &cubeTexture.imageView) != VK_SUCCESS)
+	if (vkCreateImageView(device, &viewInfo, nullptr, &cubeImageView) != VK_SUCCESS)
 	{
 		// If unsuccessful, throw runtime error
 		throw std::runtime_error("failed to create texture image view!");
 	}
+
+	cubeTexture->SetImage(cubeImage);
+	cubeTexture->SetImageView(cubeImageView);
+	cubeTexture->SetImageMemory(cubeImageMemory);
 }
 
 void DDM::ImageManager::CreateTextureSampler(GPUObject* pGPUObject, VkSampler& sampler, uint32_t miplevels)
@@ -309,8 +320,11 @@ void DDM::ImageManager::Cleanup(VkDevice device)
 {
 	// Destroy the sampler
 	vkDestroySampler(device, m_TextureSampler, nullptr);
-	// Call cleanup function for texture
-	m_DefaultTexture.Cleanup(device);
+}
+
+VkImageView DDM::ImageManager::GetDefaultImageView()
+{
+	return m_pDefaultTexture->GetImageView();
 }
 
 void DDM::ImageManager::CopyBufferToImage(VkCommandBuffer commandBuffer, VkBuffer buffer, VkImage image, uint32_t width, uint32_t height, uint32_t layerCount)
@@ -485,7 +499,76 @@ void DDM::ImageManager::GenerateMipmaps(VkPhysicalDevice physicalDevice, VkComma
 		1, &barrier);
 }
 
-void DDM::ImageManager::CreateTextureImage(GPUObject* pGPUObject, DDM::Texture& texture, const std::string& textureName, DDM::CommandpoolManager* pCommandPoolManager)
+std::shared_ptr<DDM::Image> DDM::ImageManager::CreateTextureImage(const std::string& textureName)
+{
+	// Retrieve needed variables from vulkan object
+	auto& vulkanObject = VulkanObject::GetInstance();
+	auto device = vulkanObject.GetDevice();
+	auto physicalDevice = vulkanObject.GetPhysicalDevice();
+
+	// Create image object
+	std::shared_ptr<Image> pTexture = std::make_shared<Image>();
+
+	// Load pixels of image and extract width and height
+	std::unique_ptr<STBImage> pImage = std::make_unique<STBImage>(textureName);
+
+	int texWidth = pImage->GetWidth();
+	int texHeight = pImage->GetHeight();
+
+	// Calculate max amount of miplevels based on texwidth and texheight
+	pTexture->SetMipLevels(static_cast<uint32_t>(std::floor(std::log2(std::max(texWidth, texHeight)))) + 1);
+
+	// texture image and memory
+	VkImage textureImage;
+	VkDeviceMemory textureImageMemory;
+
+	// Set up image create info
+	VkImageCreateInfo imageInfo{};
+	imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+	imageInfo.imageType = VK_IMAGE_TYPE_2D;
+	imageInfo.extent.width = static_cast<uint32_t>(texWidth);
+	imageInfo.extent.height = static_cast<uint32_t>(texHeight);
+	imageInfo.extent.depth = 1;
+	imageInfo.mipLevels = 1;
+	imageInfo.arrayLayers = 1;
+	imageInfo.format = VK_FORMAT_R8G8B8A8_SRGB;
+	imageInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
+	imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+	imageInfo.usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+	imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+	imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
+	imageInfo.flags = 0;
+
+	// Create image
+	if (vkCreateImage(device, &imageInfo, nullptr, &textureImage) != VK_SUCCESS)
+	{
+		throw std::runtime_error("failed to create image!");
+	}
+
+	// Retrieve memory requirements 
+	VkMemoryRequirements memRequirements;
+	vkGetImageMemoryRequirements(device, textureImage, &memRequirements);
+
+	// Set up allocation info
+	VkMemoryAllocateInfo allocInfo;
+	allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+	allocInfo.allocationSize = memRequirements.size;
+	allocInfo.memoryTypeIndex = VulkanUtils::FindMemoryType(physicalDevice, memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+
+	// Allocate and bind the memory
+	if (vkAllocateMemory(device, &allocInfo, nullptr, &textureImageMemory))
+	{
+		throw std::runtime_error("failed to allocate image memory!");
+	}
+
+	vkBindImageMemory(device, textureImage, textureImageMemory, 0);
+
+	
+
+	return pTexture;
+}
+
+void DDM::ImageManager::CreateTextureImage(GPUObject* pGPUObject, std::shared_ptr<DDM::Image> texture, const std::string& textureName, DDM::CommandpoolManager* pCommandPoolManager)
 {
 	// Get device
 	auto device{ pGPUObject->GetDevice() };
@@ -497,7 +580,7 @@ void DDM::ImageManager::CreateTextureImage(GPUObject* pGPUObject, DDM::Texture& 
 	int texHeight = pImage->GetHeight();
 
 	// Calculate max amount of miplevels based on texwidth and texheight
-	texture.mipLevels = static_cast<uint32_t>(std::floor(std::log2(std::max(texWidth, texHeight)))) + 1;
+	texture->SetMipLevels(static_cast<uint32_t>(std::floor(std::log2(std::max(texWidth, texHeight)))) + 1);
 
 	// Calculate the image size
 	VkDeviceSize imageSize = static_cast<uint64_t>(texWidth) * static_cast<uint64_t>(texHeight) * static_cast<uint64_t>(4);
@@ -522,7 +605,7 @@ void DDM::ImageManager::CreateTextureImage(GPUObject* pGPUObject, DDM::Texture& 
 	vkUnmapMemory(device, stagingBufferMemory);
 
 	// Create the image
-	CreateImage(pGPUObject, texWidth, texHeight, texture.mipLevels, VK_SAMPLE_COUNT_1_BIT, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL,
+	CreateImage(texWidth, texHeight, texture->GetMipLevels(), VK_SAMPLE_COUNT_1_BIT, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL,
 		VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
 		texture);
 
@@ -532,14 +615,14 @@ void DDM::ImageManager::CreateTextureImage(GPUObject* pGPUObject, DDM::Texture& 
 	// Get single time command buffer
 	commandBuffer = pCommandPoolManager->BeginSingleTimeCommands(device);
 	// Transition the image layout from undifined to transfer destination optimal
-	TransitionImageLayout(texture.image, commandBuffer, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, texture.mipLevels);
+	TransitionImageLayout(texture->GetImage(), commandBuffer, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, texture->GetMipLevels());
 	// End single time command buffer
 	pCommandPoolManager->EndSingleTimeCommands(pGPUObject, commandBuffer);
 
 	// Get new single time command buffer
 	commandBuffer = pCommandPoolManager->BeginSingleTimeCommands(device);
 	// Coppy staging buffer to texture image
-	CopyBufferToImage(commandBuffer, stagingBuffer, texture.image, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
+	CopyBufferToImage(commandBuffer, stagingBuffer, texture->GetImage(), static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
 	// End single time command buffer
 	pCommandPoolManager->EndSingleTimeCommands(pGPUObject, commandBuffer);
 
@@ -551,15 +634,17 @@ void DDM::ImageManager::CreateTextureImage(GPUObject* pGPUObject, DDM::Texture& 
 	// Get new single time command buffer
 	commandBuffer = pCommandPoolManager->BeginSingleTimeCommands(device);
 	// Generate mipmaps for the image
-	GenerateMipmaps(pGPUObject->GetPhysicalDevice(), commandBuffer, texture.image, VK_FORMAT_R8G8B8A8_SRGB, texWidth, texHeight, texture.mipLevels);
+	GenerateMipmaps(pGPUObject->GetPhysicalDevice(), commandBuffer, texture->GetImage(), VK_FORMAT_R8G8B8A8_SRGB, texWidth, texHeight, texture->GetMipLevels());
 	// En single time command buffer
 	pCommandPoolManager->EndSingleTimeCommands(pGPUObject, commandBuffer);
 }
 
-void DDM::ImageManager::CreateImage(GPUObject* pGPUObject, uint32_t width, uint32_t height, uint32_t mipLevels, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, Texture& texture)
+void DDM::ImageManager::CreateImage(uint32_t width, uint32_t height, uint32_t mipLevels, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, std::shared_ptr<Image> texture)
 {
-	// Get device
-	auto device{ pGPUObject->GetDevice() };
+	// Get required objects from vulkanObject
+	auto& vulkanObject = VulkanObject::GetInstance();
+	auto device = vulkanObject.GetDevice();
+	auto physicalDevice = vulkanObject.GetPhysicalDevice();
 
 	// Create image create info object
 	VkImageCreateInfo imageInfo{};
@@ -593,8 +678,11 @@ void DDM::ImageManager::CreateImage(GPUObject* pGPUObject, uint32_t width, uint3
 	// Set flags to 0
 	imageInfo.flags = 0;
 
+	VkImage image{};
+	VkDeviceMemory imageMemory{};
+
 	// Create the image
-	if (vkCreateImage(device, &imageInfo, nullptr, &texture.image) != VK_SUCCESS)
+	if (vkCreateImage(device, &imageInfo, nullptr, &image) != VK_SUCCESS)
 	{
 		// If unsuccessful, throw runtime error
 		throw std::runtime_error("failed to create image!");
@@ -603,7 +691,7 @@ void DDM::ImageManager::CreateImage(GPUObject* pGPUObject, uint32_t width, uint3
 	// Create memory requirements object
 	VkMemoryRequirements memRequirements;
 	// Get memory requirements
-	vkGetImageMemoryRequirements(device, texture.image, &memRequirements);
+	vkGetImageMemoryRequirements(device, image, &memRequirements);
 
 	// Create allocatoin info object
 	VkMemoryAllocateInfo allocInfo{};
@@ -612,17 +700,20 @@ void DDM::ImageManager::CreateImage(GPUObject* pGPUObject, uint32_t width, uint3
 	// Set allocation size to memory requirements size
 	allocInfo.allocationSize = memRequirements.size;
 	// Set find memory type and set it as the type index
-	allocInfo.memoryTypeIndex = VulkanUtils::FindMemoryType(pGPUObject->GetPhysicalDevice(), memRequirements.memoryTypeBits, properties);
+	allocInfo.memoryTypeIndex = VulkanUtils::FindMemoryType(physicalDevice, memRequirements.memoryTypeBits, properties);
 
 	// Allocate the memory
-	if (vkAllocateMemory(device, &allocInfo, nullptr, &texture.imageMemory) != VK_SUCCESS)
+	if (vkAllocateMemory(device, &allocInfo, nullptr, &imageMemory) != VK_SUCCESS)
 	{
 		// If unsuccessful, throw runtime error
 		throw std::runtime_error("failed to allocate image memory!");
 	}
 
 	// Bind the image memory
-	vkBindImageMemory(device, texture.image, texture.imageMemory, 0);
+	vkBindImageMemory(device, image, imageMemory, 0);
+
+	texture->SetImage(image);
+	texture->SetImageMemory(imageMemory);
 }
 
 

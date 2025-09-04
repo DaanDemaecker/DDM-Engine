@@ -67,7 +67,8 @@ add_executable(${EXECUTABLE_NAME}
  "Vulkan/Renderers/AORenderers/GTAORenderer.cpp"
  "Vulkan/VulkanWrappers/QueryPool.cpp"
  "Managers/Input/Mouse.cpp"
- "Vulkan/VulkanManagers/ImageManager/STBImage.cpp")
+ "Vulkan/VulkanManagers/ImageManager/STBImage.cpp"
+ "DataTypes/Image.cpp")
 
 
 # Include directories specific to this target

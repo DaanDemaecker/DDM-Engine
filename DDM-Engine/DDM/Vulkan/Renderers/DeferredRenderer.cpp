@@ -496,7 +496,7 @@ void DDM::DeferredRenderer::SetupDescriptorObjects()
 	{
 		auto descriptorObject{ std::make_unique<InputAttachmentDescriptorObject>() };
 
-		descriptorObject->AddImageView(attachments[i]->GetTexture(0)->imageView, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+		descriptorObject->AddImageView(attachments[i]->GetTexture(0)->GetImageView(), VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
 		m_pInputAttachmentList.push_back(std::move(descriptorObject));
 	}

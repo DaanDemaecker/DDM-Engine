@@ -36,6 +36,8 @@
 
 #include "Vulkan/VulkanWrappers/VulkanCore.h"
 
+#include "DataTypes/Image.h"
+
 
 // Standard library includes
 #include <set>
@@ -94,7 +96,7 @@ VkPhysicalDevice DDM::VulkanObject::GetPhysicalDevice()
 	return m_pVulkanCore->GetPhysicalDevice();
 }
 
-VkImageView& DDM::VulkanObject::GetDefaultImageView()
+VkImageView DDM::VulkanObject::GetDefaultImageView()
 {
 	return m_pImageManager->GetDefaultImageView();
 }
@@ -126,15 +128,15 @@ VkCommandBuffer& DDM::VulkanObject::GetCurrentCommandBuffer()
 	return m_pCommandPoolManager->GetCommandBuffer(m_CurrentFrame);
 }
 
-void DDM::VulkanObject::CreateTexture(Texture& texture, const std::string& textureName)
+void DDM::VulkanObject::CreateTexture(std::shared_ptr<Image> texture, const std::string& textureName)
 {
 	// Create the image trough the image manager
 	m_pImageManager->CreateTextureImage(GetGPUObject(), texture, textureName, GetCommandPoolManager());
 	// Create the image view
-	texture.imageView = m_pImageManager->CreateImageView(GetDevice(), texture.image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, texture.mipLevels);
+	texture->SetImageView(m_pImageManager->CreateImageView(GetDevice(), texture->GetImage(), VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, texture->GetMipLevels()));
 }
 
-void DDM::VulkanObject::CreateCubeTexture(Texture& cubeTexture, const std::initializer_list<const std::string>& textureNames)
+void DDM::VulkanObject::CreateCubeTexture(std::shared_ptr<Image> cubeTexture, const std::initializer_list<const std::string>& textureNames)
 {
 	// Create a cube texture trough image manager
 	m_pImageManager->CreateCubeTexture(GetGPUObject(), cubeTexture, textureNames, GetCommandPoolManager());
@@ -202,6 +204,11 @@ void DDM::VulkanObject::EndSingleTimeCommands(VkCommandBuffer commandBuffer)
 void DDM::VulkanObject::DrawQuad(VkCommandBuffer commandBuffer)
 {
 	vkCmdDraw(commandBuffer, 3, 1, 0, 0);
+}
+
+DDM::BufferCreator* DDM::VulkanObject::GetBufferCreator()
+{
+	return m_pBufferCreator.get();
 }
 
 void DDM::VulkanObject::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory)

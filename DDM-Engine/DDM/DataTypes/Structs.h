@@ -50,46 +50,6 @@ namespace DDM
 		std::vector<VkPresentModeKHR> presentModes{};
 	};
 
-	// Struct for compacting vulkan textures
-	struct Texture
-	{
-		// VkImage object
-		VkImage image{};
-		// VkDeviceMemory object
-		VkDeviceMemory imageMemory{};
-		// VkImageView object
-		VkImageView imageView{};
-		// The amount of levels the mipmap will have
-		uint32_t mipLevels{};
-
-		// Cleanup function
-		// Parameters: 
-		//     device: handle to VkDevice
-		virtual void Cleanup(VkDevice device)
-		{
-			if (imageView != VK_NULL_HANDLE)
-			{
-				// Destroy the image view
-				vkDestroyImageView(device, imageView, nullptr);
-				imageView = VK_NULL_HANDLE;
-			}
-
-			if (image != VK_NULL_HANDLE)
-			{
-				// Destroy the image
-				vkDestroyImage(device, image, nullptr);
-				image = VK_NULL_HANDLE;
-			}
-
-			if (imageMemory != VK_NULL_HANDLE)
-			{
-				// Free the memory
-				vkFreeMemory(device, imageMemory, nullptr);
-				imageMemory = VK_NULL_HANDLE;
-			}
-		}
-	};
-
 	// Vertex struct for rendering
 	struct Vertex
 	{

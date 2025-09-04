@@ -11,19 +11,19 @@ DDM::Attachment::Attachment(int swapchainImageAmount)
 {
 	for (int i{}; i < swapchainImageAmount; ++i)
 	{
-		m_Textures.push_back(std::make_shared<Texture>());
+		m_Textures.push_back(std::make_shared<Image>());
 	}
 }
 
 DDM::Attachment::~Attachment()
 {
-	Cleanup();
+
 }
 
 void DDM::Attachment::SetTexture(int index, VkImage image, VkImageView imageView)
 {
-	m_Textures[index]->image = image;
-	m_Textures[index]->imageView = imageView;
+	m_Textures[index]->SetImage(image);
+	m_Textures[index]->SetImageView(imageView);
 
 	m_ResetOnSetup = false;
 }
@@ -59,17 +59,20 @@ void DDM::Attachment::SetupColorTexture(int index, VkExtent2D extent)
 	auto& vulkanObject{ VulkanObject::GetInstance() };
 
 	auto pImageManager = vulkanObject.GetImageManager();
+
+	m_Textures[index] = std::make_shared<Image>();
+
 	// Create the image for the color
 	// Set tiling to optimal
 	// Set usage to transient attachment and color attachment
 	// Set properties to device local
-	pImageManager->CreateImage(vulkanObject.GetGPUObject(), extent.width, extent.height, 1, m_AttachmentDesc.samples, m_Format,
+	pImageManager->CreateImage(extent.width, extent.height, 1, m_AttachmentDesc.samples, m_Format,
 		VK_IMAGE_TILING_OPTIMAL,
 		VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | (m_IsInput ? VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT : 0),
-		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, *m_Textures[index]);
+		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_Textures[index]);
 
 	// Create image view for the color image
-	m_Textures[index]->imageView = pImageManager->CreateImageView(vulkanObject.GetDevice(), m_Textures[index]->image, m_Format, VK_IMAGE_ASPECT_COLOR_BIT, 1);
+	m_Textures[index]->SetImageView(pImageManager->CreateImageView(vulkanObject.GetDevice(), m_Textures[index]->GetImage(), m_Format, VK_IMAGE_ASPECT_COLOR_BIT, 1));
 }
 
 void DDM::Attachment::SetupDepthImage(int index, VkExtent2D extent)
@@ -79,23 +82,25 @@ void DDM::Attachment::SetupDepthImage(int index, VkExtent2D extent)
 	auto pImageManager = vulkanObject.GetImageManager();
 	
 
+	m_Textures[index] = std::make_shared<Image>();
+
 	// Create the image for the depth
 	// Set tiling to optimal
 	// Set usage to depth stencil attachment bit
 	// Set properties to device local
-	pImageManager->CreateImage(vulkanObject.GetGPUObject(), extent.width, extent.height, 1, m_AttachmentDesc.samples, m_Format,
+	pImageManager->CreateImage(extent.width, extent.height, 1, m_AttachmentDesc.samples, m_Format,
 		VK_IMAGE_TILING_OPTIMAL,
 		VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | (m_IsInput ? VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT : 0),
 		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-		*m_Textures[index]);
+		m_Textures[index]);
 
 	// Create image view for the depth image
-	m_Textures[index]->imageView = pImageManager->CreateImageView(vulkanObject.GetDevice(), m_Textures[index]->image, m_Format, VK_IMAGE_ASPECT_DEPTH_BIT, 1);
+	m_Textures[index]->SetImageView(pImageManager->CreateImageView(vulkanObject.GetDevice(), m_Textures[index]->GetImage(), m_Format, VK_IMAGE_ASPECT_DEPTH_BIT, 1));
 
 
 	auto commandBuffer{ vulkanObject.BeginSingleTimeCommands() };
 
-	pImageManager->TransitionImageLayout(m_Textures[index]->image, commandBuffer, m_Format, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, 1);
+	pImageManager->TransitionImageLayout(m_Textures[index]->GetImage(), commandBuffer, m_Format, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, 1);
 
 	vulkanObject.EndSingleTimeCommands(commandBuffer);
 }
@@ -104,17 +109,6 @@ void DDM::Attachment::CleanupImage(int index)
 {
 	if (m_Textures[index])
 	{
-		m_Textures[index]->Cleanup(VulkanObject::GetInstance().GetDevice());
-	}
-}
-
-void DDM::Attachment::Cleanup()
-{
-	if (m_ResetOnSetup)
-	{
-		for (int i{}; i < m_Textures.size(); ++i)
-		{
-			CleanupImage(i);
-		}
+		m_Textures[index]->Cleanup();
 	}
 }

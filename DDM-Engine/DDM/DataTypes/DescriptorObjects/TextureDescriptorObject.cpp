@@ -17,20 +17,10 @@ DDM::TextureDescriptorObject::TextureDescriptorObject()
 
 DDM::TextureDescriptorObject::~TextureDescriptorObject()
 {
-	// Only clean up textures if it is indicated
-	if (m_CleanupTextures)
-	{
-		// Get the device and clean up all the textures
-		auto device{ VulkanObject::GetInstance().GetDevice() };
-
-		for (auto& texture : m_Textures)
-		{
-			texture.Cleanup(device);
-		}
-	}
+	
 }
 
-void DDM::TextureDescriptorObject::AddTexture(const Texture& texture)
+void DDM::TextureDescriptorObject::AddTexture(std::shared_ptr<Image> texture)
 {
 	// Add the texture to the list of textures
 	m_Textures.push_back(texture);
@@ -55,6 +45,9 @@ void DDM::TextureDescriptorObject::AddTexture(const std::string& filePath)
 
 	// Increase textures list size by 1
 	m_Textures.resize(m_Textures.size() + 1);
+
+	// Create texture pointer
+	m_Textures[m_Textures.size() - 1] = std::make_shared<Image>();
 
 	// Create new texture
 	vulkanObject.CreateTexture(m_Textures[m_Textures.size() - 1], filePath);
@@ -136,7 +129,7 @@ void DDM::TextureDescriptorObject::SetupImageInfos()
 		// Set image layout to shader read optimal
 		m_ImageInfos[i].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 		// Set correct image view
-		m_ImageInfos[i].imageView = m_Textures[i].imageView;
+		m_ImageInfos[i].imageView = m_Textures[i]->GetImageView();
 		// Set sampler
 		m_ImageInfos[i].sampler = m_PlaceholderImageInfo.sampler;
 	}
