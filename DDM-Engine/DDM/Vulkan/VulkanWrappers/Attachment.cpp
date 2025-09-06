@@ -20,10 +20,9 @@ DDM::Attachment::~Attachment()
 
 }
 
-void DDM::Attachment::SetTexture(int index, VkImage image, VkImageView imageView)
+void DDM::Attachment::SetTexture(int index, std::shared_ptr<Image> pTexture)
 {
-	m_Textures[index]->SetImage(image);
-	m_Textures[index]->SetImageView(imageView);
+	m_Textures[index] = pTexture;
 
 	m_ResetOnSetup = false;
 }
@@ -69,7 +68,7 @@ void DDM::Attachment::SetupColorTexture(int index, VkExtent2D extent)
 	pImageManager->CreateImage(extent.width, extent.height, 1, m_AttachmentDesc.samples, m_Format,
 		VK_IMAGE_TILING_OPTIMAL,
 		VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | (m_IsInput ? VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT : 0),
-		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_Textures[index]);
+		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_Textures[index].get());
 
 	// Create image view for the color image
 	m_Textures[index]->SetImageView(pImageManager->CreateImageView(vulkanObject.GetDevice(), m_Textures[index]->GetImage(), m_Format, VK_IMAGE_ASPECT_COLOR_BIT, 1));
@@ -92,7 +91,7 @@ void DDM::Attachment::SetupDepthImage(int index, VkExtent2D extent)
 		VK_IMAGE_TILING_OPTIMAL,
 		VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | (m_IsInput ? VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT : 0),
 		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-		m_Textures[index]);
+		m_Textures[index].get());
 
 	// Create image view for the depth image
 	m_Textures[index]->SetImageView(pImageManager->CreateImageView(vulkanObject.GetDevice(), m_Textures[index]->GetImage(), m_Format, VK_IMAGE_ASPECT_DEPTH_BIT, 1));

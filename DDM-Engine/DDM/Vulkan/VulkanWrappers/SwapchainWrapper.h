@@ -20,8 +20,8 @@ namespace DDM
 	class ImageManager;
 	class ImageViewManager;
 	class GPUObject;
-	//class FrameBuffer;
 	class RenderpassWrapper;
+	class Image;
 
 	class SwapchainWrapper final
 	{
@@ -101,10 +101,7 @@ namespace DDM
 		uint32_t m_MinImageCount{};
 
 		// Vector of swapchain images
-		std::vector<VkImage> m_SwapChainImages{};
-
-		// Vector of swapchain imageviews
-		std::vector<VkImageView> m_SwapChainImageViews{};
+		std::vector<std::shared_ptr<Image>> m_pSwapchainImages{};
 
 		uint32_t m_ImageAmount{};
 

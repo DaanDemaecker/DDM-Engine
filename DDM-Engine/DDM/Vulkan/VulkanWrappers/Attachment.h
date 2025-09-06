@@ -7,7 +7,7 @@
 // File includes
 #include "Includes/VulkanIncludes.h"
 
-#include "DataTypes/Image.h"
+#include "Vulkan/VulkanWrappers/Image.h"
 
 // Standard library includes
 #include <memory>
@@ -37,7 +37,7 @@ namespace DDM
 
 		void SetTexture(std::shared_ptr<Image> texture, int index) { m_Textures[index] = texture; m_ResetOnSetup = false; }
 
-		void SetTexture(int index, VkImage image, VkImageView imageView);
+		void SetTexture(int index, std::shared_ptr<Image> pTexture);
 
 		VkAttachmentDescription& GetAttachmentDesc() { return m_AttachmentDesc; }
 

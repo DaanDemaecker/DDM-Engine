@@ -32,12 +32,10 @@ namespace DDM
 
 		void Cleanup();
 
+		void SetShouldClear(bool shouldClear) { m_ShouldClear = shouldClear; }
 	private:
-		// Image count
-		static int s_ImageCount;
-
-		// Image id
-		int m_ID{};
+		// Indicates wether allocated objects should be freed
+		bool m_ShouldClear{ true };
 
 		// VkImage object
 		VkImage m_Image{};

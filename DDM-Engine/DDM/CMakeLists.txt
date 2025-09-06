@@ -68,7 +68,7 @@ add_executable(${EXECUTABLE_NAME}
  "Vulkan/VulkanWrappers/QueryPool.cpp"
  "Managers/Input/Mouse.cpp"
  "Vulkan/VulkanManagers/ImageManager/STBImage.cpp"
- "DataTypes/Image.cpp")
+ "Vulkan/VulkanWrappers/Image.cpp")
 
 
 # Include directories specific to this target

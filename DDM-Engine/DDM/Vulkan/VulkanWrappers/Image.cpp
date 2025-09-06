@@ -6,23 +6,15 @@
 // File includes
 #include "Vulkan/VulkanObject.h"
 
-int DDM::Image::s_ImageCount = 0;
 
 DDM::Image::Image()
 {
-	m_ID = s_ImageCount;
 
-	if (m_ID == 7)
-	{
-		std::cout << "whyyyy \n";
-	}
 
-	std::cout << "Created image: " << s_ImageCount++ << std::endl;
 }
 
 DDM::Image::~Image()
 {
-	std::cout << "Deleted image " << m_ID << std::endl;
 
 	Cleanup();
 }
@@ -64,11 +56,8 @@ uint32_t DDM::Image::GetMipLevels() const
 
 void DDM::Image::Cleanup()
 {
-	if (m_ID == 1)
-	{
-		std::cout << "whyyyy \n";
-	}
-
+	if(!m_ShouldClear)
+		return;
 
 	auto device = VulkanObject::GetInstance().GetDevice();
 

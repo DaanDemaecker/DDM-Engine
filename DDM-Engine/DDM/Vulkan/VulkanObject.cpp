@@ -36,7 +36,7 @@
 
 #include "Vulkan/VulkanWrappers/VulkanCore.h"
 
-#include "DataTypes/Image.h"
+#include "Vulkan/VulkanWrappers/Image.h"
 
 
 // Standard library includes
@@ -128,7 +128,7 @@ VkCommandBuffer& DDM::VulkanObject::GetCurrentCommandBuffer()
 	return m_pCommandPoolManager->GetCommandBuffer(m_CurrentFrame);
 }
 
-void DDM::VulkanObject::CreateTexture(std::shared_ptr<Image> texture, const std::string& textureName)
+void DDM::VulkanObject::CreateTexture(Image* texture, const std::string& textureName)
 {
 	// Create the image trough the image manager
 	m_pImageManager->CreateTextureImage(GetGPUObject(), texture, textureName, GetCommandPoolManager());
@@ -136,7 +136,7 @@ void DDM::VulkanObject::CreateTexture(std::shared_ptr<Image> texture, const std:
 	texture->SetImageView(m_pImageManager->CreateImageView(GetDevice(), texture->GetImage(), VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, texture->GetMipLevels()));
 }
 
-void DDM::VulkanObject::CreateCubeTexture(std::shared_ptr<Image> cubeTexture, const std::initializer_list<const std::string>& textureNames)
+void DDM::VulkanObject::CreateCubeTexture(Image* cubeTexture, const std::initializer_list<const std::string>& textureNames)
 {
 	// Create a cube texture trough image manager
 	m_pImageManager->CreateCubeTexture(GetGPUObject(), cubeTexture, textureNames, GetCommandPoolManager());

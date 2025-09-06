@@ -50,7 +50,7 @@ void DDM::TextureDescriptorObject::AddTexture(const std::string& filePath)
 	m_Textures[m_Textures.size() - 1] = std::make_shared<Image>();
 
 	// Create new texture
-	vulkanObject.CreateTexture(m_Textures[m_Textures.size() - 1], filePath);
+	vulkanObject.CreateTexture(m_Textures[m_Textures.size() - 1].get(), filePath);
 
 	// Indicate that image infos should be set up
 	m_AreImageInfosSetup = false;

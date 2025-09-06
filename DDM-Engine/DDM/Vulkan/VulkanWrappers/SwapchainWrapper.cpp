@@ -46,13 +46,13 @@ DDM::SwapchainWrapper::~SwapchainWrapper()
 void DDM::SwapchainWrapper::SetupImageViews(GPUObject* pGPUObject, DDM::ImageManager* pImageManager,
 	VkCommandBuffer commandBuffer, RenderpassWrapper* renderPass)
 {
-	for (int i{}; i < m_SwapChainImages.size(); ++i)
+	for (int i{}; i < m_pSwapchainImages.size(); ++i)
 	{
 		for (auto& attachment : renderPass->GetAttachmentList())
 		{
 			if (attachment->IsSwapchainImage())
 			{
-				attachment->SetTexture(i, m_SwapChainImages[i], m_SwapChainImageViews[i]);
+				attachment->SetTexture(i, m_pSwapchainImages[i]);
 			}
 			else
 			{
@@ -70,7 +70,7 @@ void DDM::SwapchainWrapper::AddFrameBuffers(RenderpassWrapper* renderpass)
 	m_Framebuffers[renderpass] = std::vector<std::unique_ptr<FrameBuffer>>();
 
 	// Resize framebuffers to size of imageviews
-	m_Framebuffers[renderpass].resize(m_SwapChainImages.size());
+	m_Framebuffers[renderpass].resize(m_pSwapchainImages.size());
 
 
 	for (int i{}; i < m_Framebuffers[renderpass].size(); ++i)
@@ -187,44 +187,46 @@ void DDM::SwapchainWrapper::CreateSwapChain(GPUObject* pGPUObject, VkSurfaceKHR 
 	// Get the swapchain image count
 	vkGetSwapchainImagesKHR(device, m_SwapChain, &m_ImageAmount, nullptr);
 	// Resize swapchain images to size of image count
-	m_SwapChainImages.resize(m_ImageAmount);
+	m_pSwapchainImages.resize(m_ImageAmount);
+
+	std::vector<VkImage> swapchainImages(m_ImageAmount);
+
 	// Get swapchain images 
-	vkGetSwapchainImagesKHR(device, m_SwapChain, &m_ImageAmount, m_SwapChainImages.data());
+	vkGetSwapchainImagesKHR(device, m_SwapChain, &m_ImageAmount, swapchainImages.data());
 
 	// Save swapchain format
 	m_SwapChainImageFormat = surfaceFormat.format;
 	// Save swapchain extent
 	m_SwapChainExtent = extent;
+
+	for (uint32_t i{}; i < m_ImageAmount; ++i)
+	{
+		m_pSwapchainImages[i] = std::make_shared<Image>();
+		m_pSwapchainImages[i]->SetImage(swapchainImages[i]);
+		m_pSwapchainImages[i]->SetShouldClear(false);
+	}
 }
 
 void DDM::SwapchainWrapper::CreateSwapchainImageViews(VkDevice device, DDM::ImageManager* pImageManager)
 {
-	// Resize image views to the size of images
-	m_SwapChainImageViews.resize(m_SwapChainImages.size());
-
 	// Loop trough the amount of images
-	for (size_t i = 0; i < m_SwapChainImages.size(); i++)
+	for (auto& swapchainImage : m_pSwapchainImages)
 	{
 		// Create image view
-		m_SwapChainImageViews[i] = pImageManager->CreateImageView(device, m_SwapChainImages[i], m_SwapChainImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
+		swapchainImage->SetImageView(pImageManager->CreateImageView(device, swapchainImage->GetImage(), m_SwapChainImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1));
 	}
 }
 
 void DDM::SwapchainWrapper::Cleanup(VkDevice device)
 {
-	// Loop trough the amount of image views
-	for (size_t i = 0; i < m_SwapChainImageViews.size(); ++i)
+	for (auto& swapchainImage : m_pSwapchainImages)
 	{
-		if (m_SwapChainImageViews[i] != VK_NULL_HANDLE)
-		{
-			// Destroy the image view
-			vkDestroyImageView(device, m_SwapChainImageViews[i], nullptr);
-		}
+		vkDestroyImageView(device, swapchainImage->GetImageView(), nullptr);
 	}
 
+	m_pSwapchainImages.clear();
 	// Destroy the swapchain
 	vkDestroySwapchainKHR(device, m_SwapChain, nullptr);
-
 }
 
 void DDM::SwapchainWrapper::RecreateSwapChain(GPUObject* pGPUObject, VkSurfaceKHR surface,
@@ -244,7 +246,7 @@ VkFramebuffer DDM::SwapchainWrapper::GetFrameBuffer(uint32_t index, RenderpassWr
 
 VkImage DDM::SwapchainWrapper::GetSwapchainImage(int index)
 {
-	return m_SwapChainImages[index];
+	return m_pSwapchainImages[index]->GetImage();
 }
 
 int DDM::SwapchainWrapper::GetSwapchainImageAmount()
@@ -290,9 +292,9 @@ void DDM::SwapchainWrapper::CreateFramebuffers(VkDevice device, RenderpassWrappe
 		return;
 
 	// Loop trough the amount of imageViews
-	for (int i = 0; i < m_SwapChainImageViews.size(); ++i)
+	for (int i = 0; i < m_pSwapchainImages.size(); ++i)
 	{
-		m_Framebuffers[renderpass][i]->CreateFrameBuffer(i, renderpass, m_SwapChainExtent, renderpass->IsColorResolveSet() ? m_SwapChainImageViews[i] : VK_NULL_HANDLE);
+		m_Framebuffers[renderpass][i]->CreateFrameBuffer(i, renderpass, m_SwapChainExtent, renderpass->IsColorResolveSet() ? m_pSwapchainImages[i]->GetImageView() : VK_NULL_HANDLE);
 	}
 }
 

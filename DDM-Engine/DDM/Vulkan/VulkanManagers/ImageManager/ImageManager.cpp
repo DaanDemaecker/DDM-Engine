@@ -15,7 +15,7 @@
 #include "Vulkan/VulkanManagers/CommandpoolManager.h"
 
 #include "Vulkan/VulkanWrappers/GPUObject.h"
-#include "DataTypes/Image.h"
+#include "Vulkan/VulkanWrappers/Image.h"
 
 // Standard library includes
 #include <stdexcept>
@@ -39,7 +39,7 @@ void DDM::ImageManager::CreateDefaultResources(GPUObject* pGPUObject, Commandpoo
 	// Create the default texture sampler
 	CreateTextureSampler(pGPUObject, m_TextureSampler, m_pDefaultTexture->GetMipLevels());
 	// Create the default texture image
-	CreateTextureImage(pGPUObject, m_pDefaultTexture, m_DefaultTextureName, pCommandPoolManager);
+	CreateTextureImage(pGPUObject, m_pDefaultTexture.get(), m_DefaultTextureName, pCommandPoolManager);
 	// Create the default texture image view
 	m_pDefaultTexture->SetImageView(CreateImageView(pGPUObject->GetDevice(), m_pDefaultTexture->GetImage(), VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, m_pDefaultTexture->GetMipLevels()));
 }
@@ -80,7 +80,7 @@ VkImageView DDM::ImageManager::CreateImageView(VkDevice device, VkImage image, V
 	return imageView;
 }
 
-void DDM::ImageManager::CreateCubeTexture(GPUObject* pGPUObject, std::shared_ptr<Image> cubeTexture, const std::initializer_list<const std::string>& textureNames, CommandpoolManager* pCommandPoolManager)
+void DDM::ImageManager::CreateCubeTexture(GPUObject* pGPUObject, Image* cubeTexture, const std::initializer_list<const std::string>& textureNames, CommandpoolManager* pCommandPoolManager)
 {
 	// Get device
 	auto device{ pGPUObject->GetDevice() };
@@ -568,7 +568,7 @@ std::shared_ptr<DDM::Image> DDM::ImageManager::CreateTextureImage(const std::str
 	return pTexture;
 }
 
-void DDM::ImageManager::CreateTextureImage(GPUObject* pGPUObject, std::shared_ptr<DDM::Image> texture, const std::string& textureName, DDM::CommandpoolManager* pCommandPoolManager)
+void DDM::ImageManager::CreateTextureImage(GPUObject* pGPUObject, Image* texture, const std::string& textureName, DDM::CommandpoolManager* pCommandPoolManager)
 {
 	// Get device
 	auto device{ pGPUObject->GetDevice() };
@@ -639,7 +639,7 @@ void DDM::ImageManager::CreateTextureImage(GPUObject* pGPUObject, std::shared_pt
 	pCommandPoolManager->EndSingleTimeCommands(pGPUObject, commandBuffer);
 }
 
-void DDM::ImageManager::CreateImage(uint32_t width, uint32_t height, uint32_t mipLevels, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, std::shared_ptr<Image> texture)
+void DDM::ImageManager::CreateImage(uint32_t width, uint32_t height, uint32_t mipLevels, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, Image* texture)
 {
 	// Get required objects from vulkanObject
 	auto& vulkanObject = VulkanObject::GetInstance();

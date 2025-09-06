@@ -9,7 +9,7 @@
 #include "Vulkan/VulkanWrappers/GPUObject.h"
 #include "Vulkan/VulkanObject.h"
 
-#include "DataTypes/Image.h"
+#include "Vulkan/VulkanWrappers/Image.h"
 
 
 DDM::ImageViewManager::ImageViewManager(VkSampleCountFlagBits msaaSamples)
@@ -31,7 +31,7 @@ void DDM::ImageViewManager::CreateColorResources(GPUObject* pGPUObject, VkFormat
 	// Set properties to device local
 	pImageManager->CreateImage(swapchainExtent.width, swapchainExtent.height, 1, m_MsaaSamples, format,
 		VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
-		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_pColorImage);
+		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_pColorImage.get());
 
 	// Create image view for the color image
 	m_pColorImage->SetImageView(pImageManager->CreateImageView(pGPUObject->GetDevice(), m_pColorImage->GetImage(), format, VK_IMAGE_ASPECT_COLOR_BIT, 1));
@@ -50,7 +50,7 @@ void DDM::ImageViewManager::CreateDepthResources(GPUObject* pGPUObject, VkExtent
 		VK_IMAGE_TILING_OPTIMAL,
 		VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
 		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-		m_pDepthImage);
+		m_pDepthImage.get());
 
 	// Create image view for the depth image
 	m_pDepthImage->SetImageView(

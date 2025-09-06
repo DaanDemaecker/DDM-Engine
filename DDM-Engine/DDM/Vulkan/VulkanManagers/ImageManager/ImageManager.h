@@ -81,7 +81,7 @@ namespace DDM
 		//     texture: reference to the texture that will be created
 		//     textureName: filepath to the texture
 		//     pCommandPoolManager: pointer to the commandpool manager
-		void CreateTextureImage(GPUObject* pGPUObject, std::shared_ptr<Image> texture,
+		void CreateTextureImage(GPUObject* pGPUObject, Image*,
 			const std::string& textureName, CommandpoolManager* pCommandPoolManager);
 
 		// Create a given cube texture image
@@ -90,7 +90,7 @@ namespace DDM
 		//     cubeTexture: reference to the texture that will be created
 		//     textureNames: filepaths to the texture that make up the faces of the cube
 		//     pCommandPoolManager: pointer to the commandpool manager
-		void CreateCubeTexture(GPUObject* pGPUObject, std::shared_ptr<Image> cubeTexture,
+		void CreateCubeTexture(GPUObject* pGPUObject, Image* pCubeImage,
 			const std::initializer_list<const std::string>& textureNames, CommandpoolManager* pCommandPoolManager);
 
 		// Create a texture sampler
@@ -135,7 +135,7 @@ namespace DDM
 		//     texture: reference to the texture to be created
 		void CreateImage(uint32_t width, uint32_t height, uint32_t mipLevels,
 			VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling,
-			VkImageUsageFlags usage, VkMemoryPropertyFlags properties, std::shared_ptr<Image> texture);
+			VkImageUsageFlags usage, VkMemoryPropertyFlags properties, Image* texture);
 
 		// Create the default textures
 		// Parameters:

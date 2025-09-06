@@ -22,7 +22,7 @@ DDM::CubeMapMaterial::CubeMapMaterial(const std::initializer_list<const std::str
 	std::shared_ptr<Image> cubeTexture{std::make_shared<Image>()};
 
 	// Create the cube texture
-	VulkanObject::GetInstance().CreateCubeTexture(cubeTexture, filePaths);
+	VulkanObject::GetInstance().CreateCubeTexture(cubeTexture.get(), filePaths);
 
 	// Create the descriptor object and give the cube texture by value
 	m_pDescriptorObject = std::make_unique<TextureDescriptorObject>();
