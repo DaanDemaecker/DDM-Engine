@@ -203,7 +203,7 @@ void DDM::VulkanObject::EndSingleTimeCommands(VkCommandBuffer commandBuffer)
 
 void DDM::VulkanObject::DrawQuad(VkCommandBuffer commandBuffer)
 {
-	vkCmdDraw(commandBuffer, 3, 1, 0, 0);
+	vkCmdDraw(commandBuffer, 6, 1, 0, 0);
 }
 
 DDM::BufferCreator* DDM::VulkanObject::GetBufferCreator()
