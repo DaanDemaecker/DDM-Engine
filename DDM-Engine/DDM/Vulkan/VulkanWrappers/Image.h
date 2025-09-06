@@ -14,6 +14,10 @@ namespace DDM
 	public:
 		Image();
 
+		Image(const std::string&& filepath);
+
+		Image(const std::string& filepath);
+
 		~Image();
 
 		void SetImage(VkImage image);

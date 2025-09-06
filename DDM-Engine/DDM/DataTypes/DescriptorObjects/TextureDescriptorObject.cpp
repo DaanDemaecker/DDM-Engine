@@ -40,17 +40,8 @@ void DDM::TextureDescriptorObject::AddTextures(std::initializer_list<const std::
 
 void DDM::TextureDescriptorObject::AddTexture(const std::string& filePath)
 {
-	// Get the vulkan object
-	auto& vulkanObject{ VulkanObject::GetInstance() };
-
-	// Increase textures list size by 1
-	m_Textures.resize(m_Textures.size() + 1);
-
-	// Create texture pointer
-	m_Textures[m_Textures.size() - 1] = std::make_shared<Image>();
-
 	// Create new texture
-	vulkanObject.CreateTexture(m_Textures[m_Textures.size() - 1].get(), filePath);
+	m_Textures.push_back(std::make_shared<Image>(filePath));
 
 	// Indicate that image infos should be set up
 	m_AreImageInfosSetup = false;

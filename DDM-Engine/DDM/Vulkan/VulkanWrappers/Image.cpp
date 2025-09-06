@@ -13,6 +13,16 @@ DDM::Image::Image()
 
 }
 
+DDM::Image::Image(const std::string&& filepath)
+	:Image(filepath)
+{
+}
+
+DDM::Image::Image(const std::string& filepath)
+{
+	VulkanObject::GetInstance().CreateTexture(this, filepath);
+}
+
 DDM::Image::~Image()
 {
 
