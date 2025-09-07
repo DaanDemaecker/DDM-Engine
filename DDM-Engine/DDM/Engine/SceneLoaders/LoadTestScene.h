@@ -343,7 +343,7 @@ namespace LoadTestScene
 			"resources/images/CubeMap/Sky_Up.png",
 			"resources/images/CubeMap/Sky_Down.png",
 			"resources/images/CubeMap/Sky_Front.png",
-			"resources/images/CubeMap/Sky_Back.png"});
+			"resources/images/CubeMap/Sky_Back.png", });
 	}
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
 	void SetupLight(DDM::Scene* scene)

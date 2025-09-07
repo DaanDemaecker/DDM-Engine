@@ -89,21 +89,56 @@ void DDM::ImageManager::CreateCubeTexture(GPUObject* pGPUObject, Image* cubeText
 	uint32_t imageCount{ static_cast<uint32_t>(textureNames.size()) };
 
 	// If there are less than 6 images, no cube map can be made
-	if (imageCount < 6)
+	if (imageCount != 6)
 	{
 		// Throw runtime error
-		throw std::runtime_error("6 or more images are required for a cube map");
+		throw std::runtime_error("6 images are required for a cube map");
 	}
 
-	std::unique_ptr<STBImage> pImage = std::make_unique<STBImage>(*(textureNames.begin()));
+	std::vector<std::unique_ptr<STBImage>> pImages{};
+	pImages.reserve(imageCount);
+
+	uint32_t smallestWidth{ UINT32_MAX };
+	uint32_t smallestHeight{UINT32_MAX};
+
+	// Calcualte the size of the entire cubemap
+	VkDeviceSize cubeSize = 0;
+
+	for (auto& textureName : textureNames)
+	{
+		// Load in new image
+		auto pImage = std::make_unique<STBImage>(textureName);
+
+		// Check and save smallest width and height
+		if (pImage->GetWidth() < smallestWidth)
+		{
+			smallestWidth = pImage->GetWidth();
+		}
+
+		if (pImage->GetHeight() < smallestHeight)
+		{
+			smallestHeight = pImage->GetHeight();
+		}
+
+		// Move image into list
+		pImages.push_back(std::move(pImage));
+	}
+
+	// Resize all images
+	for (auto& pImage : pImages)
+	{
+		auto smallestSide = smallestWidth <= smallestHeight ? smallestWidth : smallestHeight;
+
+		pImage->Resize(smallestWidth, smallestHeight);
+
+		// Add to cubesize
+		cubeSize += pImage->GetSize();
+	}
+
 
 
 	// Set miplevels to 1 as cube textures generally don't need them
 	cubeTexture->SetMipLevels(1);
-	// Calculate the size of a single image
-	VkDeviceSize faceSize = pImage->GetWidth() * pImage->GetHeight() * pImage->GetChannels();
-	// Calcualte the size of the entire cubemap
-	VkDeviceSize cubeSize = faceSize * imageCount;
 
 	// Create staging buffer object
 	VkBuffer stagingBuffer{};
@@ -119,24 +154,17 @@ void DDM::ImageManager::CreateCubeTexture(GPUObject* pGPUObject, Image* cubeText
 
 	// Map the memory of the staging buffer memory to the data pointer
 	vkMapMemory(device, stagingBufferMemory, 0, cubeSize, 0, &data);
-	// Copy the data from the pixels to the data pointer
-	memcpy(data, pImage->GetPixels(), static_cast<size_t>(faceSize));
 
-	// Loop trough all the other images and load them in
-	for (uint32_t i = 1; i < imageCount; i++)
+	int offset{};
+
+	for (uint32_t i{}; i < imageCount; ++i)
 	{
-		const std::string& textureName{ *(textureNames.begin() + i) };
+		auto pImage = pImages[i].get();
 
-		pImage = std::make_unique<STBImage>(textureName);
+		// Copy the data from the pixels to the data pointer
+		memcpy(reinterpret_cast<char*>(data) + offset, pImage->GetPixels(), static_cast<size_t>(pImage->GetSize()));
 
-		// Cast the void ptr to a char*
-		char* mem_offset{ reinterpret_cast<char*>(data) };
-
-		// Calculate the offset of the current image and add it to the pointer
-		mem_offset += i * faceSize;
-
-		// Copy the memory of the pixels with the correct offset
-		memcpy(mem_offset, pImage->GetPixels(), static_cast<size_t>(faceSize));
+		offset += pImage->GetSize();
 	}
 
 	// Create image create info
@@ -148,7 +176,7 @@ void DDM::ImageManager::CreateCubeTexture(GPUObject* pGPUObject, Image* cubeText
 	// Set the format to R8G8B8A8
 	imageCreateInfo.format = VK_FORMAT_R8G8B8A8_SRGB;
 	// Set the width and height of the texture as the extent
-	imageCreateInfo.extent = { static_cast<uint32_t>(pImage->GetWidth()), static_cast<uint32_t>(pImage->GetHeight()), 1 };
+	imageCreateInfo.extent = { static_cast<uint32_t>(smallestWidth), static_cast<uint32_t>(smallestHeight), 1 };
 	// Give the miplevels
 	imageCreateInfo.mipLevels = cubeTexture->GetMipLevels();
 	// Set arrayLayers to the amount of textures
@@ -215,7 +243,7 @@ void DDM::ImageManager::CreateCubeTexture(GPUObject* pGPUObject, Image* cubeText
 	commandBuffer = pCommandPoolManager->BeginSingleTimeCommands(device);
 	// Coppy staging buffer to texture image
 	CopyBufferToImage(commandBuffer, stagingBuffer, cubeImage,
-		static_cast<uint32_t>(pImage->GetWidth()), static_cast<uint32_t>(pImage->GetHeight()), imageCount);
+		static_cast<uint32_t>(smallestWidth), static_cast<uint32_t>(smallestHeight), imageCount);
 	// End single time command buffer
 	pCommandPoolManager->EndSingleTimeCommands(pGPUObject, commandBuffer);
 

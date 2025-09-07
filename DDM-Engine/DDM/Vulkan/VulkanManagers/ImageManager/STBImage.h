@@ -6,6 +6,7 @@
 
 // Standard library include
 #include <string>
+#include <vector>
 
 namespace DDM
 {
@@ -43,27 +44,38 @@ namespace DDM
 		/// Get the width of the image
 		/// </summary>
 		/// <returns>Width of the image</returns>
-		int GetWidth() const { return m_TexWidth; }
+		uint32_t GetWidth() const { return static_cast<uint32_t>(m_TexWidth); }
 
 		/// <summary>
 		/// Get the height of the image
 		/// </summary>
 		/// <returns>Height of the image</returns>
-		int GetHeight() const { return m_TexHeight; }
+		uint32_t GetHeight() const { return static_cast<uint32_t>(m_TexHeight); }
 
 		/// <summary>
 		/// Get the amount of texture channels from the image
 		/// </summary>
 		/// <returns>Amount of texture channels of the image</returns>
-		int GetChannels() const { return m_TexChannels; }
+		uint32_t GetChannels() const { return static_cast<uint32_t>(m_TexChannels); }
 
 		/// <summary>
 		/// Get a pointer to the array of pixels
 		/// </summary>
 		/// <returns>Pointer to the array of pixels</returns>
-		stbi_uc* GetPixels() const { return m_Pixels; }
+		stbi_uc* GetPixels() { return static_cast<stbi_uc*>(m_Pixels.data()); }
 
+		/// <summary>
+		/// Get the size of the image
+		/// </summary>
+		/// <returns>Size of the image</returns>
+		uint32_t GetSize() const;
 
+		/// <summary>
+		/// Resizes the image
+		/// </summary>
+		/// <param name="newWidth: ">The new width for the image</param>
+		/// <param name="newHeight: ">The new height for the image</param>
+		void Resize(uint32_t newWidth, uint32_t newHeight);
 	private:
 		// Width of the image
 		int m_TexWidth{};
@@ -74,7 +86,10 @@ namespace DDM
 		// Amount of texture channels in the image
 		int m_TexChannels{};
 
+		// Desired amount of channels in image
+		int m_DesiredChannels{ STBI_rgb_alpha };
+
 		// List of pixels of the image
-		stbi_uc* m_Pixels{};
+		std::vector<stbi_uc> m_Pixels{};
 	};
 }

@@ -8,6 +8,7 @@
 #pragma warning(disable : 6262)
 
 #include <stb/stb_image.h>
+#include <stb/stb_image_resize.h>
 #pragma warning(pop)
 
 
