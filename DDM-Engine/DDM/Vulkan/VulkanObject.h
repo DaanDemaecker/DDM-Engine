@@ -116,7 +116,7 @@ namespace DDM
         // Parameters:
         //     cubeTexture: reference to the texture object
         //     textureNames: a list of the file paths for the cube faces in order: right,left,up,down,front,back
-        void CreateCubeTexture(Image* cubeTexture, const std::initializer_list<std::string const>& textureNames);
+        void CreateCubeTexture(Image* cubeTexture, const std::vector<std::string>& textureNames);
 
         void UpdateUniformBuffer(UniformBufferObject& buffer);
 

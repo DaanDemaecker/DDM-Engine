@@ -136,7 +136,7 @@ void DDM::VulkanObject::CreateTexture(Image* texture, const std::string& texture
 	texture->SetImageView(m_pImageManager->CreateImageView(GetDevice(), texture->GetImage(), VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, texture->GetMipLevels()));
 }
 
-void DDM::VulkanObject::CreateCubeTexture(Image* cubeTexture, const std::initializer_list<const std::string>& textureNames)
+void DDM::VulkanObject::CreateCubeTexture(Image* cubeTexture, const std::vector<std::string>& textureNames)
 {
 	// Create a cube texture trough image manager
 	m_pImageManager->CreateCubeTexture(GetGPUObject(), cubeTexture, textureNames, GetCommandPoolManager());

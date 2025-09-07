@@ -1,7 +1,7 @@
 #ifndef MaterialIncluded
 #define MaterialIncluded
 
-#include "../Structs.h"
+#include "DataTypes/Structs.h"
 #include <iostream>
 
 namespace DDM

@@ -20,6 +20,8 @@
 
 namespace DDM
 {
+	class CubeMapMaterial;
+
 	class SkyBoxComponent final : public MeshRenderComponent
 	{
 	public:
@@ -38,17 +40,6 @@ namespace DDM
 		/// </summary>
 		virtual void EarlyUpdate() override;
 
-		// LoadSkybox
-		// Parameters:
-		//     filePaths: a list of the names to the textures for the faces in the order:
-		//                Right, left, up, down, front, back...
-
-		/// <summary>
-		/// Load a new skybox
-		/// </summary>
-		/// <param name="filePaths: ">List filepaths to textures, faces come in this order: Right, left, up, down,n front, back</param>
-		void LoadSkybox(std::initializer_list<const std::string>&& filePaths);
-
 		/// <summary>
 		/// Render the skybox
 		/// </summary>
@@ -58,6 +49,76 @@ namespace DDM
 		/// Renderfunction, overrides the MeshRenderComponent render function
 		/// </summary>
 		void Render() override;
+
+		/// <summary>
+		/// Set the right face of the cubemap
+		/// </summary>
+		/// <param name="filepath: ">File path to the image</param>
+		void SetRight(const std::string&& filepath);
+
+		/// <summary>
+		/// Set the left face of the cubemap
+		/// </summary>
+		/// <param name="filepath: ">File path to the image</param>
+		void SetLeft(const std::string& filepath);
+
+		/// <summary>
+		/// Set the left face of the cubemap
+		/// </summary>
+		/// <param name="filepath: ">File path to the image</param>
+		void SetLeft(const std::string&& filepath);
+
+		/// <summary>
+		/// Set the up face of the cubemap
+		/// </summary>
+		/// <param name="filepath: ">File path to the image</param>
+		void SetUp(const std::string& filepath);
+
+		/// <summary>
+		/// Set the up face of the cubemap
+		/// </summary>
+		/// <param name="filepath: ">File path to the image</param>
+		void SetUp(const std::string&& filepath);
+
+		/// <summary>
+		/// Set the down face of the cubemap
+		/// </summary>
+		/// <param name="filepath: ">File path to the image</param>
+		void SetDown(const std::string& filepath);
+
+		/// <summary>
+		/// Set the down face of the cubemap
+		/// </summary>
+		/// <param name="filepath: ">File path to the image</param>
+		void SetDown(const std::string&& filepath);
+
+		/// <summary>
+		/// Set the front face of the cubemap
+		/// </summary>
+		/// <param name="filepath: ">File path to the image</param>
+		void SetFront(const std::string& filepath);
+
+		/// <summary>
+		/// Set the front face of the cubemap
+		/// </summary>
+		/// <param name="filepath: ">File path to the image</param>
+		void SetFront(const std::string&& filepath);
+
+		/// <summary>
+		/// Set the back face of the cubemap
+		/// </summary>
+		/// <param name="filepath: ">File path to the image</param>
+		void SetBack(const std::string& filepath);
+
+		/// <summary>
+		/// Set the back face of the cubemap
+		/// </summary>
+		/// <param name="filepath: ">File path to the image</param>
+		void SetBack(const std::string&& filepath);
+
+	private:
+		std::shared_ptr<CubeMapMaterial> m_pCubeMaterial{};
+
 	};
 
 }

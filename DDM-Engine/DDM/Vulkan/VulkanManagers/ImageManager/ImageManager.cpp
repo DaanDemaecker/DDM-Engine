@@ -80,7 +80,7 @@ VkImageView DDM::ImageManager::CreateImageView(VkDevice device, VkImage image, V
 	return imageView;
 }
 
-void DDM::ImageManager::CreateCubeTexture(GPUObject* pGPUObject, Image* cubeTexture, const std::initializer_list<const std::string>& textureNames, CommandpoolManager* pCommandPoolManager)
+void DDM::ImageManager::CreateCubeTexture(GPUObject* pGPUObject, Image* cubeTexture, const std::vector<std::string>& textureNames, CommandpoolManager* pCommandPoolManager)
 {
 	// Get device
 	auto device{ pGPUObject->GetDevice() };

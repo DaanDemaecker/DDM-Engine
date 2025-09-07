@@ -91,7 +91,7 @@ namespace DDM
 		//     textureNames: filepaths to the texture that make up the faces of the cube
 		//     pCommandPoolManager: pointer to the commandpool manager
 		void CreateCubeTexture(GPUObject* pGPUObject, Image* pCubeImage,
-			const std::initializer_list<const std::string>& textureNames, CommandpoolManager* pCommandPoolManager);
+			const std::vector<std::string>& textureNames, CommandpoolManager* pCommandPoolManager);
 
 		// Create a texture sampler
 		// Parameters:

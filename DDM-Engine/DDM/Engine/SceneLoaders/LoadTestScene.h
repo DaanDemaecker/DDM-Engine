@@ -338,12 +338,12 @@ namespace LoadTestScene
 
 		auto pSkyBox{ pCamera->AddComponent<DDM::SkyBoxComponent>() };
 
-		pSkyBox->LoadSkybox(std::initializer_list<const std::string>{"resources/images/CubeMap/Sky_Right.png",
-			"resources/images/CubeMap/Sky_Left.png",
-			"resources/images/CubeMap/Sky_Up.png",
-			"resources/images/CubeMap/Sky_Down.png",
-			"resources/images/CubeMap/Sky_Front.png",
-			"resources/images/CubeMap/Sky_Back.png", });
+		pSkyBox->SetRight("resources/images/CubeMap/Sky_Right.png");
+		pSkyBox->SetLeft("resources/images/CubeMap/Sky_Left.png");
+		pSkyBox->SetUp("resources/images/CubeMap/Sky_Up.png");
+		pSkyBox->SetDown("resources/images/CubeMap/Sky_Down.png");
+		pSkyBox->SetFront("resources/images/CubeMap/Sky_Front.png");
+		pSkyBox->SetBack("resources/images/CubeMap/Sky_Back.png");
 	}
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
 	void SetupLight(DDM::Scene* scene)

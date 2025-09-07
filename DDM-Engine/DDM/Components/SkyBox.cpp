@@ -24,6 +24,10 @@ DDM::SkyBoxComponent::SkyBoxComponent()
 
 	// Set the mesh in the meshrenderer
 	SetMesh(pMesh);
+
+	m_pMaterial = std::make_unique<CubeMapMaterial>(ConfigManager::GetInstance().GetString("SkyboxPipelineName"));
+
+	m_pCubeMaterial = std::dynamic_pointer_cast<CubeMapMaterial>(m_pMaterial);
 }
 
 void DDM::SkyBoxComponent::EarlyUpdate()
@@ -34,12 +38,6 @@ void DDM::SkyBoxComponent::EarlyUpdate()
 		CreateDescriptorSets();
 		m_ShouldCreateDescriptorSets = false;
 	}
-}
-
-void DDM::SkyBoxComponent::LoadSkybox(std::initializer_list<const std::string>&& filePaths)
-{
-	// Create cubemap material
-	m_pMaterial = std::make_shared<DDM::CubeMapMaterial>(filePaths);
 }
 
 void DDM::SkyBoxComponent::RenderSkyBox()
@@ -61,4 +59,70 @@ void DDM::SkyBoxComponent::RenderSkyBox()
 void DDM::SkyBoxComponent::Render()
 {
 	// Empty function to avoid rendering in the normal render pass
+}
+
+void DDM::SkyBoxComponent::SetRight(const std::string&& filepath)
+{
+	// Propagate to material
+	m_pCubeMaterial->SetRight(filepath);
+}
+
+void DDM::SkyBoxComponent::SetLeft(const std::string& filepath)
+{
+	// Propagate to material
+	m_pCubeMaterial->SetLeft(filepath);
+}
+
+void DDM::SkyBoxComponent::SetLeft(const std::string&& filepath)
+{
+	// Propagate to material
+	m_pCubeMaterial->SetLeft(filepath);
+}
+
+void DDM::SkyBoxComponent::SetUp(const std::string& filepath)
+{
+	// Propagate to material
+	m_pCubeMaterial->SetUp(filepath);
+}
+
+void DDM::SkyBoxComponent::SetUp(const std::string&& filepath)
+{
+	// Propagate to material
+	m_pCubeMaterial->SetUp(filepath);
+}
+
+void DDM::SkyBoxComponent::SetDown(const std::string& filepath)
+{
+	// Propagate to material
+	m_pCubeMaterial->SetDown(filepath);
+}
+
+void DDM::SkyBoxComponent::SetDown(const std::string&& filepath)
+{
+	// Propagate to material
+	m_pCubeMaterial->SetDown(filepath);
+}
+
+void DDM::SkyBoxComponent::SetFront(const std::string& filepath)
+{
+	// Propagate to material
+	m_pCubeMaterial->SetFront(filepath);
+}
+
+void DDM::SkyBoxComponent::SetFront(const std::string&& filepath)
+{
+	// Propagate to material
+	m_pCubeMaterial->SetFront(filepath);
+}
+
+void DDM::SkyBoxComponent::SetBack(const std::string& filepath)
+{
+	// Propagate to material
+	m_pCubeMaterial->SetBack(filepath);
+}
+
+void DDM::SkyBoxComponent::SetBack(const std::string&& filepath)
+{
+	// Propagate to material
+	m_pCubeMaterial->SetBack(filepath);
 }

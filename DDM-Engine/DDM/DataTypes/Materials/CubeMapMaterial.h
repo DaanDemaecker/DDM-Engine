@@ -8,18 +8,24 @@ namespace DDM
 {
 	class TextureDescriptorObject;
 
+	enum
+	{
+		sideRight = 0,
+		sideLeft = 1,
+		sideUp = 2,
+		sideDown = 3,
+		sideFront = 4,
+		sideBack = 5
+	};
+
 	class CubeMapMaterial final : public Material
 	{
 	public:
-		// Constructor
-		// Parameters:
-		//     filePaths: list of filepaths to the textures
-		CubeMapMaterial(const std::initializer_list<const std::string>&& filePaths);
+		CubeMapMaterial();
 
-		// Constructor
-		// Parameters:
-		//     filePaths: list of filepaths to the textures
-		CubeMapMaterial(const std::initializer_list<const std::string>& filePaths);
+		CubeMapMaterial(std::string&& pipelineName);
+
+		CubeMapMaterial(std::string& pipelineName);
 
 		// Default destructor
 		virtual ~CubeMapMaterial() = default;
@@ -36,12 +42,96 @@ namespace DDM
 		//     descriptorObjects: a vector of pointers to descriptorobjects in the same order as the shader code
 		virtual void UpdateDescriptorSets(std::vector<VkDescriptorSet>& descriptorSets, std::vector<DescriptorObject*>& descriptorObjects) override;
 
+
+		/// <summary>
+		/// Set the right face of the cubemap
+		/// </summary>
+		/// <param name="filepath: ">File path to the image</param>
+		void SetRight(const std::string& filepath);
+
+		/// <summary>
+		/// Set the right face of the cubemap
+		/// </summary>
+		/// <param name="filepath: ">File path to the image</param>
+		void SetRight(const std::string&& filepath);
+
+		/// <summary>
+		/// Set the left face of the cubemap
+		/// </summary>
+		/// <param name="filepath: ">File path to the image</param>
+		void SetLeft(const std::string& filepath);
+
+		/// <summary>
+		/// Set the left face of the cubemap
+		/// </summary>
+		/// <param name="filepath: ">File path to the image</param>
+		void SetLeft(const std::string&& filepath);
+
+		/// <summary>
+		/// Set the up face of the cubemap
+		/// </summary>
+		/// <param name="filepath: ">File path to the image</param>
+		void SetUp(const std::string& filepath);
+
+		/// <summary>
+		/// Set the up face of the cubemap
+		/// </summary>
+		/// <param name="filepath: ">File path to the image</param>
+		void SetUp(const std::string&& filepath);
+
+		/// <summary>
+		/// Set the down face of the cubemap
+		/// </summary>
+		/// <param name="filepath: ">File path to the image</param>
+		void SetDown(const std::string& filepath);
+
+		/// <summary>
+		/// Set the down face of the cubemap
+		/// </summary>
+		/// <param name="filepath: ">File path to the image</param>
+		void SetDown(const std::string&& filepath);
+
+		/// <summary>
+		/// Set the front face of the cubemap
+		/// </summary>
+		/// <param name="filepath: ">File path to the image</param>
+		void SetFront(const std::string& filepath);
+
+		/// <summary>
+		/// Set the front face of the cubemap
+		/// </summary>
+		/// <param name="filepath: ">File path to the image</param>
+		void SetFront(const std::string&& filepath);
+
+		/// <summary>
+		/// Set the back face of the cubemap
+		/// </summary>
+		/// <param name="filepath: ">File path to the image</param>
+		void SetBack(const std::string& filepath);
+
+		/// <summary>
+		/// Set the back face of the cubemap
+		/// </summary>
+		/// <param name="filepath: ">File path to the image</param>
+		void SetBack(const std::string&& filepath);
+
+
 	private:
 		// Pointer to the descriptor object
 		std::unique_ptr<TextureDescriptorObject> m_pDescriptorObject{};
 
 		// The amount of levels the mipmap will have
 		uint32_t m_MipLevels{};
+
+		// Vector of filepaths
+		std::vector<std::string> m_FilePaths{};
+
+		// Indicates wether texture has been initialized
+		bool m_Initialized{};
+
+		void SetTextureName(const std::string& name, int index);
+
+		void SetupCubeTexture();
 	};
 }
 
