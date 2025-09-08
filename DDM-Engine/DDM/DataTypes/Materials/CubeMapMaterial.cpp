@@ -1,36 +1,45 @@
 // CubeMapMaterial.cpp
 
-// File includes
+// Header include
 #include "CubeMapMaterial.h"
+
+// File includes
 #include "Vulkan/VulkanObject.h"
-#include "../../Vulkan/VulkanWrappers/DescriptorPoolWrapper.h"
-#include "../../DataTypes/DescriptorObjects/TextureDescriptorObject.h"
-#include "../../Managers/ConfigManager.h"
+#include "Vulkan/VulkanWrappers/DescriptorPoolWrapper.h"
+
+#include "DataTypes/DescriptorObjects/TextureDescriptorObject.h"
+
+#include "Managers/ConfigManager.h"
 
 // Standard library includes
 #include <stdexcept>
 
 DDM::CubeMapMaterial::CubeMapMaterial()
+	// USe skybox pipeline by default
 	:CubeMapMaterial(ConfigManager::GetInstance().GetString("SkyboxPipelineName"))
 {
 }
 
 DDM::CubeMapMaterial::CubeMapMaterial(std::string&& pipelineName)
+	// Propagate to lvalue constructor
 	:CubeMapMaterial(pipelineName)
 {
 }
 
 DDM::CubeMapMaterial::CubeMapMaterial(std::string& pipelineName)
+	// Initialize base class
 	:Material(pipelineName)
 {
 	// Create the descriptor object and give the cube texture by value
 	m_pDescriptorObject = std::make_unique<TextureDescriptorObject>();
 
+	// Resize filepaths to accomodate all 6 faces
 	m_FilePaths.resize(6);
 }
 
 void DDM::CubeMapMaterial::UpdateDescriptorSets(std::vector<VkDescriptorSet>& descriptorSets, std::vector<DescriptorObject*>& descriptorObjects)
 {
+	// If cubetexture is not initialized, set it up
 	if (!m_Initialized)
 	{
 		SetupCubeTexture();
@@ -57,6 +66,7 @@ void DDM::CubeMapMaterial::UpdateDescriptorSets(std::vector<VkDescriptorSet>& de
 
 void DDM::CubeMapMaterial::SetTextureName(const std::string& name, int index)
 {
+	// Replace given index with the given name
 	m_FilePaths[index] = name;
 }
 
