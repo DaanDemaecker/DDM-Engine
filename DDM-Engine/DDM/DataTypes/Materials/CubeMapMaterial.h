@@ -1,6 +1,10 @@
 // CubeMapMaterial.h
 // This class will serve as the material of the cube map and it will hold all the textures for the cubemap
 
+#ifndef _CUBEMAP_MATERIAL
+#define _CUBEMAP_MATERIAL_
+
+
 // Parent include
 #include "Material.h"
 
@@ -163,3 +167,4 @@ namespace DDM
 	};
 }
 
+#endif // !_CUBEMAP_MATERIAL

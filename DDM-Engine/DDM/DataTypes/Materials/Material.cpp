@@ -1,9 +1,16 @@
+// Material.cpp
+
+// Header include
 #include "Material.h"
+
+// File includes
+#include "Includes/STBIncludes.h"
+
+#include "Utils/Utils.h"
+
 #include "Vulkan/VulkanObject.h"
-#include "../../Utils/Utils.h"
-#include "../../Vulkan/VulkanWrappers/DescriptorPoolWrapper.h"
-#include "../../Includes/STBIncludes.h"
-#include "../../Vulkan/VulkanWrappers/PipelineWrapper.h"
+#include "Vulkan/VulkanWrappers/DescriptorPoolWrapper.h"
+#include "Vulkan/VulkanWrappers/PipelineWrapper.h"
 
 DDM::Material::Material(const std::string& pipelineName)
 {
@@ -11,9 +18,12 @@ DDM::Material::Material(const std::string& pipelineName)
 	m_pPipeline = VulkanObject::GetInstance().GetPipeline(pipelineName);
 }
 
-DDM::Material& DDM::Material::operator=(DDM::Material&& other)
+DDM::Material& DDM::Material::operator=(DDM::Material&& other) noexcept
 {
+	// Copy over the pipeline
 	m_pPipeline = other.m_pPipeline;
+
+	// Copy over wether descriptor sets should be updated 
 	m_ShouldUpdateDescriptorSets = other.m_ShouldUpdateDescriptorSets;
 
 	return *this;
@@ -21,6 +31,7 @@ DDM::Material& DDM::Material::operator=(DDM::Material&& other)
 
 DDM::PipelineWrapper* DDM::Material::GetPipeline()
 {
+	// Return pointer to the pipeline
 	return m_pPipeline;
 }
 

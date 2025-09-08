@@ -68,6 +68,9 @@ void DDM::CubeMapMaterial::SetTextureName(const std::string& name, int index)
 {
 	// Replace given index with the given name
 	m_FilePaths[index] = name;
+
+	// Set to non initialized
+	m_Initialized = false;
 }
 
 void DDM::CubeMapMaterial::SetupCubeTexture()
