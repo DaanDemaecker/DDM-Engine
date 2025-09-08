@@ -74,12 +74,12 @@ namespace LoadModelLoaderScene
 
 		auto pSkyBox{ pCamera->AddComponent<DDM::SkyBoxComponent>() };
 
-		pSkyBox->SetRight("resources/images/CubeMap/Sky_Right.png");
-		pSkyBox->SetLeft("resources/images/CubeMap/Sky_Left.png");
-		pSkyBox->SetUp("resources/images/CubeMap/Sky_Up.png");
-		pSkyBox->SetDown("resources/images/CubeMap/Sky_Down.png");
-		pSkyBox->SetFront("resources/images/CubeMap/Sky_Front.png");
-		pSkyBox->SetBack("resources/images/CubeMap/Sky_Back.png");
+		pSkyBox->SetRight("resources/images/Skybox/Sky_Right.png");
+		pSkyBox->SetLeft("resources/images/Skybox/Sky_Left.png");
+		pSkyBox->SetUp("resources/images/Skybox/Sky_Up.png");
+		pSkyBox->SetDown("resources/images/Skybox/Sky_Down.png");
+		pSkyBox->SetFront("resources/images/Skybox/Sky_Front.png");
+		pSkyBox->SetBack("resources/images/Skybox/Sky_Back.png");
 	}
 
 	void SetupLight(DDM::Scene* scene)
