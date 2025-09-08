@@ -13,6 +13,11 @@
 
 void DDM::SceneManager::EndProgram()
 {
+    if (m_ActiveScene != nullptr)
+    {
+        m_ActiveScene->OnSceneUnload();
+    }
+
     m_pScenes.clear();
     m_ActiveScene = nullptr;
 }

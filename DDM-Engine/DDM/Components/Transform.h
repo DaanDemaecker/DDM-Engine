@@ -328,6 +328,12 @@ namespace DDM
 		/// <returns>Right vector</returns>
 		glm::vec3 GetRight();
 
+
+
+		// -------------------
+		// File handling
+		// -------------------
+
 		/// <summary>
 		/// Write the contents of the component to a file
 		/// </summary>

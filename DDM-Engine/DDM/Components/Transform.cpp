@@ -11,6 +11,8 @@
 #include <math.h>
 
 #include <fstream>
+#include <iostream>
+#include <filesystem>
 
 void DDM::Transform::OnGUI()
 {
@@ -386,22 +388,35 @@ glm::vec3 DDM::Transform::GetRight()
 
 bool DDM::Transform::WriteToFile(std::string& fileName)
 {
+	// Get the index of the final period in the name, all characters after it indicate the extension
+	auto index = fileName.find_last_of("/");
+
+	auto directoryName = fileName.substr(0, index);
+
+	std::filesystem::create_directory(directoryName);
+
+
 	// Set up POD
 	TransformPod toWrite{};
 	toWrite.pos = GetWorldPosition();
 	toWrite.rot = GetWorldRotation();
 	toWrite.scale = GetWorldScale();
 
+	// Open the file
 	std::ofstream temp;
+	temp.open(fileName, std::ios::binary | std::ios::out);
 
-	temp.open(fileName, std::ios::binary);
+	// If file is open, read from it
 	if (temp.is_open())
 	{
 		temp.write((const char*)&toWrite, sizeof(toWrite));
 		temp.close();
+
+		// Indicate that writing was successful
 		return true;
 	}
 
+	// Indicate that writing failed
 	return false;
 }
 
@@ -413,6 +428,30 @@ bool DDM::Transform::WriteToFile(std::string&& fileName)
 
 bool DDM::Transform::ReadFromFile(std::string& fileName)
 {
+	// Open file
+	std::ifstream input;
+	input.open(fileName, std::ios::binary);
+	
+	// If file is open, read from it
+	if (input.is_open())
+	{
+		// Set up POD
+		TransformPod toRead{};
+
+		// Read and close file
+		input.read((char*)&toRead, sizeof(toRead));
+		input.close();
+
+		// Set all values correctly
+		SetWorldPosition(toRead.pos);
+		SetWorldRotation(toRead.rot);
+		SetWorldScale(toRead.scale);
+
+		// Indicate that reading was successful
+		return true;
+	}
+
+	// Indicate that reading failed
 	return false;
 }
 

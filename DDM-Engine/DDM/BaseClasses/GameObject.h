@@ -300,6 +300,9 @@ namespace DDM
 		// Add component to list
 		m_pComponents.push_back(pComponent);
 
+		// Call init function on component
+		pComponent->Init();
+
 		// Return pointer to new component
 		return pComponent;
 	}

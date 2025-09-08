@@ -30,6 +30,11 @@ namespace DDM
 		~Camera();
 
 		/// <summary>
+		/// Intialize function
+		/// </summary>
+		virtual void Init() override;
+
+		/// <summary>
 		/// Set FOV angle in radians
 		/// </summary>
 		/// <param name="angle: ">angle in radians</param>
@@ -85,6 +90,8 @@ namespace DDM
 		/// </summary>
 		/// <returns>Pointer to the view matrix</returns>
 		glm::mat4* GetViewMatrixPtr();
+		
+		virtual void OnSceneUnload() override;
 
 	private:
 		// Projection matrix

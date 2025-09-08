@@ -318,8 +318,8 @@ namespace LoadTestScene
 
 
 		auto pCameraTransform{ pCamera->GetTransform() };
-		pCameraTransform->SetLocalPosition(8.f, 1.5f, -0.3f);
-		pCameraTransform->SetLocalRotation(0.0f, glm::radians(90.0f), 0.0f);
+		//pCameraTransform->SetLocalPosition(8.f, 1.5f, -0.3f);
+		//pCameraTransform->SetLocalRotation(0.0f, glm::radians(90.0f), 0.0f);
 		//pCameraTransform->SetLocalRotation(glm::vec3(0.0f, glm::radians(180.f), 0.0f));
 
 		//pCamera->AddComponent<D3D::RotatorComponent>();

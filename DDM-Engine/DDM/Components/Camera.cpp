@@ -16,8 +16,14 @@ DDM::Camera::Camera()
 
 DDM::Camera::~Camera()
 {
-	// Write camera transform to file
-	GetOwner()->GetTransform()->WriteToFile("Resources/SavedData/CameraTransform.txt");
+}
+
+void DDM::Camera::Init()
+{
+	m_pTransform = GetTransform();
+
+	// Read camera transform from file
+	m_pTransform->ReadFromFile("Resources/SavedData/" + GetOwner()->GetName() + "/CameraTransform.txt");
 }
 
 void DDM::Camera::SetFovAngleDeg(float angle)
@@ -80,6 +86,12 @@ glm::mat4* DDM::Camera::GetViewMatrixPtr()
 {
 	// Return pointer to view matrix
 	return &m_ViewMatrix;
+}
+
+void DDM::Camera::OnSceneUnload()
+{
+	// Write camera transform to file
+	m_pTransform->WriteToFile("Resources/SavedData/" + GetOwner()->GetName() + "/CameraTransform.txt");
 }
 
 void DDM::Camera::UpdateViewMatrix()

@@ -35,6 +35,11 @@ namespace DDM
 		Component& operator=(Component&& other) = delete;
 
 		/// <summary>
+		/// Gets called right after creating component
+		/// </summary>
+		virtual void Init(){}
+
+		/// <summary>
 		/// Gets called when scene is loaded
 		/// </summary>
 		virtual void OnSceneLoad() {}
