@@ -13,6 +13,13 @@
 
 namespace DDM
 {
+	struct TransformPod
+	{
+		glm::vec3 pos{};
+		glm::quat rot{};
+		glm::vec3 scale{};
+	};
+
 	class Transform final : public Component
 	{
 	public:
@@ -321,6 +328,33 @@ namespace DDM
 		/// <returns>Right vector</returns>
 		glm::vec3 GetRight();
 
+		/// <summary>
+		/// Write the contents of the component to a file
+		/// </summary>
+		/// <param name="fileName:">Path to the file to write to</param>
+		/// <returns>Boolean indicating if writing was succesful</returns>
+		bool WriteToFile(std::string& fileName);
+
+		/// <summary>
+		/// Write the contents of the component to a file
+		/// </summary>
+		/// <param name="fileName:">Path to the file to write to</param>
+		/// <returns>Boolean indicating if writing was succesful</returns>
+		bool WriteToFile(std::string&& fileName);
+
+		/// <summary>
+		/// Reads the contents of the comonent from a file
+		/// </summary>
+		/// <param name="fileName: ">Path to the file to read from</param>
+		/// <returns>Boolean indicating if reading was succesful</returns>
+		bool ReadFromFile(std::string& fileName);
+
+		/// <summary>
+		/// Reads the contents of the comonent from a file
+		/// </summary>
+		/// <param name="fileName: ">Path to the file to read from</param>
+		/// <returns>Boolean indicating if reading was succesful</returns>
+		bool ReadFromFile(std::string&& fileName);
 
 	private:
 

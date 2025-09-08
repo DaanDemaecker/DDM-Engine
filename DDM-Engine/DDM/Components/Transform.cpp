@@ -10,6 +10,8 @@
 // Standard library includes
 #include <math.h>
 
+#include <fstream>
+
 void DDM::Transform::OnGUI()
 {
 	ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_Framed;
@@ -380,6 +382,44 @@ glm::vec3 DDM::Transform::GetRight()
 	finalRotatedVector.y *= -1;
 
 	return finalRotatedVector;
+}
+
+bool DDM::Transform::WriteToFile(std::string& fileName)
+{
+	// Set up POD
+	TransformPod toWrite{};
+	toWrite.pos = GetWorldPosition();
+	toWrite.rot = GetWorldRotation();
+	toWrite.scale = GetWorldScale();
+
+	std::ofstream temp;
+
+	temp.open(fileName, std::ios::binary);
+	if (temp.is_open())
+	{
+		temp.write((const char*)&toWrite, sizeof(toWrite));
+		temp.close();
+		return true;
+	}
+
+	return false;
+}
+
+bool DDM::Transform::WriteToFile(std::string&& fileName)
+{
+	// Propagate to overloaded lvalue function
+	return WriteToFile(fileName);
+}
+
+bool DDM::Transform::ReadFromFile(std::string& fileName)
+{
+	return false;
+}
+
+bool DDM::Transform::ReadFromFile(std::string&& fileName)
+{
+	// Propagate to overloaded lvalue function
+	return ReadFromFile(fileName);
 }
 
 const glm::vec3& DDM::Transform::GetParentPosition()

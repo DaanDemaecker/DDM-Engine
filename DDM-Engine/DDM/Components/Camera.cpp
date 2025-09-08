@@ -14,6 +14,12 @@ DDM::Camera::Camera()
 	m_FovAngle = glm::radians(m_DefaultAngleDegrees);
 }
 
+DDM::Camera::~Camera()
+{
+	// Write camera transform to file
+	GetOwner()->GetTransform()->WriteToFile("Resources/SavedData/CameraTransform.txt");
+}
+
 void DDM::Camera::SetFovAngleDeg(float angle)
 {
 	// Convert degrees to radians and set FOV angle

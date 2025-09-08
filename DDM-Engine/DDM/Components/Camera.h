@@ -25,9 +25,9 @@ namespace DDM
 		Camera();
 
 		/// <summary>
-		/// Default destructor
+		/// Destructor
 		/// </summary>
-		~Camera() = default;
+		~Camera();
 
 		/// <summary>
 		/// Set FOV angle in radians

@@ -39,8 +39,10 @@ void DDM::Material::CreateDescriptorSets(MeshRenderComponent* pModel, std::vecto
 {
 	// Get pointer to the descriptorpool wrapper
 	auto descriptorPool = GetDescriptorPool();
+
 	// Add model to descriptorpool wrapper
 	descriptorPool->AddModel(pModel);
+
 	// Create descriptorsets
 	descriptorPool->CreateDescriptorSets(GetDescriptorLayout(), descriptorSets);
 }
@@ -69,10 +71,12 @@ void DDM::Material::UpdateDescriptorSets(std::vector<VkDescriptorSet>& descripto
 
 VkDescriptorSetLayout DDM::Material::GetDescriptorLayout()
 {
+	// Return descriptorset layout
 	return m_pPipeline->GetDescriptorSetLayout();
 }
 
 DDM::DescriptorPoolWrapper* DDM::Material::GetDescriptorPool()
 {
+	// Return descriptorpool
 	return m_pPipeline->GetDescriptorPool();
 }
