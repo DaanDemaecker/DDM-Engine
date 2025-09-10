@@ -216,7 +216,8 @@ namespace LoadDeferredScene
 
 	void SetupVikingRoom(DDM::Scene* scene)
 	{
-		std::shared_ptr<DDM::TexturedMaterial> pVikingMaterial{ std::make_shared<DDM::TexturedMaterial>(std::initializer_list<const std::string>{"resources/images/viking_room.png"}, "Diffuse") };
+		std::shared_ptr<DDM::TexturedMaterial> pVikingMaterial{ std::make_shared<DDM::TexturedMaterial>("Diffuse") };
+		pVikingMaterial->AddTexture("resources/images/viking_room.png");
 
 		auto pvikingRoom{ scene->CreateGameObject("Viking Room") };
 

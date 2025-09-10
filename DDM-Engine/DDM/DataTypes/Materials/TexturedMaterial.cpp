@@ -1,51 +1,49 @@
+// TexturedMaterial.cpp
+
+// Header include
 #include "TexturedMaterial.h"
+
+// File includes
+#include "Includes/STBIncludes.h"
+
 #include "Vulkan/VulkanObject.h"
-#include "../../Utils/Utils.h"
-#include "../../Vulkan/VulkanWrappers/DescriptorPoolWrapper.h"
+#include "Vulkan/VulkanWrappers/DescriptorPoolWrapper.h"
+#include "Vulkan/VulkanWrappers/PipelineWrapper.h"
+
+#include "Utils/Utils.h"
+
 #include "Components/MeshRenderer.h"
-#include "../../Vulkan/VulkanWrappers/PipelineWrapper.h"
 
-#include "../../Includes/STBIncludes.h"
-
-DDM::TexturedMaterial::TexturedMaterial(std::initializer_list<const std::string>&& filePaths, const std::string& pipelineName)
-	:Material(pipelineName)
-{
-	m_pDescriptorObjects.resize(filePaths.size());
-	
-	int index = 0;
-	for (const auto& filePath : filePaths)
-	{
-		m_pDescriptorObjects[index] = std::make_unique<DDM::TextureDescriptorObject>();
-		m_pDescriptorObjects[index]->AddTexture(filePath);
-		++index;
-	}
-
-	m_ShouldUpdateDescriptorSets = true;
-}
 
 DDM::TexturedMaterial::TexturedMaterial(const std::string& pipelineName)
+	// Propagate to parent class
 	:Material(pipelineName)
 {
 }
 
 DDM::TexturedMaterial::TexturedMaterial(const std::string&& pipelineName)
-	:TexturedMaterial(pipelineName)
+	// Propagate to parent class
+	:Material(pipelineName)
 {
 }
 
 
-void DDM::TexturedMaterial::AddTexture(std::string& path)
+void DDM::TexturedMaterial::AddTexture(const std::string& path)
 {
+	// Create a descriptorobject and add the texture
 	auto descriptorObject = std::make_unique<DDM::TextureDescriptorObject>();
 	descriptorObject->AddTexture(path);
+
+	// Add object to list
 	m_pDescriptorObjects.push_back(std::move(descriptorObject));
 
+	// Indicate that descriptorsets should be updated
 	m_ShouldUpdateDescriptorSets = true;
 }
 
-void DDM::TexturedMaterial::AddTexture(std::string&& path)
+void DDM::TexturedMaterial::AddTexture(const std::string&& path)
 {
-	// Pass function on
+	// Propagate to lvalue overloaded function
 	AddTexture(path);
 }
 
@@ -74,5 +72,6 @@ void DDM::TexturedMaterial::UpdateDescriptorSets(std::vector<VkDescriptorSet>& d
 	// Update descriptorsets
 	descriptorPool->UpdateDescriptorSets(descriptorSets, descriptorObjectList);
 
+	// Indicate that descriptorsets were updated
 	m_ShouldUpdateDescriptorSets = false;
 }

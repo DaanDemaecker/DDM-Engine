@@ -95,7 +95,7 @@ void DDM::MultiMaterial::UpdateDescriptorSets(std::vector<VkDescriptorSet>& desc
 	m_ShouldUpdateDescriptorSets = false;
 }
 
-void DDM::MultiMaterial::AddDiffuseTexture(std::string& filePath)
+void DDM::MultiMaterial::AddDiffuseTexture(const std::string& filePath)
 {
 	// Add texture to the descriptor object
 	m_pTextureObjects[mm_Diffuse]->AddTexture(filePath);
@@ -108,13 +108,13 @@ void DDM::MultiMaterial::AddDiffuseTexture(std::string& filePath)
 	UpdateShaderBuffer();
 }
 
-void DDM::MultiMaterial::AddDiffuseTexture(std::string&& filePath)
+void DDM::MultiMaterial::AddDiffuseTexture(const std::string&& filePath)
 {
 	// Propagate to lvalue overloaded function
 	AddDiffuseTexture(filePath);
 }
 
-void DDM::MultiMaterial::AddNormalMap(std::string& filePath)
+void DDM::MultiMaterial::AddNormalMap(const std::string& filePath)
 {
 	// Add texture to the descriptor object
 	m_pTextureObjects[mm_Normal]->AddTexture(filePath);
@@ -127,13 +127,13 @@ void DDM::MultiMaterial::AddNormalMap(std::string& filePath)
 	UpdateShaderBuffer();
 }
 
-void DDM::MultiMaterial::AddNormalMap(std::string&& filePath)
+void DDM::MultiMaterial::AddNormalMap(const std::string&& filePath)
 {
 	// Propagate to lvalue overloaded function
 	AddNormalMap(filePath);
 }
 
-void DDM::MultiMaterial::AddGlossTexture(std::string& filePath)
+void DDM::MultiMaterial::AddGlossTexture(const std::string& filePath)
 {
 	// Add texture to the descriptor object
 	m_pTextureObjects[mm_Gloss]->AddTexture(filePath);
@@ -146,13 +146,13 @@ void DDM::MultiMaterial::AddGlossTexture(std::string& filePath)
 	UpdateShaderBuffer();
 }
 
-void DDM::MultiMaterial::AddGlossTexture(std::string&& filePath)
+void DDM::MultiMaterial::AddGlossTexture(const std::string&& filePath)
 {
 	// Propagate to lvalue overloaded function
 	AddGlossTexture(filePath);
 }
 
-void DDM::MultiMaterial::AddSpecularTexture(std::string& filePath)
+void DDM::MultiMaterial::AddSpecularTexture(const std::string& filePath)
 {
 	// Add texture to the descriptor object
 	m_pTextureObjects[mm_Specular]->AddTexture(filePath);
@@ -165,7 +165,7 @@ void DDM::MultiMaterial::AddSpecularTexture(std::string& filePath)
 	UpdateShaderBuffer();
 }
 
-void DDM::MultiMaterial::AddSpecularTexture(std::string&& filePath)
+void DDM::MultiMaterial::AddSpecularTexture(const std::string&& filePath)
 {
 	// Propagate to lvalue overloaded function
 	AddSpecularTexture(filePath);

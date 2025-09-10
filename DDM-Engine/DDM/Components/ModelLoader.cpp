@@ -43,8 +43,8 @@ void DDM::ModelLoader::OnGUI()
 	if (ImGui::TreeNodeEx("Model Loader", flags))
 	{
 		// Create input text for object name and file path
-		ImGui::InputText("Object name", m_ObjectName, IM_ARRAYSIZE(m_ObjectName));
-		ImGui::InputText("File path", m_FilePath, IM_ARRAYSIZE(m_FilePath));
+		ImGui::InputText("Object name", m_ObjectName, m_TextLength);
+		ImGui::InputText("File path", m_FilePath, m_TextLength);
 
 		// Check if inputtext for filepath is hovered
 		m_IsTextboxHovered = ImGui::IsItemHovered();
@@ -85,6 +85,9 @@ void DDM::ModelLoader::LoadObject()
 	auto pMeshTransform{ pObject->GetTransform() };
 	pMeshTransform->SetShowImGui(true);
 	
+	// Clear text
+	std::fill(m_FilePath, m_FilePath + m_TextLength, 0);
+	std::fill(m_ObjectName, m_ObjectName + m_TextLength, 0);
 }
 
 void DDM::ModelLoader::DropFileCallback(int count, const char** paths)

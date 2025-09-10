@@ -68,49 +68,49 @@ namespace DDM
 		/// Add a single diffuse texture
 		/// </summary>
 		/// <param name="filePath: ">Path to the requested image</param>
-		void AddDiffuseTexture(std::string& filePath);
+		void AddDiffuseTexture(const std::string& filePath);
 
 		/// <summary>
 		/// Add a single diffuse texture
 		/// </summary>
 		/// <param name="filePath: ">Path to the requested image</param>
-		void AddDiffuseTexture(std::string&& filePath);
+		void AddDiffuseTexture(const std::string&& filePath);
 
 		/// <summary>
 		/// Add a single normal texture
 		/// </summary>
 		/// <param name="filePath: ">Path to the requested image</param>
-		void AddNormalMap(std::string& filePath);
+		void AddNormalMap(const std::string& filePath);
 
 		/// <summary>
 		/// Add a single normal texture
 		/// </summary>
 		/// <param name="filePath: ">Path to the requested image</param>
-		void AddNormalMap(std::string&& filePath);
+		void AddNormalMap(const std::string&& filePath);
 
 		/// <summary>
 		/// Add a single gloss texture
 		/// </summary>
 		/// <param name="filePath: ">Path to the requested image</param>
-		void AddGlossTexture(std::string& filePath);
+		void AddGlossTexture(const std::string& filePath);
 
 		/// <summary>
 		/// Add a single gloss texture
 		/// </summary>
 		/// <param name="filePath: ">Path to the requested image</param>
-		void AddGlossTexture(std::string&& filePath);
+		void AddGlossTexture(const std::string&& filePath);
 
 		/// <summary>
 		/// Add a single specular texture
 		/// </summary>
 		/// <param name="filePath: ">Path to the requested image</param>
-		void AddSpecularTexture(std::string& filePath);
+		void AddSpecularTexture(const std::string& filePath);
 
 		/// <summary>
 		/// Add a single specular texture
 		/// </summary>
 		/// <param name="filePath: ">Path to the requested image</param>
-		void AddSpecularTexture(std::string&& filePath);
+		void AddSpecularTexture(const std::string&& filePath);
 
 
 	private:
