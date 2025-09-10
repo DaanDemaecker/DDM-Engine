@@ -7,8 +7,8 @@
 #include "Vulkan/VulkanObject.h"
 #include "Vulkan/VulkanWrappers/DescriptorPoolWrapper.h"
 #include "Vulkan/VulkanWrappers/PipelineWrapper.h"
+#include "Vulkan/VulkanWrappers/Mesh.h"
 
-#include "DataTypes/Mesh.h"
 #include "DataTypes/Materials/Material.h"
 
 #include "Utils/Utils.h"

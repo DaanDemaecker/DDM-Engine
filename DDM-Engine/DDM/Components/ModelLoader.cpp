@@ -5,17 +5,19 @@
 
 // File includes
 #include "Includes/ImGuiIncludes.h"
+
 #include "Managers/SceneManager.h"
 #include "Managers/ResourceManager.h"
 
 #include "Engine/Window.h"
 #include "Engine/Scene.h"
 
-#include "DataTypes/Mesh.h"
 #include "DataTypes/Materials/MultiMaterial.h"
 
 #include "Components/MeshRenderer.h"
 #include "Components/Transform.h"
+
+#include "Vulkan/VulkanWrappers/Mesh.h"
 
 // Standard library includes
 #include <iostream>

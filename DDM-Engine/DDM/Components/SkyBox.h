@@ -8,7 +8,6 @@
 #include "Components/MeshRenderer.h"
 
 // File includes
-#include "DataTypes/Mesh.h"
 #include "DataTypes/Materials/Material.h"
 #include "DataTypes/DescriptorObjects/UboDescriptorObject.h"
 

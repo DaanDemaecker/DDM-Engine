@@ -6,7 +6,7 @@
 #include "../../DataTypes/Materials/MultiMaterial.h"
 
 #include "Components/MeshRenderer.h"
-#include "../../DataTypes/Mesh.h"
+#include "Vulkan/VulkanWrappers/Mesh.h"
 #include "Components/Transform.h"
 #include "../Scene.h"
 #include "Components/SkyBox.h"

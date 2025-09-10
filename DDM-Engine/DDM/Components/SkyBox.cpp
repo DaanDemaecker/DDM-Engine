@@ -7,8 +7,8 @@
 #include "Utils/Utils.h"
 
 #include "Vulkan/VulkanObject.h"
+#include "Vulkan/VulkanWrappers/Mesh.h"
 
-#include "DataTypes/Mesh.h"
 #include "DataTypes/DescriptorObjects/TextureDescriptorObject.h"	
 #include "DataTypes/Materials/CubeMapMaterial.h"
 

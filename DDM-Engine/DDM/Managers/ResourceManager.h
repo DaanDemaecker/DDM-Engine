@@ -5,7 +5,7 @@
 
 // File includes
 #include "Engine/Singleton.h"
-#include "DataTypes/Mesh.h"
+#include "Vulkan/VulkanWrappers/Mesh.h"
 
 // Standard library includes
 #include <memory>

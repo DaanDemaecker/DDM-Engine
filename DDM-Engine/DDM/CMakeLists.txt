@@ -13,7 +13,7 @@ add_executable(${EXECUTABLE_NAME}
 "DataTypes/Materials/CubeMapMaterial.cpp"
 "DataTypes/Materials/Material.cpp"
 "DataTypes/Materials/TexturedMaterial.cpp"
-"DataTypes/Mesh.cpp"
+"Vulkan/VulkanWrappers/Mesh.cpp"
 "Engine/DDMEngine.cpp"
 "Engine/main.cpp"
 "Engine/Scene.cpp"
@@ -69,7 +69,7 @@ add_executable(${EXECUTABLE_NAME}
  "Managers/Input/Mouse.cpp"
  "Vulkan/VulkanManagers/ImageManager/STBImage.cpp"
  "Vulkan/VulkanWrappers/Image.cpp"
- "Includes/STBIncludes.cpp")
+ "Includes/STBIncludes.cpp" "Includes/DDMModelLoaderIncludes.h")
 
 
 # Include directories specific to this target

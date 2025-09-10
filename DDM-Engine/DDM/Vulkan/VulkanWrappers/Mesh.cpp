@@ -2,10 +2,13 @@
 
 // File includes
 #include "Mesh.h"
+
 #include "Vulkan/VulkanObject.h"
-#include "../Vulkan/VulkanWrappers/PipelineWrapper.h"
+#include "Vulkan/VulkanWrappers/PipelineWrapper.h"
+
 #include "Engine/DDMModelLoader.h"
-#include "DDMModelLoader/DDMModelLoader.h"
+
+#include "Includes/DDMModelLoaderIncludes.h"
 
 
 DDM::Mesh::Mesh(DDMML::Mesh* pMesh)
