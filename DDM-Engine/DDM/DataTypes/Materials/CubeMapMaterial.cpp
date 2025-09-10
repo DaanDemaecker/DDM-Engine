@@ -89,71 +89,71 @@ void DDM::CubeMapMaterial::SetupCubeTexture()
 void DDM::CubeMapMaterial::SetRight(const std::string& filepath)
 {
 	// Propagate to SetTextureName function
-	SetTextureName(filepath, sideRight);
+	SetTextureName(filepath, cm_SideRight);
 }
 
 void DDM::CubeMapMaterial::SetRight(const std::string&& filepath)
 {
 	// Propagate to SetTextureName function
-	SetTextureName(filepath, sideRight);
+	SetTextureName(filepath, cm_SideRight);
 }
 
 void DDM::CubeMapMaterial::SetLeft(const std::string& filepath)
 {
 	// Propagate to SetTextureName function
-	SetTextureName(filepath, sideLeft);
+	SetTextureName(filepath, cm_SideLeft);
 }
 
 void DDM::CubeMapMaterial::SetLeft(const std::string&& filepath)
 {
 	// Propagate to SetTextureName function
-	SetTextureName(filepath, sideLeft);
+	SetTextureName(filepath, cm_SideLeft);
 }
 
 void DDM::CubeMapMaterial::SetUp(const std::string& filepath)
 {
 	// Propagate to SetTextureName function
-	SetTextureName(filepath, sideUp);
+	SetTextureName(filepath, cm_SideUp);
 }
 
 void DDM::CubeMapMaterial::SetUp(const std::string&& filepath)
 {
 	// Propagate to SetTextureName function
-	SetTextureName(filepath, sideUp);
+	SetTextureName(filepath, cm_SideUp);
 }
 
 void DDM::CubeMapMaterial::SetDown(const std::string& filepath)
 {
 	// Propagate to SetTextureName function
-	SetTextureName(filepath, sideDown);
+	SetTextureName(filepath, cm_SideDown);
 }
 
 void DDM::CubeMapMaterial::SetDown(const std::string&& filepath)
 {
 	// Propagate to SetTextureName function
-	SetTextureName(filepath, sideDown);
+	SetTextureName(filepath, cm_SideDown);
 }
 
 void DDM::CubeMapMaterial::SetFront(const std::string& filepath)
 {
 	// Propagate to SetTextureName function
-	SetTextureName(filepath, sideFront);
+	SetTextureName(filepath, cm_SideFront);
 }
 
 void DDM::CubeMapMaterial::SetFront(const std::string&& filepath)
 {
 	// Propagate to SetTextureName function
-	SetTextureName(filepath, sideFront);
+	SetTextureName(filepath, cm_SideFront);
 }
 
 void DDM::CubeMapMaterial::SetBack(const std::string& filepath)
 {
 	// Propagate to SetTextureName function
-	SetTextureName(filepath, sideBack);
+	SetTextureName(filepath, cm_SideBack);
 }
 
 void DDM::CubeMapMaterial::SetBack(const std::string&& filepath)
 {
 	// Propagate to SetTextureName function
-	SetTextureName(filepath, sideBack);
+	SetTextureName(filepath, cm_SideBack);
 }

@@ -110,9 +110,9 @@ namespace LoadDeferredScene
 
 		pVehicleMaterial->AddNormalMap("resources/images/vehicle_normal.png");
 
-		pVehicleMaterial->AddGlossTextures(std::initializer_list<const std::string>{"resources/images/vehicle_gloss.png"});
+		pVehicleMaterial->AddGlossTexture("resources/images/vehicle_gloss.png");
 
-		pVehicleMaterial->AddSpecularTextures(std::initializer_list<const std::string>{"resources/images/vehicle_specular.png"});
+		pVehicleMaterial->AddSpecularTexture("resources/images/vehicle_specular.png");
 
 		auto pVehicle{ scene->CreateGameObject("Vehicle") };
 		pVehicle->SetShowImGui(true);

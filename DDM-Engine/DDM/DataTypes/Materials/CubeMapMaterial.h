@@ -1,5 +1,5 @@
 // CubeMapMaterial.h
-// This class will serve as the material of the cube map and it will hold all the textures for the cubemap
+// This class will serve as the material for a cube map and it will hold all the textures for the cubemap
 
 #ifndef _CUBEMAP_MATERIAL
 #define _CUBEMAP_MATERIAL_
@@ -15,12 +15,12 @@ namespace DDM
 
 	enum
 	{
-		sideRight = 0,
-		sideLeft = 1,
-		sideUp = 2,
-		sideDown = 3,
-		sideFront = 4,
-		sideBack = 5
+		cm_SideRight = 0,
+		cm_SideLeft = 1,
+		cm_SideUp = 2,
+		cm_SideDown = 3,
+		cm_SideFront = 4,
+		cm_SideBack = 5
 	};
 
 	class CubeMapMaterial final : public Material

@@ -56,7 +56,7 @@ namespace LoadModelLoaderScene
 		auto pCameraComponent{ pCamera->AddComponent<DDM::Camera>() };
 
 		auto pCameraTransform{ pCamera->GetTransform() };
-		pCameraTransform->SetLocalPosition(0, 1, 0);
+		//pCameraTransform->SetLocalPosition(0, 1, 0);
 
 		//pCamera->AddComponent<D3D::RotatorComponent>();
 

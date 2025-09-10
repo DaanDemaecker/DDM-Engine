@@ -66,6 +66,7 @@ void DDM::Material::UpdateDescriptorSets(std::vector<VkDescriptorSet>& descripto
 	// Update descriptorsets
 	descriptorPool->UpdateDescriptorSets(descriptorSets, descriptorObjectList);
 
+	// Indicate that descriptor sets are updated
 	m_ShouldUpdateDescriptorSets = false;
 }
 
