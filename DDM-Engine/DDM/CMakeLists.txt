@@ -2,6 +2,7 @@
 add_executable(${EXECUTABLE_NAME}
 
 "BaseClasses/GameObject.cpp"
+
 "Components/Camera.cpp"
 "Components/Light/LightComponent.cpp"
 "Components/MeshRenderer.cpp"
@@ -69,7 +70,8 @@ add_executable(${EXECUTABLE_NAME}
  "Managers/Input/Mouse.cpp"
  "Vulkan/VulkanManagers/ImageManager/STBImage.cpp"
  "Vulkan/VulkanWrappers/Image.cpp"
- "Includes/STBIncludes.cpp" "Includes/DDMModelLoaderIncludes.h")
+ "Includes/STBIncludes.cpp" "Includes/DDMModelLoaderIncludes.h"
+  "Vulkan/VulkanWrappers/Buffer.cpp")
 
 
 # Include directories specific to this target

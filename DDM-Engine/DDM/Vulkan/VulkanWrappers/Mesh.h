@@ -7,6 +7,7 @@
 // File includes
 #include "Includes/VulkanIncludes.h"
 #include "DataTypes/Structs.h"
+#include "Vulkan/VulkanWrappers/Buffer.h"
 
 // Standard library includes
 #include <string>
@@ -72,29 +73,11 @@ namespace DDM
 		// Indicates wether 
 		bool m_IsTransparant{ false };
 		
-		// Vector of vertices
-		std::vector<Vertex> m_Vertices{};
-
 		// Vertex buffer
-		VkBuffer m_VertexBuffer{};
-
-		// Vertex buffer memory
-		VkDeviceMemory m_VertexBufferMemory{};
-
-		// Vector of indices
-		std::vector<uint32_t> m_Indices{};
+		std::unique_ptr<Buffer<Vertex>> m_pVertexBuffer{};
 
 		// Index buffer
-		VkBuffer m_IndexBuffer{};
-
-		// Index buffer memory
-		VkDeviceMemory m_IndexBufferMemory{};
-
-		
-		/// <summary>
-		/// Clean up allocated objects
-		/// </summary>
-		void Cleanup();
+		std::unique_ptr<Buffer<uint32_t>> m_pIndexBuffer{};
 
 		/// <summary>
 		/// Set up index and vertex buffers

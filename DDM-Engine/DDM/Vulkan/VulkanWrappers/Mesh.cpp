@@ -13,35 +13,37 @@
 
 DDM::Mesh::Mesh(DDMML::Mesh* pMesh)
 {
-	m_Vertices.clear();
-	m_Indices.clear();
-
 	auto& vertices = pMesh->GetVertices();
 	auto& indices = pMesh->GetIndices();
 
-	DDMModelLoader::GetInstance().ConvertVertices(vertices, m_Vertices);
+	std::vector<Vertex> convertedVertices{};
 
-	m_Indices.resize(indices.size());
+	DDMModelLoader::GetInstance().ConvertVertices(vertices, convertedVertices);
 
-	std::copy(indices.begin(), indices.end(), m_Indices.begin());
+	m_pIndexBuffer = std::make_unique<Buffer<uint32_t>>(indices);	
+	m_pVertexBuffer = std::make_unique<Buffer<Vertex>>(convertedVertices);
 
-	SetupBuffers();
 
 	m_IsTransparant = pMesh->GetIsTransparant();
 }
 
 DDM::Mesh::Mesh(const std::string& filePath)
 {
-	// Load the vertices and indices
-	DDM::DDMModelLoader::GetInstance().LoadModel(filePath, m_Vertices, m_Indices);
 
-	SetupBuffers();
+	std::vector<uint32_t> indices{};
+	std::vector<Vertex> vertices{};
+
+	// Load the vertices and indices
+	DDM::DDMModelLoader::GetInstance().LoadModel(filePath, vertices, indices);
+
+
+	m_pIndexBuffer = std::make_unique<Buffer<uint32_t>>(indices);
+	m_pVertexBuffer = std::make_unique<Buffer<Vertex>>(vertices);
 }
 
 DDM::Mesh::~Mesh()
 {
-	// Call cleanup function
-	Cleanup();
+	
 }
 
 void DDM::Mesh::Render(PipelineWrapper* pPipeline, VkDescriptorSet* descriptorSet)
@@ -56,12 +58,12 @@ void DDM::Mesh::Render(PipelineWrapper* pPipeline, VkDescriptorSet* descriptorSe
 	}
 
 	// Set and bind vertex buffer
-	VkBuffer vertexBuffers[] = { m_VertexBuffer };
+	VkBuffer vertexBuffers[] = { m_pVertexBuffer->GetBuffer()};
 	VkDeviceSize offsets[] = { 0 };
 	vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
 
 	// Bind index buffer
-	vkCmdBindIndexBuffer(commandBuffer, m_IndexBuffer, 0, VK_INDEX_TYPE_UINT32);
+	vkCmdBindIndexBuffer(commandBuffer, m_pIndexBuffer->GetBuffer(), 0, VK_INDEX_TYPE_UINT32);
 
 	if (pPipeline != nullptr && descriptorSet != nullptr)
 	{
@@ -70,36 +72,5 @@ void DDM::Mesh::Render(PipelineWrapper* pPipeline, VkDescriptorSet* descriptorSe
 	}
 
 	// Draw
-	vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(m_Indices.size()), 1, 0, 0, 0);
-}
-
-void DDM::Mesh::Cleanup()
-{
-	// Get reference to renderer
-	auto& renderer = DDM::VulkanObject::GetInstance();
-	// Get reference to device
-	auto device = renderer.GetDevice();
-
-	// Wait until device is idle
-	vkDeviceWaitIdle(device);
-
-	// Destroy index buffer
-	vkDestroyBuffer(device, m_IndexBuffer, nullptr);
-	// Free index buffer memory
-	vkFreeMemory(device, m_IndexBufferMemory, nullptr);
-
-	// Destroy vertex buffer
-	vkDestroyBuffer(device, m_VertexBuffer, nullptr);
-	// Free vertex buffer
-	vkFreeMemory(device, m_VertexBufferMemory, nullptr);
-}
-
-void DDM::Mesh::SetupBuffers()
-{	
-	// Get reference to the renderer
-	auto& renderer{ VulkanObject::GetInstance() };
-
-	// Create vertex and index buffer
-	renderer.CreateVertexBuffer(m_Vertices, m_VertexBuffer, m_VertexBufferMemory);
-	renderer.CreateIndexBuffer(m_Indices, m_IndexBuffer, m_IndexBufferMemory);
+	vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(m_pIndexBuffer->GetDataCount()), 1, 0, 0, 0);
 }
