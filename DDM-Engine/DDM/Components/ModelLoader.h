@@ -1,26 +1,26 @@
 // ModelLoaderComponent.h
 // This component will let the user load models trough imgui
 
-#ifndef _MODEL_LOADER_
-#define _MODEL_LOADER_
+#ifndef _DDM_MODEL_LOADER_COMPONENT_
+#define _DDM_MODEL_LOADER_COMPONENT_
 
 // Parent include
 #include "BaseClasses/Component.h"
 
 namespace DDM
 {
-	class ModelLoader final : public Component
+	class ModelLoaderComponent final : public Component
 	{
 	public:
 		/// <summary>
 		/// Default constructor
 		/// </summary>
-		ModelLoader();
+		ModelLoaderComponent();
 
 		/// <summary>
 		/// Destructor
 		/// </summary>
-		~ModelLoader();
+		~ModelLoaderComponent();
 
 		/// <summary>
 		/// OnGui function for imgui rendering
@@ -53,4 +53,4 @@ namespace DDM
 		void LoadObject();
 	};
 }
-#endif // !_MODEL_LOADER_
+#endif // !_DDM_MODEL_LOADER_COMPONENT_

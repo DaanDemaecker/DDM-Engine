@@ -2,8 +2,8 @@
 // This material has a variable amount of diffuse, normal, gloss and specular textures
 
 
-#ifndef _MULTI_MATERIAL_
-#define _MULTI_MATERIAL_
+#ifndef _DDM_MULTI_MATERIAL_
+#define _DDM_MULTI_MATERIAL_
 
 // Parent include
 #include "Material.h"
@@ -182,4 +182,4 @@ namespace DDM
 }
 
 
-#endif // !_MULTI_MATERIAL_
+#endif // !_DDM_MULTI_MATERIAL_

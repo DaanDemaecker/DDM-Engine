@@ -1,5 +1,8 @@
-#ifndef _LIGHT_COMPONENT_
-#define _LIGHT_COMPONENT_
+// LightComponent.h
+// This class attaches the Light struct to a component
+
+#ifndef _DDM_LIGHT_COMPONENT_
+#define _DDM_LIGHT_COMPONENT_
 
 // Parent include
 #include "BaseClasses/Component.h"

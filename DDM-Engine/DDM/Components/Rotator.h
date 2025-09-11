@@ -1,8 +1,8 @@
 // Rotator.h
 // This componenat will rotate the game object it is attached to
 
-#ifndef _ROTATOR_
-#define _ROTATOR_
+#ifndef _DDM_ROTATOR_
+#define _DDM_ROTATOR_
 
 // Parent include
 #include "BaseClasses/Component.h"

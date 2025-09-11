@@ -1,12 +1,12 @@
 // Structs.h
 // This file contains all major structs
 
-#ifndef StructsIncluded
-#define StructsIncluded
+#ifndef _DDM_STRUCTS_
+#define _DDM_STRUCTS_
 
 // File includes
-#include "../Includes/VulkanIncludes.h"
-#include "../Includes/GLMIncludes.h"
+#include "Includes/VulkanIncludes.h"
+#include "Includes/GLMIncludes.h"
 
 // Standard library includes
 #include <optional>
@@ -54,19 +54,19 @@ namespace DDM
 	struct Vertex
 	{
 		// Position
-		alignas(16) glm::vec3 pos;
+		alignas(16) glm::vec3 pos{};
 		// Color
-		alignas(16) glm::vec3 color;
+		alignas(16) glm::vec3 color{};
 		// UV coordinates
-		alignas(16) glm::vec2 texCoord;
+		alignas(16) glm::vec2 texCoord{};
 		// Vertex normal
-		alignas(16) glm::vec3 normal;
+		alignas(16) glm::vec3 normal{};
 		// Vertex tangent
-		alignas(16) glm::vec3 tangent;
+		alignas(16) glm::vec3 tangent{};
 		// Bone indices
-		alignas(16) glm::vec4 boneIndices;
+		alignas(16) glm::vec4 boneIndices{};
 		// Bone weights
-		alignas(16) glm::vec4 boneWeights;
+		alignas(16) glm::vec4 boneWeights{};
 		// Uv set index
 		alignas(4) float uvSetIndex{0};
 
@@ -178,22 +178,6 @@ namespace DDM
 		}
 	};
 
-	struct AnimationKey
-	{
-		float tick{};
-		std::vector<glm::mat4x4> boneTransforms{};
-	};
-
-	struct AnimationClip
-	{
-		AnimationClip() = default;
-
-		std::wstring name{};
-		float duration{};
-		float ticksPerSecond{};
-		std::vector<AnimationKey> keys{};
-	};
-
 	// Uniform buffer object
 		// Needed for transformations in shaders
 	struct UniformBufferObject
@@ -224,4 +208,4 @@ namespace std
 }
 
 
-#endif // !StructsIncluded
+#endif // !_DDM_STRUCTS_

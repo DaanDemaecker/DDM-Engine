@@ -1,8 +1,8 @@
 // TextureDescriptorObject.h
 // This class wil handle the updating of texture descriptor sets
 
-#ifndef _TEXTURE_DESCRIPTOR_OBJECT_
-#define _TEXTURE_DESCRIPTOR_OBJECT_
+#ifndef _DDM_TEXTURE_DESCRIPTOR_OBJECT_
+#define _DDM_TEXTURE_DESCRIPTOR_OBJECT_
 
 
 // File includes

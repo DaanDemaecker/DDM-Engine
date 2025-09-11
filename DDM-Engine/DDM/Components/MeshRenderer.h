@@ -1,8 +1,8 @@
 // MeshRenderer.h
 // This component will render an attached mesh
 
-#ifndef _MESH_RENDERER_
-#define _MESH_RENDERER_
+#ifndef _DDM_MESH_RENDERER_
+#define _DDM_MESH_RENDERER_
 
 // Parent include
 #include "BaseClasses/Component.h"
@@ -162,4 +162,4 @@ namespace DDM
 		PipelineWrapper* GetDepthPipeline();
 	};
 }
-#endif // !_MESH_RENDERER_
+#endif // !_DDM_MESH_RENDERER_

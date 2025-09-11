@@ -2,8 +2,8 @@
 // THis class will represent the transform of the object
 // The transform holds and handles rotation, position and scale
 
-#ifndef _TRANSFORM_
-#define _TRANSFORM_
+#ifndef _DDM_TRANSFORM_
+#define _DDM_TRANSFORM_
 
 // Parent include
 #include "BaseClasses/Component.h"
@@ -422,4 +422,4 @@ namespace DDM
 		const glm::vec3& GetParentScale();
 	};
 }
-#endif // !_TRANSFORM_
+#endif // !_DDM_TRANSFORM_

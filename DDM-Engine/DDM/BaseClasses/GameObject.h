@@ -2,8 +2,8 @@
 // This class serves as a base game object
 // It can contain multiple components and child game objects
 
-#ifndef _GAMEOBJECT_
-#define _GAMEOBJECT_
+#ifndef _DDM_GAMEOBJECT_
+#define _DDM_GAMEOBJECT_
 
 // Standard library includes
 #include <string>
@@ -352,4 +352,4 @@ namespace DDM
 
 }
 
-#endif // !_GAMEOBJECT_
+#endif // !_DDM_GAMEOBJECT_

@@ -1,8 +1,8 @@
 // InfoComponent.h
 // This component will display information like the current frame rate and other useful information
 
-#ifndef _INFO_COMPONENT_
-#define _INFO_COMPONENT_
+#ifndef _DDM_INFO_COMPONENT_
+#define _DDM_INFO_COMPONENT_
 
 
 // Parent include
@@ -77,4 +77,4 @@ namespace DDM
 	};
 }
 
-#endif // !_INFO_COMPONENT_
+#endif // !_DDM_INFO_COMPONENT_

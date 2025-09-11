@@ -1,8 +1,8 @@
 // Component.h
 // This class will serve as the base for any component created
 
-#ifndef _COMPONENT_
-#define _COMPONENT_
+#ifndef _DDM_COMPONENT_
+#define _DDM_COMPONENT_
 
 // File includes
 #include "GameObject.h"
@@ -206,4 +206,4 @@ namespace DDM
 		return m_pOwner->HasComponent<T>();
 	}
 }
-#endif // !_COMPONENT_
+#endif // !_DDM_COMPONENT_

@@ -1,8 +1,8 @@
 // Camera.h
 
 
-#ifndef CameraComponentIncluded
-#define CameraComponentIncluded
+#ifndef _DDM_CAMERA_
+#define _DDM_CAMERA_
 
 // Parent include
 #include "BaseClasses/Component.h"
@@ -122,4 +122,4 @@ namespace DDM
 		void UpdateProjectionMatrix();
 	};
 }
-#endif // !CameraComponentIncluded
+#endif // !_DDM_CAMERA_

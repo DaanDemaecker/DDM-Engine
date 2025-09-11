@@ -2,8 +2,8 @@
 // This class will serve as the base class for descriptor object classes
 // Descriptor object classes will be needed to automate descriptor set updating
 
-#ifndef _DESCRIPTOR_OBJECT_
-#define _DESCRIPTOR_OBJECT_
+#ifndef _DDM_DESCRIPTOR_OBJECT_
+#define _DDM_DESCRIPTOR_OBJECT_
 
 // File includes
 #include "Includes/VulkanIncludes.h"
@@ -57,4 +57,4 @@ namespace DDM
 
 	};
 }
-#endif // !_DESCRIPTOR_OBJECT_
+#endif // !_DDM_DESCRIPTOR_OBJECT_

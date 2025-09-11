@@ -1,8 +1,8 @@
 // Material.h
 // This class will serve as the baseclass for all materials
 
-#ifndef _MATERIAL_
-#define _MATERIAL_
+#ifndef _DDM_MATERIAL_
+#define _DDM_MATERIAL_
 
 // File includes
 #include "DataTypes/Structs.h"
@@ -99,4 +99,4 @@ namespace DDM
 		bool m_ShouldUpdateDescriptorSets{true};
 	};
 }
-#endif // !_MATERIAL_
+#endif // !_DDM_MATERIAL_

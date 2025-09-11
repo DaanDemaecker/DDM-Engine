@@ -1,8 +1,8 @@
 // SpectatorMovement.h
 // This component will allow the user to move the camera around by using the keyboard and mouse
 
-#ifndef _SPECTATOR_MOVEMENT_
-#define _SPECTATOR_MOVEMENT_
+#ifndef _DDM_SPECTATOR_MOVEMENT_
+#define _DDM_SPECTATOR_MOVEMENT_
 
 // Parent include
 #include "BaseClasses/Component.h"
@@ -49,4 +49,4 @@ namespace DDM
 }
 
 
-#endif // !_SPECTATOR_MOVEMENT_
+#endif // !_DDM_SPECTATOR_MOVEMENT_

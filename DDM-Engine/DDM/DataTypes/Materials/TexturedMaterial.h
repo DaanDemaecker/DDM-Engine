@@ -1,8 +1,8 @@
 // TexturedMaterial.h
 // This material holds a number of textures and sends them to the shader
 
-#ifndef _TEXTURED_MATERIAL_
-#define _TEXTURED_MATERIAL_
+#ifndef _DDM_TEXTURED_MATERIAL_
+#define _DDM_TEXTURED_MATERIAL_
 
 // Parent include
 #include "Material.h"
@@ -61,4 +61,4 @@ namespace DDM
 		std::vector<std::unique_ptr<TextureDescriptorObject>> m_pDescriptorObjects{};
 	};
 }
-#endif // !_TEXTURED_MATERIAL_
+#endif // !_DDM_TEXTURED_MATERIAL_

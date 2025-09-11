@@ -23,21 +23,21 @@
 #include <iostream>
 #include <algorithm>
 
-DDM::ModelLoader::ModelLoader()
+DDM::ModelLoaderComponent::ModelLoaderComponent()
 	:Component()
 {
 	// Add callback to window
-	auto boundCallback = std::bind(&DDM::ModelLoader::DropFileCallback, this, std::placeholders::_1, std::placeholders::_2);
+	auto boundCallback = std::bind(&DDM::ModelLoaderComponent::DropFileCallback, this, std::placeholders::_1, std::placeholders::_2);
 	Window::GetInstance().AddCallback(this, boundCallback);
 }
 
-DDM::ModelLoader::~ModelLoader()
+DDM::ModelLoaderComponent::~ModelLoaderComponent()
 {
 	// Remove callback
 	Window::GetInstance().RemoveCallback(this);
 }
 
-void DDM::ModelLoader::OnGUI()
+void DDM::ModelLoaderComponent::OnGUI()
 {
 	ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_Framed;
 
@@ -63,7 +63,7 @@ void DDM::ModelLoader::OnGUI()
 	}
 }
 
-void DDM::ModelLoader::LoadObject()
+void DDM::ModelLoaderComponent::LoadObject()
 {
 	// If no object name, return
 	if (m_ObjectName[0] == '\0')
@@ -92,7 +92,7 @@ void DDM::ModelLoader::LoadObject()
 	std::fill(m_ObjectName, m_ObjectName + m_TextLength, 0);
 }
 
-void DDM::ModelLoader::DropFileCallback(int count, const char** paths)
+void DDM::ModelLoaderComponent::DropFileCallback(int count, const char** paths)
 {
 	// Check if textbox is hovered
 	if (!m_IsTextboxHovered || count <= 0)

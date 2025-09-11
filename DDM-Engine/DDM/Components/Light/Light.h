@@ -1,5 +1,8 @@
-#ifndef _LIGHT_
-#define _LIGHT_
+// Light.h
+// This file holds the Light struct, used for sending lighting information to the shader
+
+#ifndef _DDM_LIGHT_
+#define _DDM_LIGHT_
 
 // File includes
 #include "Includes/GLMIncludes.h"
@@ -44,4 +47,4 @@ namespace DDM
 #pragma warning(pop)
 }
 
-#endif // !_LIGHT_
+#endif // !_DDM_LIGHT_

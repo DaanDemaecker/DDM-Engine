@@ -1,8 +1,8 @@
 // MaterialSwitchManager.h
 // This component will be used to swap the material of all registered MaterialSwitchers
 
-#ifndef _MATERIAL_SWITCH_MANAGER_
-#define _MATERIAL_SWITCH_MANAGER_
+#ifndef _DDM_MATERIAL_SWITCH_MANAGER_
+#define _DDM_MATERIAL_SWITCH_MANAGER_
 
 
 // Parent include
@@ -94,4 +94,4 @@ namespace DDM
 	};
 }
 
-#endif // !_MATERIAL_SWITCH_MANAGER_
+#endif // !_DDM_MATERIAL_SWITCH_MANAGER_

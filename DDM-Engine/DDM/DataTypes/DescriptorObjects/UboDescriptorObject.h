@@ -1,8 +1,8 @@
 // UboDescriptorObject.h
 // This class will handle the buffers, memory and descriptor set updates of Uniform Buffer Objects
 
-#ifndef _UBO_DESCRIPTOR_OBJECT_
-#define _UBO_DESCRIPTOR_OBJECT_
+#ifndef _DDM_UBO_DESCRIPTOR_OBJECT_
+#define _DDM_UBO_DESCRIPTOR_OBJECT_
 
 // File includes
 #include "DescriptorObject.h"
@@ -199,4 +199,4 @@ namespace DDM
 	}
 }
 
-#endif // !_UBO_DESCRIPTOR_OBJECT_
+#endif // !_DDM_UBO_DESCRIPTOR_OBJECT_

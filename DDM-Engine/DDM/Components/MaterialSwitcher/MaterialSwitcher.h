@@ -2,8 +2,8 @@
 // This component will be used to swap the material of MeshRenderComponent
 // from a list of given materials
 
-#ifndef _MATERIAL_SWITCHER_
-#define _MATERIAL_SWITCHER_
+#ifndef _DDM_MATERIAL_SWITCHER_
+#define _DDM_MATERIAL_SWITCHER_
 
 // Parent include
 #include "BaseClasses/Component.h"
@@ -61,4 +61,4 @@ namespace DDM
 	};
 }
 
-#endif // !_MATERIAL_SWITCHER_
+#endif // !_DDM_MATERIAL_SWITCHER_

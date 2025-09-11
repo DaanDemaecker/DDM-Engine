@@ -1,7 +1,7 @@
 // InputAttachmentDescriptorObject.h
 
-#ifndef _INPUT_ATTACHMENT_DESCRIPTOR_OBJECT_
-#define _INPUT_ATTACHMENT_DESCRIPTOR_OBJECT_
+#ifndef _DDM_INPUT_ATTACHMENT_DESCRIPTOR_OBJECT_
+#define _DDM_INPUT_ATTACHMENT_DESCRIPTOR_OBJECT_
 
 // Parent include 
 #include "DescriptorObject.h"
@@ -51,4 +51,4 @@ namespace DDM
 	};
 }
 
-#endif // !_INPUT_ATTACHMENT_DESCRIPTOR_OBJECT_
+#endif // !_DDM_INPUT_ATTACHMENT_DESCRIPTOR_OBJECT_

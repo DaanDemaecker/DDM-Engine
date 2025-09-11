@@ -1,8 +1,8 @@
 // Skybox.h
 // This component will render a skybox
 
-#ifndef SkyBoxIncluded
-#define SkyBoxIncluded
+#ifndef _DDM_SKYBOX_
+#define _DDM_SKYBOX_
 
 // Parent include
 #include "Components/MeshRenderer.h"
@@ -121,4 +121,4 @@ namespace DDM
 	};
 
 }
-#endif // !SkyBoxIncluded
+#endif // !_DDM_SKYBOX_

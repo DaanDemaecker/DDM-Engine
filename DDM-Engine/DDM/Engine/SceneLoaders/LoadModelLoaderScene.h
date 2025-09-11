@@ -109,7 +109,7 @@ namespace LoadModelLoaderScene
 		auto pModelLoader{ scene->CreateGameObject("ModelLoader") };
 		pModelLoader->SetShowImGui(true);
 
-		auto pModelLoaderComponent{pModelLoader->AddComponent<DDM::ModelLoader>()};
+		auto pModelLoaderComponent{pModelLoader->AddComponent<DDM::ModelLoaderComponent>()};
 		pModelLoaderComponent->SetShowImGui(true);
 	}
 }
