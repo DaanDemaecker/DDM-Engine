@@ -1,31 +1,10 @@
-#include "Vulkan/VulkanObject.h"
-#include "../../Managers/SceneManager.h"
+// LoadAOScene.h
+// This file is used to load in a single scene
+// In this case a scene to show of the ambient occlusion generation
 
-#include "../../DataTypes/Materials/Material.h"
-#include "../../DataTypes/Materials/TexturedMaterial.h"
-#include "../../DataTypes/Materials/MultiMaterial.h"
-
-#include "Components/MeshRenderer.h"
-#include "Vulkan/VulkanWrappers/Mesh.h"
-#include "Components/Transform.h"
-#include "../Scene.h"
-#include "Components/SkyBox.h"
-
-#include "Components/Camera.h"
-#include "Components/Light/LightComponent.h"
-
-#include "Components/Rotator.h"
-#include "Components/SpectatorMovement.h"
-
-#include "../../Managers/ResourceManager.h"
-#include "../../Managers/ConfigManager.h"
-#include "Engine/DDMModelLoader.h"
-
-#include "Components/MaterialSwitcher/MaterialSwitchManager.h"
-#include "Components/MaterialSwitcher/MaterialSwitcher.h"
-#include "Components/InfoComponent.h"
-
+// File includes
 #include "Vulkan/Renderers/AORenderers/AoRenderPasses.h"
+
 
 namespace LoadAOScene
 {

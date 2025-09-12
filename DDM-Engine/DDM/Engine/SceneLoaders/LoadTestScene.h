@@ -1,29 +1,20 @@
-#include "Vulkan/VulkanObject.h"
-#include "../../Managers/SceneManager.h"
+// LoadTestScene.h
+// This file is used to load in a single scene
+// In this case a scene to show of the forward renderer
 
-#include "../../DataTypes/Materials/Material.h"
-#include "../../DataTypes/Materials/TexturedMaterial.h"
-#include "../../DataTypes/Materials/MultiMaterial.h"
+// File includes
+#include "DataTypes/Materials/MultiMaterial.h"
+#include "DataTypes/Materials/TexturedMaterial.h"
 
-#include "Components/MeshRenderer.h"
-#include "Vulkan/VulkanWrappers/Mesh.h"
-#include "Components/Transform.h"
-#include "../Scene.h"
-#include "Components/SkyBox.h"
+#include "Managers/ResourceManager.h"
 
-#include "Components/Camera.h"
-#include "Components/Light/LightComponent.h"
-
-#include "Components/Rotator.h"
-#include "Components/SpectatorMovement.h"
-
-#include "../../Managers/ResourceManager.h"
-#include "../../Managers/ConfigManager.h"
 #include "Engine/DDMModelLoader.h"
 
-#include "Components/MaterialSwitcher/MaterialSwitchManager.h"
 #include "Components/MaterialSwitcher/MaterialSwitcher.h"
+#include "Components/MaterialSwitcher/MaterialSwitchManager.h"
 #include "Components/InfoComponent.h"
+#include "Components/Rotator.h"
+#include "Components/Camera.h"
 
 namespace LoadTestScene
 {

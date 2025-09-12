@@ -1,13 +1,20 @@
-#include "Vulkan/VulkanObject.h"
+// LoadModelLoaderScene.h
+// This file is used to load in a single scene
+// In this case a scene to show of the model loader
+
+// File includes
 #include "Managers/SceneManager.h"
-#include "../Scene.h"
-#include "Components/SpectatorMovement.h"
-#include "Components/Camera.h"
-#include "Components/SkyBox.h"
-#include "Components/Transform.h"
-#include "Components/Light/LightComponent.h"
+#include "Managers/ConfigManager.h"
+
+#include "Engine/Scene.h"
+
 #include "Components/ModelLoader.h"
-#include "../../Managers/ConfigManager.h"
+#include "Components/SpectatorMovement.h"
+#include "Components/SkyBox.h"
+#include "Components/Light/LightComponent.h"
+#include "Components/Transform.h"
+
+#include "BaseClasses/GameObject.h"
 
 namespace LoadModelLoaderScene
 {
