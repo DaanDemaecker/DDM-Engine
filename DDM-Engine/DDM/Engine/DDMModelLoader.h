@@ -1,8 +1,8 @@
 // DDMModelLoader.h
 // This class will hold the model loader that can be used to load in 3D models of different types
 
-#ifndef _DDM_MODEL_LOADER_
-#define _DDM_MODEL_LOADER_
+#ifndef _DDM_DDM_MODEL_LOADER_
+#define _DDM_DDM_MODEL_LOADER_
 
 // Parent class include
 #include "Singleton.h"
@@ -84,4 +84,4 @@ namespace DDM
 }
 
 
-#endif // !_DDM_MODEL_LOADER_
+#endif // !_DDM_DDM_MODEL_LOADER_

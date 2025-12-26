@@ -51,11 +51,6 @@ namespace DDM
 		/// </summary>
 		virtual void LateUpdate() override;
 
-		// Update uniform buffer with camera transform
-		// Parameters:
-		//     buffer: reference to the uniform buffer object that needs updating
-		//     extent: the extent of the swapchain
-
 		/// <summary>
 		/// Update uniform buffer with camera transform
 		/// </summary>

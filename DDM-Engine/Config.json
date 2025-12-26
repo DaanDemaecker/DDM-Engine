@@ -3,7 +3,7 @@
   "WindowWidth": 800,
   "WindowHeight": 600,
   "FullScreen": false,
-  "Maximized": false,
+  "Maximized": true,
   "Monitor": 0,
   "MaxFrames": 2,
   "ApplicationName": "D3D-Lite-Engine",

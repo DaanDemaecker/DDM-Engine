@@ -70,8 +70,10 @@ add_executable(${EXECUTABLE_NAME}
  "Managers/Input/Mouse.cpp"
  "Vulkan/VulkanManagers/ImageManager/STBImage.cpp"
  "Vulkan/VulkanWrappers/Image.cpp"
- "Includes/STBIncludes.cpp" "Includes/DDMModelLoaderIncludes.h"
-  "Vulkan/VulkanWrappers/Buffer.cpp")
+ "Includes/STBIncludes.cpp"
+ "Includes/DDMModelLoaderIncludes.h"
+  "Vulkan/VulkanWrappers/Buffer.cpp"
+  "ServiceLocator/ServiceLocator.cpp")
 
 
 # Include directories specific to this target
