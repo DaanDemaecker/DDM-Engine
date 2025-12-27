@@ -4,6 +4,12 @@
 #ifndef _DDM_SERVICE_LOCATOR_
 #define _DDM_SERVICE_LOCATOR_
 
+// File includes
+#include "SoundSystem/SoundSystem.h"
+
+// File includes
+#include <memory>
+
 namespace DDM
 {
 	class ServiceLocator
@@ -18,8 +24,12 @@ namespace DDM
 		ServiceLocator& operator=(ServiceLocator&) = delete;
 		ServiceLocator& operator=(ServiceLocator&&) = delete;
 
-	private:
+		static SoundSystem& GetSoundSystem();
+		static void RegisterSoundSystem(std::unique_ptr<SoundSystem> soundSystem);
 
+	private:
+		static std::unique_ptr<SoundSystem> m_pSoundSystemInstance;
+		static std::unique_ptr<DefaultSoundSystem> m_DefaultSoundSystemInstance;
 	};
 }
 
