@@ -12,6 +12,9 @@
 #include "Vulkan/Renderers/AORenderers/HBAORenderer.h"
 #include "Vulkan/Renderers/AORenderers/GTAORenderer.h"
 
+#include "ServiceLocator/ServiceLocator.h"
+#include "ServiceLocator/SoundSystem/FmodSoundSystem.h"
+
 enum
 {
 	activeRendererForward = 0,
@@ -25,6 +28,9 @@ int main()
 {
 	// Seed random number generator
 	srand(static_cast<uint16_t>(time(NULL)));
+
+	DDM::ServiceLocator::RegisterSoundSystem(std::make_unique<DDM::FmodSoundSystem>());
+	DDM::ServiceLocator::GetSoundSystem().Play("Resources/Sound/waluigi.mp3");
 
 	// Create the engine object and run it with the load function
 	DDM::DDMEngine engine{};

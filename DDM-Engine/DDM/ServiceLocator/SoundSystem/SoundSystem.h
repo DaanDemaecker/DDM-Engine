@@ -62,6 +62,11 @@ namespace DDM
 		/// <param name="volume: ">value of the new folume</param>
 		virtual void SetVolume(float volume) = 0;
 
+		/// <summary>
+		/// Update the sound system
+		/// </summary>
+		virtual void Update() = 0;
+
 	};
 
 	class DefaultSoundSystem final : public SoundSystem
@@ -78,6 +83,7 @@ namespace DDM
 
 		virtual void SetVolume(float volume) override {};
 
+		virtual void Update() override {};
 	};
 }
 
