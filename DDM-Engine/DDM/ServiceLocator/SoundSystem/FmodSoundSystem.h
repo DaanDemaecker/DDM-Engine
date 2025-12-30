@@ -17,7 +17,9 @@ namespace DDM
 	public:
 		FmodSoundSystem();
 
-		virtual void Play(std::string& fileName) override;
+		virtual void PlayClip(std::string& fileName) override;
+
+		virtual void PlayStream(std::string& fileName) override;
 
 		virtual void ToggleMute() override {};
 

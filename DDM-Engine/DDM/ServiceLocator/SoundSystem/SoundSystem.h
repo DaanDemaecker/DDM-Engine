@@ -33,17 +33,33 @@ namespace DDM
 		/// Play a sound clip given a filepath
 		/// </summary>
 		/// <param name="fileName: ">path to the requested clip</param>
-		virtual void Play(std::string&& fileName)
+		virtual void PlayClip(std::string&& fileName)
 		{
-			// Forward to l-value function
-			Play(fileName);
+			// Forward to l-value overloaded function
+			PlayClip(fileName);
 		}
 
 		/// <summary>
 		/// Play a sound clip given a filepath
 		/// </summary>
 		/// <param name="fileName: ">path to the requested clip</param>
-		virtual void Play(std::string& fileName) = 0;
+		virtual void PlayClip(std::string& fileName) = 0;
+
+		/// <summary>
+		/// Play a sound track given a filepath
+		/// </summary>
+		/// <param name="fileName: ">path to the requested track</param>
+		virtual void PlayStream(std::string&& fileName)
+		{
+			// Forward to l-value overloaded function
+			PlayStream(fileName);
+		}
+
+		/// <summary>
+		/// Play a sound track given a filepath
+		/// </summary>
+		/// <param name="fileName: ">path to the requested track</param>
+		virtual void PlayStream(std::string& fileName) = 0;
 
 		/// <summary>
 		/// Toggle wether the sound is muted or not
@@ -75,15 +91,17 @@ namespace DDM
 		DefaultSoundSystem() = default;
 		virtual ~DefaultSoundSystem() override = default;
 
-		virtual void Play(std::string& fileName) override {};
+		virtual void PlayClip(std::string& fileName) override {}
 
-		virtual void ToggleMute() override {};
+		virtual void PlayStream(std::string& fileName) override {}
 
-		virtual void SetMute(bool mute) override {};
+		virtual void ToggleMute() override {}
 
-		virtual void SetVolume(float volume) override {};
+		virtual void SetMute(bool mute) override {}
 
-		virtual void Update() override {};
+		virtual void SetVolume(float volume) override {}
+
+		virtual void Update() override {}
 	};
 }
 

@@ -30,7 +30,7 @@ int main()
 	srand(static_cast<uint16_t>(time(NULL)));
 
 	DDM::ServiceLocator::RegisterSoundSystem(std::make_unique<DDM::FmodSoundSystem>());
-	DDM::ServiceLocator::GetSoundSystem().Play("Resources/Sound/waluigi.mp3");
+	DDM::ServiceLocator::GetSoundSystem().PlayStream("Resources/Sound/Darksiders.mp3");
 
 	// Create the engine object and run it with the load function
 	DDM::DDMEngine engine{};

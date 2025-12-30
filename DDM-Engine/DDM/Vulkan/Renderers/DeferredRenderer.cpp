@@ -576,12 +576,13 @@ void DDM::DeferredRenderer::RecordCommandBuffer(VkCommandBuffer& commandBuffer, 
 	
 	m_pRenderpass->BeginRenderPass(commandBuffer, m_pSwapchainWrapper->GetFrameBuffer(imageIndex, m_pRenderpass.get()), extent);
 
-
+	// Depth subass
 	SceneManager::GetInstance().RenderDepth();
 
 
 	vkCmdNextSubpass(commandBuffer, VK_SUBPASS_CONTENTS_INLINE);
 
+	// Render geometry
 	SceneManager::GetInstance().Render();
 
 	SceneManager::GetInstance().RenderTransparancy();

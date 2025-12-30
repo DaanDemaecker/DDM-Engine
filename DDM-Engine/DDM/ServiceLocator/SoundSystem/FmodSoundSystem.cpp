@@ -31,7 +31,7 @@ namespace DDM
 
 		~FmodImpl()
 		{
-			for(auto& sound : m_Sounds)
+			for(auto& sound : m_Clips)
 			{
 				sound.second->release();
 				sound.second = nullptr;
@@ -47,26 +47,67 @@ namespace DDM
 			m_pSystem->update();
 		}
 
-		void Play(std::string& fileName)
+		void PlayClip(std::string& fileName)
 		{
-			if (m_Sounds[fileName] == nullptr)
+			if (m_Clips[fileName] == nullptr)
 			{
-				CreateSound(fileName);
+				CreateClip(fileName);
 			}
 
 			int channelIndex = GetFreeChannel();
 
-			m_pSystem->playSound(m_Sounds[fileName], nullptr, false,  &m_Channels[channelIndex]);
+			if (channelIndex < 0)
+			{
+				std::cout << "No available channel \n";
+			}
+
+			m_pSystem->playSound(m_Clips[fileName], nullptr, false,  &m_Channels[channelIndex]);
+		}
+
+		void PlayStream(std::string& fileName)
+		{
+			if (m_Streams[fileName] == nullptr)
+			{
+				CreateStream(fileName);
+			}
+
+			if (m_Channels[m_StreamChannel] != nullptr)
+			{
+				bool isPlaying{};
+				FMOD_RESULT result = m_Channels[m_StreamChannel]->isPlaying(&isPlaying);
+
+				if (result != FMOD_OK)
+				{
+					HandleError(result);
+				}
+
+				if (isPlaying)
+				{
+					result = m_Channels[m_StreamChannel]->stop();
+
+					if (result != FMOD_OK)
+					{
+						HandleError(result);
+					}
+				}
+			}
+
+			m_pSystem->playSound(m_Streams[fileName], nullptr, false, &m_Channels[m_StreamChannel]);
 		}
 
 	private:
 		const int m_MaxChannels{ 32 };
 
+		const int m_StreamChannel{ 0 };
+
 		// FMOD core system
 		FMOD::System* m_pSystem;
 
-		// List of FMOD sounds
-		std::unordered_map<std::string, FMOD::Sound*> m_Sounds{};
+		// List of FMOD clips
+		std::unordered_map<std::string, FMOD::Sound*> m_Clips{};
+
+		// List of FMOD streams
+		std::unordered_map<std::string, FMOD::Sound*> m_Streams{};
 
 		// List of available channels
 		std::vector<FMOD::Channel*> m_Channels{};
@@ -76,11 +117,17 @@ namespace DDM
 			std::cout << "Fmod error: " << result << "\n";
 		}
 
-		void CreateSound(std::string& fileName)
+		void CreateClip(std::string& fileName)
 		{
-			std::cout << fileName << "\n";
+			std::cout << "Creating clip: " << fileName << "\n";
+			
+			m_pSystem->createSound(fileName.c_str(), FMOD_LOOP_OFF, nullptr, &m_Clips[fileName]);
+		}
 
-			m_pSystem->createSound(fileName.c_str(), FMOD_DEFAULT, nullptr, &m_Sounds[fileName]);
+		void CreateStream(std::string& fileName)
+		{
+			std::cout << "Creating stream: " << fileName << "\n";
+			m_pSystem->createSound(fileName.c_str(), FMOD_LOOP_NORMAL, nullptr, &m_Streams[fileName]);
 		}
 
 		int GetFreeChannel()
@@ -89,6 +136,11 @@ namespace DDM
 
 			for(int i{}; i < m_Channels.size(); ++i)
 			{
+				if (i == m_StreamChannel)
+				{
+					continue;
+				}
+
 				bool isPlaying = false;
 
 				if (m_Channels[i] == nullptr)
@@ -109,7 +161,7 @@ namespace DDM
 				}
 			}
 
-			return 0;
+			return -1;
 		}
 	};
 }
@@ -120,9 +172,14 @@ DDM::FmodSoundSystem::FmodSoundSystem()
 	m_pImpl = std::make_unique<FmodImpl>();
 }
 
-void DDM::FmodSoundSystem::Play(std::string& fileName)
+void DDM::FmodSoundSystem::PlayClip(std::string& fileName)
 {
-	m_pImpl->Play(fileName);
+	m_pImpl->PlayClip(fileName);
+}
+
+void DDM::FmodSoundSystem::PlayStream(std::string& fileName)
+{
+	m_pImpl->PlayStream(fileName);
 }
 
 void DDM::FmodSoundSystem::Update()
