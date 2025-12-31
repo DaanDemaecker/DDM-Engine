@@ -21,9 +21,9 @@ namespace DDM
 
 		virtual void PlayStream(std::string& fileName) override;
 
-		virtual void ToggleMute() override {};
+		virtual void ToggleMute() override;
 
-		virtual void SetMute(bool mute) override {};
+		virtual void SetMute(bool mute) override;
 
 		virtual void SetVolume(float volume) override {};
 

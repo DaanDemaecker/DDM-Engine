@@ -95,10 +95,32 @@ namespace DDM
 			m_pSystem->playSound(m_Streams[fileName], nullptr, false, &m_Channels[m_StreamChannel]);
 		}
 
+		void SetMute(bool mute)
+		{
+			m_Muted = mute;
+
+			for (auto& channel : m_Channels)
+			{
+				if (channel == nullptr)
+				{
+					continue;
+				}
+				
+				channel->setMute(m_Muted);
+			}
+		}
+
+		void ToggleMute()
+		{
+			SetMute(!m_Muted);
+		}
+
 	private:
 		const int m_MaxChannels{ 32 };
 
 		const int m_StreamChannel{ 0 };
+
+		bool m_Muted{ false };
 
 		// FMOD core system
 		FMOD::System* m_pSystem;
@@ -180,6 +202,16 @@ void DDM::FmodSoundSystem::PlayClip(std::string& fileName)
 void DDM::FmodSoundSystem::PlayStream(std::string& fileName)
 {
 	m_pImpl->PlayStream(fileName);
+}
+
+void DDM::FmodSoundSystem::ToggleMute()
+{
+	m_pImpl->ToggleMute();
+}
+
+void DDM::FmodSoundSystem::SetMute(bool mute)
+{
+	m_pImpl->SetMute(mute);
 }
 
 void DDM::FmodSoundSystem::Update()

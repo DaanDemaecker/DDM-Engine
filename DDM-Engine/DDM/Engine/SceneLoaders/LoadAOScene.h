@@ -4,6 +4,7 @@
 
 // File includes
 #include "Vulkan/Renderers/AORenderers/AoRenderPasses.h"
+#include "ServiceLocator/ServiceLocator.h"
 
 
 namespace LoadAOScene
