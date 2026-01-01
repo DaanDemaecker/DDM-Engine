@@ -61,7 +61,7 @@ namespace DDM
 				std::cout << "No available channel \n";
 			}
 
-			m_pSystem->playSound(m_Clips[fileName], nullptr, false,  &m_Channels[channelIndex]);
+			m_pSystem->playSound(m_Clips[fileName], nullptr, m_Paused,  &m_Channels[channelIndex]);
 		}
 
 		void PlayStream(std::string& fileName)
@@ -92,7 +92,7 @@ namespace DDM
 				}
 			}
 
-			m_pSystem->playSound(m_Streams[fileName], nullptr, false, &m_Channels[m_StreamChannel]);
+			m_pSystem->playSound(m_Streams[fileName], nullptr, m_Paused, &m_Channels[m_StreamChannel]);
 		}
 
 		void SetMute(bool mute)
@@ -115,12 +115,24 @@ namespace DDM
 			SetMute(!m_Muted);
 		}
 
+		void PauseAll()
+		{
+			SetPaused(true);
+		}
+
+		void ResumeAll()
+		{
+			SetPaused(false);
+		}
+
 	private:
 		const int m_MaxChannels{ 32 };
 
 		const int m_StreamChannel{ 0 };
 
 		bool m_Muted{ false };
+
+		bool m_Paused{ false };
 
 		// FMOD core system
 		FMOD::System* m_pSystem;
@@ -185,6 +197,16 @@ namespace DDM
 
 			return -1;
 		}
+
+		void SetPaused(bool paused)
+		{
+			m_Paused = paused;
+
+			for (auto& channel : m_Channels)
+			{
+				channel->setPaused(m_Paused);
+			}
+		}
 	};
 }
 
@@ -217,4 +239,14 @@ void DDM::FmodSoundSystem::SetMute(bool mute)
 void DDM::FmodSoundSystem::Update()
 {
 	m_pImpl->Update();
+}
+
+void DDM::FmodSoundSystem::PauseAll()
+{
+	m_pImpl->PauseAll();
+}
+
+void DDM::FmodSoundSystem::ResumeAll()
+{
+	m_pImpl->ResumeAll();
 }

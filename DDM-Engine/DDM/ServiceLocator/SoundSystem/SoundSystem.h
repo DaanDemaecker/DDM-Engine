@@ -83,6 +83,15 @@ namespace DDM
 		/// </summary>
 		virtual void Update() = 0;
 
+		/// <summary>
+		/// Pause all channels
+		/// </summary>
+		virtual void PauseAll() = 0;
+
+		/// <summary>
+		/// Resume all channels
+		/// </summary>
+		virtual void ResumeAll() = 0;
 	};
 
 	class DefaultSoundSystem final : public SoundSystem
@@ -102,6 +111,10 @@ namespace DDM
 		virtual void SetVolume(float volume) override {}
 
 		virtual void Update() override {}
+
+		virtual void PauseAll() override {}
+
+		virtual void ResumeAll() override {}
 	};
 }
 

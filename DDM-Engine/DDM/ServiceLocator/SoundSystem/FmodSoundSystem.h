@@ -27,7 +27,11 @@ namespace DDM
 
 		virtual void SetVolume(float volume) override {};
 
-		virtual void Update();
+		virtual void Update() override;
+
+		virtual void PauseAll() override;
+
+		virtual void ResumeAll() override;
 
 	private:
 		std::unique_ptr<FmodImpl> m_pImpl;
