@@ -35,6 +35,8 @@ Currently, there is a single global directional light that is used for shading i
 Future goals for my engine include:
 
 - Sound system using fmod
+- Options for more lights and light types
+- Physics using the Havok physics engine
 
 
 ## Object Loader
