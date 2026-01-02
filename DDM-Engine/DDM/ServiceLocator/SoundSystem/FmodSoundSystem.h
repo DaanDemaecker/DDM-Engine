@@ -33,6 +33,12 @@ namespace DDM
 
 		virtual void ResumeAll() override;
 
+		virtual void SetMasterVolume(float volume) override;
+
+		virtual void SetMusicVolume(float volume) override;
+
+		virtual void SetSfxVolume(float volume) override;
+
 	private:
 		std::unique_ptr<FmodImpl> m_pImpl;
 	};

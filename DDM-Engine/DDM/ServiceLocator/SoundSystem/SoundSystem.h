@@ -92,6 +92,26 @@ namespace DDM
 		/// Resume all channels
 		/// </summary>
 		virtual void ResumeAll() = 0;
+
+		/// <summary>
+		/// Set master volume to a new volume between 0 and 10
+		/// </summary>
+		/// <param name="volume: ">new volume</param>
+		virtual void SetMasterVolume(float volume) = 0;
+		
+
+		/// <summary>
+		/// Set music volume to a new volume between 0 and 10
+		/// </summary>
+		/// <param name="volume: ">new volume</param>
+		virtual void SetMusicVolume(float volume) = 0;
+
+
+		/// <summary>
+		/// Set sfx volume to a new volume between 0 and 10
+		/// </summary>
+		/// <param name="volume: ">new volume</param>
+		virtual void SetSfxVolume(float volume) = 0;
 	};
 
 	class DefaultSoundSystem final : public SoundSystem
@@ -115,6 +135,12 @@ namespace DDM
 		virtual void PauseAll() override {}
 
 		virtual void ResumeAll() override {}
+
+		virtual void SetMasterVolume(float volume) override {}
+
+		virtual void SetMusicVolume(float volume) override {}
+
+		virtual void SetSfxVolume(float volume) override {}
 	};
 }
 

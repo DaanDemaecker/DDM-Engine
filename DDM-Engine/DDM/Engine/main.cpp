@@ -33,6 +33,7 @@ int main()
 	
 	auto& soundSystem = DDM::ServiceLocator::GetSoundSystem();
 
+	soundSystem.PlayClip("Resources/Sound/Waluigi.mp3");
 	soundSystem.PlayStream("Resources/Sound/Darksiders.mp3");
 
 	// Create the engine object and run it with the load function

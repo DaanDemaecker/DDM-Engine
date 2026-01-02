@@ -62,6 +62,8 @@ namespace DDM
 			}
 
 			m_pSystem->playSound(m_Clips[fileName], nullptr, m_Paused,  &m_Channels[channelIndex]);
+
+			m_Channels[channelIndex]->setVolume((m_MasterVolume * m_SfxVolume)/m_MaxTotalVolume);
 		}
 
 		void PlayStream(std::string& fileName)
@@ -71,10 +73,10 @@ namespace DDM
 				CreateStream(fileName);
 			}
 
-			if (m_Channels[m_StreamChannel] != nullptr)
+			if (m_Channels[m_MusicChannel] != nullptr)
 			{
 				bool isPlaying{};
-				FMOD_RESULT result = m_Channels[m_StreamChannel]->isPlaying(&isPlaying);
+				FMOD_RESULT result = m_Channels[m_MusicChannel]->isPlaying(&isPlaying);
 
 				if (result != FMOD_OK)
 				{
@@ -83,7 +85,7 @@ namespace DDM
 
 				if (isPlaying)
 				{
-					result = m_Channels[m_StreamChannel]->stop();
+					result = m_Channels[m_MusicChannel]->stop();
 
 					if (result != FMOD_OK)
 					{
@@ -92,7 +94,9 @@ namespace DDM
 				}
 			}
 
-			m_pSystem->playSound(m_Streams[fileName], nullptr, m_Paused, &m_Channels[m_StreamChannel]);
+			m_pSystem->playSound(m_Streams[fileName], nullptr, m_Paused, &m_Channels[m_MusicChannel]);
+
+			m_Channels[m_MusicChannel]->setVolume((m_MasterVolume * m_SfxVolume) / m_MaxTotalVolume);
 		}
 
 		void SetMute(bool mute)
@@ -125,14 +129,43 @@ namespace DDM
 			SetPaused(false);
 		}
 
+		void SetMasterVolume(float volume)
+		{
+			m_MasterVolume = std::min(volume, m_MaxPartialVolume);
+			SetVolume();
+		}
+
+		void SetMusicVolume(float volume)
+		{
+			m_MusicVolume = std::min(volume, m_MaxPartialVolume);
+			SetVolume();
+		}
+
+
+		void SetSfxVolume(float volume)
+		{
+			m_SfxVolume = std::min(volume, m_MaxPartialVolume);
+			SetVolume();
+		}
+
 	private:
 		const int m_MaxChannels{ 32 };
 
-		const int m_StreamChannel{ 0 };
+		const int m_MusicChannel{ 0 };
+
+		const float m_MaxTotalVolume{ 100 };
+
+		const float m_MaxPartialVolume{ std::sqrt(m_MaxTotalVolume) };
 
 		bool m_Muted{ false };
 
 		bool m_Paused{ false };
+
+		float m_MasterVolume{10};
+
+		float m_MusicVolume{10};
+
+		float m_SfxVolume{10};
 
 		// FMOD core system
 		FMOD::System* m_pSystem;
@@ -170,7 +203,7 @@ namespace DDM
 
 			for(int i{}; i < m_Channels.size(); ++i)
 			{
-				if (i == m_StreamChannel)
+				if (i == m_MusicChannel)
 				{
 					continue;
 				}
@@ -205,6 +238,21 @@ namespace DDM
 			for (auto& channel : m_Channels)
 			{
 				channel->setPaused(m_Paused);
+			}
+		}
+
+		void SetVolume()
+		{
+			for (int i{}; i < m_Channels.size(); ++i)
+			{
+				if (i == m_MusicChannel)
+				{
+					m_Channels[i]->setVolume((m_MasterVolume * m_MusicVolume) / m_MaxTotalVolume);
+				}
+				else
+				{
+					m_Channels[i]->setVolume((m_MasterVolume * m_SfxVolume) / m_MaxTotalVolume);
+				}
 			}
 		}
 	};
@@ -249,4 +297,19 @@ void DDM::FmodSoundSystem::PauseAll()
 void DDM::FmodSoundSystem::ResumeAll()
 {
 	m_pImpl->ResumeAll();
+}
+
+void DDM::FmodSoundSystem::SetMasterVolume(float volume)
+{
+	m_pImpl->SetMasterVolume(volume);
+}
+
+void DDM::FmodSoundSystem::SetMusicVolume(float volume)
+{
+	m_pImpl->SetMusicVolume(volume);
+}
+
+void DDM::FmodSoundSystem::SetSfxVolume(float volume)
+{
+	m_pImpl->SetSfxVolume(volume);
 }
