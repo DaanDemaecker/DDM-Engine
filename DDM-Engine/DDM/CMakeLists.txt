@@ -1,38 +1,67 @@
 # Create the executable
-add_executable(${EXECUTABLE_NAME}
+add_executable(
+	${EXECUTABLE_NAME}
 
 "BaseClasses/GameObject.cpp"
+
+"CustomComponents/SpectatorMovement.cpp"
+"CustomComponents/Rotator.cpp"
+"CustomComponents/ModelLoader.cpp"
+"CustomComponents/MaterialSwitcher/MaterialSwitcher.cpp"
+"CustomComponents/MaterialSwitcher/MaterialSwitchManager.cpp"
+"CustomComponents/InfoComponent.cpp"
 
 "EngineComponents/Camera.cpp"
 "EngineComponents/Light/LightComponent.cpp"
 "EngineComponents/MeshRenderer.cpp"
-"CustomComponents/Rotator.cpp"
 "EngineComponents/SkyBox.cpp"
-"CustomComponents/SpectatorMovement.cpp"
 "EngineComponents/Transform.cpp"
+
+"DataTypes/DescriptorObjects/InputAttachmentDescriptorObject.cpp"
 "DataTypes/DescriptorObjects/TextureDescriptorObject.cpp"
-"DataTypes/Materials/CubeMapMaterial.cpp"
+
 "DataTypes/Materials/Material.cpp"
+"DataTypes/Materials/CubeMapMaterial.cpp"
+"DataTypes/Materials/MultiMaterial.cpp"
 "DataTypes/Materials/TexturedMaterial.cpp"
-"Vulkan/VulkanWrappers/Mesh.cpp"
+
 "Engine/DDMEngine.cpp"
 "Engine/main.cpp"
 "Engine/Scene.cpp"
 "Engine/Window.cpp"
+"Engine/DDMModelLoader.cpp"
 
 "Managers/ConfigManager.cpp"
 "Managers/SceneManager.cpp"
 "Managers/TimeManager.cpp"
+"Managers/ResourceManager.cpp"
+"Managers/InputManager.cpp"
+"Managers/Input/KeyboardImpl.cpp"
+"Managers/Input/MouseImpl.h"
+"Managers/Input/MouseImpl.cpp"
+"Managers/Input/Mouse.cpp"
 
 "Utils/Utils.cpp"
 
+"Vulkan/VulkanObject.cpp"
+"Vulkan/VulkanUtils.cpp"
+
 "Vulkan/SpirVReflect/spirv_reflect.cpp"
+
+"Vulkan/Renderers/ForwardRenderer.cpp"
+"Vulkan/Renderers/DeferredRenderer.cpp"
+"Vulkan/Renderers/AORenderers/SSAORenderer.cpp"
+"Vulkan/Renderers/AORenderers/HBAORenderer.cpp"
+"Vulkan/Renderers/AORenderers/GTAORenderer.cpp"
+
 "Vulkan/VulkanManagers/BufferCreator.cpp"
 "Vulkan/VulkanManagers/CommandpoolManager.cpp"
 "Vulkan/VulkanManagers/ImageManager/ImageManager.cpp"
 "Vulkan/VulkanManagers/ImageViewManager.cpp"
 "Vulkan/VulkanManagers/PipelineManager.cpp"
 "Vulkan/VulkanManagers/SyncObjectManager.cpp"
+"Vulkan/VulkanManagers/ImageManager/STBImage.cpp"
+
 "Vulkan/VulkanWrappers/DescriptorPoolWrapper.cpp"
 "Vulkan/VulkanWrappers/GPUObject.cpp"
 "Vulkan/VulkanWrappers/ImGuiWrapper.cpp"
@@ -42,39 +71,19 @@ add_executable(${EXECUTABLE_NAME}
 "Vulkan/VulkanWrappers/ShaderModuleWrapper.cpp"
 "Vulkan/VulkanWrappers/SurfaceWrapper.cpp" 
 "Vulkan/VulkanWrappers/SwapchainWrapper.cpp"
-"Vulkan/VulkanObject.cpp"
-"Vulkan/VulkanUtils.cpp"
-"Vulkan/Renderers/ForwardRenderer.cpp"
-"DataTypes/Materials/MultiMaterial.cpp"
-"CustomComponents/ModelLoader.cpp"
-"Managers/ResourceManager.cpp"
-"Managers/InputManager.cpp"
-"Managers/Input/KeyboardImpl.cpp"
-"Managers/Input/MouseImpl.h"
-"Managers/Input/MouseImpl.cpp"
-"Engine/DDMModelLoader.cpp"
-"CustomComponents/MaterialSwitcher/MaterialSwitcher.cpp"
-"CustomComponents/MaterialSwitcher/MaterialSwitchManager.cpp"
-"CustomComponents/InfoComponent.cpp"
 "Vulkan/VulkanWrappers/VulkanCore.cpp"
-
+"Vulkan/VulkanWrappers/Mesh.cpp"
+"Vulkan/VulkanWrappers/QueryPool.cpp"
 "Vulkan/VulkanWrappers/Attachment.cpp"
 "Vulkan/VulkanWrappers/FrameBuffer.cpp"
-"Vulkan/Renderers/DeferredRenderer.cpp"
 "Vulkan/VulkanWrappers/Subpass.cpp"
-"DataTypes/DescriptorObjects/InputAttachmentDescriptorObject.cpp"
-"Vulkan/Renderers/AORenderers/SSAORenderer.cpp"
-"Vulkan/Renderers/AORenderers/HBAORenderer.cpp"
-"Vulkan/Renderers/AORenderers/GTAORenderer.cpp"
-"Vulkan/VulkanWrappers/QueryPool.cpp"
-"Managers/Input/Mouse.cpp"
-"Vulkan/VulkanManagers/ImageManager/STBImage.cpp"
 "Vulkan/VulkanWrappers/Image.cpp"
-"Includes/STBIncludes.cpp"
-"Includes/DDMModelLoaderIncludes.h"
 "Vulkan/VulkanWrappers/Buffer.cpp"
+
 "ServiceLocator/ServiceLocator.cpp"
 "ServiceLocator/SoundSystem/FmodSoundSystem.cpp"
+
+"Includes/STBIncludes.cpp"
 )
 
 
