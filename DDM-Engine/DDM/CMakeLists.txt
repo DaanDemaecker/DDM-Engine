@@ -10,6 +10,7 @@ add_executable(
 "CustomComponents/MaterialSwitcher/MaterialSwitcher.cpp"
 "CustomComponents/MaterialSwitcher/MaterialSwitchManager.cpp"
 "CustomComponents/InfoComponent.cpp"
+"CustomComponents/Audio/AudioTester.cpp"
 
 "EngineComponents/Camera.cpp"
 "EngineComponents/Light/LightComponent.cpp"
@@ -83,8 +84,7 @@ add_executable(
 "ServiceLocator/ServiceLocator.cpp"
 "ServiceLocator/SoundSystem/FmodSoundSystem.cpp"
 
-"Includes/STBIncludes.cpp"
-)
+"Includes/STBIncludes.cpp")
 
 
 # Include directories specific to this target
