@@ -73,12 +73,6 @@ namespace DDM
 		virtual void SetMute(bool mute) = 0;
 
 		/// <summary>
-		/// Set the master volume of all sound
-		/// </summary>
-		/// <param name="volume: ">value of the new folume</param>
-		virtual void SetVolume(float volume) = 0;
-
-		/// <summary>
 		/// Update the sound system
 		/// </summary>
 		virtual void Update() = 0;
@@ -127,8 +121,6 @@ namespace DDM
 		virtual void ToggleMute() override {}
 
 		virtual void SetMute(bool mute) override {}
-
-		virtual void SetVolume(float volume) override {}
 
 		virtual void Update() override {}
 

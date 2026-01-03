@@ -13,7 +13,7 @@
 
 #include "Utils/Utils.h"
 
-#include "Components/Transform.h"
+#include "EngineComponents/Transform.h"
 
 #include "DDMModelLoader/Mesh.h"
 

@@ -25,8 +25,6 @@ namespace DDM
 
 		virtual void SetMute(bool mute) override;
 
-		virtual void SetVolume(float volume) override {};
-
 		virtual void Update() override;
 
 		virtual void PauseAll() override;

@@ -8,11 +8,11 @@
 
 #include "Engine/Scene.h"
 
-#include "Components/ModelLoader.h"
-#include "Components/SpectatorMovement.h"
-#include "Components/SkyBox.h"
-#include "Components/Light/LightComponent.h"
-#include "Components/Transform.h"
+#include "CustomComponents/ModelLoader.h"
+#include "CustomComponents/SpectatorMovement.h"
+#include "EngineComponents/SkyBox.h"
+#include "EngineComponents/Light/LightComponent.h"
+#include "EngineComponents/Transform.h"
 
 #include "BaseClasses/GameObject.h"
 

@@ -29,10 +29,10 @@
 #include "VulkanWrappers/ImGuiWrapper.h"
 #include "VulkanManagers/SyncObjectManager.h"
 
-#include "Components/MeshRenderer.h"
-#include "Components/Camera.h"
-#include "Components/Transform.h"
-#include "Components/Light/LightComponent.h"
+#include "EngineComponents/MeshRenderer.h"
+#include "EngineComponents/Camera.h"
+#include "EngineComponents/Transform.h"
+#include "EngineComponents/Light/LightComponent.h"
 
 #include "Vulkan/VulkanWrappers/VulkanCore.h"
 

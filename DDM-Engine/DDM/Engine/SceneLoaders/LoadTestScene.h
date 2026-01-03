@@ -10,11 +10,11 @@
 
 #include "Engine/DDMModelLoader.h"
 
-#include "Components/MaterialSwitcher/MaterialSwitcher.h"
-#include "Components/MaterialSwitcher/MaterialSwitchManager.h"
-#include "Components/InfoComponent.h"
-#include "Components/Rotator.h"
-#include "Components/Camera.h"
+#include "CustomComponents/MaterialSwitcher/MaterialSwitcher.h"
+#include "CustomComponents/MaterialSwitcher/MaterialSwitchManager.h"
+#include "CustomComponents/InfoComponent.h"
+#include "CustomComponents/Rotator.h"
+#include "EngineComponents/Camera.h"
 
 namespace LoadTestScene
 {

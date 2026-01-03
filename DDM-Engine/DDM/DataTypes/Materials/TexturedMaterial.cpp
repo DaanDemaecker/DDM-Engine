@@ -12,7 +12,7 @@
 
 #include "Utils/Utils.h"
 
-#include "Components/MeshRenderer.h"
+#include "EngineComponents/MeshRenderer.h"
 
 
 DDM::TexturedMaterial::TexturedMaterial(const std::string& pipelineName)

@@ -8,8 +8,8 @@
 
 #include "BaseClasses/GameObject.h"
 
-#include "Components/Camera.h"
-#include "Components/Light/LightComponent.h"
+#include "EngineComponents/Camera.h"
+#include "EngineComponents/Light/LightComponent.h"
 
 void DDM::SceneManager::EndProgram()
 {

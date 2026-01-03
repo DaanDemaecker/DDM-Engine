@@ -5,7 +5,7 @@
 #define _DDM_SKYBOX_
 
 // Parent include
-#include "Components/MeshRenderer.h"
+#include "EngineCOmponents/MeshRenderer.h"
 
 // File includes
 #include "DataTypes/Materials/Material.h"

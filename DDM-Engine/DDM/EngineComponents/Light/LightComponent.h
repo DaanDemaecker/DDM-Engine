@@ -8,7 +8,7 @@
 #include "BaseClasses/Component.h"
 
 // File includes
-#include "Components/Light/Light.h"
+#include "EngineComponents/Light/Light.h"
 #include "DataTypes/DescriptorObjects/UboDescriptorObject.h"
 
 namespace DDM

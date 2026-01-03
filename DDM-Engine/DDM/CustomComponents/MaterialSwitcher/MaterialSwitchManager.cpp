@@ -4,7 +4,7 @@
 #include "MaterialSwitchManager.h"
 
 // File includes
-#include "Components/MaterialSwitcher/MaterialSwitcher.h"
+#include "CustomComponents/MaterialSwitcher/MaterialSwitcher.h"
 #include "Includes/ImGuiIncludes.h"
 
 

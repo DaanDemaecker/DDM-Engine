@@ -5,7 +5,7 @@
 
 // File includes
 #include "Includes/GLMIncludes.h"
-#include "Components/Transform.h"
+#include "EngineComponents/Transform.h"
 #include "Engine/Window.h"
 
 DDM::Camera::Camera()

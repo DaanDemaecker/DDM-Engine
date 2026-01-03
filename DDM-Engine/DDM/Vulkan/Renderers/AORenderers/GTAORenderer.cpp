@@ -24,7 +24,7 @@
 #include "Managers/ConfigManager.h"
 
 #include "Utils/Utils.h"
-#include "Components/Camera.h"
+#include "EngineComponents/Camera.h"
 
 #include "Vulkan/Renderers/AORenderers/AoRenderPasses.h"
 

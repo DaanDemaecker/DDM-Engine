@@ -6,9 +6,9 @@
 // File includes
 #include "BaseClasses/GameObject.h"
 
-#include "Components/Camera.h"
-#include "Components/Light/LightComponent.h"
-#include "Components/Transform.h"
+#include "EngineComponents/Camera.h"
+#include "EngineComponents/Light/LightComponent.h"
+#include "EngineComponents/Transform.h"
 
 unsigned int DDM::Scene::m_IdCounter = 0;
 

@@ -14,8 +14,8 @@
 
 #include "DataTypes/Materials/MultiMaterial.h"
 
-#include "Components/MeshRenderer.h"
-#include "Components/Transform.h"
+#include "EngineComponents/MeshRenderer.h"
+#include "EngineComponents/Transform.h"
 
 #include "Vulkan/VulkanWrappers/Mesh.h"
 
