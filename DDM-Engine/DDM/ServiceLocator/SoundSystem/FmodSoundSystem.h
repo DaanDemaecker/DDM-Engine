@@ -23,6 +23,8 @@ namespace DDM
 
 		virtual void ToggleMute() override;
 
+		virtual bool IsMuted() const;
+
 		virtual void SetMute(bool mute) override;
 
 		virtual void Update() override;

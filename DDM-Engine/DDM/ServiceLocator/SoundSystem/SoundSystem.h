@@ -62,6 +62,12 @@ namespace DDM
 		virtual void PlayStream(std::string& fileName) = 0;
 
 		/// <summary>
+		/// Query wether sound system is muted
+		/// </summary>
+		/// <returns: >bool indicating if soundsystem is muted or not</returns>
+		virtual bool IsMuted() const = 0;
+
+		/// <summary>
 		/// Toggle wether the sound is muted or not
 		/// </summary>
 		virtual void ToggleMute() = 0;
@@ -117,6 +123,8 @@ namespace DDM
 		virtual void PlayClip(std::string& fileName) override {}
 
 		virtual void PlayStream(std::string& fileName) override {}
+
+		virtual bool IsMuted() const override { return false; }
 
 		virtual void ToggleMute() override {}
 

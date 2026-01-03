@@ -61,7 +61,7 @@ namespace DDM
 				std::cout << "No available channel \n";
 			}
 
-			m_pSystem->playSound(m_Clips[fileName], nullptr, m_Paused,  &m_Channels[channelIndex]);
+			m_pSystem->playSound(m_Clips[fileName], nullptr, m_IsPaused,  &m_Channels[channelIndex]);
 
 			m_Channels[channelIndex]->setVolume((m_MasterVolume * m_SfxVolume)/m_MaxTotalVolume);
 		}
@@ -94,14 +94,14 @@ namespace DDM
 				}
 			}
 
-			m_pSystem->playSound(m_Streams[fileName], nullptr, m_Paused, &m_Channels[m_MusicChannel]);
+			m_pSystem->playSound(m_Streams[fileName], nullptr, m_IsPaused, &m_Channels[m_MusicChannel]);
 
 			m_Channels[m_MusicChannel]->setVolume((m_MasterVolume * m_SfxVolume) / m_MaxTotalVolume);
 		}
 
 		void SetMute(bool mute)
 		{
-			m_Muted = mute;
+			m_IsMuted = mute;
 
 			for (auto& channel : m_Channels)
 			{
@@ -110,13 +110,13 @@ namespace DDM
 					continue;
 				}
 				
-				channel->setMute(m_Muted);
+				channel->setMute(m_IsMuted);
 			}
 		}
 
 		void ToggleMute()
 		{
-			SetMute(!m_Muted);
+			SetMute(!m_IsMuted);
 		}
 
 		void PauseAll()
@@ -148,6 +148,11 @@ namespace DDM
 			SetVolume();
 		}
 
+		bool IsMuted() const
+		{
+			return m_IsMuted;
+		}
+
 	private:
 		const int m_MaxChannels{ 32 };
 
@@ -157,9 +162,9 @@ namespace DDM
 
 		const float m_MaxPartialVolume{ std::sqrt(m_MaxTotalVolume) };
 
-		bool m_Muted{ false };
+		bool m_IsMuted{ false };
 
-		bool m_Paused{ false };
+		bool m_IsPaused{ false };
 
 		float m_MasterVolume{10};
 
@@ -233,11 +238,11 @@ namespace DDM
 
 		void SetPaused(bool paused)
 		{
-			m_Paused = paused;
+			m_IsPaused = paused;
 
 			for (auto& channel : m_Channels)
 			{
-				channel->setPaused(m_Paused);
+				channel->setPaused(m_IsPaused);
 			}
 		}
 
@@ -277,6 +282,11 @@ void DDM::FmodSoundSystem::PlayStream(std::string& fileName)
 void DDM::FmodSoundSystem::ToggleMute()
 {
 	m_pImpl->ToggleMute();
+}
+
+bool DDM::FmodSoundSystem::IsMuted() const
+{
+	return m_pImpl->IsMuted();
 }
 
 void DDM::FmodSoundSystem::SetMute(bool mute)
