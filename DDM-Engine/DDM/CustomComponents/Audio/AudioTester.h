@@ -7,6 +7,9 @@
 // Parent include
 #include "BaseClasses/Component.h"
 
+// Standard library includes
+#include <iostream>
+
 namespace DDM
 {
 	class AudioTester final : public Component
@@ -27,7 +30,28 @@ namespace DDM
 		/// </summary>
 		virtual void OnGUI() override;
 	private:
-		
+		// Max length for text input
+		const int m_TextLength{ 125 };
+
+		// String for filepath to clip to play
+		std::vector<char> m_ClipPath{};
+
+		// String for filepath to stream to play
+		std::vector<char> m_StreamPath{};
+
+		/// <summary>
+		/// Play an audio clip given a filepath
+		/// </summary>
+		/// <param name="filePath: ">Filepath to the audioclip</param>
+		/// <param name="bufferLength: ">Length of the text buffer</param>
+		void PlayCLip(char* filePath, int bufferLength);
+
+		/// <summary>
+		/// Play an audio stream given a filepath
+		/// </summary>
+		/// <param name="filePath: ">Filepath to the audioclip</param>
+		/// <param name="bufferLength: ">Length of the text buffer</param>
+		void PlayStream(char* filePath, int bufferLength);
 
 	};
 }

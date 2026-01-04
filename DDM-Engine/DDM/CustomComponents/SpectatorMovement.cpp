@@ -31,11 +31,11 @@ void DDM::SpectatorMovement::Update()
 	{
 		// Get transform component
 		m_pTransform = GetComponent<Transform>().get();
-		
+
 		// Extract rotation and convert to eulerangles
 		auto rotation = m_pTransform->GetWorldRotation();
-		glm::vec3 eulerAngles = glm::eulerAngles( rotation );
-		
+		glm::vec3 eulerAngles = glm::eulerAngles(rotation);
+
 		// Set total pitch and yaw
 		m_TotalPitch = eulerAngles.x;
 		m_TotalYaw = eulerAngles.y;
@@ -44,52 +44,51 @@ void DDM::SpectatorMovement::Update()
 	// Get input manager instance
 	auto& input{ InputManager::GetInstance() };
 
-	// Movement direction is initially zero
-	glm::vec3 direction{};
-
-	// Get window pointer
-	auto window = Window::GetInstance().GetWindowStruct().pWindow;
-
-	auto deltaTime = TimeManager::GetInstance().GetDeltaTime();
-
-	// Determine movement direction based on key presses
-	if (input.GetKeyPressed(GLFW_KEY_W))
-	{
-		//direction += transform->GetForward() * m_Speed * deltaTime;
-		direction += m_pTransform->GetForward();
-	}
-	if (input.GetKeyPressed(GLFW_KEY_S))
-	{
-		//direction -= transform->GetForward() * m_Speed * deltaTime;
-		direction -= m_pTransform->GetForward();
-	}
-	if (input.GetKeyPressed(GLFW_KEY_A))
-	{
-		//direction -= transform->GetRight() * m_Speed * deltaTime;
-		direction -= m_pTransform->GetRight();
-	}
-	if (input.GetKeyPressed(GLFW_KEY_D))
-	{
-		//direction += transform->GetRight() * m_Speed * deltaTime;
-		direction += m_pTransform->GetRight();
-	}
-
-	// Normalize direction and scale with speed and deltatime
-	glm::normalize(direction);
-	direction *= m_Speed * deltaTime;
-
-
-	// Translate the object based on the rotated movement direction
-	m_pTransform->Translate(direction);
-
-
-
 	// If right mouse button is pressed rotate camera
 	if (input.GetMouseButtonPressed(GLFW_MOUSE_BUTTON_RIGHT))
 	{
+		// Movement direction is initially zero
+		glm::vec3 direction{};
+
+		// Get window pointer
+		auto window = Window::GetInstance().GetWindowStruct().pWindow;
+
+		auto deltaTime = TimeManager::GetInstance().GetDeltaTime();
+
+		// Determine movement direction based on key presses
+		if (input.GetKeyPressed(GLFW_KEY_W))
+		{
+			//direction += transform->GetForward() * m_Speed * deltaTime;
+			direction += m_pTransform->GetForward();
+		}
+		if (input.GetKeyPressed(GLFW_KEY_S))
+		{
+			//direction -= transform->GetForward() * m_Speed * deltaTime;
+			direction -= m_pTransform->GetForward();
+		}
+		if (input.GetKeyPressed(GLFW_KEY_A))
+		{
+			//direction -= transform->GetRight() * m_Speed * deltaTime;
+			direction -= m_pTransform->GetRight();
+		}
+		if (input.GetKeyPressed(GLFW_KEY_D))
+		{
+			//direction += transform->GetRight() * m_Speed * deltaTime;
+			direction += m_pTransform->GetRight();
+		}
+
+		// Normalize direction and scale with speed and deltatime
+		glm::normalize(direction);
+		direction *= m_Speed * deltaTime;
+
+
+		// Translate the object based on the rotated movement direction
+		m_pTransform->Translate(direction);
+
+
 		// Retrieve scroll delta
 		auto& scrollDelta = input.GetScrollDelta();
-		
+
 		// If scrolled down, slow down camera
 		if (scrollDelta.y < 0)
 		{
@@ -100,7 +99,6 @@ void DDM::SpectatorMovement::Update()
 		{
 			m_Speed *= m_IncreaseFactor;
 		}
-
 
 
 		// Retrieve mouse delta
