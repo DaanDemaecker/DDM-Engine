@@ -203,12 +203,12 @@ DDM::FmodSoundSystem::FmodSoundSystem()
 
 void DDM::FmodSoundSystem::LoadClip(const AudioClip& clip)
 {
-	m_pImpl->LoadClip(clip.filePath);
+	m_pImpl->LoadClip(clip.GetFilePath());
 }
 
 void DDM::FmodSoundSystem::PlayClip(const AudioClip& clip)
 {
-	m_pImpl->PlayClip(clip.filePath);
+	m_pImpl->PlayClip(clip.GetFilePath());
 }
 
 void DDM::FmodSoundSystem::ToggleMute()

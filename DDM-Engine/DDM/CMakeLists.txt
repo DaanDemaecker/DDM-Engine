@@ -17,6 +17,8 @@ add_executable(
 "EngineComponents/MeshRenderer.cpp"
 "EngineComponents/SkyBox.cpp"
 "EngineComponents/Transform.cpp"
+"EngineComponents/Audio/AudioSource.cpp"
+"EngineComponents/Audio/AudioClip.cpp"
 
 "DataTypes/DescriptorObjects/InputAttachmentDescriptorObject.cpp"
 "DataTypes/DescriptorObjects/TextureDescriptorObject.cpp"
@@ -84,7 +86,7 @@ add_executable(
 "ServiceLocator/ServiceLocator.cpp"
 "ServiceLocator/SoundSystem/FmodSoundSystem.cpp"
 
-"Includes/STBIncludes.cpp")
+"Includes/STBIncludes.cpp" "EngineComponents/Audio/AudioSource.h" "EngineComponents/Audio/AudioClip.cpp")
 
 
 # Include directories specific to this target

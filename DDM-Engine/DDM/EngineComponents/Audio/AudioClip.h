@@ -9,33 +9,61 @@
 
 namespace DDM
 {
-	struct AudioClip
+	class AudioClip
 	{
-		// Delete default constructor
-		AudioClip() = delete;
+	public:
+		/// <summary>
+		/// Default constructor
+		/// </summary>
+		AudioClip();
 
 		/// <summary>
 		/// Constructor
 		/// </summary>
 		/// <param name="path: ">filepath to the audio file</param>
-		AudioClip(std::string& path)
-			:filePath(path)
-		{
-
-		}
+		AudioClip(const std::string& path);
 
 		/// <summary>
 		/// Constructor
 		/// </summary>
 		/// <param name="path: ">filepath to the audio file</param>
-		AudioClip(std::string&& path)
-			:AudioClip(path)
-		{
+		AudioClip(const std::string&& path);
 
-		}
+		/// <summary>
+		/// Copy constructor
+		/// </summary>
+		/// <param name="other: ">audioclip to copy</param>
+		AudioClip(const AudioClip& other);
 
+		/// <summary>
+		/// Move constructor
+		/// </summary>
+		/// <param name="other: ">audioclip to move</param>
+		AudioClip(const AudioClip&& other) noexcept;
+
+		/// <summary>
+		/// Copy asignment operator
+		/// </summary>
+		/// <param name="other: ">audioclip to copy</param>
+		/// <returns>new audioclip</returns>
+		AudioClip& operator=(const AudioClip& other);
+
+		/// <summary>
+		/// Copy asignment operator
+		/// </summary>
+		/// <param name="other: ">audioclip to move</param>
+		/// <returns>new audioclip</returns>
+		AudioClip& operator=(const AudioClip&& other) noexcept;
+
+		/// <summary>
+		/// Get the saved file path
+		/// </summary>
+		/// <returns>File path</returns>
+		const std::string& GetFilePath() const { return m_FilePath; }
+
+	private:
 		// Path to the audio file
-		const std::string filePath;
+		std::string m_FilePath{};
 	};
 }
 

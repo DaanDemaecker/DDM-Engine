@@ -10,6 +10,7 @@
 
 
 DDM::LightComponent::LightComponent()
+	:Component()
 {
 	// Create the descriptor object
 	m_DescriptorObject = std::make_unique<UboDescriptorObject<Light>>();
