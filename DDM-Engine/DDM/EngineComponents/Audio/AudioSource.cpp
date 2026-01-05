@@ -3,27 +3,24 @@
 // Header include
 #include "AudioSource.h"
 
+// File includes
+#include "ServiceLocator/ServiceLocator.h"
+
 DDM::AudioSource::AudioSource()
 	:Component()
 {
 
 }
 
-void DDM::AudioSource::SetClip(const AudioClip& clip)
+void DDM::AudioSource::SetClip(const std::shared_ptr<AudioClip> clip)
 {
-	_clip = clip;
-}
-
-void DDM::AudioSource::SetClip(const AudioClip&& clip)
-{
-	// Forward to l-value overloaded function
-	SetClip(clip);
+	m_pClip = clip;
 }
 
 void DDM::AudioSource::SetClip(const std::string& path)
 {
 	// Create audioclip and forward to overloaded function
-	SetClip(AudioClip(path));
+	SetClip(std::make_shared<AudioClip>(path));
 }
 
 void DDM::AudioSource::SetClip(const std::string&& path)
@@ -34,5 +31,5 @@ void DDM::AudioSource::SetClip(const std::string&& path)
 
 void DDM::AudioSource::Play()
 {
-
+	ServiceLocator::GetSoundSystem().PlayClip(m_pClip.get());
 }

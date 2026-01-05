@@ -37,13 +37,7 @@ namespace DDM
 		/// Set the audio clip
 		/// </summary>
 		/// <param name="clip: ">reference to audio clip</param>
-		void SetClip(const AudioClip& clip);
-
-		/// <summary>
-		/// Set the audio clip
-		/// </summary>
-		/// <param name="clip: ">audio clip</param>
-		void SetClip(const AudioClip&& clip);
+		void SetClip(const std::shared_ptr<AudioClip> clip);
 		
 		/// <summary>
 		/// Set the audio clip
@@ -61,11 +55,11 @@ namespace DDM
 		/// Get the currently set clip
 		/// </summary>
 		/// <returns></returns>
-		const AudioClip& GetClip() const { return _clip; }
+		const AudioClip* GetClip() const { return m_pClip.get(); }
 
 		void Play();
 	private:
-		AudioClip _clip{};
+		std::shared_ptr<AudioClip> m_pClip{};
 
 	};
 }

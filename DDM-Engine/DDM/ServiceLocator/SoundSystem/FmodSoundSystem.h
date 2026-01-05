@@ -17,9 +17,9 @@ namespace DDM
 	public:
 		FmodSoundSystem();
 
-		virtual void LoadClip(const AudioClip& clip) override;
+		virtual void LoadClip(const AudioClip* clip) override;
 
-		virtual void PlayClip(const AudioClip& fileName) override;
+		virtual void PlayClip(const AudioClip* clip) override;
 
 		virtual void ToggleMute() override;
 

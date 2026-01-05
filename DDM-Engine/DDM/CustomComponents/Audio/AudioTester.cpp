@@ -52,7 +52,7 @@ void DDM::AudioTester::PlayCLip(char* filePath, int bufferLength)
 		return;
 	}
 
-	AudioClip clip = AudioClip(filePath);
+	std::shared_ptr<AudioClip> clip = std::make_shared<AudioClip>(filePath);
 
-	ServiceLocator::GetSoundSystem().PlayClip(clip);
+	ServiceLocator::GetSoundSystem().PlayClip(clip.get());
 }

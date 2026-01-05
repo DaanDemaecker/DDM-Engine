@@ -36,13 +36,13 @@ namespace DDM
 		/// Load in a clip before playing it
 		/// </summary>
 		/// <param name="clip: ">reference to the audioclip</param>
-		virtual void LoadClip(const AudioClip& clip) = 0;
+		virtual void LoadClip(const AudioClip* clip) = 0;
 
 		/// <summary>
 		/// Play an audio clip
 		/// </summary>
 		/// <param name="clip: ">reference to the audioclip</param>
-		virtual void PlayClip(const AudioClip& fileName) = 0;
+		virtual void PlayClip(const AudioClip* clip) = 0;
 
 		/// <summary>
 		/// Query wether sound system is muted
@@ -89,9 +89,9 @@ namespace DDM
 		DefaultSoundSystem() = default;
 		virtual ~DefaultSoundSystem() override = default;
 
-		virtual void LoadClip(const AudioClip& clip) override {}
+		virtual void LoadClip(const AudioClip* clip) override {}
 
-		virtual void PlayClip(const AudioClip& fileName) override {}
+		virtual void PlayClip(const AudioClip* clip) override {}
 
 		virtual bool IsMuted() const override { return false; }
 
