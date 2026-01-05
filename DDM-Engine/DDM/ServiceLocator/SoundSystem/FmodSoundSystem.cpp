@@ -47,7 +47,7 @@ namespace DDM
 			m_pSystem->update();
 		}
 
-		void PlayClip(std::string& fileName)
+		void PlayClip(const std::string& fileName)
 		{
 			if (m_Clips[fileName] == nullptr)
 			{
@@ -63,40 +63,7 @@ namespace DDM
 
 			m_pSystem->playSound(m_Clips[fileName], nullptr, m_IsPaused,  &m_Channels[channelIndex]);
 
-			m_Channels[channelIndex]->setVolume((m_MasterVolume * m_SfxVolume)/m_MaxTotalVolume);
-		}
-
-		void PlayStream(std::string& fileName)
-		{
-			if (m_Streams[fileName] == nullptr)
-			{
-				CreateStream(fileName);
-			}
-
-			if (m_Channels[m_MusicChannel] != nullptr)
-			{
-				bool isPlaying{};
-				FMOD_RESULT result = m_Channels[m_MusicChannel]->isPlaying(&isPlaying);
-
-				if (result != FMOD_OK)
-				{
-					HandleError(result);
-				}
-
-				if (isPlaying)
-				{
-					result = m_Channels[m_MusicChannel]->stop();
-
-					if (result != FMOD_OK)
-					{
-						HandleError(result);
-					}
-				}
-			}
-
-			m_pSystem->playSound(m_Streams[fileName], nullptr, m_IsPaused, &m_Channels[m_MusicChannel]);
-
-			m_Channels[m_MusicChannel]->setVolume((m_MasterVolume * m_SfxVolume) / m_MaxTotalVolume);
+			m_Channels[channelIndex]->setVolume((m_MasterVolume)/m_MaxTotalVolume);
 		}
 
 		void SetMute(bool mute)
@@ -135,28 +102,18 @@ namespace DDM
 			SetVolume();
 		}
 
-		void SetMusicVolume(float volume)
-		{
-			m_MusicVolume = std::min(volume, m_MaxPartialVolume);
-			SetVolume();
-		}
-
-
-		void SetSfxVolume(float volume)
-		{
-			m_SfxVolume = std::min(volume, m_MaxPartialVolume);
-			SetVolume();
-		}
-
 		bool IsMuted() const
 		{
 			return m_IsMuted;
 		}
 
+		void LoadClip(const std::string& filePath)
+		{
+			CreateClip(filePath);
+		}
+
 	private:
 		const int m_MaxChannels{ 32 };
-
-		const int m_MusicChannel{ 0 };
 
 		const float m_MaxTotalVolume{ 100 };
 
@@ -168,18 +125,11 @@ namespace DDM
 
 		float m_MasterVolume{10};
 
-		float m_MusicVolume{10};
-
-		float m_SfxVolume{10};
-
 		// FMOD core system
 		FMOD::System* m_pSystem;
 
 		// List of FMOD clips
 		std::unordered_map<std::string, FMOD::Sound*> m_Clips{};
-
-		// List of FMOD streams
-		std::unordered_map<std::string, FMOD::Sound*> m_Streams{};
 
 		// List of available channels
 		std::vector<FMOD::Channel*> m_Channels{};
@@ -189,17 +139,11 @@ namespace DDM
 			std::cout << "Fmod error: " << result << "\n";
 		}
 
-		void CreateClip(std::string& fileName)
+		void CreateClip(const std::string& fileName)
 		{
 			std::cout << "Creating clip: " << fileName << "\n";
 			
-			m_pSystem->createSound(fileName.c_str(), FMOD_LOOP_OFF, nullptr, &m_Clips[fileName]);
-		}
-
-		void CreateStream(std::string& fileName)
-		{
-			std::cout << "Creating stream: " << fileName << "\n";
-			m_pSystem->createSound(fileName.c_str(), FMOD_LOOP_NORMAL, nullptr, &m_Streams[fileName]);
+			m_pSystem->createSound(fileName.c_str(), FMOD_DEFAULT, nullptr, &m_Clips[fileName]);
 		}
 
 		int GetFreeChannel()
@@ -208,11 +152,6 @@ namespace DDM
 
 			for(int i{}; i < m_Channels.size(); ++i)
 			{
-				if (i == m_MusicChannel)
-				{
-					continue;
-				}
-
 				bool isPlaying = false;
 
 				if (m_Channels[i] == nullptr)
@@ -250,14 +189,7 @@ namespace DDM
 		{
 			for (int i{}; i < m_Channels.size(); ++i)
 			{
-				if (i == m_MusicChannel)
-				{
-					m_Channels[i]->setVolume((m_MasterVolume * m_MusicVolume) / m_MaxTotalVolume);
-				}
-				else
-				{
-					m_Channels[i]->setVolume((m_MasterVolume * m_SfxVolume) / m_MaxTotalVolume);
-				}
+				m_Channels[i]->setVolume(m_MasterVolume / m_MaxTotalVolume);
 			}
 		}
 	};
@@ -269,14 +201,14 @@ DDM::FmodSoundSystem::FmodSoundSystem()
 	m_pImpl = std::make_unique<FmodImpl>();
 }
 
-void DDM::FmodSoundSystem::PlayClip(std::string& fileName)
+void DDM::FmodSoundSystem::LoadClip(const AudioClip& clip)
 {
-	m_pImpl->PlayClip(fileName);
+	m_pImpl->LoadClip(clip.filePath);
 }
 
-void DDM::FmodSoundSystem::PlayStream(std::string& fileName)
+void DDM::FmodSoundSystem::PlayClip(const AudioClip& clip)
 {
-	m_pImpl->PlayStream(fileName);
+	m_pImpl->PlayClip(clip.filePath);
 }
 
 void DDM::FmodSoundSystem::ToggleMute()
@@ -312,14 +244,4 @@ void DDM::FmodSoundSystem::ResumeAll()
 void DDM::FmodSoundSystem::SetMasterVolume(float volume)
 {
 	m_pImpl->SetMasterVolume(volume);
-}
-
-void DDM::FmodSoundSystem::SetMusicVolume(float volume)
-{
-	m_pImpl->SetMusicVolume(volume);
-}
-
-void DDM::FmodSoundSystem::SetSfxVolume(float volume)
-{
-	m_pImpl->SetSfxVolume(volume);
 }

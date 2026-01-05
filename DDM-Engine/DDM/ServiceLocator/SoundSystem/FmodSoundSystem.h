@@ -17,9 +17,9 @@ namespace DDM
 	public:
 		FmodSoundSystem();
 
-		virtual void PlayClip(std::string& fileName) override;
+		virtual void LoadClip(const AudioClip& clip) override;
 
-		virtual void PlayStream(std::string& fileName) override;
+		virtual void PlayClip(const AudioClip& fileName) override;
 
 		virtual void ToggleMute() override;
 
@@ -34,10 +34,6 @@ namespace DDM
 		virtual void ResumeAll() override;
 
 		virtual void SetMasterVolume(float volume) override;
-
-		virtual void SetMusicVolume(float volume) override;
-
-		virtual void SetSfxVolume(float volume) override;
 
 	private:
 		std::unique_ptr<FmodImpl> m_pImpl;

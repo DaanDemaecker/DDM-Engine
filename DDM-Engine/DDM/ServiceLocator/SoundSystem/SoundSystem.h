@@ -4,6 +4,9 @@
 #ifndef _DDM_SOUND_SYSTEM_
 #define _DDM_SOUND_SYSTEM_
 
+// File includes
+#include "EngineComponents/Audio/AudioClip.h"
+
 // Standard library includes
 #include <string>
 
@@ -30,36 +33,16 @@ namespace DDM
 		SoundSystem& operator=(SoundSystem&& other) = delete;
 
 		/// <summary>
-		/// Play a sound clip given a filepath
+		/// Load in a clip before playing it
 		/// </summary>
-		/// <param name="fileName: ">path to the requested clip</param>
-		virtual void PlayClip(std::string&& fileName)
-		{
-			// Forward to l-value overloaded function
-			PlayClip(fileName);
-		}
+		/// <param name="clip: ">reference to the audioclip</param>
+		virtual void LoadClip(const AudioClip& clip) = 0;
 
 		/// <summary>
-		/// Play a sound clip given a filepath
+		/// Play an audio clip
 		/// </summary>
-		/// <param name="fileName: ">path to the requested clip</param>
-		virtual void PlayClip(std::string& fileName) = 0;
-
-		/// <summary>
-		/// Play a sound track given a filepath
-		/// </summary>
-		/// <param name="fileName: ">path to the requested track</param>
-		virtual void PlayStream(std::string&& fileName)
-		{
-			// Forward to l-value overloaded function
-			PlayStream(fileName);
-		}
-
-		/// <summary>
-		/// Play a sound track given a filepath
-		/// </summary>
-		/// <param name="fileName: ">path to the requested track</param>
-		virtual void PlayStream(std::string& fileName) = 0;
+		/// <param name="clip: ">reference to the audioclip</param>
+		virtual void PlayClip(const AudioClip& fileName) = 0;
 
 		/// <summary>
 		/// Query wether sound system is muted
@@ -94,24 +77,10 @@ namespace DDM
 		virtual void ResumeAll() = 0;
 
 		/// <summary>
-		/// Set master volume to a new volume between 0 and 10
+		/// Set master volume to a new volume between 0 and 100
 		/// </summary>
 		/// <param name="volume: ">new volume</param>
 		virtual void SetMasterVolume(float volume) = 0;
-		
-
-		/// <summary>
-		/// Set music volume to a new volume between 0 and 10
-		/// </summary>
-		/// <param name="volume: ">new volume</param>
-		virtual void SetMusicVolume(float volume) = 0;
-
-
-		/// <summary>
-		/// Set sfx volume to a new volume between 0 and 10
-		/// </summary>
-		/// <param name="volume: ">new volume</param>
-		virtual void SetSfxVolume(float volume) = 0;
 	};
 
 	class DefaultSoundSystem final : public SoundSystem
@@ -120,9 +89,9 @@ namespace DDM
 		DefaultSoundSystem() = default;
 		virtual ~DefaultSoundSystem() override = default;
 
-		virtual void PlayClip(std::string& fileName) override {}
+		virtual void LoadClip(const AudioClip& clip) override {}
 
-		virtual void PlayStream(std::string& fileName) override {}
+		virtual void PlayClip(const AudioClip& fileName) override {}
 
 		virtual bool IsMuted() const override { return false; }
 
@@ -137,10 +106,6 @@ namespace DDM
 		virtual void ResumeAll() override {}
 
 		virtual void SetMasterVolume(float volume) override {}
-
-		virtual void SetMusicVolume(float volume) override {}
-
-		virtual void SetSfxVolume(float volume) override {}
 	};
 }
 

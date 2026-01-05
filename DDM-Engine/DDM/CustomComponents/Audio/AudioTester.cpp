@@ -8,8 +8,6 @@
 DDM::AudioTester::AudioTester()
 {
 	m_ClipPath.resize(m_TextLength);
-
-	m_StreamPath.resize(m_TextLength);
 }
 
 DDM::AudioTester::~AudioTester()
@@ -37,14 +35,6 @@ void DDM::AudioTester::OnGUI()
 			PlayCLip(m_ClipPath.data(), m_TextLength);
 		}
 
-
-		ImGui::InputText("Path to stream to play", m_StreamPath.data(), m_TextLength);
-
-		if (ImGui::Button("Play stream"))
-		{
-			PlayStream(m_StreamPath.data(), m_TextLength);
-		}
-
 		ImGui::TreePop();
 	}
 
@@ -62,16 +52,7 @@ void DDM::AudioTester::PlayCLip(char* filePath, int bufferLength)
 		return;
 	}
 
-	ServiceLocator::GetSoundSystem().PlayClip(filePath);
-}
+	AudioClip clip = AudioClip(filePath);
 
-void DDM::AudioTester::PlayStream(char* filePath, int bufferLength)
-{
-	if (bufferLength <= 0)
-	{
-		std::cout << "AudioTester: buffer was of insufficient size\n";
-		return;
-	}
-
-	ServiceLocator::GetSoundSystem().PlayStream(filePath);
+	ServiceLocator::GetSoundSystem().PlayClip(clip);
 }
