@@ -125,12 +125,11 @@ void DDM::SceneManager::StartFrame()
             m_ActiveScene->OnSceneUnload();
         }
         m_ActiveScene = m_NextActiveScene;
+        m_ActiveScene->StartFrame();
         m_ActiveScene->OnSceneLoad();
         m_NextActiveScene = nullptr;
     }
-
-
-    if (m_ActiveScene != nullptr)
+    else if (m_ActiveScene != nullptr)
     {
         m_ActiveScene->StartFrame();
     }

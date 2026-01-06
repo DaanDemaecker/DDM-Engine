@@ -7,6 +7,9 @@
 #include "EngineComponents/Transform.h"
 #include "Includes/ImGuiIncludes.h"
 
+// Standard library includes
+#include <iostream>
+
 DDM::GameObject::~GameObject()
 {
 }

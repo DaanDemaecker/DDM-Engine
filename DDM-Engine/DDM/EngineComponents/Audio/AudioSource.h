@@ -34,6 +34,11 @@ namespace DDM
 		AudioSource& operator=(AudioSource&& other) = delete;
 
 		/// <summary>
+		/// Used to render GUI
+		/// </summary>
+		virtual void OnGUI() override;
+
+		/// <summary>
 		/// Set the audio clip
 		/// </summary>
 		/// <param name="clip: ">reference to audio clip</param>
@@ -57,8 +62,12 @@ namespace DDM
 		/// <returns></returns>
 		const AudioClip* GetClip() const { return m_pClip.get(); }
 
+		/// <summary>
+		/// Play the currently selected clip
+		/// </summary>
 		void Play();
 	private:
+		// The currently set audioclip
 		std::shared_ptr<AudioClip> m_pClip{};
 
 	};

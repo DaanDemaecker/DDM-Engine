@@ -5,11 +5,30 @@
 
 // File includes
 #include "ServiceLocator/ServiceLocator.h"
+#include "Includes/ImGuiIncludes.h"
 
 DDM::AudioSource::AudioSource()
 	:Component()
 {
 
+}
+
+void DDM::AudioSource::OnGUI()
+{
+	ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_Framed;
+
+	// Start tree
+	if (ImGui::TreeNodeEx("AudioSource", flags))
+	{
+		ImGui::Text(m_pClip == nullptr ? "" : m_pClip->GetFilePath().c_str());
+
+		if(ImGui::Button("Play"))
+		{
+			Play();
+		}
+
+		ImGui::TreePop();
+	}
 }
 
 void DDM::AudioSource::SetClip(const std::shared_ptr<AudioClip> clip)

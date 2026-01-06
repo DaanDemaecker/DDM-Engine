@@ -12,6 +12,9 @@
 
 namespace DDM
 {
+	// Class forward declaration
+	class AudioSource;
+
 	class AudioTester final : public Component
 	{
 	public:
@@ -24,6 +27,11 @@ namespace DDM
 		/// Destructor
 		/// </summary>
 		virtual ~AudioTester();
+		
+		/// <summary>
+		/// Called when a new scene is loaded in
+		/// </summary>
+		virtual void OnSceneLoad() override;
 
 		/// <summary>
 		/// Used to render GUI
@@ -36,12 +44,15 @@ namespace DDM
 		// String for filepath to clip to play
 		std::vector<char> m_ClipPath{};
 
+		// Audiosource attached to this gameobject
+		std::shared_ptr<AudioSource> m_pAudioSource{};
+
 		/// <summary>
 		/// Play an audio clip given a filepath
 		/// </summary>
 		/// <param name="filePath: ">Filepath to the audioclip</param>
 		/// <param name="bufferLength: ">Length of the text buffer</param>
-		void PlayCLip(char* filePath, int bufferLength);
+		void SetCLip(char* filePath, int bufferLength);
 	};
 }
 

@@ -4,8 +4,10 @@
 // Header includes
 #include "Includes/ImGuiIncludes.h"
 #include "ServiceLocator/ServiceLocator.h"
+#include "EngineComponents/Audio/AudioSource.h"
 
 DDM::AudioTester::AudioTester()
+	:Component()
 {
 	m_ClipPath.resize(m_TextLength);
 }
@@ -14,14 +16,21 @@ DDM::AudioTester::~AudioTester()
 {
 }
 
+void DDM::AudioTester::OnSceneLoad()
+{
+	m_pAudioSource = GetOwner()->AddComponent<AudioSource>();
+
+	m_pAudioSource->SetShowImGui(true);
+}
+
 void DDM::AudioTester::OnGUI()
 {
 	auto& soundSystem{ ServiceLocator::GetSoundSystem() };
 
-	ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_Framed;
-
 	const bool isMutedOriginal{ soundSystem.IsMuted()};
 	bool tempIsMuted{ isMutedOriginal };
+
+	ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_Framed;
 
 	// Start tree
 	if (ImGui::TreeNodeEx("AudioTest", flags))
@@ -30,9 +39,9 @@ void DDM::AudioTester::OnGUI()
 
 		ImGui::InputText("Path to clip to play", m_ClipPath.data(), m_TextLength);
 
-		if(ImGui::Button("Play clip"))
+		if(ImGui::Button("Set clip"))
 		{
-			PlayCLip(m_ClipPath.data(), m_TextLength);
+			SetCLip(m_ClipPath.data(), m_TextLength);
 		}
 
 		ImGui::TreePop();
@@ -44,7 +53,7 @@ void DDM::AudioTester::OnGUI()
 	}
 }
 
-void DDM::AudioTester::PlayCLip(char* filePath, int bufferLength)
+void DDM::AudioTester::SetCLip(char* filePath, int bufferLength)
 {
 	if (bufferLength <= 0)
 	{
@@ -52,7 +61,5 @@ void DDM::AudioTester::PlayCLip(char* filePath, int bufferLength)
 		return;
 	}
 
-	std::shared_ptr<AudioClip> clip = std::make_shared<AudioClip>(filePath);
-
-	ServiceLocator::GetSoundSystem().PlayClip(clip.get());
+	m_pAudioSource->SetClip(filePath);
 }
