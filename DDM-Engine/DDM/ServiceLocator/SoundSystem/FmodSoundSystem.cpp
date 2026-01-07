@@ -47,7 +47,7 @@ namespace DDM
 			m_pSystem->update();
 		}
 
-		void PlayClip(const std::string& fileName)
+		int PlayClip(const std::string& fileName)
 		{
 			if (m_Clips[fileName] == nullptr)
 			{
@@ -61,9 +61,11 @@ namespace DDM
 				std::cout << "No available channel \n";
 			}
 
-			m_pSystem->playSound(m_Clips[fileName], nullptr, m_IsPaused,  &m_Channels[channelIndex]);
+			m_pSystem->playSound(m_Clips[fileName], nullptr, m_IsPaused, &m_Channels[channelIndex]);
 
-			m_Channels[channelIndex]->setVolume((m_MasterVolume)/m_MaxTotalVolume);
+			m_Channels[channelIndex]->setVolume(m_MasterVolume / m_MaxTotalVolume);
+
+			return channelIndex;
 		}
 
 		void SetMute(bool mute)
@@ -143,7 +145,7 @@ namespace DDM
 		{
 			std::cout << "Creating clip: " << fileName << "\n";
 			
-			m_pSystem->createSound(fileName.c_str(), FMOD_DEFAULT, nullptr, &m_Clips[fileName]);
+			m_pSystem->createSound(fileName.c_str(), FMOD_LOOP_NORMAL, nullptr, &m_Clips[fileName]);
 		}
 
 		int GetFreeChannel()
@@ -206,9 +208,9 @@ void DDM::FmodSoundSystem::LoadClip(const AudioClip* clip)
 	m_pImpl->LoadClip(clip->GetFilePath());
 }
 
-void DDM::FmodSoundSystem::PlayClip(const AudioClip* clip)
+int DDM::FmodSoundSystem::PlayClip(const AudioClip* clip)
 {
-	m_pImpl->PlayClip(clip->GetFilePath());
+	return m_pImpl->PlayClip(clip->GetFilePath());
 }
 
 void DDM::FmodSoundSystem::ToggleMute()

@@ -19,7 +19,7 @@ namespace DDM
 
 		virtual void LoadClip(const AudioClip* clip) override;
 
-		virtual void PlayClip(const AudioClip* clip) override;
+		virtual int PlayClip(const AudioClip* clip) override;
 
 		virtual void ToggleMute() override;
 

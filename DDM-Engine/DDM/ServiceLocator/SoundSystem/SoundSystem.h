@@ -42,7 +42,7 @@ namespace DDM
 		/// Play an audio clip
 		/// </summary>
 		/// <param name="clip: ">reference to the audioclip</param>
-		virtual void PlayClip(const AudioClip* clip) = 0;
+		virtual int PlayClip(const AudioClip* clip) = 0;
 
 		/// <summary>
 		/// Query wether sound system is muted
@@ -91,7 +91,7 @@ namespace DDM
 
 		virtual void LoadClip(const AudioClip* clip) override {}
 
-		virtual void PlayClip(const AudioClip* clip) override {}
+		virtual int PlayClip(const AudioClip* clip) override { return 0; }
 
 		virtual bool IsMuted() const override { return false; }
 
