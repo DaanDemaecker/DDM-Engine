@@ -13,7 +13,7 @@
 #include "Vulkan/Renderers/AORenderers/GTAORenderer.h"
 
 #include "ServiceLocator/ServiceLocator.h"
-#include "ServiceLocator/SoundSystem/FmodSoundSystem.h"
+#include "ServiceLocator/SoundSystem/Fmod/FmodSoundSystem.h"
 
 enum
 {

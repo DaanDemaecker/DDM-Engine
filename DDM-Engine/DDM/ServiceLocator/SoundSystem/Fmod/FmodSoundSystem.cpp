@@ -3,6 +3,7 @@
 
 // File includes
 #include "Includes/FmodIncludes.h"
+#include "FmodErrorHandler.h"
 
 // Standard library includes
 #include <iostream>
@@ -17,12 +18,7 @@ namespace DDM
 		{
 			FMOD_RESULT result;
 
-			result = FMOD::System_Create(&m_pSystem);
-
-			if (result != FMOD_OK)
-			{
-				HandleError(result);
-			}
+			HandleError(FMOD::System_Create(&m_pSystem));
 
 			m_pSystem->init(m_MaxChannels, FMOD_INIT_NORMAL, nullptr);
 
@@ -63,7 +59,10 @@ namespace DDM
 
 			m_pSystem->playSound(m_Clips[fileName], nullptr, m_IsPaused, &m_Channels[channelIndex]);
 
+			std::cout << "Playing in channel: " << channelIndex << "\n";
+
 			m_Channels[channelIndex]->setVolume(m_MasterVolume / m_MaxTotalVolume);
+			m_Channels[channelIndex]->setLoopCount(0);
 
 			return channelIndex;
 		}
@@ -136,11 +135,6 @@ namespace DDM
 		// List of available channels
 		std::vector<FMOD::Channel*> m_Channels{};
 
-		void HandleError(FMOD_RESULT result)
-		{
-			std::cout << "Fmod error: " << result << "\n";
-		}
-
 		void CreateClip(const std::string& fileName)
 		{
 			std::cout << "Creating clip: " << fileName << "\n";
@@ -150,8 +144,6 @@ namespace DDM
 
 		int GetFreeChannel()
 		{
-			FMOD_RESULT result{};
-
 			for(int i{}; i < m_Channels.size(); ++i)
 			{
 				bool isPlaying = false;
@@ -161,12 +153,7 @@ namespace DDM
 					return i;
 				}
 
-				result = m_Channels[i]->isPlaying(&isPlaying);
-
-				if (result != FMOD_OK)
-				{
-					HandleError(result);
-				}
+				HandleError(m_Channels[i]->isPlaying(&isPlaying));
 
 				if (!isPlaying)
 				{

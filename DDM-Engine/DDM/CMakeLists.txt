@@ -84,9 +84,10 @@ add_executable(
 "Vulkan/VulkanWrappers/Buffer.cpp"
 
 "ServiceLocator/ServiceLocator.cpp"
-"ServiceLocator/SoundSystem/FmodSoundSystem.cpp"
 
-"Includes/STBIncludes.cpp" "EngineComponents/Audio/AudioSource.h" "EngineComponents/Audio/AudioClip.cpp")
+"ServiceLocator/SoundSystem/Fmod/FmodSoundSystem.cpp"
+
+"Includes/STBIncludes.cpp")
 
 
 # Include directories specific to this target
