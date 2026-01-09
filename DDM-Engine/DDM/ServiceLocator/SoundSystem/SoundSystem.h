@@ -77,7 +77,7 @@ namespace DDM
 		virtual void ResumeAll() = 0;
 
 		/// <summary>
-		/// Set master volume to a new volume between 0 and 100
+		/// Set master volume to a new volume between 0 and 1
 		/// </summary>
 		/// <param name="volume: ">new volume</param>
 		virtual void SetMasterVolume(float volume) = 0;
