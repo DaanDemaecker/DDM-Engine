@@ -86,8 +86,10 @@ add_executable(
 "ServiceLocator/ServiceLocator.cpp"
 
 "ServiceLocator/SoundSystem/Fmod/FmodSoundSystem.cpp"
+"ServiceLocator/SoundSystem/Fmod/FmodSystem.cpp"
+"ServiceLocator/SoundSystem/Fmod/FmodChannel.cpp"
 
-"Includes/STBIncludes.cpp" "ServiceLocator/SoundSystem/Fmod/FmodSystem.cpp" "ServiceLocator/SoundSystem/Fmod/FmodSystem.h")
+"Includes/STBIncludes.cpp")
 
 
 # Include directories specific to this target
