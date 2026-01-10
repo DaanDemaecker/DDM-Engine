@@ -27,6 +27,10 @@ void DDM::AudioSource::OnGUI()
 			Play();
 		}
 
+		std::string channelText = "Using channel: " + std::to_string(m_CurrentChannel);
+
+		ImGui::Text(channelText.c_str());
+
 		ImGui::TreePop();
 	}
 }

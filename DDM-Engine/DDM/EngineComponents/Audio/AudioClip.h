@@ -12,10 +12,8 @@ namespace DDM
 	class AudioClip
 	{
 	public:
-		/// <summary>
-		/// Default constructor
-		/// </summary>
-		AudioClip();
+		// Delete default constructor
+		AudioClip() = delete;
 
 		/// <summary>
 		/// Constructor
@@ -30,32 +28,6 @@ namespace DDM
 		AudioClip(const std::string&& path);
 
 		/// <summary>
-		/// Copy constructor
-		/// </summary>
-		/// <param name="other: ">audioclip to copy</param>
-		AudioClip(const AudioClip& other);
-
-		/// <summary>
-		/// Move constructor
-		/// </summary>
-		/// <param name="other: ">audioclip to move</param>
-		AudioClip(const AudioClip&& other) noexcept;
-
-		/// <summary>
-		/// Copy asignment operator
-		/// </summary>
-		/// <param name="other: ">audioclip to copy</param>
-		/// <returns>new audioclip</returns>
-		AudioClip& operator=(const AudioClip& other);
-
-		/// <summary>
-		/// Copy asignment operator
-		/// </summary>
-		/// <param name="other: ">audioclip to move</param>
-		/// <returns>new audioclip</returns>
-		AudioClip& operator=(const AudioClip&& other) noexcept;
-
-		/// <summary>
 		/// Get the saved file path
 		/// </summary>
 		/// <returns>File path</returns>
@@ -63,7 +35,7 @@ namespace DDM
 
 	private:
 		// Path to the audio file
-		std::string m_FilePath{};
+		const std::string m_FilePath{};
 	};
 }
 
