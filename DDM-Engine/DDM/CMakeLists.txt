@@ -20,6 +20,8 @@ add_executable(
 "EngineComponents/Audio/AudioSource.cpp"
 "EngineComponents/Audio/AudioClip.cpp"
 
+"Events/Subject.cpp"
+
 "DataTypes/DescriptorObjects/InputAttachmentDescriptorObject.cpp"
 "DataTypes/DescriptorObjects/TextureDescriptorObject.cpp"
 
