@@ -5,6 +5,8 @@
 
 // File includes
 #include "FmodErrorHandler.h"
+#include "FmodChannel.h"
+#include "EngineComponents/Audio/AudioEvents.h"
 
 // Standard library includes
 #include <algorithm>
@@ -35,9 +37,16 @@ DDM::FmodSystem::~FmodSystem()
 void DDM::FmodSystem::Update()
 {
 	m_pSystem->update();
+
+	for (auto index : m_ChannelsToRemove)
+	{
+		m_Channels[index] = nullptr;
+	}
+
+	m_ChannelsToRemove.clear();
 }
 
-int DDM::FmodSystem::PlayClip(const std::string& fileName)
+int DDM::FmodSystem::PlayClip(const std::string& fileName, Observer* observer)
 {
 	if (m_Clips[fileName] == nullptr)
 	{
@@ -51,13 +60,18 @@ int DDM::FmodSystem::PlayClip(const std::string& fileName)
 		std::cout << "No available channel \n";
 	}
 
-	m_pSystem->playSound(m_Clips[fileName], nullptr, false, &m_Channels[channelIndex]);
+	FMOD::Channel* channel;
+	m_pSystem->playSound(m_Clips[fileName], nullptr, false, &channel);
 
 	std::cout << "Playing in channel: " << channelIndex << "\n";
 
-	m_Channels[channelIndex]->setVolume(m_MasterVolume);
-	m_Channels[channelIndex]->setLoopCount(0);
-	m_Channels[channelIndex]->setMute(m_IsMuted);
+	channel->setVolume(m_MasterVolume);
+	channel->setLoopCount(0);
+	channel->setMute(m_IsMuted);
+
+	m_Channels[channelIndex] = std::make_unique<FmodChannel>(channel, channelIndex);
+	m_Channels[channelIndex]->AddObserver(this);
+	m_Channels[channelIndex]->AddObserver(observer);
 
 	return channelIndex;
 }
@@ -73,7 +87,7 @@ void DDM::FmodSystem::SetMute(bool mute)
 			continue;
 		}
 
-		channel->setMute(m_IsMuted);
+		channel->SetMute(m_IsMuted);
 	}
 }
 
@@ -98,20 +112,19 @@ void DDM::FmodSystem::LoadClip(const std::string& filePath)
 	CreateClip(filePath);
 }
 
+void DDM::FmodSystem::Notify(const Event& event)
+{
+	if (auto audioFinishedEvent{ dynamic_cast<const AudioFinishedEvent*>(&event) })
+	{
+		m_ChannelsToRemove.push_back(audioFinishedEvent->Index);
+	}
+}
+
 int DDM::FmodSystem::GetFreeChannel()
 {
 	for (int i{}; i < m_Channels.size(); ++i)
 	{
-		bool isPlaying = false;
-
 		if (m_Channels[i] == nullptr)
-		{
-			return i;
-		}
-
-		HandleError(m_Channels[i]->isPlaying(&isPlaying));
-
-		if (!isPlaying)
 		{
 			return i;
 		}
@@ -129,8 +142,8 @@ void DDM::FmodSystem::CreateClip(const std::string& fileName)
 
 void DDM::FmodSystem::SetVolume()
 {
-	for(auto channel : m_Channels)
+	for(auto& channel : m_Channels)
 	{
-		channel->setVolume(m_MasterVolume);
+		channel->SetVolume(m_MasterVolume);
 	}
 }

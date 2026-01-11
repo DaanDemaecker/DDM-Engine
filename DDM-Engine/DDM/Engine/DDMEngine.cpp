@@ -12,10 +12,11 @@
 #include "Managers/ConfigManager.h"
 #include "Managers/TimeManager.h"
 
-
 #include "Vulkan/VulkanObject.h"
 
 #include "Managers/InputManager.h"
+
+#include "ServiceLocator/ServiceLocator.h"
 
 // Standard library includes
 #include <chrono>
@@ -120,6 +121,9 @@ void DDM::DDMEngine::Run(const std::function<void()>& load)
 
 		// Call post update, used
 		sceneManager.PostUpdate();
+
+		// Call update for soundsystem
+		DDM::ServiceLocator::GetSoundSystem().Update();
 
 		// Render scene
 		vulkanObject.Render();

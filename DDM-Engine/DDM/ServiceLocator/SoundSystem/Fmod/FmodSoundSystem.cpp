@@ -29,9 +29,9 @@ namespace DDM
 			m_pSystem->Update();
 		}
 
-		int PlayClip(const std::string& fileName)
+		int PlayClip(const std::string& fileName, Observer* observer)
 		{
-			return m_pSystem->PlayClip(fileName);
+			return m_pSystem->PlayClip(fileName, observer);
 		}
 
 		void SetMute(bool mute)
@@ -77,9 +77,9 @@ void DDM::FmodSoundSystem::LoadClip(const AudioClip* clip)
 	m_pImpl->LoadClip(clip->GetFilePath());
 }
 
-int DDM::FmodSoundSystem::PlayClip(const AudioClip* clip)
+int DDM::FmodSoundSystem::PlayClip(const AudioClip* clip, Observer* observer)
 {
-	return m_pImpl->PlayClip(clip->GetFilePath());
+	return m_pImpl->PlayClip(clip->GetFilePath(), observer);
 }
 
 void DDM::FmodSoundSystem::ToggleMute()

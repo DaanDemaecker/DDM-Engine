@@ -6,18 +6,28 @@
 
 // File includes
 #include "Includes/FmodIncludes.h"
+#include "Events/Subject.h"
 
 namespace DDM
 {
-	class FmodChannel final
+	class FmodChannel final : public Subject
 	{
 	public:
 		FmodChannel() = delete;
 
-		FmodChannel(FMOD::Channel* pChannel);
+		FmodChannel(FMOD::Channel* pChannel, int index);
 
+		~FmodChannel();
+
+		void SetMute(bool muted);
+
+		void SetVolume(float volume);
+
+		int GetIndex() const { return m_Index; }
 	private:
 		FMOD::Channel* m_pChannel{};
+
+		const int m_Index;
 
 		static FMOD_RESULT F_CALLBACK ChannelCallback(
 			FMOD_CHANNELCONTROL* channelcontrol,

@@ -7,13 +7,14 @@
 
 // Parent include
 #include "BaseClasses/Component.h"
+#include "Events/Observer.h"
 
 // File includes
 #include "AudioClip.h"
 
 namespace DDM
 {
-	class AudioSource final : public Component
+	class AudioSource final : public Component, public Observer
 	{
 	public:
 		/// <summary>
@@ -66,6 +67,12 @@ namespace DDM
 		/// Play the currently selected clip
 		/// </summary>
 		void Play();
+
+		/// <summary>
+		/// Receive a notification from the subject
+		/// </summary>
+		/// <param name="event: ">event that triggered the notification</param>
+		virtual void Notify(const Event& event);
 	private:
 		// The currently set audioclip
 		std::shared_ptr<AudioClip> m_pClip{};

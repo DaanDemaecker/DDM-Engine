@@ -6,6 +6,7 @@
 // File includes
 #include "ServiceLocator/ServiceLocator.h"
 #include "Includes/ImGuiIncludes.h"
+#include "AudioEvents.h"
 
 DDM::AudioSource::AudioSource()
 	:Component()
@@ -54,5 +55,13 @@ void DDM::AudioSource::SetClip(const std::string&& path)
 
 void DDM::AudioSource::Play()
 {
-	m_CurrentChannel = ServiceLocator::GetSoundSystem().PlayClip(m_pClip.get());
+	m_CurrentChannel = ServiceLocator::GetSoundSystem().PlayClip(m_pClip.get(), this);
+}
+
+void DDM::AudioSource::Notify(const Event& event)
+{
+	if (dynamic_cast<const AudioFinishedEvent*>(&event))
+	{
+		m_CurrentChannel = -1;
+	}
 }

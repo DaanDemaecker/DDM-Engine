@@ -24,6 +24,12 @@ namespace DDM
 		/// Send a notification to all observers
 		/// </summary>
 		/// <param name="event: ">extra data</param>
+		void NotifyObservers(const Event&& event);
+
+		/// <summary>
+		/// Send a notification to all observers
+		/// </summary>
+		/// <param name="event: ">extra data</param>
 		void NotifyObservers(const Event& event);
 
 		/// <summary>

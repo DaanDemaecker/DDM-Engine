@@ -6,15 +6,18 @@
 
 // File includes
 #include "Includes/FmodIncludes.h"
+#include "Events/Observer.h"
+#include "FmodChannel.h"
 
 // Standard library includes
 #include <vector>
 #include <unordered_map>
 #include <iostream>
+#include <memory>
 
 namespace DDM
 {
-	class FmodSystem final
+	class FmodSystem final : public Observer
 	{
 	public:
 		FmodSystem() = delete;
@@ -31,7 +34,7 @@ namespace DDM
 
 		void Update();
 
-		int PlayClip(const std::string& fileName);
+		int PlayClip(const std::string& fileName, Observer* observer);
 
 		void SetMute(bool mute);
 
@@ -43,6 +46,11 @@ namespace DDM
 
 		void LoadClip(const std::string& filePath);
 
+		/// <summary>
+		/// Receive a notification from the subject
+		/// </summary>
+		/// <param name="event: ">event that triggered the notification</param>
+		virtual void Notify(const Event& event);
 	private:
 		// Max volume
 		const float m_MaxVolume{ 1 };
@@ -63,7 +71,10 @@ namespace DDM
 		std::unordered_map<std::string, FMOD::Sound*> m_Clips{};
 
 		// List of available channels
-		std::vector<FMOD::Channel*> m_Channels{};
+		std::vector<std::unique_ptr<FmodChannel>> m_Channels{};
+
+		// Channels to remove in next update
+		std::vector<int> m_ChannelsToRemove{};
 
 		/// <summary>
 		/// Get a channel index that isn't playing

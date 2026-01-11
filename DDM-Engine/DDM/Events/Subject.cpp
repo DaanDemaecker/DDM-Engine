@@ -9,6 +9,11 @@
 // Standard library includes
 #include <algorithm>
 
+void DDM::Subject::NotifyObservers(const Event&& event)
+{
+	NotifyObservers(event);
+}
+
 void DDM::Subject::NotifyObservers(const Event& event)
 {
 	for (auto observer : m_pObservers)
@@ -19,7 +24,7 @@ void DDM::Subject::NotifyObservers(const Event& event)
 
 void DDM::Subject::AddObserver(Observer* observer)
 {
-	if (std::find(m_pObservers.begin(), m_pObservers.end(), observer) != m_pObservers.end())
+	if (std::find(m_pObservers.begin(), m_pObservers.end(), observer) == m_pObservers.end())
 	{
 		m_pObservers.push_back(observer);
 	}
