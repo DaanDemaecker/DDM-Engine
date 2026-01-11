@@ -35,6 +35,8 @@ namespace DDM
 
 		virtual void SetMasterVolume(float volume) override;
 
+		virtual float GetMasterVolume() override;
+
 	private:
 		std::unique_ptr<FmodImpl> m_pImpl;
 	};

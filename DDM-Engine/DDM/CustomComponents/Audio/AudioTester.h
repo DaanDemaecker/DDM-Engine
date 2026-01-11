@@ -38,6 +38,9 @@ namespace DDM
 		/// </summary>
 		virtual void OnGUI() override;
 	private:
+		// Master volume
+		float m_Volume{ 1 };
+
 		// Max length for text input
 		const int m_TextLength{ 125 };
 

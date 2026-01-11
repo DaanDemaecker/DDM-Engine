@@ -42,6 +42,8 @@ namespace DDM
 
 		void SetMasterVolume(float volume);
 
+		float GetMasterVolume();
+
 		bool IsMuted() const;
 
 		void LoadClip(const std::string& filePath);

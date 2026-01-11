@@ -58,6 +58,7 @@ int DDM::FmodSystem::PlayClip(const std::string& fileName, Observer* observer)
 	if (channelIndex < 0)
 	{
 		std::cout << "No available channel \n";
+		return channelIndex;
 	}
 
 	FMOD::Channel* channel;
@@ -102,6 +103,11 @@ void DDM::FmodSystem::SetMasterVolume(float volume)
 	SetVolume();
 }
 
+float DDM::FmodSystem::GetMasterVolume()
+{
+	return m_MasterVolume;
+}
+
 bool DDM::FmodSystem::IsMuted() const
 {
 	return m_IsMuted;
@@ -144,6 +150,11 @@ void DDM::FmodSystem::SetVolume()
 {
 	for(auto& channel : m_Channels)
 	{
+		if (channel == nullptr)
+		{
+			continue;
+		}
+
 		channel->SetVolume(m_MasterVolume);
 	}
 }

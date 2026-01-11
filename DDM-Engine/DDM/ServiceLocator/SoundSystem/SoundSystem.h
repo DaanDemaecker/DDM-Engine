@@ -84,6 +84,8 @@ namespace DDM
 		/// </summary>
 		/// <param name="volume: ">new volume</param>
 		virtual void SetMasterVolume(float volume) = 0;
+
+		virtual float GetMasterVolume() = 0;
 	};
 
 	class DefaultSoundSystem final : public SoundSystem
@@ -109,6 +111,8 @@ namespace DDM
 		virtual void ResumeAll() override {}
 
 		virtual void SetMasterVolume(float volume) override {}
+
+		virtual float GetMasterVolume() override { return 0; }
 	};
 }
 

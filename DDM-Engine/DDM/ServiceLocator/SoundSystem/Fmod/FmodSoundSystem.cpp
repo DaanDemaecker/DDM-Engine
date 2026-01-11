@@ -59,6 +59,11 @@ namespace DDM
 			m_pSystem->LoadClip(filePath);
 		}
 
+		float GetMasterVolume()
+		{
+			return m_pSystem->GetMasterVolume();
+		}
+
 	private:
 		std::unique_ptr<FmodSystem> m_pSystem{};
 
@@ -115,4 +120,9 @@ void DDM::FmodSoundSystem::ResumeAll()
 void DDM::FmodSoundSystem::SetMasterVolume(float volume)
 {
 	m_pImpl->SetMasterVolume(volume);
+}
+
+float DDM::FmodSoundSystem::GetMasterVolume()
+{
+	return m_pImpl->GetMasterVolume();
 }
