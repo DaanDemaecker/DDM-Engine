@@ -18,24 +18,25 @@ DDM::AudioTester::~AudioTester()
 
 void DDM::AudioTester::OnSceneLoad()
 {
-	m_pAudioSource = GetOwner()->AddComponent<AudioSource>();
+	m_pAudioSource = GetOwner()->GetComponent<AudioSource>();
 
-	m_pAudioSource->SetShowImGui(true);
+	if (m_pAudioSource != nullptr)
+	{
+		m_pAudioSource->SetShowImGui(true);
+	}
 }
 
 void DDM::AudioTester::OnGUI()
 {
 	auto& soundSystem{ ServiceLocator::GetSoundSystem() };
 
-	const bool isMutedOriginal{ soundSystem.IsMuted()};
-	bool tempIsMuted{ isMutedOriginal };
 
 	ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_Framed;
 
 	// Start tree
 	if (ImGui::TreeNodeEx("AudioTest", flags))
 	{
-		m_Volume = ServiceLocator::GetSoundSystem().GetMasterVolume();
+		m_Volume = soundSystem.GetMasterVolume();
 
 		if (ImGui::SliderFloat("Volume", &m_Volume, 0, 1))
 		{
@@ -43,8 +44,12 @@ void DDM::AudioTester::OnGUI()
 		}
 
 
+		m_IsMuted = soundSystem.IsMuted();
 
-		ImGui::Checkbox("Is muted", &tempIsMuted);
+		if (ImGui::Checkbox("Is muted", &m_IsMuted))
+		{
+			soundSystem.SetMute(m_IsMuted);
+		}
 
 		ImGui::InputText("Path to clip to play", m_ClipPath.data(), m_TextLength);
 
@@ -54,11 +59,6 @@ void DDM::AudioTester::OnGUI()
 		}
 
 		ImGui::TreePop();
-	}
-
-	if (isMutedOriginal != tempIsMuted)
-	{
-		soundSystem.SetMute(tempIsMuted);
 	}
 }
 
@@ -70,5 +70,8 @@ void DDM::AudioTester::SetCLip(char* filePath, int bufferLength)
 		return;
 	}
 
-	m_pAudioSource->SetClip(filePath);
+	if (m_pAudioSource != nullptr)
+	{
+		m_pAudioSource->SetClip(filePath);
+	}
 }

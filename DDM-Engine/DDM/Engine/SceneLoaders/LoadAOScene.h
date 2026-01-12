@@ -6,6 +6,7 @@
 #include "Vulkan/Renderers/AORenderers/AoRenderPasses.h"
 #include "ServiceLocator/ServiceLocator.h"
 #include "CustomComponents/Audio/AudioTester.h"
+#include "EngineComponents/Audio/AudioSource.h"
 
 
 namespace LoadAOScene
@@ -219,6 +220,19 @@ namespace LoadAOScene
 
 		auto pAudioTestComponent{ pAudioTester->AddComponent<DDM::AudioTester>() };
 		pAudioTestComponent->SetShowImGui(true);
+
+		auto pAudioSourceComponent{ pAudioTester->AddComponent<DDM::AudioSource>() };
+		pAudioSourceComponent->SetShowImGui(true);
+
+
+		auto pAudioTester2{ scene->CreateGameObject("Audio tester 2") };
+		pAudioTester2->SetShowImGui(true);
+
+		auto pAudioTestComponent2{ pAudioTester2->AddComponent<DDM::AudioTester>() };
+		pAudioTestComponent2->SetShowImGui(true);
+
+		auto pAudioSourceComponent2{ pAudioTester2->AddComponent<DDM::AudioSource>() };
+		pAudioSourceComponent2->SetShowImGui(true);
 	}
 
 	void SetupCamera(DDM::Scene* scene)

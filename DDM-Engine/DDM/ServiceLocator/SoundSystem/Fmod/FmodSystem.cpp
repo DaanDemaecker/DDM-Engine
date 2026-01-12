@@ -46,14 +46,20 @@ void DDM::FmodSystem::Update()
 	m_ChannelsToRemove.clear();
 }
 
-int DDM::FmodSystem::PlayClip(const std::string& fileName, Observer* observer)
+int DDM::FmodSystem::PlayClip(const std::string& fileName, Observer* observer, int channel)
 {
 	if (m_Clips[fileName] == nullptr)
 	{
 		CreateClip(fileName);
 	}
 
-	int channelIndex = GetFreeChannel();
+	int channelIndex = channel;
+
+	if (channelIndex < 0)
+	{
+		channelIndex = GetFreeChannel();
+	}
+
 
 	if (channelIndex < 0)
 	{
@@ -61,18 +67,26 @@ int DDM::FmodSystem::PlayClip(const std::string& fileName, Observer* observer)
 		return channelIndex;
 	}
 
-	FMOD::Channel* channel;
-	m_pSystem->playSound(m_Clips[fileName], nullptr, false, &channel);
+	FMOD::Channel* newChannel;
+	m_pSystem->playSound(m_Clips[fileName], nullptr, false, &newChannel);
 
 	std::cout << "Playing in channel: " << channelIndex << "\n";
 
-	channel->setVolume(m_MasterVolume);
-	channel->setLoopCount(0);
-	channel->setMute(m_IsMuted);
+	newChannel->setVolume(m_MasterVolume);
+	newChannel->setLoopCount(0);
+	newChannel->setMute(m_IsMuted);
 
-	m_Channels[channelIndex] = std::make_unique<FmodChannel>(channel, channelIndex);
-	m_Channels[channelIndex]->AddObserver(this);
-	m_Channels[channelIndex]->AddObserver(observer);
+	if (m_Channels[channelIndex] == nullptr)
+	{
+		m_Channels[channelIndex] = std::make_unique<FmodChannel>(newChannel, channelIndex);
+		m_Channels[channelIndex]->AddObserver(this);
+		m_Channels[channelIndex]->AddObserver(observer);
+	}
+	else
+
+	{
+		m_Channels[channelIndex]->SetChannel(newChannel);
+	}
 
 	return channelIndex;
 }
@@ -103,7 +117,7 @@ void DDM::FmodSystem::SetMasterVolume(float volume)
 	SetVolume();
 }
 
-float DDM::FmodSystem::GetMasterVolume()
+float DDM::FmodSystem::GetMasterVolume() const 
 {
 	return m_MasterVolume;
 }

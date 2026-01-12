@@ -34,7 +34,7 @@ namespace DDM
 
 		void Update();
 
-		int PlayClip(const std::string& fileName, Observer* observer);
+		int PlayClip(const std::string& fileName, Observer* observer, int channel);
 
 		void SetMute(bool mute);
 
@@ -42,7 +42,7 @@ namespace DDM
 
 		void SetMasterVolume(float volume);
 
-		float GetMasterVolume();
+		float GetMasterVolume() const;
 
 		bool IsMuted() const;
 

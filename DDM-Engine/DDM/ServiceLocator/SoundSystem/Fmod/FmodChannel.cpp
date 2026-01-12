@@ -20,6 +20,15 @@ DDM::FmodChannel::~FmodChannel()
 {
 }
 
+void DDM::FmodChannel::SetChannel(FMOD::Channel* pChannel)
+{
+	m_pChannel->stop();
+
+	m_pChannel = pChannel;
+
+	m_IgnoreNextCallback = true;
+}
+
 void DDM::FmodChannel::SetMute(bool muted)
 {
 	m_pChannel->setMute(muted);
@@ -40,8 +49,9 @@ FMOD_RESULT F_CALLBACK DDM::FmodChannel::ChannelCallback(FMOD_CHANNELCONTROL* ch
 		pChannel->getUserData(&userData);
 
 		FmodChannel* wrapper = static_cast<FmodChannel*>(userData);
-		if (wrapper)
+		if (wrapper && wrapper->m_IgnoreNextCallback)
 		{
+			wrapper->m_IgnoreNextCallback = false;
 			// Notify wrapper that playback ended
 			wrapper->NotifyObservers(AudioFinishedEvent(wrapper->GetIndex()));
 		}

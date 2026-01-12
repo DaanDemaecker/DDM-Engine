@@ -19,13 +19,19 @@ namespace DDM
 
 		~FmodChannel();
 
+		void SetChannel(FMOD::Channel* pChannel);
+
 		void SetMute(bool muted);
 
 		void SetVolume(float volume);
 
 		int GetIndex() const { return m_Index; }
+
+		FMOD::Channel* GetChannel() const { return m_pChannel; }
 	private:
 		FMOD::Channel* m_pChannel{};
+
+		bool m_IgnoreNextCallback{false};
 
 		const int m_Index;
 

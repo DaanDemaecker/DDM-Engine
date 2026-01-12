@@ -55,7 +55,7 @@ void DDM::AudioSource::SetClip(const std::string&& path)
 
 void DDM::AudioSource::Play()
 {
-	m_CurrentChannel = ServiceLocator::GetSoundSystem().PlayClip(m_pClip.get(), this);
+	m_CurrentChannel = ServiceLocator::GetSoundSystem().PlayClip(m_pClip.get(), this, m_CurrentChannel);
 }
 
 void DDM::AudioSource::Notify(const Event& event)

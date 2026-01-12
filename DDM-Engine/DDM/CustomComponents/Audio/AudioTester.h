@@ -41,6 +41,8 @@ namespace DDM
 		// Master volume
 		float m_Volume{ 1 };
 
+		bool m_IsMuted{ false };
+
 		// Max length for text input
 		const int m_TextLength{ 125 };
 
