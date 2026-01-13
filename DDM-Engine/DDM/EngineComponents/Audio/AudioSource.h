@@ -11,6 +11,7 @@
 
 // File includes
 #include "AudioClip.h"
+#include "AudioSourceInfo.h"
 
 namespace DDM
 {
@@ -79,6 +80,9 @@ namespace DDM
 
 		// The current channel in use
 		int m_CurrentChannel{ -1 };
+
+		// Info about the audiosource
+		AudioSourceInfo m_Info{};
 	};
 }
 

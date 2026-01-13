@@ -17,6 +17,8 @@
 
 namespace DDM
 {
+	struct AudioSourceInfo;
+
 	class FmodSystem final : public Observer
 	{
 	public:
@@ -34,7 +36,7 @@ namespace DDM
 
 		void Update();
 
-		int PlayClip(const std::string& fileName, Observer* observer, int channel);
+		int PlayClip(const std::string& fileName, const AudioSourceInfo& audioSourceInfo, Observer* observer, int channel);
 
 		void SetMute(bool mute);
 

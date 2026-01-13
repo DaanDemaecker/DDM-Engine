@@ -7,6 +7,7 @@
 #include "FmodErrorHandler.h"
 #include "FmodChannel.h"
 #include "EngineComponents/Audio/AudioEvents.h"
+#include "EngineComponents/Audio/AudioSourceInfo.h"
 
 // Standard library includes
 #include <algorithm>
@@ -46,7 +47,7 @@ void DDM::FmodSystem::Update()
 	m_ChannelsToRemove.clear();
 }
 
-int DDM::FmodSystem::PlayClip(const std::string& fileName, Observer* observer, int channel)
+int DDM::FmodSystem::PlayClip(const std::string& fileName, const AudioSourceInfo& audioSourceInfo, Observer* observer, int channel)
 {
 	if (m_Clips[fileName] == nullptr)
 	{
@@ -72,9 +73,9 @@ int DDM::FmodSystem::PlayClip(const std::string& fileName, Observer* observer, i
 
 	std::cout << "Playing in channel: " << channelIndex << "\n";
 
-	newChannel->setVolume(m_MasterVolume);
+	newChannel->setVolume(m_MasterVolume * audioSourceInfo.Volume);
 	newChannel->setLoopCount(0);
-	newChannel->setMute(m_IsMuted);
+	newChannel->setMute(m_IsMuted || audioSourceInfo.Muted);
 
 	if (m_Channels[channelIndex] == nullptr)
 	{

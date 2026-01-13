@@ -10,6 +10,7 @@
 
 namespace DDM
 {
+
 	class FmodChannel final : public Subject
 	{
 	public:

@@ -32,6 +32,21 @@ void DDM::AudioSource::OnGUI()
 
 		ImGui::Text(channelText.c_str());
 
+		if (ImGui::Checkbox("Muted", &m_Info.Muted))
+		{
+			
+		}
+
+		if(ImGui::Checkbox("Paused", &m_Info.Paused))
+		{
+			
+		}
+
+		if (ImGui::SliderFloat("Volume", &m_Info.Volume, 0, 1))
+		{
+			
+		}
+
 		ImGui::TreePop();
 	}
 }
@@ -55,7 +70,7 @@ void DDM::AudioSource::SetClip(const std::string&& path)
 
 void DDM::AudioSource::Play()
 {
-	m_CurrentChannel = ServiceLocator::GetSoundSystem().PlayClip(m_pClip.get(), this, m_CurrentChannel);
+	m_CurrentChannel = ServiceLocator::GetSoundSystem().PlayClip(m_pClip.get(), m_Info, this, m_CurrentChannel);
 }
 
 void DDM::AudioSource::Notify(const Event& event)

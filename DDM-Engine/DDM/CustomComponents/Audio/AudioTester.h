@@ -39,7 +39,7 @@ namespace DDM
 		virtual void OnGUI() override;
 	private:
 		// Master volume
-		float m_Volume{ 1 };
+		float m_MasterVolume{ 1 };
 
 		bool m_IsMuted{ false };
 

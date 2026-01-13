@@ -6,6 +6,7 @@
 
 // File includes
 #include "EngineComponents/Audio/AudioClip.h"
+#include "EngineComponents/Audio/AudioSourceInfo.h"
 
 // Standard library includes
 #include <string>
@@ -44,9 +45,10 @@ namespace DDM
 		/// Play an audio clip
 		/// </summary>
 		/// <param name="clip: ">reference to the audioclip</param>
+		/// <param name="audioSourceInfo: ">reference to struct holding info about audiosource</param>
 		/// <param name="observer: ">observer for audio end events</param>
 		/// <param name="channel: ">channel index to play in, -1 for new channel</param>
-		virtual int PlayClip(const AudioClip* clip, Observer* observer, int channel) = 0;
+		virtual int PlayClip(const AudioClip* clip, const AudioSourceInfo& audioSourceInfo, Observer* observer, int channel) = 0;
 
 		/// <summary>
 		/// Query wether sound system is muted
@@ -97,7 +99,7 @@ namespace DDM
 
 		virtual void LoadClip(const AudioClip* clip) override {}
 
-		virtual int PlayClip(const AudioClip* clip, Observer* observer, int channel) override { return 0; }
+		virtual int PlayClip(const AudioClip* clip, const AudioSourceInfo& audioSourceInfo, Observer* observer, int channel) override { return 0; }
 
 		virtual bool IsMuted() const override { return false; }
 

@@ -49,7 +49,7 @@ FMOD_RESULT F_CALLBACK DDM::FmodChannel::ChannelCallback(FMOD_CHANNELCONTROL* ch
 		pChannel->getUserData(&userData);
 
 		FmodChannel* wrapper = static_cast<FmodChannel*>(userData);
-		if (wrapper && wrapper->m_IgnoreNextCallback)
+		if (wrapper && !wrapper->m_IgnoreNextCallback)
 		{
 			wrapper->m_IgnoreNextCallback = false;
 			// Notify wrapper that playback ended

@@ -36,13 +36,12 @@ void DDM::AudioTester::OnGUI()
 	// Start tree
 	if (ImGui::TreeNodeEx("AudioTest", flags))
 	{
-		m_Volume = soundSystem.GetMasterVolume();
+		m_MasterVolume = soundSystem.GetMasterVolume();
 
-		if (ImGui::SliderFloat("Volume", &m_Volume, 0, 1))
+		if (ImGui::SliderFloat("Volume", &m_MasterVolume, 0, 1))
 		{
-			ServiceLocator::GetSoundSystem().SetMasterVolume(m_Volume);
+			ServiceLocator::GetSoundSystem().SetMasterVolume(m_MasterVolume);
 		}
-
 
 		m_IsMuted = soundSystem.IsMuted();
 
