@@ -47,8 +47,7 @@ namespace DDM
 		/// <param name="clip: ">reference to the audioclip</param>
 		/// <param name="audioSourceInfo: ">reference to struct holding info about audiosource</param>
 		/// <param name="observer: ">observer for audio end events</param>
-		/// <param name="channel: ">channel index to play in, -1 for new channel</param>
-		virtual int PlayClip(const AudioClip* clip, const AudioSourceInfo& audioSourceInfo, Observer* observer, int channel) = 0;
+		virtual int PlayClip(const AudioClip* clip, const AudioSourceInfo& audioSourceInfo, Observer* observer) = 0;
 
 		/// <summary>
 		/// Query wether sound system is muted
@@ -89,6 +88,10 @@ namespace DDM
 		virtual void SetMasterVolume(float volume) = 0;
 
 		virtual float GetMasterVolume() = 0;
+
+		virtual void SetVolume(const AudioSourceInfo& audioSourceInfo) = 0;
+
+		virtual float GetVolume(const AudioSourceInfo& audioSourceInfo) = 0;
 	};
 
 	class DefaultSoundSystem final : public SoundSystem
@@ -99,7 +102,7 @@ namespace DDM
 
 		virtual void LoadClip(const AudioClip* clip) override {}
 
-		virtual int PlayClip(const AudioClip* clip, const AudioSourceInfo& audioSourceInfo, Observer* observer, int channel) override { return 0; }
+		virtual int PlayClip(const AudioClip* clip, const AudioSourceInfo& audioSourceInfo, Observer* observer) override { return -1; }
 
 		virtual bool IsMuted() const override { return false; }
 
@@ -116,6 +119,10 @@ namespace DDM
 		virtual void SetMasterVolume(float volume) override {}
 
 		virtual float GetMasterVolume() override { return 0; }
+
+		virtual void SetVolume(const AudioSourceInfo& audioSourceInfo) override {}
+
+		virtual float GetVolume(const AudioSourceInfo& audioSourceInfo) override { return 0; }
 	};
 }
 

@@ -78,9 +78,6 @@ namespace DDM
 		// The currently set audioclip
 		std::shared_ptr<AudioClip> m_pClip{};
 
-		// The current channel in use
-		int m_CurrentChannel{ -1 };
-
 		// Info about the audiosource
 		AudioSourceInfo m_Info{};
 	};

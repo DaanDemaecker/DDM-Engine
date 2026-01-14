@@ -29,9 +29,9 @@ namespace DDM
 			m_pSystem->Update();
 		}
 
-		int PlayClip(const std::string& fileName, const AudioSourceInfo& audioSourceInfo, Observer* observer, int channel)
+		int PlayClip(const std::string& fileName, const AudioSourceInfo& audioSourceInfo, Observer* observer)
 		{
-			return m_pSystem->PlayClip(fileName, audioSourceInfo, observer, channel);
+			return m_pSystem->PlayClip(fileName, audioSourceInfo, observer);
 		}
 
 		void SetMute(bool mute)
@@ -64,6 +64,16 @@ namespace DDM
 			return m_pSystem->GetMasterVolume();
 		}
 
+		void SetVolume(const AudioSourceInfo& audioSourceInfo)
+		{
+			m_pSystem->SetVolume(audioSourceInfo);
+		}
+
+		float GetVolume(const AudioSourceInfo& audioSourceInfo)
+		{
+			return m_pSystem->GetVolume(audioSourceInfo);
+		}
+
 	private:
 		std::unique_ptr<FmodSystem> m_pSystem{};
 
@@ -82,9 +92,9 @@ void DDM::FmodSoundSystem::LoadClip(const AudioClip* clip)
 	m_pImpl->LoadClip(clip->GetFilePath());
 }
 
-int DDM::FmodSoundSystem::PlayClip(const AudioClip* clip, const AudioSourceInfo& audioSourceInfo, Observer* observer, int channel)
+int DDM::FmodSoundSystem::PlayClip(const AudioClip* clip, const AudioSourceInfo& audioSourceInfo, Observer* observer)
 {
-	return m_pImpl->PlayClip(clip->GetFilePath(), audioSourceInfo, observer, channel);
+	return m_pImpl->PlayClip(clip->GetFilePath(), audioSourceInfo, observer);
 }
 
 void DDM::FmodSoundSystem::ToggleMute()
@@ -125,4 +135,14 @@ void DDM::FmodSoundSystem::SetMasterVolume(float volume)
 float DDM::FmodSoundSystem::GetMasterVolume()
 {
 	return m_pImpl->GetMasterVolume();
+}
+
+void DDM::FmodSoundSystem::SetVolume(const AudioSourceInfo& audioSourceInfo)
+{
+	m_pImpl->SetVolume(audioSourceInfo);
+}
+
+float DDM::FmodSoundSystem::GetVolume(const AudioSourceInfo& audioSourceInfo)
+{
+	return m_pImpl->GetVolume(audioSourceInfo);
 }

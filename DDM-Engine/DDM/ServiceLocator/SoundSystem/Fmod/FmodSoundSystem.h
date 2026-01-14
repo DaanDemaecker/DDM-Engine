@@ -19,7 +19,7 @@ namespace DDM
 
 		virtual void LoadClip(const AudioClip* clip) override;
 
-		virtual int PlayClip(const AudioClip* clip, const AudioSourceInfo& audioSourceInfo, Observer* observer, int channel) override;
+		virtual int PlayClip(const AudioClip* clip, const AudioSourceInfo& audioSourceInfo, Observer* observer) override;
 
 		virtual void ToggleMute() override;
 
@@ -36,6 +36,10 @@ namespace DDM
 		virtual void SetMasterVolume(float volume) override;
 
 		virtual float GetMasterVolume() override;
+
+		virtual void SetVolume(const AudioSourceInfo& audioSourceInfo) override;
+
+		virtual float GetVolume(const AudioSourceInfo& audioSourceInfo) override;
 
 	private:
 		std::unique_ptr<FmodImpl> m_pImpl;

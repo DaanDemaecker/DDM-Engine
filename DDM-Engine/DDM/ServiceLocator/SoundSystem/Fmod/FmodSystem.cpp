@@ -47,14 +47,14 @@ void DDM::FmodSystem::Update()
 	m_ChannelsToRemove.clear();
 }
 
-int DDM::FmodSystem::PlayClip(const std::string& fileName, const AudioSourceInfo& audioSourceInfo, Observer* observer, int channel)
+int DDM::FmodSystem::PlayClip(const std::string& fileName, const AudioSourceInfo& audioSourceInfo, Observer* observer)
 {
 	if (m_Clips[fileName] == nullptr)
 	{
 		CreateClip(fileName);
 	}
 
-	int channelIndex = channel;
+	int channelIndex = audioSourceInfo.Channel;
 
 	if (channelIndex < 0)
 	{
@@ -115,7 +115,15 @@ void DDM::FmodSystem::ToggleMute()
 void DDM::FmodSystem::SetMasterVolume(float volume)
 {
 	m_MasterVolume = std::min(volume, m_MaxVolume);
-	SetVolume();
+	
+	for (auto& channel : m_Channels)
+	{
+		if (channel != nullptr)
+		{
+			channel->SetMasterVolume(m_MasterVolume);
+		}
+	}
+
 }
 
 float DDM::FmodSystem::GetMasterVolume() const 
@@ -131,6 +139,26 @@ bool DDM::FmodSystem::IsMuted() const
 void DDM::FmodSystem::LoadClip(const std::string& filePath)
 {
 	CreateClip(filePath);
+}
+
+void DDM::FmodSystem::SetVolume(const AudioSourceInfo& audioSourceInfo)
+{
+	if (audioSourceInfo.Channel < 0 || m_Channels[audioSourceInfo.Channel] == nullptr)
+	{
+		return;
+	}
+
+	m_Channels[audioSourceInfo.Channel]->SetVolume(audioSourceInfo.Volume);
+}
+
+float DDM::FmodSystem::GetVolume(const AudioSourceInfo& audioSourceInfo)
+{
+	if (audioSourceInfo.Channel < 0 || m_Channels[audioSourceInfo.Channel] == nullptr)
+	{
+		return 0;
+	}
+
+	return m_Channels[audioSourceInfo.Channel]->GetVolume();
 }
 
 void DDM::FmodSystem::Notify(const Event& event)
@@ -159,17 +187,4 @@ void DDM::FmodSystem::CreateClip(const std::string& fileName)
 	std::cout << "Creating clip: " << fileName << "\n";
 
 	m_pSystem->createSound(fileName.c_str(), FMOD_LOOP_NORMAL, nullptr, &m_Clips[fileName]);
-}
-
-void DDM::FmodSystem::SetVolume()
-{
-	for(auto& channel : m_Channels)
-	{
-		if (channel == nullptr)
-		{
-			continue;
-		}
-
-		channel->SetVolume(m_MasterVolume);
-	}
 }

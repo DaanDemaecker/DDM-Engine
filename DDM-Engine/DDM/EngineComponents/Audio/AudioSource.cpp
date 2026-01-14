@@ -28,7 +28,7 @@ void DDM::AudioSource::OnGUI()
 			Play();
 		}
 
-		std::string channelText = "Using channel: " + std::to_string(m_CurrentChannel);
+		std::string channelText = "Using channel: " + std::to_string(m_Info.Channel);
 
 		ImGui::Text(channelText.c_str());
 
@@ -44,7 +44,7 @@ void DDM::AudioSource::OnGUI()
 
 		if (ImGui::SliderFloat("Volume", &m_Info.Volume, 0, 1))
 		{
-			
+			ServiceLocator::GetSoundSystem().SetVolume(m_Info);
 		}
 
 		ImGui::TreePop();
@@ -70,13 +70,13 @@ void DDM::AudioSource::SetClip(const std::string&& path)
 
 void DDM::AudioSource::Play()
 {
-	m_CurrentChannel = ServiceLocator::GetSoundSystem().PlayClip(m_pClip.get(), m_Info, this, m_CurrentChannel);
+	m_Info.Channel = ServiceLocator::GetSoundSystem().PlayClip(m_pClip.get(), m_Info, this);
 }
 
 void DDM::AudioSource::Notify(const Event& event)
 {
 	if (dynamic_cast<const AudioFinishedEvent*>(&event))
 	{
-		m_CurrentChannel = -1;
+		m_Info.Channel = -1;
 	}
 }

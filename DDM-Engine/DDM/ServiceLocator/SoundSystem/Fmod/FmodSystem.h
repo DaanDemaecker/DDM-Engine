@@ -36,7 +36,7 @@ namespace DDM
 
 		void Update();
 
-		int PlayClip(const std::string& fileName, const AudioSourceInfo& audioSourceInfo, Observer* observer, int channel);
+		int PlayClip(const std::string& fileName, const AudioSourceInfo& audioSourceInfo, Observer* observer);
 
 		void SetMute(bool mute);
 
@@ -49,6 +49,10 @@ namespace DDM
 		bool IsMuted() const;
 
 		void LoadClip(const std::string& filePath);
+
+		void SetVolume(const AudioSourceInfo& audioSourceInfo);
+
+		float GetVolume(const AudioSourceInfo& audioSourceInfo);
 
 		/// <summary>
 		/// Receive a notification from the subject
@@ -91,8 +95,6 @@ namespace DDM
 		/// </summary>
 		/// <param name="fileName: ">path to audio file</param>
 		void CreateClip(const std::string& fileName);
-
-		void SetVolume();
 	};
 }
 

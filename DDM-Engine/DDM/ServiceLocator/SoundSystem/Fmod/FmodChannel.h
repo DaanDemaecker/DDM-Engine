@@ -24,12 +24,20 @@ namespace DDM
 
 		void SetMute(bool muted);
 
+		void SetMasterVolume(float volume);
+
 		void SetVolume(float volume);
 
 		int GetIndex() const { return m_Index; }
 
+		float GetVolume();
+
 		FMOD::Channel* GetChannel() const { return m_pChannel; }
 	private:
+		float m_Volume{ 1 };
+
+		float m_MasterVolume{1};
+
 		FMOD::Channel* m_pChannel{};
 
 		bool m_IgnoreNextCallback{false};
@@ -43,6 +51,8 @@ namespace DDM
 			void* commanddata1,
 			void* commanddata2
 		);
+
+		void SetVolume();
 	};
 }
 

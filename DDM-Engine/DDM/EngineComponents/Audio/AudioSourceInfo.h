@@ -9,6 +9,7 @@ namespace DDM
 {
 	struct AudioSourceInfo
 	{
+		int Channel{ -1 };
 		float Volume{1.0};
 		bool Muted{ false };
 		bool Paused{ false };
