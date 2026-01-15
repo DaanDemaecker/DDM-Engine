@@ -64,7 +64,13 @@ namespace DDM
 		/// Set wether the sound is muted or not
 		/// </summary>
 		/// <param name="mute: ">new value</param>
-		virtual void SetMute(bool mute) = 0;
+		virtual void SetMasterMute(bool mute) = 0;
+
+		/// <summary>
+		/// Set mute for a single channel
+		/// </summary>
+		/// <param name="audioSourceInfo: ">info of audio source</param>
+		virtual void SetMute(const AudioSourceInfo& audioSourceInfo) = 0;
 
 		/// <summary>
 		/// Update the sound system
@@ -108,7 +114,9 @@ namespace DDM
 
 		virtual void ToggleMute() override {}
 
-		virtual void SetMute(bool mute) override {}
+		virtual void SetMasterMute(bool mute) override {}
+
+		virtual void SetMute(const AudioSourceInfo& audioSourceInfo) override {}
 
 		virtual void Update() override {}
 

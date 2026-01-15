@@ -25,7 +25,9 @@ namespace DDM
 
 		virtual bool IsMuted() const;
 
-		virtual void SetMute(bool mute) override;
+		virtual void SetMasterMute(bool mute) override;
+
+		virtual void SetMute(const AudioSourceInfo& audioSourceInfo) override;
 
 		virtual void Update() override;
 

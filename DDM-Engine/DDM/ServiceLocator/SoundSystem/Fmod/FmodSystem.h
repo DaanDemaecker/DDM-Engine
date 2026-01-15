@@ -38,7 +38,7 @@ namespace DDM
 
 		int PlayClip(const std::string& fileName, const AudioSourceInfo& audioSourceInfo, Observer* observer);
 
-		void SetMute(bool mute);
+		void SetMasterMute(bool mute);
 
 		void ToggleMute();
 
@@ -59,6 +59,8 @@ namespace DDM
 		/// </summary>
 		/// <param name="event: ">event that triggered the notification</param>
 		virtual void Notify(const Event& event);
+
+		void SetMute(const AudioSourceInfo& info);
 	private:
 		// Max volume
 		const float m_MaxVolume{ 1 };

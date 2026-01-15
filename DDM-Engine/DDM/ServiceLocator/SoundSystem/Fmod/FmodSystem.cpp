@@ -54,6 +54,12 @@ int DDM::FmodSystem::PlayClip(const std::string& fileName, const AudioSourceInfo
 		CreateClip(fileName);
 	}
 
+	if (m_Clips[fileName] == nullptr)
+	{
+		std::cout << "Failed to load sound file: " << fileName << std::endl;
+		return -1;
+	}
+
 	int channelIndex = audioSourceInfo.Channel;
 
 	if (channelIndex < 0)
@@ -84,7 +90,6 @@ int DDM::FmodSystem::PlayClip(const std::string& fileName, const AudioSourceInfo
 		m_Channels[channelIndex]->AddObserver(observer);
 	}
 	else
-
 	{
 		m_Channels[channelIndex]->SetChannel(newChannel);
 	}
@@ -92,7 +97,7 @@ int DDM::FmodSystem::PlayClip(const std::string& fileName, const AudioSourceInfo
 	return channelIndex;
 }
 
-void DDM::FmodSystem::SetMute(bool mute)
+void DDM::FmodSystem::SetMasterMute(bool mute)
 {
 	m_IsMuted = mute;
 
@@ -103,13 +108,13 @@ void DDM::FmodSystem::SetMute(bool mute)
 			continue;
 		}
 
-		channel->SetMute(m_IsMuted);
+		channel->SetMasterMute(m_IsMuted);
 	}
 }
 
 void DDM::FmodSystem::ToggleMute()
 {
-	SetMute(!m_IsMuted);
+	SetMasterMute(!m_IsMuted);
 }
 
 void DDM::FmodSystem::SetMasterVolume(float volume)
@@ -167,6 +172,16 @@ void DDM::FmodSystem::Notify(const Event& event)
 	{
 		m_ChannelsToRemove.push_back(audioFinishedEvent->Index);
 	}
+}
+
+void DDM::FmodSystem::SetMute(const AudioSourceInfo& info)
+{
+	if (info.Channel < 0 || m_Channels[info.Channel] == nullptr)
+	{
+		return;
+	}
+
+	m_Channels[info.Channel]->SetMute(info.Muted);
 }
 
 int DDM::FmodSystem::GetFreeChannel()

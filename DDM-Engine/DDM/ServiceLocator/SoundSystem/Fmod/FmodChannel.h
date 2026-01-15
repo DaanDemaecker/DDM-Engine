@@ -22,6 +22,8 @@ namespace DDM
 
 		void SetChannel(FMOD::Channel* pChannel);
 
+		void SetMasterMute(bool muted);
+
 		void SetMute(bool muted);
 
 		void SetMasterVolume(float volume);
@@ -38,6 +40,10 @@ namespace DDM
 
 		float m_MasterVolume{1};
 
+		bool m_Muted{ false };
+
+		bool m_MasterMuted{ false };
+
 		FMOD::Channel* m_pChannel{};
 
 		bool m_IgnoreNextCallback{false};
@@ -53,6 +59,8 @@ namespace DDM
 		);
 
 		void SetVolume();
+
+		void SetMute();
 	};
 }
 

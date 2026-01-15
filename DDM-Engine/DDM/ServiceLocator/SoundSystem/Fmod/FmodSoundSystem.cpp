@@ -34,9 +34,14 @@ namespace DDM
 			return m_pSystem->PlayClip(fileName, audioSourceInfo, observer);
 		}
 
-		void SetMute(bool mute)
+		void SetMasterMute(bool mute)
 		{
-			m_pSystem->SetMute(mute);
+			m_pSystem->SetMasterMute(mute);
+		}
+
+		void SetMute(const AudioSourceInfo& info)
+		{
+			m_pSystem->SetMute(info);
 		}
 
 		void ToggleMute()
@@ -107,9 +112,14 @@ bool DDM::FmodSoundSystem::IsMuted() const
 	return m_pImpl->IsMuted();
 }
 
-void DDM::FmodSoundSystem::SetMute(bool mute)
+void DDM::FmodSoundSystem::SetMasterMute(bool mute)
 {
-	m_pImpl->SetMute(mute);
+	m_pImpl->SetMasterMute(mute);
+}
+
+void DDM::FmodSoundSystem::SetMute(const AudioSourceInfo& audioSourceInfo)
+{
+	m_pImpl->SetMute(audioSourceInfo);
 }
 
 void DDM::FmodSoundSystem::Update()

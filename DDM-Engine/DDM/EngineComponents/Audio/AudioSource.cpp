@@ -34,7 +34,7 @@ void DDM::AudioSource::OnGUI()
 
 		if (ImGui::Checkbox("Muted", &m_Info.Muted))
 		{
-			
+			ServiceLocator::GetSoundSystem().SetMute(m_Info);
 		}
 
 		if(ImGui::Checkbox("Paused", &m_Info.Paused))

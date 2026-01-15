@@ -47,7 +47,7 @@ void DDM::AudioTester::OnGUI()
 
 		if (ImGui::Checkbox("Is muted", &m_IsMuted))
 		{
-			soundSystem.SetMute(m_IsMuted);
+			soundSystem.SetMasterMute(m_IsMuted);
 		}
 
 		ImGui::InputText("Path to clip to play", m_ClipPath.data(), m_TextLength);

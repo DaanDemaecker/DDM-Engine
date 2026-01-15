@@ -29,9 +29,16 @@ void DDM::FmodChannel::SetChannel(FMOD::Channel* pChannel)
 	m_IgnoreNextCallback = true;
 }
 
+void DDM::FmodChannel::SetMasterMute(bool muted)
+{
+	m_MasterMuted = muted;
+	SetMute();
+}
+
 void DDM::FmodChannel::SetMute(bool muted)
 {
-	m_pChannel->setMute(muted);
+	m_Muted = muted;
+	SetMute();
 }
 
 void DDM::FmodChannel::SetMasterVolume(float volume)
@@ -75,4 +82,9 @@ FMOD_RESULT F_CALLBACK DDM::FmodChannel::ChannelCallback(FMOD_CHANNELCONTROL* ch
 void DDM::FmodChannel::SetVolume()
 {
 	m_pChannel->setVolume(m_MasterVolume * m_Volume);
+}
+
+void DDM::FmodChannel::SetMute()
+{
+	m_pChannel->setMute(m_MasterMuted || m_Muted);
 }
