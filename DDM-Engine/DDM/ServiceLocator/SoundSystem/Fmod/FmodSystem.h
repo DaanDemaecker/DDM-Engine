@@ -69,7 +69,7 @@ namespace DDM
 		float m_MasterVolume{ 1 };
 
 		// Indicates wether sound is muted
-		bool m_IsMuted{ false };
+		bool m_MasterMute{ false };
 
 		// Max amount of channels
 		const int m_MaxChannels{};

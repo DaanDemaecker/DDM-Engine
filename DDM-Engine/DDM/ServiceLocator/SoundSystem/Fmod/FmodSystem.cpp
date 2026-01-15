@@ -79,15 +79,17 @@ int DDM::FmodSystem::PlayClip(const std::string& fileName, const AudioSourceInfo
 
 	std::cout << "Playing in channel: " << channelIndex << "\n";
 
-	newChannel->setVolume(m_MasterVolume * audioSourceInfo.Volume);
 	newChannel->setLoopCount(0);
-	newChannel->setMute(m_IsMuted || audioSourceInfo.Muted);
 
 	if (m_Channels[channelIndex] == nullptr)
 	{
 		m_Channels[channelIndex] = std::make_unique<FmodChannel>(newChannel, channelIndex);
 		m_Channels[channelIndex]->AddObserver(this);
 		m_Channels[channelIndex]->AddObserver(observer);
+		m_Channels[channelIndex]->SetMasterVolume(m_MasterVolume);
+		m_Channels[channelIndex]->SetMasterMute(m_MasterMute);
+		m_Channels[channelIndex]->SetVolume(audioSourceInfo.Volume);
+		m_Channels[channelIndex]->SetMute(audioSourceInfo.Muted);
 	}
 	else
 	{
@@ -99,7 +101,7 @@ int DDM::FmodSystem::PlayClip(const std::string& fileName, const AudioSourceInfo
 
 void DDM::FmodSystem::SetMasterMute(bool mute)
 {
-	m_IsMuted = mute;
+	m_MasterMute = mute;
 
 	for (auto& channel : m_Channels)
 	{
@@ -108,13 +110,13 @@ void DDM::FmodSystem::SetMasterMute(bool mute)
 			continue;
 		}
 
-		channel->SetMasterMute(m_IsMuted);
+		channel->SetMasterMute(m_MasterMute);
 	}
 }
 
 void DDM::FmodSystem::ToggleMute()
 {
-	SetMasterMute(!m_IsMuted);
+	SetMasterMute(!m_MasterMute);
 }
 
 void DDM::FmodSystem::SetMasterVolume(float volume)
@@ -138,7 +140,7 @@ float DDM::FmodSystem::GetMasterVolume() const
 
 bool DDM::FmodSystem::IsMuted() const
 {
-	return m_IsMuted;
+	return m_MasterMute;
 }
 
 void DDM::FmodSystem::LoadClip(const std::string& filePath)
