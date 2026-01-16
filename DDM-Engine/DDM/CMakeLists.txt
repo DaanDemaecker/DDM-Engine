@@ -19,6 +19,7 @@ add_executable(
 "EngineComponents/Transform.cpp"
 "EngineComponents/Audio/AudioSource.cpp"
 "EngineComponents/Audio/AudioClip.cpp"
+"EngineComponents/Audio/AudioListener.cpp"
 
 "Events/Subject.cpp"
 

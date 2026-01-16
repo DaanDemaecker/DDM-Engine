@@ -4,9 +4,11 @@
 
 // File includes
 #include "Vulkan/Renderers/AORenderers/AoRenderPasses.h"
+
 #include "ServiceLocator/ServiceLocator.h"
 #include "CustomComponents/Audio/AudioTester.h"
 #include "EngineComponents/Audio/AudioSource.h"
+#include "EngineComponents/Audio/AudioListener.h"
 
 
 namespace LoadAOScene
@@ -243,7 +245,7 @@ namespace LoadAOScene
 
 		auto pCameraComponent{ pCamera->AddComponent<DDM::Camera>() };
 
-
+		auto pAudioListenerComponent{ pCamera->AddComponent<DDM::AudioListener>() };
 
 		auto pCameraTransform{ pCamera->GetTransform() };
 		//pCameraTransform->SetLocalPosition(8.f, 1.5f, -0.3f);

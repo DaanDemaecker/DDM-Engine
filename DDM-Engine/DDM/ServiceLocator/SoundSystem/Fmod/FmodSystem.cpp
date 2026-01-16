@@ -86,15 +86,16 @@ int DDM::FmodSystem::PlayClip(const std::string& fileName, const AudioSourceInfo
 		m_Channels[channelIndex] = std::make_unique<FmodChannel>(newChannel, channelIndex);
 		m_Channels[channelIndex]->AddObserver(this);
 		m_Channels[channelIndex]->AddObserver(observer);
-		m_Channels[channelIndex]->SetMasterVolume(m_MasterVolume);
-		m_Channels[channelIndex]->SetMasterMute(m_MasterMute);
-		m_Channels[channelIndex]->SetVolume(audioSourceInfo.Volume);
-		m_Channels[channelIndex]->SetMute(audioSourceInfo.Muted);
 	}
 	else
 	{
 		m_Channels[channelIndex]->SetChannel(newChannel);
 	}
+
+	m_Channels[channelIndex]->SetMasterVolume(m_MasterVolume);
+	m_Channels[channelIndex]->SetMasterMute(m_MasterMute);
+	m_Channels[channelIndex]->SetVolume(audioSourceInfo.Volume);
+	m_Channels[channelIndex]->SetMute(audioSourceInfo.Muted);
 
 	return channelIndex;
 }
