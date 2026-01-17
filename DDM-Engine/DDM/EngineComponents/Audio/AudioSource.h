@@ -41,6 +41,11 @@ namespace DDM
 		virtual void OnGUI() override;
 
 		/// <summary>
+		/// Gets called at the end of the update loop
+		/// </summary>
+		virtual void LateUpdate() override;
+
+		/// <summary>
 		/// Set the audio clip
 		/// </summary>
 		/// <param name="clip: ">reference to audio clip</param>

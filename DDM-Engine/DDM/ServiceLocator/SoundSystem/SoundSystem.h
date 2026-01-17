@@ -7,6 +7,7 @@
 // File includes
 #include "EngineComponents/Audio/AudioClip.h"
 #include "EngineComponents/Audio/AudioSourceInfo.h"
+#include "BaseClasses/GameObject.h"
 
 // Standard library includes
 #include <string>
@@ -98,6 +99,10 @@ namespace DDM
 		virtual void SetVolume(const AudioSourceInfo& audioSourceInfo) = 0;
 
 		virtual float GetVolume(const AudioSourceInfo& audioSourceInfo) = 0;
+
+		virtual void UpdateSourceLocation(const AudioSourceInfo& audioSourceInfo, GameObject* pGameObject) = 0;
+
+		virtual void UpdateListenerLocation(GameObject* pGameObject) = 0;
 	};
 
 	class DefaultSoundSystem final : public SoundSystem
@@ -131,6 +136,10 @@ namespace DDM
 		virtual void SetVolume(const AudioSourceInfo& audioSourceInfo) override {}
 
 		virtual float GetVolume(const AudioSourceInfo& audioSourceInfo) override { return 0; }
+
+		virtual void UpdateSourceLocation(const AudioSourceInfo& audioSourceInfo, GameObject* pGameObject) override {}
+
+		virtual void UpdateListenerLocation(GameObject* pGameObject) override {}
 	};
 }
 

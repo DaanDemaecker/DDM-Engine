@@ -38,6 +38,8 @@ namespace DDM
 
 		void LateUpdate();
 
+		void AudioUpdate();
+
 		void PostUpdate();
 
 		void RenderSkyBox();

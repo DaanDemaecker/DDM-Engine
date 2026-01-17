@@ -18,6 +18,7 @@
 namespace DDM
 {
 	struct AudioSourceInfo;
+	class GameObject;
 
 	class FmodSystem final : public Observer
 	{
@@ -61,6 +62,10 @@ namespace DDM
 		virtual void Notify(const Event& event);
 
 		void SetMute(const AudioSourceInfo& info);
+
+		void UpdateSourceLocation(const AudioSourceInfo& audioSourceInfo, GameObject* pGameObject);
+
+		void UpdateListenerLocation(GameObject* pGameObject);
 	private:
 		// Max volume
 		const float m_MaxVolume{ 1 };

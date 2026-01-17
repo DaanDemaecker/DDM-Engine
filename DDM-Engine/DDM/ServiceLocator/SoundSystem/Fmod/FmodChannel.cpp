@@ -6,6 +6,8 @@
 // File includes
 #include "EngineComponents/Audio/AudioEvents.h"
 #include "FmodErrorHandler.h"
+#include "BaseClasses/GameObject.h"
+#include "EngineComponents/Transform.h"
 
 DDM::FmodChannel::FmodChannel(FMOD::Channel* pChannel, int index)
 	:m_Index{index}
@@ -56,6 +58,19 @@ void DDM::FmodChannel::SetVolume(float volume)
 float DDM::FmodChannel::GetVolume()
 {
 	return m_Volume;
+}
+
+void DDM::FmodChannel::UpdateSourceLocation(GameObject* pGameObject)
+{
+	auto transform = pGameObject->GetTransform();
+
+	auto pos = transform->GetWorldPosition();
+
+	FMOD_VECTOR audioPos{pos.x, pos.y, pos.z};
+
+	FMOD_VECTOR audioVel{};
+
+	m_pChannel->set3DAttributes(&audioPos, &audioVel);
 }
 
 FMOD_RESULT F_CALLBACK DDM::FmodChannel::ChannelCallback(FMOD_CHANNELCONTROL* channelControl, FMOD_CHANNELCONTROL_TYPE controlType, FMOD_CHANNELCONTROL_CALLBACK_TYPE callbackType, void* commandData1, void* commandData2)

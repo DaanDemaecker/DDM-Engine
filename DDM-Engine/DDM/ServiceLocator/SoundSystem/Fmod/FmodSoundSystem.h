@@ -43,6 +43,9 @@ namespace DDM
 
 		virtual float GetVolume(const AudioSourceInfo& audioSourceInfo) override;
 
+		virtual void UpdateSourceLocation(const AudioSourceInfo& audioSourceInfo, GameObject* pGameObject) override;
+
+		virtual void UpdateListenerLocation(GameObject* pGameObject) override;
 	private:
 		std::unique_ptr<FmodImpl> m_pImpl;
 	};

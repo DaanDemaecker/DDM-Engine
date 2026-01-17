@@ -79,6 +79,16 @@ namespace DDM
 			return m_pSystem->GetVolume(audioSourceInfo);
 		}
 
+		void UpdateSourceLocation(const AudioSourceInfo& audioSourceInfo, GameObject* pGameObject)
+		{
+			m_pSystem->UpdateSourceLocation(audioSourceInfo, pGameObject);
+		}
+
+		void UpdateListenerLocation(GameObject* pGameObject)
+		{
+			m_pSystem->UpdateListenerLocation(pGameObject);
+		}
+
 	private:
 		std::unique_ptr<FmodSystem> m_pSystem{};
 
@@ -155,4 +165,14 @@ void DDM::FmodSoundSystem::SetVolume(const AudioSourceInfo& audioSourceInfo)
 float DDM::FmodSoundSystem::GetVolume(const AudioSourceInfo& audioSourceInfo)
 {
 	return m_pImpl->GetVolume(audioSourceInfo);
+}
+
+void DDM::FmodSoundSystem::UpdateSourceLocation(const AudioSourceInfo& audioSourceInfo, GameObject* pGameObject)
+{
+	m_pImpl->UpdateSourceLocation(audioSourceInfo, pGameObject);
+}
+
+void DDM::FmodSoundSystem::UpdateListenerLocation(GameObject* pGameObject)
+{
+	m_pImpl->UpdateListenerLocation(pGameObject);
 }

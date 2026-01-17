@@ -119,11 +119,8 @@ void DDM::DDMEngine::Run(const std::function<void()>& load)
 		// Call late update
 		sceneManager.LateUpdate();
 
-		// Call post update, used
+		// Call post update
 		sceneManager.PostUpdate();
-
-		// Call update for soundsystem
-		DDM::ServiceLocator::GetSoundSystem().Update();
 
 		// Render scene
 		vulkanObject.Render();

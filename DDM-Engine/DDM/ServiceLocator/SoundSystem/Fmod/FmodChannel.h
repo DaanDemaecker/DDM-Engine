@@ -10,6 +10,7 @@
 
 namespace DDM
 {
+	class GameObject;
 
 	class FmodChannel final : public Subject
 	{
@@ -35,6 +36,8 @@ namespace DDM
 		float GetVolume();
 
 		FMOD::Channel* GetChannel() const { return m_pChannel; }
+
+		void UpdateSourceLocation(GameObject* pGameObject);
 	private:
 		float m_Volume{ 1 };
 

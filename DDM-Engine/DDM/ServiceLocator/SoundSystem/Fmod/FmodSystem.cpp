@@ -8,6 +8,8 @@
 #include "FmodChannel.h"
 #include "EngineComponents/Audio/AudioEvents.h"
 #include "EngineComponents/Audio/AudioSourceInfo.h"
+#include "BaseClasses/GameObject.h"
+#include "EngineComponents/Transform.h"
 
 // Standard library includes
 #include <algorithm>
@@ -187,6 +189,44 @@ void DDM::FmodSystem::SetMute(const AudioSourceInfo& info)
 	m_Channels[info.Channel]->SetMute(info.Muted);
 }
 
+void DDM::FmodSystem::UpdateSourceLocation(const AudioSourceInfo& audioSourceInfo, GameObject* pGameObject)
+{
+	if (audioSourceInfo.Channel < 0 || m_Channels[audioSourceInfo.Channel] == nullptr || pGameObject == nullptr)
+	{
+		return;
+	}
+
+	m_Channels[audioSourceInfo.Channel]->UpdateSourceLocation(pGameObject);
+}
+
+void DDM::FmodSystem::UpdateListenerLocation(GameObject* pGameObject)
+{
+	if (pGameObject == nullptr || m_pSystem == nullptr)
+	{
+		return;
+	}
+
+	auto transform = pGameObject->GetTransform();
+
+	auto pos = transform->GetWorldPosition();
+
+	auto forward = transform->GetForward();
+
+	auto up = transform->GetUp();
+
+	FMOD_VECTOR audioPos{ pos.x, pos.y, pos.z };
+
+	FMOD_VECTOR audioVel{};
+
+	FMOD_VECTOR audioForward{ forward.x, forward.y, forward.z };
+
+	FMOD_VECTOR audioUp{ up.x, up.y, up.z };
+
+
+	m_pSystem->set3DListenerAttributes(0, &audioPos, &audioVel, &audioForward, &audioUp);
+
+}
+
 int DDM::FmodSystem::GetFreeChannel()
 {
 	for (int i{}; i < m_Channels.size(); ++i)
@@ -204,5 +244,5 @@ void DDM::FmodSystem::CreateClip(const std::string& fileName)
 {
 	std::cout << "Creating clip: " << fileName << "\n";
 
-	m_pSystem->createSound(fileName.c_str(), FMOD_LOOP_NORMAL, nullptr, &m_Clips[fileName]);
+	m_pSystem->createSound(fileName.c_str(), FMOD_LOOP_NORMAL | FMOD_3D, nullptr, &m_Clips[fileName]);
 }

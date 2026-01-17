@@ -51,6 +51,11 @@ void DDM::AudioSource::OnGUI()
 	}
 }
 
+void DDM::AudioSource::LateUpdate()
+{
+	ServiceLocator::GetSoundSystem().UpdateSourceLocation(m_Info, GetOwner());
+}
+
 void DDM::AudioSource::SetClip(const std::shared_ptr<AudioClip> clip)
 {
 	m_pClip = clip;

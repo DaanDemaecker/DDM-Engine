@@ -11,6 +11,8 @@
 #include "EngineComponents/Camera.h"
 #include "EngineComponents/Light/LightComponent.h"
 
+#include "ServiceLocator/ServiceLocator.h"
+
 void DDM::SceneManager::EndProgram()
 {
     if (m_ActiveScene != nullptr)
@@ -165,6 +167,9 @@ void DDM::SceneManager::LateUpdate()
     {
         m_ActiveScene->LateUpdate();
     }
+
+    // Call update for soundsystem
+    DDM::ServiceLocator::GetSoundSystem().Update();
 }
 
 void DDM::SceneManager::PostUpdate()

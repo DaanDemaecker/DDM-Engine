@@ -40,15 +40,15 @@ namespace LoadAOScene
 
 		SetupPipelines();
 
-		SetupAtrium(scene.get());
+		//SetupAtrium(scene.get());
 
 		//SetupRoom(scene.get());
 
 		//SetupVehicle(scene.get());
 
-		//SetupGear(scene.get());
+		SetupGear(scene.get());
 
-		//SetupGroundPlane(scene.get());
+		SetupGroundPlane(scene.get());
 
 		SetupInfoComponent(scene.get());
 
@@ -225,16 +225,6 @@ namespace LoadAOScene
 
 		auto pAudioSourceComponent{ pAudioTester->AddComponent<DDM::AudioSource>() };
 		pAudioSourceComponent->SetShowImGui(true);
-
-
-		auto pAudioTester2{ scene->CreateGameObject("Audio tester 2") };
-		pAudioTester2->SetShowImGui(true);
-
-		auto pAudioTestComponent2{ pAudioTester2->AddComponent<DDM::AudioTester>() };
-		pAudioTestComponent2->SetShowImGui(true);
-
-		auto pAudioSourceComponent2{ pAudioTester2->AddComponent<DDM::AudioSource>() };
-		pAudioSourceComponent2->SetShowImGui(true);
 	}
 
 	void SetupCamera(DDM::Scene* scene)
@@ -281,11 +271,9 @@ namespace LoadAOScene
 
 	void SetupGroundPlane(DDM::Scene* scene)
 	{
-		std::shared_ptr<DDM::Material> pFloorMaterial{ std::make_shared<DDM::Material>() };
-
-
-		//std::shared_ptr<D3D::TexturedMaterial> pFloorMaterial{
-		//	std::make_shared<D3D::TexturedMaterial>(std::initializer_list<const std::string>{"resources/images/GroundPlane.png"}, "DiffuseUnshaded") };
+		std::shared_ptr<DDM::TexturedMaterial> pFloorMaterial
+		{std::make_shared<DDM::TexturedMaterial>("DiffuseUnshaded") };
+		pFloorMaterial->AddTexture("resources/images/GroundPlane.png");
 
 
 		auto pGroundPlane{ scene->CreateGameObject("Ground Plane") };
@@ -304,15 +292,11 @@ namespace LoadAOScene
 		std::shared_ptr<DDM::Material> pGearMaterial{ std::make_shared<DDM::Material>() };
 
 
-		//std::shared_ptr<D3D::TexturedMaterial> pFloorMaterial{
-		//	std::make_shared<D3D::TexturedMaterial>(std::initializer_list<const std::string>{"resources/images/GroundPlane.png"}, "DiffuseUnshaded") };
-
-
 		auto pGear{ scene->CreateGameObject("Gear") };
 		pGear->SetShowImGui(true);
 
 		auto rotator = pGear->AddComponent<DDM::RotatorComponent>();
-		rotator->SetRotSpeed(10.0f);
+		rotator->SetRotSpeed(72);
 
 		auto pGearMesh{ DDM::ResourceManager::GetInstance().LoadMesh("Resources/Models/Gear.obj") };
 
@@ -323,5 +307,24 @@ namespace LoadAOScene
 
 		auto pGearTransform{ pGear->GetTransform() };
 		pGearTransform->SetShowImGui(true);
+
+
+
+		auto pAudioGear{ pGear->CreateNewObject("AudioGear") };
+		pAudioGear->SetShowImGui(true);
+
+		auto pAudiotesterComponentGear{ pAudioGear->AddComponent<DDM::AudioTester>() };
+		pAudiotesterComponentGear->SetShowImGui(true);
+
+		auto pAudioSourceComponentGear{ pAudioGear->AddComponent<DDM::AudioSource>() };
+		pAudioSourceComponentGear->SetShowImGui(true);
+
+		auto pAudioGearModel{ pAudioGear->AddComponent<DDM::MeshRenderComponent>() };
+		pAudioGearModel->SetMesh(pGearMesh);
+		pAudioGearModel->SetMaterial(pGearMaterial);
+
+		auto pAudioGearTransform{ pAudioGear->GetTransform() };
+		pAudioGearTransform->SetShowImGui(true);
+		pAudioGearTransform->Translate(10, 0, 0);
 	}
 }

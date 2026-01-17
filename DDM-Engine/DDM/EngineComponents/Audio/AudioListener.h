@@ -28,6 +28,8 @@ namespace DDM
 
 		AudioListener& operator=(const AudioListener& other) = delete;
 		AudioListener& operator=(AudioListener&& other) = delete;
+
+		virtual void LateUpdate() override;
 	private:
 	};
 }
