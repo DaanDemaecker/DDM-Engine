@@ -49,7 +49,7 @@ void DDM::FmodSystem::Update()
 	m_ChannelsToRemove.clear();
 }
 
-int DDM::FmodSystem::PlayClip(const std::string& fileName, const AudioSourceInfo& audioSourceInfo, Observer* observer)
+int DDM::FmodSystem::PlayClip(const std::string& fileName, const AudioSourceInfo& info, Observer* observer)
 {
 	if (m_Clips[fileName] == nullptr)
 	{
@@ -62,7 +62,7 @@ int DDM::FmodSystem::PlayClip(const std::string& fileName, const AudioSourceInfo
 		return -1;
 	}
 
-	int channelIndex = audioSourceInfo.Channel;
+	int channelIndex = info.Channel;
 
 	if (channelIndex < 0)
 	{
@@ -96,8 +96,8 @@ int DDM::FmodSystem::PlayClip(const std::string& fileName, const AudioSourceInfo
 
 	m_Channels[channelIndex]->SetMasterVolume(m_MasterVolume);
 	m_Channels[channelIndex]->SetMasterMute(m_MasterMute);
-	m_Channels[channelIndex]->SetVolume(audioSourceInfo.Volume);
-	m_Channels[channelIndex]->SetMute(audioSourceInfo.Muted);
+	m_Channels[channelIndex]->SetVolume(info.Volume);
+	m_Channels[channelIndex]->SetMute(info.Muted);
 
 	return channelIndex;
 }
@@ -133,7 +133,6 @@ void DDM::FmodSystem::SetMasterVolume(float volume)
 			channel->SetMasterVolume(m_MasterVolume);
 		}
 	}
-
 }
 
 float DDM::FmodSystem::GetMasterVolume() const 
@@ -151,24 +150,24 @@ void DDM::FmodSystem::LoadClip(const std::string& filePath)
 	CreateClip(filePath);
 }
 
-void DDM::FmodSystem::SetVolume(const AudioSourceInfo& audioSourceInfo)
+void DDM::FmodSystem::SetVolume(const AudioSourceInfo& info)
 {
-	if (audioSourceInfo.Channel < 0 || m_Channels[audioSourceInfo.Channel] == nullptr)
+	if (info.Channel < 0 || m_Channels[info.Channel] == nullptr)
 	{
 		return;
 	}
 
-	m_Channels[audioSourceInfo.Channel]->SetVolume(audioSourceInfo.Volume);
+	m_Channels[info.Channel]->SetVolume(info.Volume);
 }
 
-float DDM::FmodSystem::GetVolume(const AudioSourceInfo& audioSourceInfo)
+float DDM::FmodSystem::GetVolume(const AudioSourceInfo& info)
 {
-	if (audioSourceInfo.Channel < 0 || m_Channels[audioSourceInfo.Channel] == nullptr)
+	if (info.Channel < 0 || m_Channels[info.Channel] == nullptr)
 	{
 		return 0;
 	}
 
-	return m_Channels[audioSourceInfo.Channel]->GetVolume();
+	return m_Channels[info.Channel]->GetVolume();
 }
 
 void DDM::FmodSystem::Notify(const Event& event)
@@ -189,14 +188,14 @@ void DDM::FmodSystem::SetMute(const AudioSourceInfo& info)
 	m_Channels[info.Channel]->SetMute(info.Muted);
 }
 
-void DDM::FmodSystem::UpdateSourceLocation(const AudioSourceInfo& audioSourceInfo, GameObject* pGameObject)
+void DDM::FmodSystem::UpdateSourceLocation(const AudioSourceInfo& info, GameObject* pGameObject)
 {
-	if (audioSourceInfo.Channel < 0 || m_Channels[audioSourceInfo.Channel] == nullptr || pGameObject == nullptr)
+	if (info.Channel < 0 || m_Channels[info.Channel] == nullptr || pGameObject == nullptr)
 	{
 		return;
 	}
 
-	m_Channels[audioSourceInfo.Channel]->UpdateSourceLocation(pGameObject);
+	m_Channels[info.Channel]->UpdateSourceLocation(pGameObject);
 }
 
 void DDM::FmodSystem::UpdateListenerLocation(GameObject* pGameObject)
@@ -225,6 +224,16 @@ void DDM::FmodSystem::UpdateListenerLocation(GameObject* pGameObject)
 
 	m_pSystem->set3DListenerAttributes(0, &audioPos, &audioVel, &audioForward, &audioUp);
 
+}
+
+void DDM::FmodSystem::SetPaused(const AudioSourceInfo& info)
+{
+	if (info.Channel < 0 || m_Channels[info.Channel] == nullptr)
+	{
+		return;
+	}
+
+	m_Channels[info.Channel]->SetPaused(info.Paused);
 }
 
 int DDM::FmodSystem::GetFreeChannel()

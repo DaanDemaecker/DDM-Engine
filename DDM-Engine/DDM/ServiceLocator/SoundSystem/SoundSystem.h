@@ -48,7 +48,7 @@ namespace DDM
 		/// <param name="clip: ">reference to the audioclip</param>
 		/// <param name="audioSourceInfo: ">reference to struct holding info about audiosource</param>
 		/// <param name="observer: ">observer for audio end events</param>
-		virtual int PlayClip(const AudioClip* clip, const AudioSourceInfo& audioSourceInfo, Observer* observer) = 0;
+		virtual int PlayClip(const AudioClip* clip, const AudioSourceInfo& info, Observer* observer) = 0;
 
 		/// <summary>
 		/// Query wether sound system is muted
@@ -71,7 +71,7 @@ namespace DDM
 		/// Set mute for a single channel
 		/// </summary>
 		/// <param name="audioSourceInfo: ">info of audio source</param>
-		virtual void SetMute(const AudioSourceInfo& audioSourceInfo) = 0;
+		virtual void SetMute(const AudioSourceInfo& info) = 0;
 
 		/// <summary>
 		/// Update the sound system
@@ -96,13 +96,15 @@ namespace DDM
 
 		virtual float GetMasterVolume() = 0;
 
-		virtual void SetVolume(const AudioSourceInfo& audioSourceInfo) = 0;
+		virtual void SetVolume(const AudioSourceInfo& info) = 0;
 
-		virtual float GetVolume(const AudioSourceInfo& audioSourceInfo) = 0;
+		virtual float GetVolume(const AudioSourceInfo& info) = 0;
 
-		virtual void UpdateSourceLocation(const AudioSourceInfo& audioSourceInfo, GameObject* pGameObject) = 0;
+		virtual void UpdateSourceLocation(const AudioSourceInfo& info, GameObject* pGameObject) = 0;
 
 		virtual void UpdateListenerLocation(GameObject* pGameObject) = 0;
+
+		virtual void SetPaused(const AudioSourceInfo& info) = 0;
 	};
 
 	class DefaultSoundSystem final : public SoundSystem
@@ -113,7 +115,7 @@ namespace DDM
 
 		virtual void LoadClip(const AudioClip* clip) override {}
 
-		virtual int PlayClip(const AudioClip* clip, const AudioSourceInfo& audioSourceInfo, Observer* observer) override { return -1; }
+		virtual int PlayClip(const AudioClip* clip, const AudioSourceInfo& info, Observer* observer) override { return -1; }
 
 		virtual bool IsMuted() const override { return false; }
 
@@ -121,7 +123,7 @@ namespace DDM
 
 		virtual void SetMasterMute(bool mute) override {}
 
-		virtual void SetMute(const AudioSourceInfo& audioSourceInfo) override {}
+		virtual void SetMute(const AudioSourceInfo& info) override {}
 
 		virtual void Update() override {}
 
@@ -133,13 +135,15 @@ namespace DDM
 
 		virtual float GetMasterVolume() override { return 0; }
 
-		virtual void SetVolume(const AudioSourceInfo& audioSourceInfo) override {}
+		virtual void SetVolume(const AudioSourceInfo& info) override {}
 
-		virtual float GetVolume(const AudioSourceInfo& audioSourceInfo) override { return 0; }
-
-		virtual void UpdateSourceLocation(const AudioSourceInfo& audioSourceInfo, GameObject* pGameObject) override {}
+		virtual void UpdateSourceLocation(const AudioSourceInfo& info, GameObject* pGameObject) override {}
 
 		virtual void UpdateListenerLocation(GameObject* pGameObject) override {}
+
+		virtual void SetPaused(const AudioSourceInfo& info) override {}
+
+		virtual float GetVolume(const AudioSourceInfo& info) override { return 0; }
 	};
 }
 

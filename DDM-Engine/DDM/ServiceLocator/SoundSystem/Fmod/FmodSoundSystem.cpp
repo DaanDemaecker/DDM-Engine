@@ -29,9 +29,9 @@ namespace DDM
 			m_pSystem->Update();
 		}
 
-		int PlayClip(const std::string& fileName, const AudioSourceInfo& audioSourceInfo, Observer* observer)
+		int PlayClip(const std::string& fileName, const AudioSourceInfo& info, Observer* observer)
 		{
-			return m_pSystem->PlayClip(fileName, audioSourceInfo, observer);
+			return m_pSystem->PlayClip(fileName, info, observer);
 		}
 
 		void SetMasterMute(bool mute)
@@ -69,24 +69,29 @@ namespace DDM
 			return m_pSystem->GetMasterVolume();
 		}
 
-		void SetVolume(const AudioSourceInfo& audioSourceInfo)
+		void SetVolume(const AudioSourceInfo& info)
 		{
-			m_pSystem->SetVolume(audioSourceInfo);
+			m_pSystem->SetVolume(info);
 		}
 
-		float GetVolume(const AudioSourceInfo& audioSourceInfo)
+		float GetVolume(const AudioSourceInfo& info)
 		{
-			return m_pSystem->GetVolume(audioSourceInfo);
+			return m_pSystem->GetVolume(info);
 		}
 
-		void UpdateSourceLocation(const AudioSourceInfo& audioSourceInfo, GameObject* pGameObject)
+		void UpdateSourceLocation(const AudioSourceInfo& info, GameObject* pGameObject)
 		{
-			m_pSystem->UpdateSourceLocation(audioSourceInfo, pGameObject);
+			m_pSystem->UpdateSourceLocation(info, pGameObject);
 		}
 
 		void UpdateListenerLocation(GameObject* pGameObject)
 		{
 			m_pSystem->UpdateListenerLocation(pGameObject);
+		}
+
+		void SetPaused(const AudioSourceInfo& info)
+		{
+			m_pSystem->SetPaused(info);
 		}
 
 	private:
@@ -107,9 +112,9 @@ void DDM::FmodSoundSystem::LoadClip(const AudioClip* clip)
 	m_pImpl->LoadClip(clip->GetFilePath());
 }
 
-int DDM::FmodSoundSystem::PlayClip(const AudioClip* clip, const AudioSourceInfo& audioSourceInfo, Observer* observer)
+int DDM::FmodSoundSystem::PlayClip(const AudioClip* clip, const AudioSourceInfo& info, Observer* observer)
 {
-	return m_pImpl->PlayClip(clip->GetFilePath(), audioSourceInfo, observer);
+	return m_pImpl->PlayClip(clip->GetFilePath(), info, observer);
 }
 
 void DDM::FmodSoundSystem::ToggleMute()
@@ -127,9 +132,9 @@ void DDM::FmodSoundSystem::SetMasterMute(bool mute)
 	m_pImpl->SetMasterMute(mute);
 }
 
-void DDM::FmodSoundSystem::SetMute(const AudioSourceInfo& audioSourceInfo)
+void DDM::FmodSoundSystem::SetMute(const AudioSourceInfo& info)
 {
-	m_pImpl->SetMute(audioSourceInfo);
+	m_pImpl->SetMute(info);
 }
 
 void DDM::FmodSoundSystem::Update()
@@ -157,22 +162,27 @@ float DDM::FmodSoundSystem::GetMasterVolume()
 	return m_pImpl->GetMasterVolume();
 }
 
-void DDM::FmodSoundSystem::SetVolume(const AudioSourceInfo& audioSourceInfo)
+void DDM::FmodSoundSystem::SetVolume(const AudioSourceInfo& info)
 {
-	m_pImpl->SetVolume(audioSourceInfo);
+	m_pImpl->SetVolume(info);
 }
 
-float DDM::FmodSoundSystem::GetVolume(const AudioSourceInfo& audioSourceInfo)
+float DDM::FmodSoundSystem::GetVolume(const AudioSourceInfo& info)
 {
-	return m_pImpl->GetVolume(audioSourceInfo);
+	return m_pImpl->GetVolume(info);
 }
 
-void DDM::FmodSoundSystem::UpdateSourceLocation(const AudioSourceInfo& audioSourceInfo, GameObject* pGameObject)
+void DDM::FmodSoundSystem::UpdateSourceLocation(const AudioSourceInfo& info, GameObject* pGameObject)
 {
-	m_pImpl->UpdateSourceLocation(audioSourceInfo, pGameObject);
+	m_pImpl->UpdateSourceLocation(info, pGameObject);
 }
 
 void DDM::FmodSoundSystem::UpdateListenerLocation(GameObject* pGameObject)
 {
 	m_pImpl->UpdateListenerLocation(pGameObject);
+}
+
+void DDM::FmodSoundSystem::SetPaused(const AudioSourceInfo& info)
+{
+	m_pImpl->SetPaused(info);
 }

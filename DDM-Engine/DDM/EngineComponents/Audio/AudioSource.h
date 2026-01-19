@@ -64,15 +64,51 @@ namespace DDM
 		void SetClip(const std::string&& path);
 
 		/// <summary>
-		/// Get the currently set clip
+		/// Get the audioclip
 		/// </summary>
-		/// <returns></returns>
-		const AudioClip* GetClip() const { return m_pClip.get(); }
+		/// <returns>Shared pointer to audioclip</returns>
+		std::shared_ptr<AudioClip> GetClip() const;
 
 		/// <summary>
 		/// Play the currently selected clip
 		/// </summary>
 		void Play();
+
+		/// <summary>
+		/// Set the volume
+		/// </summary>
+		/// <param name="volume: ">value between 0 and 1</param>
+		void SetVolume(float volume);
+
+		/// <summary>
+		/// Get the current volume
+		/// </summary>
+		/// <returns>Value between 0 and 1 indicating volume</returns>
+		float GetVolume() const { return m_Info.Volume; }
+
+		/// <summary>
+		/// Set whether audiosource is muted or not
+		/// </summary>
+		/// <param name="mute"></param>
+		void SetMute(bool mute);
+
+		/// <summary>
+		/// Get whether audiosource is muted or not
+		/// </summary>
+		/// <returns>Value indicating muted value</returns>
+		bool GetMute() const { return m_Info.Muted; }
+
+		/// <summary>
+		/// Set paused mode
+		/// </summary>
+		/// <param name="paused: ">new paused mode</param>
+		void SetPaused(bool paused);
+
+		/// <summary>
+		/// Get whether audiosource is paused or not
+		/// </summary>
+		/// <returns>Value indicating paused value</returns>
+		bool GetPaused() const { return m_Info.Paused; }
 
 		/// <summary>
 		/// Receive a notification from the subject

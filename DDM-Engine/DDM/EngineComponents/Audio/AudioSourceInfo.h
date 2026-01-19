@@ -13,6 +13,7 @@ namespace DDM
 		float Volume{1.0};
 		bool Muted{ false };
 		bool Paused{ false };
+		bool Is3D{ true };
 	};
 }
 

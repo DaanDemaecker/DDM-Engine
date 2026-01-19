@@ -8,6 +8,9 @@
 #include "Includes/ImGuiIncludes.h"
 #include "AudioEvents.h"
 
+// Standard library includes
+#include <algorithm>
+
 DDM::AudioSource::AudioSource()
 	:Component()
 {
@@ -34,17 +37,17 @@ void DDM::AudioSource::OnGUI()
 
 		if (ImGui::Checkbox("Muted", &m_Info.Muted))
 		{
-			ServiceLocator::GetSoundSystem().SetMute(m_Info);
+			SetMute(m_Info.Muted);
 		}
 
 		if(ImGui::Checkbox("Paused", &m_Info.Paused))
 		{
-			
+			SetPaused(m_Info.Paused);
 		}
 
 		if (ImGui::SliderFloat("Volume", &m_Info.Volume, 0, 1))
 		{
-			ServiceLocator::GetSoundSystem().SetVolume(m_Info);
+			SetVolume(m_Info.Volume);
 		}
 
 		ImGui::TreePop();
@@ -73,6 +76,11 @@ void DDM::AudioSource::SetClip(const std::string&& path)
 	SetClip(path);
 }
 
+std::shared_ptr<DDM::AudioClip> DDM::AudioSource::GetClip() const
+{
+	return m_pClip;
+}
+
 void DDM::AudioSource::Play()
 {
 	m_Info.Channel = ServiceLocator::GetSoundSystem().PlayClip(m_pClip.get(), m_Info, this);
@@ -84,4 +92,25 @@ void DDM::AudioSource::Notify(const Event& event)
 	{
 		m_Info.Channel = -1;
 	}
+}
+
+void DDM::AudioSource::SetVolume(float volume)
+{
+	m_Info.Volume = std::clamp(volume, 0.0f, 1.0f);
+
+	ServiceLocator::GetSoundSystem().SetVolume(m_Info);
+}
+
+void DDM::AudioSource::SetMute(bool mute)
+{
+	m_Info.Muted = mute;
+
+	ServiceLocator::GetSoundSystem().SetMute(m_Info);
+}
+
+void DDM::AudioSource::SetPaused(bool paused)
+{
+	m_Info.Paused = paused;
+
+	ServiceLocator::GetSoundSystem().SetPaused(m_Info);
 }

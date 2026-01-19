@@ -38,6 +38,10 @@ namespace DDM
 		FMOD::Channel* GetChannel() const { return m_pChannel; }
 
 		void UpdateSourceLocation(GameObject* pGameObject);
+
+		void SetMasterPaused(bool paused);
+
+		void SetPaused(bool paused);
 	private:
 		float m_Volume{ 1 };
 
@@ -46,6 +50,10 @@ namespace DDM
 		bool m_Muted{ false };
 
 		bool m_MasterMuted{ false };
+
+		bool m_Paused{ false };
+
+		bool m_MasterPaused{ false };
 
 		FMOD::Channel* m_pChannel{};
 
@@ -64,6 +72,8 @@ namespace DDM
 		void SetVolume();
 
 		void SetMute();
+
+		void SetPaused();
 	};
 }
 

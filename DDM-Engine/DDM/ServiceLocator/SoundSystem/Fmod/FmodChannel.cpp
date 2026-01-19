@@ -73,6 +73,20 @@ void DDM::FmodChannel::UpdateSourceLocation(GameObject* pGameObject)
 	m_pChannel->set3DAttributes(&audioPos, &audioVel);
 }
 
+void DDM::FmodChannel::SetMasterPaused(bool paused)
+{
+	m_MasterPaused = paused;
+
+	SetPaused();
+}
+
+void DDM::FmodChannel::SetPaused(bool paused)
+{
+	m_Paused = paused;
+
+	SetPaused();
+}
+
 FMOD_RESULT F_CALLBACK DDM::FmodChannel::ChannelCallback(FMOD_CHANNELCONTROL* channelControl, FMOD_CHANNELCONTROL_TYPE controlType, FMOD_CHANNELCONTROL_CALLBACK_TYPE callbackType, void* commandData1, void* commandData2)
 {
 	if (callbackType == FMOD_CHANNELCONTROL_CALLBACK_END)
@@ -102,4 +116,9 @@ void DDM::FmodChannel::SetVolume()
 void DDM::FmodChannel::SetMute()
 {
 	m_pChannel->setMute(m_MasterMuted || m_Muted);
+}
+
+void DDM::FmodChannel::SetPaused()
+{
+	m_pChannel->setPaused(m_Paused ||  m_MasterPaused);
 }
