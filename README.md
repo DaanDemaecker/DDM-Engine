@@ -32,7 +32,7 @@ ImGui has been implemented and can be used for debugging purposes or anything el
 Currently, there is a single global directional light that is used for shading in any way the user wants to. The light has a direction, color, and intensity that can be customized
 
 - ***Sound System***  
-A soundsytem using FMOD has been implemented that plays 3D sound.
+A soundsytem using FMOD has been implemented that supports 2D and 3D sound.
 
 ## Future goals
 Future goals for my engine include:
