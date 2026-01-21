@@ -36,18 +36,18 @@ void DDM::AudioTester::OnGUI()
 	// Start tree
 	if (ImGui::TreeNodeEx("AudioTest", flags))
 	{
-		m_MasterVolume = soundSystem.GetMasterVolume();
+		float volume = soundSystem.GetMasterVolume();
 
-		if (ImGui::SliderFloat("Volume", &m_MasterVolume, 0, 1))
+		if (ImGui::SliderFloat("Volume", &volume, 0, 1))
 		{
-			ServiceLocator::GetSoundSystem().SetMasterVolume(m_MasterVolume);
+			ServiceLocator::GetSoundSystem().SetMasterVolume(volume);
 		}
 
-		m_IsMuted = soundSystem.IsMuted();
+		bool isMuted = soundSystem.IsMuted();
 
-		if (ImGui::Checkbox("Is muted", &m_IsMuted))
+		if (ImGui::Checkbox("Is muted", &isMuted))
 		{
-			soundSystem.SetMasterMute(m_IsMuted);
+			soundSystem.SetMasterMute(isMuted);
 		}
 
 		ImGui::InputText("Path to clip to play", m_ClipPath.data(), m_TextLength);
