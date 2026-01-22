@@ -8,6 +8,7 @@
 #include "Includes/FmodIncludes.h"
 #include "Events/Observer.h"
 #include "FmodChannel.h"
+#include "FmodSystemInfo.h"
 
 // Standard library includes
 #include <vector>
@@ -72,11 +73,7 @@ namespace DDM
 		// Max volume
 		const float m_MaxVolume{ 1 };
 
-		// Volume of sounds
-		float m_MasterVolume{ 1 };
-
-		// Indicates wether sound is muted
-		bool m_MasterMute{ false };
+		FmodSystemInfo m_Info{};
 
 		// Max amount of channels
 		const int m_MaxChannels{};
