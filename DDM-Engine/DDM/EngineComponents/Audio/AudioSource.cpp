@@ -40,6 +40,11 @@ void DDM::AudioSource::OnGUI()
 			SetMute(m_Info.Muted);
 		}
 
+		if (ImGui::Checkbox("3D", &m_Info.Is3D))
+		{
+			Set3D(m_Info.Is3D);
+		}
+
 		if(ImGui::Checkbox("Paused", &m_Info.Paused))
 		{
 			SetPaused(m_Info.Paused);
@@ -113,4 +118,11 @@ void DDM::AudioSource::SetPaused(bool paused)
 	m_Info.Paused = paused;
 
 	ServiceLocator::GetSoundSystem().SetPaused(m_Info);
+}
+
+void DDM::AudioSource::Set3D(bool is3D)
+{
+	m_Info.Is3D = is3D;
+
+	ServiceLocator::GetSoundSystem().Set3D(m_Info);
 }

@@ -94,6 +94,21 @@ namespace DDM
 			m_pSystem->SetPaused(info);
 		}
 
+		void Set3D(const AudioSourceInfo& info)
+		{
+			m_pSystem->Set3D(info);
+		}
+
+		void SetMaster3D(bool is3D)
+		{
+			m_pSystem->SetMaster3D(is3D);
+		}
+
+		bool GetMaster3D()
+		{
+			return m_pSystem->GetMaster3D();
+		}
+
 	private:
 		std::unique_ptr<FmodSystem> m_pSystem{};
 
@@ -185,4 +200,19 @@ void DDM::FmodSoundSystem::UpdateListenerLocation(GameObject* pGameObject)
 void DDM::FmodSoundSystem::SetPaused(const AudioSourceInfo& info)
 {
 	m_pImpl->SetPaused(info);
+}
+
+void DDM::FmodSoundSystem::Set3D(const AudioSourceInfo& info)
+{
+	m_pImpl->Set3D(info);
+}
+
+void DDM::FmodSoundSystem::SetMaster3D(bool is3D)
+{
+	m_pImpl->SetMaster3D(is3D);
+}
+
+bool DDM::FmodSoundSystem::GetMaster3D()
+{
+	return m_pImpl->GetMaster3D();
 }

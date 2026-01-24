@@ -105,6 +105,12 @@ namespace DDM
 		virtual void UpdateListenerLocation(GameObject* pGameObject) = 0;
 
 		virtual void SetPaused(const AudioSourceInfo& info) = 0;
+
+		virtual void Set3D(const AudioSourceInfo& info) = 0;
+
+		virtual void SetMaster3D(bool is3D) = 0;
+
+		virtual bool GetMaster3D() = 0;
 	};
 
 	class DefaultSoundSystem final : public SoundSystem
@@ -144,6 +150,12 @@ namespace DDM
 		virtual void SetPaused(const AudioSourceInfo& info) override {}
 
 		virtual float GetVolume(const AudioSourceInfo& info) override { return 0; }
+
+		virtual void Set3D(const AudioSourceInfo& info) override {}
+
+		virtual void SetMaster3D(bool is3D) override {}
+
+		virtual bool GetMaster3D() override { return false; }
 	};
 }
 

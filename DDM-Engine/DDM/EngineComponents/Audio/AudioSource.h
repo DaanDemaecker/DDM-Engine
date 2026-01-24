@@ -107,8 +107,20 @@ namespace DDM
 		/// <summary>
 		/// Get whether audiosource is paused or not
 		/// </summary>
-		/// <returns>Value indicating paused value</returns>
+		/// <returns>Bool indicating paused value</returns>
 		bool GetPaused() const { return m_Info.Paused; }
+
+		/// <summary>
+		/// Set 3D mode
+		/// </summary>
+		/// <param name="is3D: ">new 3D mode</param>
+		void Set3D(bool is3D);
+
+		/// <summary>
+		/// Get wether audisource is 3D or not
+		/// </summary>
+		/// <returns>Bool indicating 3D value</returns>
+		bool Get3D() const { return m_Info.Is3D; }
 
 		/// <summary>
 		/// Receive a notification from the subject

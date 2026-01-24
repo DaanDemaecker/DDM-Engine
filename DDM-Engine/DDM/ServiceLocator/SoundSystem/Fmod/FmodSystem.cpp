@@ -85,19 +85,14 @@ int DDM::FmodSystem::PlayClip(const std::string& fileName, const AudioSourceInfo
 
 	if (m_Channels[channelIndex] == nullptr)
 	{
-		m_Channels[channelIndex] = std::make_unique<FmodChannel>(newChannel, channelIndex);
+		m_Channels[channelIndex] = std::make_unique<FmodChannel>(newChannel, channelIndex, m_Info, info);
 		m_Channels[channelIndex]->AddObserver(this);
 		m_Channels[channelIndex]->AddObserver(observer);
 	}
 	else
 	{
-		m_Channels[channelIndex]->SetChannel(newChannel);
+		m_Channels[channelIndex]->SetChannel(newChannel, m_Info, info);
 	}
-
-	m_Channels[channelIndex]->SetMasterVolume(m_Info.Volume);
-	m_Channels[channelIndex]->SetMasterMute(m_Info.Muted);
-	m_Channels[channelIndex]->SetVolume(info.Volume);
-	m_Channels[channelIndex]->SetMute(info.Muted);
 
 	return channelIndex;
 }
@@ -234,6 +229,34 @@ void DDM::FmodSystem::SetPaused(const AudioSourceInfo& info)
 	}
 
 	m_Channels[info.Channel]->SetPaused(info.Paused);
+}
+
+void DDM::FmodSystem::Set3D(const AudioSourceInfo& info)
+{
+	if (info.Channel < 0 || m_Channels[info.Channel] == nullptr)
+	{
+		return;
+	}
+
+	m_Channels[info.Channel]->Set3D(info.Is3D);
+}
+
+void DDM::FmodSystem::SetMaster3D(bool is3D)
+{
+	m_Info.Is3D = is3D;
+
+	for (auto& channel : m_Channels)
+	{
+		if (channel != nullptr)
+		{
+			channel->SetMaster3D(m_Info.Is3D);
+		}
+	}
+}
+
+bool DDM::FmodSystem::GetMaster3D()
+{
+	return m_Info.Is3D;
 }
 
 int DDM::FmodSystem::GetFreeChannel()

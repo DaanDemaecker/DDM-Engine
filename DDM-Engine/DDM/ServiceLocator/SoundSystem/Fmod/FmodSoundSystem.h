@@ -48,6 +48,12 @@ namespace DDM
 		virtual void UpdateListenerLocation(GameObject* pGameObject) override;
 
 		virtual void SetPaused(const AudioSourceInfo& info) override;
+
+		virtual void Set3D(const AudioSourceInfo& info) override;
+
+		virtual void SetMaster3D(bool is3D) override;
+
+		virtual bool GetMaster3D() override;
 	private:
 		std::unique_ptr<FmodImpl> m_pImpl;
 	};

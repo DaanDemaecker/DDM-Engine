@@ -50,6 +50,13 @@ void DDM::AudioTester::OnGUI()
 			soundSystem.SetMasterMute(isMuted);
 		}
 
+		bool is3D = soundSystem.GetMaster3D();
+
+		if (ImGui::Checkbox("3D", &is3D))
+		{
+			soundSystem.SetMaster3D(is3D);
+		}
+
 		ImGui::InputText("Path to clip to play", m_ClipPath.data(), m_TextLength);
 
 		if(ImGui::Button("Set clip"))

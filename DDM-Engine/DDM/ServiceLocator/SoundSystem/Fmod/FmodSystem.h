@@ -69,6 +69,13 @@ namespace DDM
 		void UpdateListenerLocation(GameObject* pGameObject);
 
 		virtual void SetPaused(const AudioSourceInfo& info);
+
+		void Set3D(const AudioSourceInfo& info);
+
+		void SetMaster3D(bool is3D);
+
+		bool GetMaster3D();
+
 	private:
 		// Max volume
 		const float m_MaxVolume{ 1 };

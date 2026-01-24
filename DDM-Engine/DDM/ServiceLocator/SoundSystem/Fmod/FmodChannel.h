@@ -11,17 +11,19 @@
 namespace DDM
 {
 	class GameObject;
+	struct FmodSystemInfo;
+	struct AudioSourceInfo;
 
 	class FmodChannel final : public Subject
 	{
 	public:
 		FmodChannel() = delete;
 
-		FmodChannel(FMOD::Channel* pChannel, int index);
+		FmodChannel(FMOD::Channel* pChannel, int index, const FmodSystemInfo& systemInfo, const AudioSourceInfo& sourceInfo);
 
 		~FmodChannel();
 
-		void SetChannel(FMOD::Channel* pChannel);
+		void SetChannel(FMOD::Channel* pChannel, const FmodSystemInfo& systemInfo, const AudioSourceInfo& sourceInfo);
 
 		void SetMasterMute(bool muted);
 
@@ -42,6 +44,11 @@ namespace DDM
 		void SetMasterPaused(bool paused);
 
 		void SetPaused(bool paused);
+
+		void SetMaster3D(bool is3d);
+
+		void Set3D(bool is3d);
+
 	private:
 		float m_Volume{ 1 };
 
@@ -54,6 +61,10 @@ namespace DDM
 		bool m_Paused{ false };
 
 		bool m_MasterPaused{ false };
+
+		bool m_Is3d{ true };
+
+		bool m_Master3d{ true };
 
 		FMOD::Channel* m_pChannel{};
 
@@ -74,6 +85,10 @@ namespace DDM
 		void SetMute();
 
 		void SetPaused();
+
+		void Set3D();
+
+		void SetInfo(const FmodSystemInfo& systemInfo, const AudioSourceInfo& sourceInfo);
 	};
 }
 
