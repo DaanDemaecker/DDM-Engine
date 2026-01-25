@@ -109,6 +109,17 @@ namespace DDM
 			return m_pSystem->GetMaster3D();
 		}
 
+
+		void Stop(AudioSourceInfo& info)
+		{
+			m_pSystem->Stop(info);
+		}
+
+		void StopAll()
+		{
+			m_pSystem->StopAll();
+		}
+
 	private:
 		std::unique_ptr<FmodSystem> m_pSystem{};
 
@@ -155,16 +166,6 @@ void DDM::FmodSoundSystem::SetMute(const AudioSourceInfo& info)
 void DDM::FmodSoundSystem::Update()
 {
 	m_pImpl->Update();
-}
-
-void DDM::FmodSoundSystem::PauseAll()
-{
-	//m_pImpl->PauseAll();
-}
-
-void DDM::FmodSoundSystem::ResumeAll()
-{
-	//m_pImpl->ResumeAll();
 }
 
 void DDM::FmodSoundSystem::SetMasterVolume(float volume)
@@ -215,4 +216,14 @@ void DDM::FmodSoundSystem::SetMaster3D(bool is3D)
 bool DDM::FmodSoundSystem::GetMaster3D()
 {
 	return m_pImpl->GetMaster3D();
+}
+
+void DDM::FmodSoundSystem::Stop(AudioSourceInfo& info)
+{
+	m_pImpl->Stop(info);
+}
+
+void DDM::FmodSoundSystem::StopAll()
+{
+	m_pImpl->StopAll();
 }

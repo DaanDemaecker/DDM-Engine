@@ -259,6 +259,29 @@ bool DDM::FmodSystem::GetMaster3D()
 	return m_Info.Is3D;
 }
 
+void DDM::FmodSystem::Stop(AudioSourceInfo& info)
+{
+	if (info.Channel < 0 || m_Channels[info.Channel] == nullptr)
+	{
+		return;
+	}
+
+	m_Channels[info.Channel]->Stop();
+}
+
+void DDM::FmodSystem::StopAll()
+{
+	for (auto& channel : m_Channels)
+	{
+		if (channel == nullptr)
+		{
+			continue;
+		}
+
+		channel->Stop();
+	}
+}
+
 int DDM::FmodSystem::GetFreeChannel()
 {
 	for (int i{}; i < m_Channels.size(); ++i)

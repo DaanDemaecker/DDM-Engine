@@ -29,11 +29,11 @@ DDM::FmodChannel::~FmodChannel()
 
 void DDM::FmodChannel::SetChannel(FMOD::Channel* pChannel, const FmodSystemInfo& systemInfo, const AudioSourceInfo& sourceInfo)
 {
-	m_pChannel->stop();
+	m_IgnoreNextCallback = true;
+
+	Stop();
 
 	m_pChannel = pChannel;
-
-	m_IgnoreNextCallback = true;
 
 	SetInfo(systemInfo, sourceInfo);
 }
@@ -106,6 +106,11 @@ void DDM::FmodChannel::Set3D(bool is3d)
 	m_Is3d = is3d;
 
 	Set3D();
+}
+
+void DDM::FmodChannel::Stop()
+{
+	m_pChannel->stop();
 }
 
 FMOD_RESULT F_CALLBACK DDM::FmodChannel::ChannelCallback(FMOD_CHANNELCONTROL* channelControl, FMOD_CHANNELCONTROL_TYPE controlType, FMOD_CHANNELCONTROL_CALLBACK_TYPE callbackType, void* commandData1, void* commandData2)

@@ -31,10 +31,6 @@ namespace DDM
 
 		virtual void Update() override;
 
-		virtual void PauseAll() override;
-
-		virtual void ResumeAll() override;
-
 		virtual void SetMasterVolume(float volume) override;
 
 		virtual float GetMasterVolume() override;
@@ -54,6 +50,14 @@ namespace DDM
 		virtual void SetMaster3D(bool is3D) override;
 
 		virtual bool GetMaster3D() override;
+
+		virtual void SetMasterPaused(bool paused) override {};
+
+		virtual bool GetMasterPaused() const override { return false; }
+
+		virtual void Stop(AudioSourceInfo& info) override;
+
+		virtual void StopAll() override;
 	private:
 		std::unique_ptr<FmodImpl> m_pImpl;
 	};

@@ -55,6 +55,11 @@ void DDM::AudioSource::OnGUI()
 			SetVolume(m_Info.Volume);
 		}
 
+		if (ImGui::Button("Stop"))
+		{
+			Stop();
+		}
+
 		ImGui::TreePop();
 	}
 }
@@ -89,6 +94,11 @@ std::shared_ptr<DDM::AudioClip> DDM::AudioSource::GetClip() const
 void DDM::AudioSource::Play()
 {
 	m_Info.Channel = ServiceLocator::GetSoundSystem().PlayClip(m_pClip.get(), m_Info, this);
+}
+
+void DDM::AudioSource::Stop()
+{
+	ServiceLocator::GetSoundSystem().Stop(m_Info);
 }
 
 void DDM::AudioSource::Notify(const Event& event)

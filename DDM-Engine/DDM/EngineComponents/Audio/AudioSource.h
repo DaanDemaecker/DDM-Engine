@@ -123,6 +123,11 @@ namespace DDM
 		bool Get3D() const { return m_Info.Is3D; }
 
 		/// <summary>
+		/// Stop the audio currently playing
+		/// </summary>
+		void Stop();
+
+		/// <summary>
 		/// Receive a notification from the subject
 		/// </summary>
 		/// <param name="event: ">event that triggered the notification</param>

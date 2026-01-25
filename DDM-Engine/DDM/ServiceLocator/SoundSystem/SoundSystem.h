@@ -79,16 +79,6 @@ namespace DDM
 		virtual void Update() = 0;
 
 		/// <summary>
-		/// Pause all channels
-		/// </summary>
-		virtual void PauseAll() = 0;
-
-		/// <summary>
-		/// Resume all channels
-		/// </summary>
-		virtual void ResumeAll() = 0;
-
-		/// <summary>
 		/// Set master volume to a new volume between 0 and 1
 		/// </summary>
 		/// <param name="volume: ">new volume</param>
@@ -111,6 +101,14 @@ namespace DDM
 		virtual void SetMaster3D(bool is3D) = 0;
 
 		virtual bool GetMaster3D() = 0;
+
+		virtual void SetMasterPaused(bool paused) = 0;
+
+		virtual bool GetMasterPaused() const = 0;
+
+		virtual void Stop(AudioSourceInfo& info) = 0;
+
+		virtual void StopAll() = 0;
 	};
 
 	class DefaultSoundSystem final : public SoundSystem
@@ -133,10 +131,6 @@ namespace DDM
 
 		virtual void Update() override {}
 
-		virtual void PauseAll() override {}
-
-		virtual void ResumeAll() override {}
-
 		virtual void SetMasterVolume(float volume) override {}
 
 		virtual float GetMasterVolume() override { return 0; }
@@ -156,6 +150,14 @@ namespace DDM
 		virtual void SetMaster3D(bool is3D) override {}
 
 		virtual bool GetMaster3D() override { return false; }
+
+		virtual void SetMasterPaused(bool paused) override {};
+
+		virtual bool GetMasterPaused() const override { return false; }
+
+		virtual void Stop(AudioSourceInfo& info) override {};
+
+		virtual void StopAll() override {};
 	};
 }
 

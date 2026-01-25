@@ -76,6 +76,10 @@ namespace DDM
 
 		bool GetMaster3D();
 
+		void Stop(AudioSourceInfo& info);
+
+		void StopAll();
+
 	private:
 		// Max volume
 		const float m_MaxVolume{ 1 };

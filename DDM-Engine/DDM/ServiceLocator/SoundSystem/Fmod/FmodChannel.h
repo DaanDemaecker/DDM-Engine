@@ -49,6 +49,8 @@ namespace DDM
 
 		void Set3D(bool is3d);
 
+		void Stop();
+
 	private:
 		float m_Volume{ 1 };
 

@@ -45,9 +45,16 @@ void DDM::AudioTester::OnGUI()
 
 		bool isMuted = soundSystem.IsMuted();
 
-		if (ImGui::Checkbox("Is muted", &isMuted))
+		if (ImGui::Checkbox("Muted", &isMuted))
 		{
 			soundSystem.SetMasterMute(isMuted);
+		}
+
+		bool paused = soundSystem.GetMasterPaused();
+
+		if (ImGui::Checkbox("Paused", &paused))
+		{
+			soundSystem.SetMasterPaused(paused);
 		}
 
 		bool is3D = soundSystem.GetMaster3D();
@@ -55,6 +62,11 @@ void DDM::AudioTester::OnGUI()
 		if (ImGui::Checkbox("3D", &is3D))
 		{
 			soundSystem.SetMaster3D(is3D);
+		}
+
+		if (ImGui::Button("Stop all"))
+		{
+			soundSystem.StopAll();
 		}
 
 		ImGui::InputText("Path to clip to play", m_ClipPath.data(), m_TextLength);
