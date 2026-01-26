@@ -109,6 +109,8 @@ namespace DDM
 		virtual void Stop(AudioSourceInfo& info) = 0;
 
 		virtual void StopAll() = 0;
+
+		virtual void SetLoop(AudioSourceInfo& sourceInfo) = 0;
 	};
 
 	class DefaultSoundSystem final : public SoundSystem
@@ -158,6 +160,8 @@ namespace DDM
 		virtual void Stop(AudioSourceInfo& info) override {};
 
 		virtual void StopAll() override {};
+
+		virtual void SetLoop(AudioSourceInfo& sourceInfo) override {};
 	};
 }
 

@@ -282,6 +282,16 @@ void DDM::FmodSystem::StopAll()
 	}
 }
 
+void DDM::FmodSystem::SetLoop(AudioSourceInfo& sourceInfo)
+{
+	if (sourceInfo.Channel < 0 || m_Channels[sourceInfo.Channel] == nullptr)
+	{
+		return;
+	}
+
+	m_Channels[sourceInfo.Channel]->SetLoop(sourceInfo.Looping);
+}
+
 int DDM::FmodSystem::GetFreeChannel()
 {
 	for (int i{}; i < m_Channels.size(); ++i)

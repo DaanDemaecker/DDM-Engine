@@ -80,6 +80,8 @@ namespace DDM
 
 		void StopAll();
 
+		void SetLoop(AudioSourceInfo& sourceInfo);
+
 	private:
 		// Max volume
 		const float m_MaxVolume{ 1 };

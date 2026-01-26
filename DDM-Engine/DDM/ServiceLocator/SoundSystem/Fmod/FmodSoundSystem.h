@@ -58,6 +58,8 @@ namespace DDM
 		virtual void Stop(AudioSourceInfo& info) override;
 
 		virtual void StopAll() override;
+
+		virtual void SetLoop(AudioSourceInfo& sourceInfo) override;
 	private:
 		std::unique_ptr<FmodImpl> m_pImpl;
 	};

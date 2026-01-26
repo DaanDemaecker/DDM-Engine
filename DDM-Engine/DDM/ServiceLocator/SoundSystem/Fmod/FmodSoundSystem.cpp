@@ -120,6 +120,11 @@ namespace DDM
 			m_pSystem->StopAll();
 		}
 
+		void SetLooping(AudioSourceInfo& sourceInfo)
+		{
+			m_pSystem->SetLoop(sourceInfo);
+		}
+
 	private:
 		std::unique_ptr<FmodSystem> m_pSystem{};
 
@@ -226,4 +231,9 @@ void DDM::FmodSoundSystem::Stop(AudioSourceInfo& info)
 void DDM::FmodSoundSystem::StopAll()
 {
 	m_pImpl->StopAll();
+}
+
+void DDM::FmodSoundSystem::SetLoop(AudioSourceInfo& sourceInfo)
+{
+	m_pImpl->SetLooping(sourceInfo);
 }

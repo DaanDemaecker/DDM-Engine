@@ -117,7 +117,7 @@ namespace DDM
 		void Set3D(bool is3D);
 
 		/// <summary>
-		/// Get wether audisource is 3D or not
+		/// Get whether audiosource is 3D or not
 		/// </summary>
 		/// <returns>Bool indicating 3D value</returns>
 		bool Get3D() const { return m_Info.Is3D; }
@@ -126,6 +126,18 @@ namespace DDM
 		/// Stop the audio currently playing
 		/// </summary>
 		void Stop();
+
+		/// <summary>
+		/// Set new looping mode
+		/// </summary>
+		/// <param name="looping: ">new looping mode</param>
+		void SetLooping(bool looping);
+
+		/// <summary>
+		/// Get whether audiosource is looping
+		/// </summary>
+		/// <returns>Bool indiciating looping value</returns>
+		bool GetLooping() const { return m_Info.Looping; }
 
 		/// <summary>
 		/// Receive a notification from the subject

@@ -50,6 +50,11 @@ void DDM::AudioSource::OnGUI()
 			SetPaused(m_Info.Paused);
 		}
 
+		if (ImGui::Checkbox("Looping", &m_Info.Looping))
+		{
+			SetLooping(m_Info.Looping);
+		}
+
 		if (ImGui::SliderFloat("Volume", &m_Info.Volume, 0, 1))
 		{
 			SetVolume(m_Info.Volume);
@@ -99,6 +104,13 @@ void DDM::AudioSource::Play()
 void DDM::AudioSource::Stop()
 {
 	ServiceLocator::GetSoundSystem().Stop(m_Info);
+}
+
+void DDM::AudioSource::SetLooping(bool looping)
+{
+	m_Info.Looping = looping;
+
+	ServiceLocator::GetSoundSystem().SetLoop(m_Info);
 }
 
 void DDM::AudioSource::Notify(const Event& event)

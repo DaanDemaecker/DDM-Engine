@@ -14,6 +14,7 @@ namespace DDM
 		bool Muted{ false };
 		bool Paused{ false };
 		bool Is3D{ true };
+		bool Looping{ false };
 	};
 }
 

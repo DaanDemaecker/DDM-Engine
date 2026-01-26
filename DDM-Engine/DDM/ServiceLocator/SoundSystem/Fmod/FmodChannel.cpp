@@ -108,6 +108,11 @@ void DDM::FmodChannel::Set3D(bool is3d)
 	Set3D();
 }
 
+void DDM::FmodChannel::SetLoop(bool looping)
+{
+	m_pChannel->setLoopCount(looping ? -1 : 0);
+}
+
 void DDM::FmodChannel::Stop()
 {
 	m_pChannel->stop();
@@ -170,4 +175,6 @@ void DDM::FmodChannel::SetInfo(const FmodSystemInfo& systemInfo, const AudioSour
 	SetVolume();
 	SetPaused();
 	Set3D();
+
+	SetLoop(sourceInfo.Looping);
 }
