@@ -53,7 +53,12 @@ namespace DDM
 
 		void Stop();
 
+		void SetMasterFrequency(float frequency);
+
+		void SetFrequency(float frequency);
 	private:
+		float m_InitialFrequency{};
+
 		float m_Volume{ 1 };
 
 		float m_MasterVolume{1};
@@ -69,6 +74,10 @@ namespace DDM
 		bool m_Is3d{ true };
 
 		bool m_Master3d{ true };
+
+		float m_Frequency{ 1.f };
+
+		float m_MasterFrequency{ 1.f };
 
 		FMOD::Channel* m_pChannel{};
 
@@ -91,6 +100,8 @@ namespace DDM
 		void SetPaused();
 
 		void Set3D();
+
+		void SetFrequency();
 
 		void SetInfo(const FmodSystemInfo& systemInfo, const AudioSourceInfo& sourceInfo);
 	};

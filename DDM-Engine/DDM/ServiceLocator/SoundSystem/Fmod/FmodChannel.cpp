@@ -17,6 +17,8 @@ DDM::FmodChannel::FmodChannel(FMOD::Channel* pChannel, int index, const FmodSyst
 {
 	m_pChannel = pChannel;
 
+	m_pChannel->getFrequency(&m_InitialFrequency);
+
 	HandleError(m_pChannel->setUserData(this));
 	HandleError(m_pChannel->setCallback(ChannelCallback));
 
@@ -34,6 +36,8 @@ void DDM::FmodChannel::SetChannel(FMOD::Channel* pChannel, const FmodSystemInfo&
 	Stop();
 
 	m_pChannel = pChannel;
+
+	m_pChannel->getFrequency(&m_InitialFrequency);
 
 	SetInfo(systemInfo, sourceInfo);
 }
@@ -118,6 +122,20 @@ void DDM::FmodChannel::Stop()
 	m_pChannel->stop();
 }
 
+void DDM::FmodChannel::SetMasterFrequency(float frequency)
+{
+	m_MasterFrequency = frequency;
+
+	SetFrequency();
+}
+
+void DDM::FmodChannel::SetFrequency(float frequency)
+{
+	m_Frequency = frequency;
+
+	SetFrequency();
+}
+
 FMOD_RESULT F_CALLBACK DDM::FmodChannel::ChannelCallback(FMOD_CHANNELCONTROL* channelControl, FMOD_CHANNELCONTROL_TYPE controlType, FMOD_CHANNELCONTROL_CALLBACK_TYPE callbackType, void* commandData1, void* commandData2)
 {
 	if (callbackType == FMOD_CHANNELCONTROL_CALLBACK_END)
@@ -159,22 +177,30 @@ void DDM::FmodChannel::Set3D()
 	m_pChannel->setMode(m_Is3d && m_Master3d ? FMOD_3D : FMOD_2D);
 }
 
+void DDM::FmodChannel::SetFrequency()
+{
+	m_pChannel->setFrequency(m_Frequency * m_MasterFrequency * m_InitialFrequency);
+}
+
 void DDM::FmodChannel::SetInfo(const FmodSystemInfo& systemInfo, const AudioSourceInfo& sourceInfo)
 {
 	m_MasterMuted = systemInfo.Muted;
 	m_MasterVolume = systemInfo.Volume;
 	m_MasterPaused = systemInfo.Paused;
 	m_Master3d = systemInfo.Is3D;
+	m_MasterFrequency = systemInfo.Frequency;
 
 	m_Muted = sourceInfo.Muted;
 	m_Volume = sourceInfo.Volume;
 	m_Paused = sourceInfo.Paused;
 	m_Is3d = sourceInfo.Is3D;
+	m_Frequency = sourceInfo.Frequency;
 
 	SetMute();
 	SetVolume();
 	SetPaused();
 	Set3D();
+	SetFrequency();
 
 	SetLoop(sourceInfo.Looping);
 }

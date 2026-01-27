@@ -111,6 +111,12 @@ namespace DDM
 		virtual void StopAll() = 0;
 
 		virtual void SetLoop(AudioSourceInfo& sourceInfo) = 0;
+
+		virtual void SetFrequency(AudioSourceInfo& sourceInfo) = 0;
+
+		virtual void SetMasterFrequency(float frequency) = 0;
+
+		virtual float GetMasterFrequency() = 0;
 	};
 
 	class DefaultSoundSystem final : public SoundSystem
@@ -153,15 +159,21 @@ namespace DDM
 
 		virtual bool GetMaster3D() override { return false; }
 
-		virtual void SetMasterPaused(bool paused) override {};
+		virtual void SetMasterPaused(bool paused) override {}
 
 		virtual bool GetMasterPaused() const override { return false; }
 
-		virtual void Stop(AudioSourceInfo& info) override {};
+		virtual void Stop(AudioSourceInfo& info) override {}
 
-		virtual void StopAll() override {};
+		virtual void StopAll() override {}
 
-		virtual void SetLoop(AudioSourceInfo& sourceInfo) override {};
+		virtual void SetLoop(AudioSourceInfo& sourceInfo) override {}
+
+		virtual void SetFrequency(AudioSourceInfo& sourceInfo) override {}
+
+		virtual void SetMasterFrequency(float frequency) override {}
+
+		virtual float GetMasterFrequency() override { return 1.f; }
 	};
 }
 

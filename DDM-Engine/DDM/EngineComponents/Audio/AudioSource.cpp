@@ -60,6 +60,11 @@ void DDM::AudioSource::OnGUI()
 			SetVolume(m_Info.Volume);
 		}
 
+		if (ImGui::SliderFloat("Frequency", &m_Info.Frequency, -3, 3))
+		{
+			SetFrequency(m_Info.Frequency);
+		}
+
 		if (ImGui::Button("Stop"))
 		{
 			Stop();
@@ -111,6 +116,13 @@ void DDM::AudioSource::SetLooping(bool looping)
 	m_Info.Looping = looping;
 
 	ServiceLocator::GetSoundSystem().SetLoop(m_Info);
+}
+
+void DDM::AudioSource::SetFrequency(float frequency)
+{
+	m_Info.Frequency = frequency;
+
+	ServiceLocator::GetSoundSystem().SetFrequency(m_Info);
 }
 
 void DDM::AudioSource::Notify(const Event& event)

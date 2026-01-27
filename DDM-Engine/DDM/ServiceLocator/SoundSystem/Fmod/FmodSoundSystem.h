@@ -60,6 +60,12 @@ namespace DDM
 		virtual void StopAll() override;
 
 		virtual void SetLoop(AudioSourceInfo& sourceInfo) override;
+
+		virtual void SetFrequency(AudioSourceInfo& sourceInfo) override;
+
+		virtual void SetMasterFrequency(float frequency) override;
+
+		virtual float GetMasterFrequency() override;
 	private:
 		std::unique_ptr<FmodImpl> m_pImpl;
 	};

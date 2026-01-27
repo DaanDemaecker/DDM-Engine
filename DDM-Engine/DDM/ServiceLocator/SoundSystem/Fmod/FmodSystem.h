@@ -82,6 +82,12 @@ namespace DDM
 
 		void SetLoop(AudioSourceInfo& sourceInfo);
 
+		void SetMasterFrequency(float frequency);
+
+		void SetFrequency(AudioSourceInfo& sourceInfo);
+
+		float GetMasterFrequency() const { return m_Info.Frequency; }
+
 	private:
 		// Max volume
 		const float m_MaxVolume{ 1 };

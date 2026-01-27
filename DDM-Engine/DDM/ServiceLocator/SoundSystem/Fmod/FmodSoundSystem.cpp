@@ -125,6 +125,21 @@ namespace DDM
 			m_pSystem->SetLoop(sourceInfo);
 		}
 
+		void SetFrequency(AudioSourceInfo& sourceInfo)
+		{
+			m_pSystem->SetFrequency(sourceInfo);
+		}
+
+		void SetMasterFrequency(float frequency)
+		{
+			m_pSystem->SetMasterFrequency(frequency);
+		}
+
+		float GetMasterFrequency()
+		{
+			return m_pSystem->GetMasterFrequency();
+		}
+
 	private:
 		std::unique_ptr<FmodSystem> m_pSystem{};
 
@@ -236,4 +251,19 @@ void DDM::FmodSoundSystem::StopAll()
 void DDM::FmodSoundSystem::SetLoop(AudioSourceInfo& sourceInfo)
 {
 	m_pImpl->SetLooping(sourceInfo);
+}
+
+void DDM::FmodSoundSystem::SetFrequency(AudioSourceInfo& sourceInfo)
+{
+	m_pImpl->SetFrequency(sourceInfo);
+}
+
+void DDM::FmodSoundSystem::SetMasterFrequency(float frequency)
+{
+	m_pImpl->SetMasterFrequency(frequency);
+}
+
+float DDM::FmodSoundSystem::GetMasterFrequency()
+{
+	return m_pImpl->GetMasterFrequency();
 }

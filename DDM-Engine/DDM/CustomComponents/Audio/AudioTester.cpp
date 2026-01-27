@@ -43,6 +43,13 @@ void DDM::AudioTester::OnGUI()
 			ServiceLocator::GetSoundSystem().SetMasterVolume(volume);
 		}
 
+		float frequency = soundSystem.GetMasterFrequency();
+
+		if (ImGui::SliderFloat("Frequency", &frequency, -3, 3))
+		{
+			ServiceLocator::GetSoundSystem().SetMasterFrequency(frequency);
+		}
+
 		bool isMuted = soundSystem.IsMuted();
 
 		if (ImGui::Checkbox("Muted", &isMuted))

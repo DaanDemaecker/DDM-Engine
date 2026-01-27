@@ -140,6 +140,18 @@ namespace DDM
 		bool GetLooping() const { return m_Info.Looping; }
 
 		/// <summary>
+		/// Set the frequency of the audiosource
+		/// </summary>
+		/// <param name="frequency: ">new frequency</param>
+		void SetFrequency(float frequency);
+
+		/// <summary>
+		/// Get the current frequency
+		/// </summary>
+		/// <returns>Float indicating frequency</returns>
+		float GetFrequency() const { return m_Info.Frequency; }
+
+		/// <summary>
 		/// Receive a notification from the subject
 		/// </summary>
 		/// <param name="event: ">event that triggered the notification</param>

@@ -12,6 +12,7 @@ namespace DDM
 		bool Muted{ false };
 		bool Paused{ false };
 		bool Is3D{ true };
+		float Frequency{ 1.0 };
 	};
 }
 

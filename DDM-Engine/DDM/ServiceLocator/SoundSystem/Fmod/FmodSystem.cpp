@@ -292,6 +292,29 @@ void DDM::FmodSystem::SetLoop(AudioSourceInfo& sourceInfo)
 	m_Channels[sourceInfo.Channel]->SetLoop(sourceInfo.Looping);
 }
 
+void DDM::FmodSystem::SetMasterFrequency(float frequency)
+{
+	m_Info.Frequency = frequency;
+
+	for (auto& channel : m_Channels)
+	{
+		if (channel != nullptr)
+		{
+			channel->SetMasterFrequency(m_Info.Frequency);
+		}
+	}
+}
+
+void DDM::FmodSystem::SetFrequency(AudioSourceInfo& sourceInfo)
+{
+	if (sourceInfo.Channel < 0 || m_Channels[sourceInfo.Channel] == nullptr)
+	{
+		return;
+	}
+
+	m_Channels[sourceInfo.Channel]->SetFrequency(sourceInfo.Frequency);
+}
+
 int DDM::FmodSystem::GetFreeChannel()
 {
 	for (int i{}; i < m_Channels.size(); ++i)
