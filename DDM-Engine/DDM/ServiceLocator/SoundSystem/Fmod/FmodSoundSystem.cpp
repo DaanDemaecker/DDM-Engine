@@ -140,10 +140,15 @@ namespace DDM
 			return m_pSystem->GetMasterFrequency();
 		}
 
+		void SetPriority(AudioSourceInfo& sourceInfo)
+		{
+			m_pSystem->SetPriority(sourceInfo);
+		}
+
 	private:
 		std::unique_ptr<FmodSystem> m_pSystem{};
 
-		const int m_MaxChannels{ 32 };		
+		const int m_MaxChannels{ 1 };		
 	};
 }
 
@@ -266,4 +271,9 @@ void DDM::FmodSoundSystem::SetMasterFrequency(float frequency)
 float DDM::FmodSoundSystem::GetMasterFrequency()
 {
 	return m_pImpl->GetMasterFrequency();
+}
+
+void DDM::FmodSoundSystem::SetPriority(AudioSourceInfo& sourceInfo)
+{
+	m_pImpl->SetPriority(sourceInfo);
 }

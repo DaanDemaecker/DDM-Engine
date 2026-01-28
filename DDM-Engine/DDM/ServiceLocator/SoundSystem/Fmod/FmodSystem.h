@@ -88,6 +88,8 @@ namespace DDM
 
 		float GetMasterFrequency() const { return m_Info.Frequency; }
 
+		void SetPriority(AudioSourceInfo& sourceInfo);
+
 	private:
 		// Max volume
 		const float m_MaxVolume{ 1 };
@@ -112,14 +114,22 @@ namespace DDM
 		/// <summary>
 		/// Get a channel index that isn't playing
 		/// </summary>
-		/// <returns>Channel index</returns>
-		int GetFreeChannel();
+		/// <param name="priority: ">priority index of requested index</param>
+		/// <returns></returns>
+		int GetFreeChannel(int priority);
 
 		/// <summary>
 		/// Create a single audioclip
 		/// </summary>
 		/// <param name="fileName: ">path to audio file</param>
 		void CreateClip(const std::string& fileName);
+
+		/// <summary>
+		/// Check if the given index is a valid channel
+		/// </summary>
+		/// <param name="index: ">index of requested channel</param>
+		/// <returns>bool indicating whether channel is valid</returns>
+		bool IsValidChannel(int index);
 	};
 }
 

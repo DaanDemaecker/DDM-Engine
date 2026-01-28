@@ -152,6 +152,12 @@ namespace DDM
 		float GetFrequency() const { return m_Info.Frequency; }
 
 		/// <summary>
+		/// Set the priority value of this audiosource
+		/// </summary>
+		/// <param name="priority: ">new priority value</param>
+		void SetPriority(int priority);
+
+		/// <summary>
 		/// Receive a notification from the subject
 		/// </summary>
 		/// <param name="event: ">event that triggered the notification</param>

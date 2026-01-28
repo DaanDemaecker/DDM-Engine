@@ -117,6 +117,8 @@ namespace DDM
 		virtual void SetMasterFrequency(float frequency) = 0;
 
 		virtual float GetMasterFrequency() = 0;
+
+		virtual void SetPriority(AudioSourceInfo& sourceInfo) = 0;
 	};
 
 	class DefaultSoundSystem final : public SoundSystem
@@ -174,6 +176,8 @@ namespace DDM
 		virtual void SetMasterFrequency(float frequency) override {}
 
 		virtual float GetMasterFrequency() override { return 1.f; }
+
+		virtual void SetPriority(AudioSourceInfo& sourceInfo) override {};
 	};
 }
 

@@ -35,6 +35,11 @@ void DDM::AudioSource::OnGUI()
 
 		ImGui::Text(channelText.c_str());
 
+		if (ImGui::SliderInt("Priority", &m_Info.Priority, 0, 10))
+		{
+			SetPriority(m_Info.Priority);
+		}
+
 		if (ImGui::Checkbox("Muted", &m_Info.Muted))
 		{
 			SetMute(m_Info.Muted);
@@ -103,6 +108,11 @@ std::shared_ptr<DDM::AudioClip> DDM::AudioSource::GetClip() const
 
 void DDM::AudioSource::Play()
 {
+	if (m_pClip == nullptr)
+	{
+		return;
+	}
+
 	m_Info.Channel = ServiceLocator::GetSoundSystem().PlayClip(m_pClip.get(), m_Info, this);
 }
 
@@ -123,6 +133,13 @@ void DDM::AudioSource::SetFrequency(float frequency)
 	m_Info.Frequency = frequency;
 
 	ServiceLocator::GetSoundSystem().SetFrequency(m_Info);
+}
+
+void DDM::AudioSource::SetPriority(int priority)
+{
+	m_Info.Priority = priority;
+
+	ServiceLocator::GetSoundSystem().SetPriority(m_Info);
 }
 
 void DDM::AudioSource::Notify(const Event& event)

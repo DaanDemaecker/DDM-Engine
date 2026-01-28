@@ -66,7 +66,7 @@ int DDM::FmodSystem::PlayClip(const std::string& fileName, const AudioSourceInfo
 
 	if (channelIndex < 0)
 	{
-		channelIndex = GetFreeChannel();
+		channelIndex = GetFreeChannel(info.Priority);
 	}
 
 
@@ -307,7 +307,7 @@ void DDM::FmodSystem::SetMasterFrequency(float frequency)
 
 void DDM::FmodSystem::SetFrequency(AudioSourceInfo& sourceInfo)
 {
-	if (sourceInfo.Channel < 0 || m_Channels[sourceInfo.Channel] == nullptr)
+	if (!IsValidChannel(sourceInfo.Channel))
 	{
 		return;
 	}
@@ -315,14 +315,43 @@ void DDM::FmodSystem::SetFrequency(AudioSourceInfo& sourceInfo)
 	m_Channels[sourceInfo.Channel]->SetFrequency(sourceInfo.Frequency);
 }
 
-int DDM::FmodSystem::GetFreeChannel()
+void DDM::FmodSystem::SetPriority(AudioSourceInfo& sourceInfo)
 {
+	if (!IsValidChannel(sourceInfo.Channel))
+	{
+		return;
+	}
+
+	m_Channels[sourceInfo.Channel]->SetPriority(sourceInfo.Priority);
+}
+
+int DDM::FmodSystem::GetFreeChannel(int priority)
+{
+	int lowestPriority{INT_MAX};
+
+	int lowestIndex{};
+
 	for (int i{}; i < m_Channels.size(); ++i)
 	{
 		if (m_Channels[i] == nullptr)
 		{
 			return i;
 		}
+		else
+		{
+			int priority = m_Channels[i]->GetPriority();
+
+			if (priority < lowestPriority)
+			{
+				lowestPriority = priority;
+				lowestIndex = i;
+			}
+		}
+	}
+
+	if (lowestPriority < priority)
+	{
+		return lowestIndex;
 	}
 
 	return -1;
@@ -333,4 +362,9 @@ void DDM::FmodSystem::CreateClip(const std::string& fileName)
 	std::cout << "Creating clip: " << fileName << "\n";
 
 	m_pSystem->createSound(fileName.c_str(), FMOD_LOOP_NORMAL | FMOD_3D, nullptr, &m_Clips[fileName]);
+}
+
+bool DDM::FmodSystem::IsValidChannel(int index)
+{
+	return index >= 0 && m_Channels[index] != nullptr;
 }

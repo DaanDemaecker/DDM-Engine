@@ -27,6 +27,7 @@ DDM::FmodChannel::FmodChannel(FMOD::Channel* pChannel, int index, const FmodSyst
 
 DDM::FmodChannel::~FmodChannel()
 {
+	Stop();
 }
 
 void DDM::FmodChannel::SetChannel(FMOD::Channel* pChannel, const FmodSystemInfo& systemInfo, const AudioSourceInfo& sourceInfo)
@@ -119,7 +120,10 @@ void DDM::FmodChannel::SetLoop(bool looping)
 
 void DDM::FmodChannel::Stop()
 {
-	m_pChannel->stop();
+	if (m_pChannel != nullptr)
+	{
+		m_pChannel->stop();
+	}
 }
 
 void DDM::FmodChannel::SetMasterFrequency(float frequency)
@@ -136,6 +140,11 @@ void DDM::FmodChannel::SetFrequency(float frequency)
 	SetFrequency();
 }
 
+void DDM::FmodChannel::SetPriority(int priority)
+{
+	m_Priority = priority;
+}
+
 FMOD_RESULT F_CALLBACK DDM::FmodChannel::ChannelCallback(FMOD_CHANNELCONTROL* channelControl, FMOD_CHANNELCONTROL_TYPE controlType, FMOD_CHANNELCONTROL_CALLBACK_TYPE callbackType, void* commandData1, void* commandData2)
 {
 	if (callbackType == FMOD_CHANNELCONTROL_CALLBACK_END)
@@ -148,6 +157,8 @@ FMOD_RESULT F_CALLBACK DDM::FmodChannel::ChannelCallback(FMOD_CHANNELCONTROL* ch
 		FmodChannel* wrapper = static_cast<FmodChannel*>(userData);
 		if (wrapper && !wrapper->m_IgnoreNextCallback)
 		{
+			wrapper->m_pChannel = nullptr;
+
 			wrapper->m_IgnoreNextCallback = false;
 			// Notify wrapper that playback ended
 			wrapper->NotifyObservers(AudioFinishedEvent(wrapper->GetIndex()));
@@ -195,6 +206,7 @@ void DDM::FmodChannel::SetInfo(const FmodSystemInfo& systemInfo, const AudioSour
 	m_Paused = sourceInfo.Paused;
 	m_Is3d = sourceInfo.Is3D;
 	m_Frequency = sourceInfo.Frequency;
+	m_Priority = sourceInfo.Priority;
 
 	SetMute();
 	SetVolume();

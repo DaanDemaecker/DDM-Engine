@@ -56,12 +56,17 @@ namespace DDM
 		void SetMasterFrequency(float frequency);
 
 		void SetFrequency(float frequency);
+
+		void SetPriority(int priority);
+
+		int GetPriority() const { return m_Priority; }
+
 	private:
-		float m_InitialFrequency{};
+		int m_Priority{ 0 };
 
 		float m_Volume{ 1 };
 
-		float m_MasterVolume{1};
+		float m_MasterVolume{ 1 };
 
 		bool m_Muted{ false };
 
@@ -74,6 +79,8 @@ namespace DDM
 		bool m_Is3d{ true };
 
 		bool m_Master3d{ true };
+
+		float m_InitialFrequency{};
 
 		float m_Frequency{ 1.f };
 
