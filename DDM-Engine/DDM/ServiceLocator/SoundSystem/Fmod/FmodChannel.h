@@ -51,7 +51,7 @@ namespace DDM
 
 		void SetLoop(bool looping);
 
-		void Stop();
+		void Stop(bool ignoreNextCallback = false);
 
 		void SetMasterFrequency(float frequency);
 

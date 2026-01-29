@@ -76,6 +76,11 @@ int DDM::FmodSystem::PlayClip(const std::string& fileName, const AudioSourceInfo
 		return channelIndex;
 	}
 
+	if (m_Channels[channelIndex] != nullptr)
+	{
+		m_Channels[channelIndex]->Stop(true);
+	}
+
 	FMOD::Channel* newChannel;
 	m_pSystem->playSound(m_Clips[fileName], nullptr, false, &newChannel);
 

@@ -34,8 +34,6 @@ void DDM::FmodChannel::SetChannel(FMOD::Channel* pChannel, const FmodSystemInfo&
 {
 	m_IgnoreNextCallback = true;
 
-	Stop();
-
 	m_pChannel = pChannel;
 
 	m_pChannel->getFrequency(&m_InitialFrequency);
@@ -118,10 +116,11 @@ void DDM::FmodChannel::SetLoop(bool looping)
 	m_pChannel->setLoopCount(looping ? -1 : 0);
 }
 
-void DDM::FmodChannel::Stop()
+void DDM::FmodChannel::Stop(bool ignoreNextCallback)
 {
 	if (m_pChannel != nullptr)
 	{
+		m_IgnoreNextCallback = ignoreNextCallback;
 		m_pChannel->stop();
 	}
 }
