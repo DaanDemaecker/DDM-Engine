@@ -118,6 +118,12 @@ namespace DDM
 
 		virtual float GetMasterFrequency() = 0;
 
+		virtual void SetPitch(AudioSourceInfo& sourceInfo) = 0;
+
+		virtual void SetMasterPitch(float pitch) = 0;
+
+		virtual float GetMasterPitch() = 0;
+
 		virtual void SetPriority(AudioSourceInfo& sourceInfo) = 0;
 	};
 
@@ -176,6 +182,12 @@ namespace DDM
 		virtual void SetMasterFrequency(float frequency) override {}
 
 		virtual float GetMasterFrequency() override { return 1.f; }
+
+		virtual void SetPitch(AudioSourceInfo& sourceInfo) override{};
+
+		virtual void SetMasterPitch(float pitch) override {};
+
+		virtual float GetMasterPitch() override { return 1.f; }
 
 		virtual void SetPriority(AudioSourceInfo& sourceInfo) override {};
 	};

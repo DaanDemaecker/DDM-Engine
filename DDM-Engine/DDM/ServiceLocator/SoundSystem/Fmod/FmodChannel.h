@@ -61,6 +61,10 @@ namespace DDM
 
 		int GetPriority() const { return m_Priority; }
 
+		void SetMasterPitch(float pitch);
+
+		void SetPitch(float pitch);
+
 	private:
 		int m_Priority{ 0 };
 
@@ -86,6 +90,10 @@ namespace DDM
 
 		float m_MasterFrequency{ 1.f };
 
+		float m_Pitch{ 1.f };
+
+		float m_MasterPitch{ 1.f };
+
 		FMOD::Channel* m_pChannel{};
 
 		bool m_IgnoreNextCallback{false};
@@ -109,6 +117,8 @@ namespace DDM
 		void Set3D();
 
 		void SetFrequency();
+
+		void SetPitch();
 
 		void SetInfo(const FmodSystemInfo& systemInfo, const AudioSourceInfo& sourceInfo);
 	};

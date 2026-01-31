@@ -13,6 +13,7 @@ namespace DDM
 		bool Paused{ false };
 		bool Is3D{ true };
 		float Frequency{ 1.0 };
+		float Pitch{ 1.0 };
 	};
 }
 

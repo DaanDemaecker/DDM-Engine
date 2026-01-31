@@ -6,10 +6,12 @@
 // File includes
 #include "FmodErrorHandler.h"
 #include "FmodChannel.h"
+
 #include "EngineComponents/Audio/AudioEvents.h"
 #include "EngineComponents/Audio/AudioSourceInfo.h"
-#include "BaseClasses/GameObject.h"
 #include "EngineComponents/Transform.h"
+
+#include "BaseClasses/GameObject.h"
 
 // Standard library includes
 #include <algorithm>
@@ -152,7 +154,7 @@ void DDM::FmodSystem::LoadClip(const std::string& filePath)
 
 void DDM::FmodSystem::SetVolume(const AudioSourceInfo& info)
 {
-	if (info.Channel < 0 || m_Channels[info.Channel] == nullptr)
+	if (!IsValidChannel(info.Channel))
 	{
 		return;
 	}
@@ -162,9 +164,9 @@ void DDM::FmodSystem::SetVolume(const AudioSourceInfo& info)
 
 float DDM::FmodSystem::GetVolume(const AudioSourceInfo& info)
 {
-	if (info.Channel < 0 || m_Channels[info.Channel] == nullptr)
+	if (!IsValidChannel(info.Channel))
 	{
-		return 0;
+		return 1.0f;
 	}
 
 	return m_Channels[info.Channel]->GetVolume();
@@ -180,7 +182,7 @@ void DDM::FmodSystem::Notify(const Event& event)
 
 void DDM::FmodSystem::SetMute(const AudioSourceInfo& info)
 {
-	if (info.Channel < 0 || m_Channels[info.Channel] == nullptr)
+	if (!IsValidChannel(info.Channel))
 	{
 		return;
 	}
@@ -190,7 +192,7 @@ void DDM::FmodSystem::SetMute(const AudioSourceInfo& info)
 
 void DDM::FmodSystem::UpdateSourceLocation(const AudioSourceInfo& info, GameObject* pGameObject)
 {
-	if (info.Channel < 0 || m_Channels[info.Channel] == nullptr || pGameObject == nullptr)
+	if (!IsValidChannel(info.Channel) || pGameObject == nullptr)
 	{
 		return;
 	}
@@ -228,17 +230,16 @@ void DDM::FmodSystem::UpdateListenerLocation(GameObject* pGameObject)
 
 void DDM::FmodSystem::SetPaused(const AudioSourceInfo& info)
 {
-	if (info.Channel < 0 || m_Channels[info.Channel] == nullptr)
+	if (!IsValidChannel(info.Channel))
 	{
 		return;
 	}
-
 	m_Channels[info.Channel]->SetPaused(info.Paused);
 }
 
 void DDM::FmodSystem::Set3D(const AudioSourceInfo& info)
 {
-	if (info.Channel < 0 || m_Channels[info.Channel] == nullptr)
+	if (!IsValidChannel(info.Channel))
 	{
 		return;
 	}
@@ -266,7 +267,7 @@ bool DDM::FmodSystem::GetMaster3D()
 
 void DDM::FmodSystem::Stop(AudioSourceInfo& info)
 {
-	if (info.Channel < 0 || m_Channels[info.Channel] == nullptr)
+	if (!IsValidChannel(info.Channel))
 	{
 		return;
 	}
@@ -289,7 +290,7 @@ void DDM::FmodSystem::StopAll()
 
 void DDM::FmodSystem::SetLoop(AudioSourceInfo& sourceInfo)
 {
-	if (sourceInfo.Channel < 0 || m_Channels[sourceInfo.Channel] == nullptr)
+	if (!IsValidChannel(sourceInfo.Channel))
 	{
 		return;
 	}
@@ -328,6 +329,28 @@ void DDM::FmodSystem::SetPriority(AudioSourceInfo& sourceInfo)
 	}
 
 	m_Channels[sourceInfo.Channel]->SetPriority(sourceInfo.Priority);
+}
+
+void DDM::FmodSystem::SetMasterPitch(float pitch)
+{
+	m_Info.Pitch = pitch;
+	for (auto& channel : m_Channels)
+	{
+		if (channel != nullptr)
+		{
+			channel->SetMasterPitch(m_Info.Pitch);
+		}
+	}
+}
+
+void DDM::FmodSystem::SetPitch(AudioSourceInfo& sourceInfo)
+{
+	if (!IsValidChannel(sourceInfo.Channel))
+	{
+		return;
+	}
+
+	m_Channels[sourceInfo.Channel]->SetPitch(sourceInfo.Pitch);
 }
 
 int DDM::FmodSystem::GetFreeChannel(int priority)

@@ -17,6 +17,7 @@ namespace DDM
 		bool Paused{ false };
 		bool Is3D{ true };
 		bool Looping{ false };
+		float Pitch{ 1.0 };
 	};
 }
 

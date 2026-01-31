@@ -70,6 +70,11 @@ void DDM::AudioSource::OnGUI()
 			SetFrequency(m_Info.Frequency);
 		}
 
+		if (ImGui::SliderFloat("Pitch", &m_Info.Pitch, 0, 2))
+		{
+			SetPitch(m_Info.Pitch);
+		}
+
 		if (ImGui::Button("Stop"))
 		{
 			Stop();
@@ -140,6 +145,13 @@ void DDM::AudioSource::SetPriority(int priority)
 	m_Info.Priority = priority;
 
 	ServiceLocator::GetSoundSystem().SetPriority(m_Info);
+}
+
+void DDM::AudioSource::SetPitch(float pitch)
+{
+	m_Info.Pitch = pitch;
+
+	ServiceLocator::GetSoundSystem().SetPitch(m_Info);
 }
 
 void DDM::AudioSource::Notify(const Event& event)

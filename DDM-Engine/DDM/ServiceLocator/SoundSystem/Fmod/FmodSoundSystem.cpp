@@ -145,10 +145,25 @@ namespace DDM
 			m_pSystem->SetPriority(sourceInfo);
 		}
 
+		void SetPitch(AudioSourceInfo& sourceInfo)
+		{
+			m_pSystem->SetPitch(sourceInfo);
+		}
+
+		void SetMasterPitch(float pitch)
+		{
+			m_pSystem->SetMasterPitch(pitch);
+		}
+
+		float GetMasterPitch()
+		{
+			return m_pSystem->GetMasterPitch();
+		}
+
 	private:
 		std::unique_ptr<FmodSystem> m_pSystem{};
 
-		const int m_MaxChannels{ 1 };		
+		const int m_MaxChannels{ 32 };		
 	};
 }
 
@@ -276,4 +291,19 @@ float DDM::FmodSoundSystem::GetMasterFrequency()
 void DDM::FmodSoundSystem::SetPriority(AudioSourceInfo& sourceInfo)
 {
 	m_pImpl->SetPriority(sourceInfo);
+}
+
+void DDM::FmodSoundSystem::SetPitch(AudioSourceInfo& sourceInfo)
+{
+	m_pImpl->SetPitch(sourceInfo);
+}
+
+void DDM::FmodSoundSystem::SetMasterPitch(float pitch)
+{
+	m_pImpl->SetMasterPitch(pitch);
+}
+
+float DDM::FmodSoundSystem::GetMasterPitch()
+{
+	return m_pImpl->GetMasterPitch();
 }

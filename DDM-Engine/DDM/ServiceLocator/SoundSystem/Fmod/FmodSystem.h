@@ -90,6 +90,11 @@ namespace DDM
 
 		void SetPriority(AudioSourceInfo& sourceInfo);
 
+		void SetMasterPitch(float pitch);
+
+		void SetPitch(AudioSourceInfo& sourceInfo);
+
+		float GetMasterPitch() const { return m_Info.Pitch; }
 	private:
 		// Max volume
 		const float m_MaxVolume{ 1 };

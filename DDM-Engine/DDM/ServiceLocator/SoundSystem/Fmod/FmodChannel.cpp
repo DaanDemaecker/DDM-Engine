@@ -144,6 +144,18 @@ void DDM::FmodChannel::SetPriority(int priority)
 	m_Priority = priority;
 }
 
+void DDM::FmodChannel::SetMasterPitch(float pitch)
+{
+	m_MasterPitch = pitch;
+	SetPitch();
+}
+
+void DDM::FmodChannel::SetPitch(float pitch)
+{
+	m_Pitch = pitch;
+	SetPitch();
+}
+
 FMOD_RESULT F_CALLBACK DDM::FmodChannel::ChannelCallback(FMOD_CHANNELCONTROL* channelControl, FMOD_CHANNELCONTROL_TYPE controlType, FMOD_CHANNELCONTROL_CALLBACK_TYPE callbackType, void* commandData1, void* commandData2)
 {
 	if (callbackType == FMOD_CHANNELCONTROL_CALLBACK_END)
@@ -192,6 +204,11 @@ void DDM::FmodChannel::SetFrequency()
 	m_pChannel->setFrequency(m_Frequency * m_MasterFrequency * m_InitialFrequency);
 }
 
+void DDM::FmodChannel::SetPitch()
+{
+	m_pChannel->setPitch(m_Pitch * m_MasterPitch);
+}
+
 void DDM::FmodChannel::SetInfo(const FmodSystemInfo& systemInfo, const AudioSourceInfo& sourceInfo)
 {
 	m_MasterMuted = systemInfo.Muted;
@@ -199,12 +216,14 @@ void DDM::FmodChannel::SetInfo(const FmodSystemInfo& systemInfo, const AudioSour
 	m_MasterPaused = systemInfo.Paused;
 	m_Master3d = systemInfo.Is3D;
 	m_MasterFrequency = systemInfo.Frequency;
+	m_MasterPitch = systemInfo.Pitch;
 
 	m_Muted = sourceInfo.Muted;
 	m_Volume = sourceInfo.Volume;
 	m_Paused = sourceInfo.Paused;
 	m_Is3d = sourceInfo.Is3D;
 	m_Frequency = sourceInfo.Frequency;
+	m_Pitch = sourceInfo.Pitch;
 	m_Priority = sourceInfo.Priority;
 
 	SetMute();
@@ -212,6 +231,7 @@ void DDM::FmodChannel::SetInfo(const FmodSystemInfo& systemInfo, const AudioSour
 	SetPaused();
 	Set3D();
 	SetFrequency();
+	SetPitch();
 
 	SetLoop(sourceInfo.Looping);
 }

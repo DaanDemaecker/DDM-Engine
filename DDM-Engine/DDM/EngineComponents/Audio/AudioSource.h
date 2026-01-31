@@ -158,6 +158,12 @@ namespace DDM
 		void SetPriority(int priority);
 
 		/// <summary>
+		/// Set the pitch of this audiosource
+		/// </summary>
+		/// <param name="pitch: ">new pitch value</param>
+		void SetPitch(float pitch);
+
+		/// <summary>
 		/// Receive a notification from the subject
 		/// </summary>
 		/// <param name="event: ">event that triggered the notification</param>

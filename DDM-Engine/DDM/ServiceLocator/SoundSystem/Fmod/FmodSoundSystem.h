@@ -68,6 +68,12 @@ namespace DDM
 		virtual float GetMasterFrequency() override;
 
 		virtual void SetPriority(AudioSourceInfo& sourceInfo) override;
+
+		virtual void SetPitch(AudioSourceInfo& sourceInfo) override;
+
+		virtual void SetMasterPitch(float pitch) override;
+
+		virtual float GetMasterPitch() override;
 	private:
 		std::unique_ptr<FmodImpl> m_pImpl;
 	};
