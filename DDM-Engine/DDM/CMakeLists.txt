@@ -72,7 +72,7 @@ add_executable(
 "Vulkan/VulkanWrappers/GPUObject.cpp"
 "Vulkan/VulkanWrappers/ImGuiWrapper.cpp"
 "Vulkan/VulkanWrappers/InstanceWrapper.cpp"
-"Vulkan/VulkanWrappers/PipelineWrapper"
+"Vulkan/VulkanWrappers/PipelineWrapper.cpp"
 "Vulkan/VulkanWrappers/RenderpassWrapper.cpp"
 "Vulkan/VulkanWrappers/ShaderModuleWrapper.cpp"
 "Vulkan/VulkanWrappers/SurfaceWrapper.cpp" 
@@ -97,6 +97,15 @@ add_executable(
 
 # Include directories specific to this target
 target_include_directories(${EXECUTABLE_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+
+add_custom_command(
+    TARGET ${EXECUTABLE_NAME}
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy
+        $<TARGET_RUNTIME_DLLS:${EXECUTABLE_NAME}>
+        $<TARGET_FILE_DIR:${EXECUTABLE_NAME}>
+    COMMAND_EXPAND_LISTS
+)
 
 if (MSVC)
   # Use CMake's built-in property to set warning level cleanly
