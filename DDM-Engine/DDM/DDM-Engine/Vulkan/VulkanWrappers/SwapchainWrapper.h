@@ -1,0 +1,161 @@
+// SwapchainWrapper.h
+// This class will serve as a wrapper for the vulkan swapchain
+
+#ifndef SwapchainWrapperIncluded
+#define SwapchainWrapperIncluded
+
+// File includes
+#include "DDM-Engine/Includes/VulkanIncludes.h"
+#include "DDM-Engine/DataTypes/Structs.h"
+
+#include "DDM-Engine/Vulkan/VulkanWrappers/FrameBuffer.h"
+
+// Standard library includes
+#include <memory>
+#include <unordered_map>
+
+namespace DDM
+{
+	// Class forward declarations
+	class ImageManager;
+	class ImageViewManager;
+	class GPUObject;
+	class RenderpassWrapper;
+	class Image;
+
+	class SwapchainWrapper final
+	{
+	public:
+		// Constructor
+		// Parameter:
+		//     pGPUObject: pointer to the GPUObject
+		//     surface: handle of the VkSurfaceKHR
+		//     pImageManager: pointer to the image manager
+		//     msaaSamples: max amount of samples per pixel
+		SwapchainWrapper(GPUObject* pGPUObject, VkSurfaceKHR surface, DDM::ImageManager* pImageManager, VkSampleCountFlagBits msaaSamples);
+
+		// Delete default constructor
+		SwapchainWrapper() = delete;
+
+		// Destructor
+		~SwapchainWrapper();
+
+		// Delete copy and move functions
+		SwapchainWrapper(SwapchainWrapper& other) = delete;
+		SwapchainWrapper(SwapchainWrapper&& other) = delete;
+		SwapchainWrapper& operator=(SwapchainWrapper& other) = delete;
+		SwapchainWrapper& operator=(SwapchainWrapper&& other) = delete;
+
+		// Set up the color and depth image views
+		// Parameters:
+		//     pGPUObject: pointer to the GPUObject
+		//     pImageManager: pointer to the image manager
+		//     commandBuffer: commandbuffer that will be used to create depth image
+		//     renderPass: the renderpass that will be used with this swapchain
+		void SetupImageViews(GPUObject* pGPUObject, DDM::ImageManager* pImageManager,
+			VkCommandBuffer commandBuffer, RenderpassWrapper* renderPass);
+
+		void AddFrameBuffers(RenderpassWrapper* renderpass);
+
+
+		// Clean up allocated objects
+		// Parameters:
+		//     device: handle of the VkDevice
+		void Cleanup(VkDevice device);
+
+		// Delete and recreate the swapchain
+		// Parameters:
+		//     pGPUObject: pointer to the GPUObject
+		//     surface: handle of the VkSurfaceKHR
+		//     pImageManager: pointer to the image manager
+		//     commandBuffer: commandbuffer that will be used to create depth image
+		//     renderpass: the renderpass that will be used with this swapchain
+		void RecreateSwapChain(GPUObject* pGPUObject, VkSurfaceKHR surface,
+			DDM::ImageManager* pImageManager, VkCommandBuffer commandBuffer, std::vector<RenderpassWrapper*>& renderpasses);
+
+		// Get the swapchain
+		VkSwapchainKHR GetSwapchain() const { return m_SwapChain; }
+
+		// Get the format of the swapchain
+		VkFormat GetFormat() const { return m_SwapChainImageFormat; }
+
+		// Get the minimum image count
+		uint32_t GetMinImageCount() const { return m_MinImageCount; }
+
+		// Get the extent of the swapchain
+		VkExtent2D GetExtent() const { return m_SwapChainExtent; }
+
+		// Get the requested frame buffer
+		// Parameters:
+		//     index: the index of the frame buffer
+		VkFramebuffer GetFrameBuffer(uint32_t index, RenderpassWrapper* renderpass);
+
+		VkImage GetSwapchainImage(int index);
+
+		int GetSwapchainImageAmount();
+	private:
+		// Handle of the swapchaint
+		VkSwapchainKHR m_SwapChain = VK_NULL_HANDLE;
+
+		// The minimum amount of images
+		uint32_t m_MinImageCount{};
+
+		// Vector of swapchain images
+		std::vector<std::shared_ptr<Image>> m_pSwapchainImages{};
+
+		uint32_t m_ImageAmount{};
+
+		// Format of the swapchain
+		VkFormat m_SwapChainImageFormat{};
+
+		// Extent of the swapchain
+		VkExtent2D m_SwapChainExtent{};
+
+		// Vector of frameBuffers
+		std::unordered_map<RenderpassWrapper*, std::vector<std::unique_ptr<FrameBuffer>>> m_Framebuffers{};
+
+		// Initialize the swapchain and other components
+		// Parameters:
+		//     pGPUObject: pointer to the GPUObject
+		//     surface: Handle of the VkSurfaceKHR
+		//     pImageManager: pointer to the image manager
+		//     commandBuffer: commandbuffer needed for creation of depth image
+		//     renderpass: the renderpass used with this swapchain
+		void SetupSwapchain(GPUObject* pGPUObject, VkSurfaceKHR surface,
+			DDM::ImageManager* pImageManager, VkCommandBuffer commandBuffer, std::vector<RenderpassWrapper*>& renderpasses);
+
+		// Create the swapchain
+		// Parameters:
+		//     pGPUObject: pointer to the GPUObject
+		//     surface: handle of the VkSurfaceKHR
+		void CreateSwapChain(GPUObject* pGPUObject, VkSurfaceKHR surface);
+
+		// Create the color and depth image views
+		// Parameters:
+		//     device: handle of the VkDevice
+		//     pImageManager: handle of the image manager
+		void CreateSwapchainImageViews(VkDevice device, ImageManager* pImageManager);
+
+		// Create the frame buffers
+		// Parameters:
+		//     device: handle of the VkDevice
+		void CreateFramebuffers(VkDevice device, RenderpassWrapper* renderpass);
+
+		// Get the format for the swapchain surface
+		// Parameters:
+		//     availableFormats: list of candidate formats for the swapchain
+		VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
+
+		// Choose the extent of the swapchain
+		// Parameters:
+		//     capabilities: the needed capabilities for the swapchain
+		VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
+
+		// Choose the presentmode of the swapchain
+		// Parameters:
+		//     availablePresentModes: list of candidate presentmodes for the swapchain
+		VkPresentModeKHR ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
+	};
+
+}
+#endif // !SwapchainWrapperIncluded
