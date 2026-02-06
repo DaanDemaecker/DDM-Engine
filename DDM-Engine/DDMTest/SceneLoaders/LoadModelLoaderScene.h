@@ -8,8 +8,8 @@
 
 #include "DDM-Engine/Engine/Scene.h"
 
-#include "DDM-Engine/CustomComponents/ModelLoader.h"
-#include "DDM-Engine/CustomComponents/SpectatorMovement.h"
+#include "CustomComponents/ModelLoader.h"
+#include "CustomComponents/SpectatorMovement.h"
 #include "DDM-Engine/EngineComponents/SkyBox.h"
 #include "DDM-Engine/EngineComponents/Light/LightComponent.h"
 #include "DDM-Engine/EngineComponents/Transform.h"

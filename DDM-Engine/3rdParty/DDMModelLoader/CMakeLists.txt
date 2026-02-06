@@ -9,4 +9,4 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(DDMModelLoader)
 
-target_link_libraries(${EXECUTABLE_NAME} PRIVATE DDMModelLoader)
+target_link_libraries(DDMEngine PUBLIC DDMModelLoader)

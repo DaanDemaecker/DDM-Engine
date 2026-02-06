@@ -18,4 +18,5 @@ target_link_libraries(imgui_library PRIVATE Vulkan::Vulkan)
 target_link_libraries(imgui_library PRIVATE glfw)
 target_include_directories(imgui_library INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include/imgui/backends)
 target_include_directories(imgui_library INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include/imgui)
-target_link_libraries(${EXECUTABLE_NAME} PRIVATE imgui_library)
+
+target_link_libraries(DDMEngine PUBLIC imgui_library)

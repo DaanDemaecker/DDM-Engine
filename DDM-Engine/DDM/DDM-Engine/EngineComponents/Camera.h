@@ -12,11 +12,14 @@
 #include "DDM-Engine/Includes/VulkanIncludes.h"
 #include "DDM-Engine/EngineComponents/Skybox.h"
 
+// Export include
+#include "DDM-Engine/Export.h"
+
 namespace DDM
 {
 	class Transform;
 
-	class Camera final : public Component
+	class DDM_API Camera final : public Component
 	{
 	public:
 		/// <summary>

@@ -7,6 +7,9 @@
 #include "DDM-Engine/Includes/GLFWIncludes.h"
 #include "DDM-Engine/Includes/GLMIncludes.h"
 
+// Export include
+#include "DDM-Engine/Export.h"
+
 // Standard library includes
 #include <memory>
 
@@ -16,7 +19,7 @@ namespace DDM
 	class Keyboard;
 	class Mouse;
 
-	class InputManager final : public Singleton<InputManager>
+	class DDM_API InputManager final : public Singleton<InputManager>
 	{
 	public:
 		virtual ~InputManager();

@@ -10,4 +10,4 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(glm)
 
 
-target_link_libraries(${EXECUTABLE_NAME} PRIVATE glm::glm)
+target_link_libraries(DDMEngine PUBLIC glm::glm)

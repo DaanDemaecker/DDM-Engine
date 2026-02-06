@@ -15,6 +15,9 @@
 #include "DDM-Engine/DataTypes/DescriptorObjects/UboDescriptorObject.h"
 #include "DDM-Engine/DataTypes/DescriptorObjects/TextureDescriptorObject.h"
 
+// Export include
+#include "DDM-Engine/Export.h"
+
 
 namespace DDM
 {
@@ -24,7 +27,7 @@ namespace DDM
 	class ImGuiWrapper;
 	class SyncObjectManager;
 
-	class SSAORenderer final : public Renderer
+	class DDM_API SSAORenderer final : public Renderer
 	{
 	public:
 		SSAORenderer();
@@ -37,6 +40,8 @@ namespace DDM
 
 		SSAORenderer& operator=(SSAORenderer&) = delete;
 		SSAORenderer& operator=(SSAORenderer&&) = delete;
+
+		virtual void Setup() override;
 
 		virtual void Render() override;
 

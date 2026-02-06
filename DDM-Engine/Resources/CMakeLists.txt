@@ -1,6 +1,6 @@
 # Set source and destination root directories
 set(SHADER_SOURCE_DIR "${CMAKE_SOURCE_DIR}/resources")
-set(SHADER_BINARY_DIR "${CMAKE_BINARY_DIR}/${SOURCE_FOLDER_NAME}/resources")
+set(SHADER_BINARY_DIR "${CMAKE_BINARY_DIR}/DDMTest/resources")
 
 # Recursively find all shader files
 file(GLOB_RECURSE GLSL_SOURCE_FILES
@@ -43,4 +43,4 @@ add_custom_target(Shaders ALL
 )
 
 # Make your main executable depend on Shaders
-add_dependencies(${EXECUTABLE_NAME} Shaders)
+add_dependencies(DDMEngine Shaders)

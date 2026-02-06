@@ -15,6 +15,9 @@
 #include "DDM-Engine/DataTypes/DescriptorObjects/UboDescriptorObject.h"
 #include "DDM-Engine/DataTypes/DescriptorObjects/TextureDescriptorObject.h"
 
+// Export include
+#include "DDM-Engine/Export.h"
+
 
 namespace DDM
 {
@@ -24,7 +27,7 @@ namespace DDM
 	class ImGuiWrapper;
 	class SyncObjectManager;
 
-	class GTAORenderer final : public Renderer
+	class DDM_API GTAORenderer final : public Renderer
 	{
 	public:
 		GTAORenderer();
@@ -37,6 +40,8 @@ namespace DDM
 
 		GTAORenderer& operator=(GTAORenderer&) = delete;
 		GTAORenderer& operator=(GTAORenderer&&) = delete;
+
+		virtual void Setup() override;
 
 		virtual void Render() override;
 

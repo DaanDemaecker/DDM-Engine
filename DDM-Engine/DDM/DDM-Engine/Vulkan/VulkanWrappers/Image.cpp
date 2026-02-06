@@ -25,7 +25,6 @@ DDM::Image::Image(const std::string& filepath)
 
 DDM::Image::~Image()
 {
-
 	Cleanup();
 }
 

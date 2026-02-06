@@ -10,13 +10,16 @@
 // File includes
 #include "DDM-Engine/DataTypes/DescriptorObjects/TextureDescriptorObject.h"
 
+// Export include
+#include "DDM-Engine/Export.h"
+
 // Standard library includes
 #include <initializer_list>
 #include <iostream>
 
 namespace DDM
 {
-	class TexturedMaterial final : public Material
+	class DDM_API TexturedMaterial final : public Material
 	{
 	public:
 

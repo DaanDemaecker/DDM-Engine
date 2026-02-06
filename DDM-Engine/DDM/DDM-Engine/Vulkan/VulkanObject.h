@@ -10,7 +10,9 @@
 #include "DDM-Engine/DataTypes/Structs.h"
 #include "DDM-Engine/Vulkan/Renderers/Renderer.h"
 #include "DDM-Engine/Vulkan/VulkanManagers/ImageManager/ImageManager.h"
-#include "DDM-Engine/Vulkan/VulkanWrappers/VulkanCore.h"
+
+// Export include
+#include "DDM-Engine/Export.h"
 
 // Standard library includes
 #include <iostream>
@@ -23,8 +25,6 @@
 namespace DDM
 {
     // Class forward declarations
-    class VulkanCore;
-    class GPUObject;
     class DescriptorObject;
     class BufferCreator;
     class PipelineManager;
@@ -32,8 +32,9 @@ namespace DDM
     class ImageManager;
     class CommandpoolManager;
     class Image;
+    class VulkanCore;
 
-    class VulkanObject final : public Singleton<VulkanObject>
+    class DDM_API VulkanObject final : public Singleton<VulkanObject>
     {
     public:
         ~VulkanObject();
@@ -154,6 +155,8 @@ namespace DDM
        BufferCreator* GetBufferCreator();
 
     private:
+        bool m_Initialized{ false };
+
         // Constructor
         friend class Singleton<VulkanObject>;
         VulkanObject();
@@ -198,12 +201,8 @@ namespace DDM
     template<class T>
     inline void VulkanObject::Init()
     {
-        if (!std::is_base_of<Renderer, T>())
-        {
-            throw std::runtime_error("Class is not derived from renderer base class");
-        }
-
-        m_pImageManager = std::make_unique<ImageManager>(m_pVulkanCore->GetGpuObject(), GetCommandPoolManager());
+        static_assert(std::is_base_of_v<Renderer, T>,
+            "T must derive from Renderer");
 
         Setup(std::make_unique<T>());
     }

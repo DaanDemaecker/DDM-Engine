@@ -7,6 +7,9 @@
 // File includes
 #include "Event.h"
 
+// Export include
+#include "DDM-Engine/Export.h"
+
 // Standard library includes
 #include <vector>
 
@@ -14,7 +17,7 @@ namespace DDM
 {
 	class Observer;
 
-	class Subject
+	class DDM_API Subject
 	{
 	public:
 		Subject() = default;

@@ -10,6 +10,7 @@
 #include "DDM-Engine/Managers/SceneManager.h"
 #include "DDM-Engine/Managers/ConfigManager.h"
 #include "DDM-Engine/Managers/TimeManager.h"
+#include "DDM-Engine/Managers/ResourceManager.h"
 
 #include "DDM-Engine/Vulkan/VulkanObject.h"
 
@@ -27,8 +28,16 @@ DDM::DDMEngine::DDMEngine()
 
 DDM::DDMEngine::~DDMEngine()
 {
-	VulkanObject::GetInstance().Terminate();
 
+}
+
+void DDM::DDMEngine::Terminate()
+{
+	ResourceManager::GetInstance().EndProgram();
+
+	SceneManager::GetInstance().EndProgram();
+
+	VulkanObject::GetInstance().Terminate();
 }
 
 void DDM::DDMEngine::Run(const std::function<void()>& load)
@@ -139,6 +148,5 @@ void DDM::DDMEngine::Run(const std::function<void()>& load)
 		}
 	}
 
-	// Clean up all objects
-	sceneManager.EndProgram();
+	Terminate();
 }

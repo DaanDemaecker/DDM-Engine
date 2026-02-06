@@ -19,4 +19,4 @@ set(GLFW_DOCUMENT_INTERNALS OFF)
 FetchContent_MakeAvailable(glfw)
 
 # Link GLFW to your executable
-target_link_libraries(${EXECUTABLE_NAME} PRIVATE glfw)
+target_link_libraries(DDMEngine PUBLIC glfw)

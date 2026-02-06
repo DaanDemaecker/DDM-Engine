@@ -9,13 +9,16 @@
 #include "DDM-Engine/BaseClasses/Component.h"
 #include "DDM-Engine/Events/Observer.h"
 
+// Export include
+#include "DDM-Engine/Export.h"
+
 // File includes
 #include "AudioClip.h"
 #include "AudioSourceInfo.h"
 
 namespace DDM
 {
-	class AudioSource final : public Component, public Observer
+	class DDM_API AudioSource final : public Component, public Observer
 	{
 	public:
 		/// <summary>

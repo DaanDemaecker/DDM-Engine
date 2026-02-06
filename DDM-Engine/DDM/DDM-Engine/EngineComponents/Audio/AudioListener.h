@@ -7,9 +7,12 @@
 // Parent include
 #include "DDM-Engine/BaseClasses/Component.h"
 
+// Export include
+#include "DDM-Engine/Export.h"
+
 namespace DDM
 {
-	class AudioListener final : public Component
+	class DDM_API AudioListener final : public Component
 	{
 	public:
 		/// <summary>
@@ -20,7 +23,7 @@ namespace DDM
 		/// <summary>
 		/// Default destructor
 		/// </summary>
-		~AudioListener() = default;
+		virtual ~AudioListener() = default;
 
 		// Rule of five
 		AudioListener(const AudioListener& other) = delete;

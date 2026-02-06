@@ -30,6 +30,32 @@
 
 DDM::SSAORenderer::SSAORenderer()
 {
+	
+
+}
+
+DDM::SSAORenderer::~SSAORenderer()
+{
+	auto device = VulkanObject::GetInstance().GetDevice();
+
+	vkDestroyDescriptorSetLayout(device, m_LightingDescriptorSetLayout, nullptr);
+
+	vkDestroyDescriptorPool(device, m_LightingDescriptorPool, nullptr);
+
+	if (m_ShouldBlur)
+	{
+		vkDestroyDescriptorSetLayout(device, m_AoBlurDescriptorSetLayout, nullptr);
+
+		vkDestroyDescriptorPool(device, m_AoBlurDescriptorPool, nullptr);
+	}
+
+	vkDestroyDescriptorSetLayout(device, m_AoGenDescriptorSetLayout, nullptr);
+
+	vkDestroyDescriptorPool(device, m_AoGenDescriptorPool, nullptr);
+}
+
+void DDM::SSAORenderer::Setup()
+{
 	auto surface{ VulkanObject::GetInstance().GetSurface() };
 
 	// Get pointer to gpu object
@@ -73,27 +99,6 @@ DDM::SSAORenderer::SSAORenderer()
 	SetupProjectionViewMatrix();
 
 	SetNewSamples();
-
-}
-
-DDM::SSAORenderer::~SSAORenderer()
-{
-	auto device = VulkanObject::GetInstance().GetDevice();
-
-	vkDestroyDescriptorSetLayout(device, m_LightingDescriptorSetLayout, nullptr);
-
-	vkDestroyDescriptorPool(device, m_LightingDescriptorPool, nullptr);
-
-	if (m_ShouldBlur)
-	{
-		vkDestroyDescriptorSetLayout(device, m_AoBlurDescriptorSetLayout, nullptr);
-
-		vkDestroyDescriptorPool(device, m_AoBlurDescriptorPool, nullptr);
-	}
-
-	vkDestroyDescriptorSetLayout(device, m_AoGenDescriptorSetLayout, nullptr);
-
-	vkDestroyDescriptorPool(device, m_AoGenDescriptorPool, nullptr);
 }
 
 

@@ -5,6 +5,9 @@
 #ifndef _DDM_GAMEOBJECT_
 #define _DDM_GAMEOBJECT_
 
+// Export include
+#include "DDM-Engine/Export.h"
+
 // Standard library includes
 #include <string>
 #include <memory>
@@ -16,7 +19,7 @@ namespace DDM
 	class Component;
 	class Transform;
 
-	class GameObject final
+	class DDM_API GameObject final
 	{
 	public:
 		/// <summary>

@@ -144,13 +144,13 @@ namespace DDM
 		void CreateDefaultResources(GPUObject* pGPUObject, CommandpoolManager* pCommandPoolManager);
 	private:
 		// The default texture
-		std::shared_ptr<Image> m_pDefaultTexture{};
+		std::unique_ptr<Image> m_pDefaultTexture{};
 
 		// The textpath to the default texture
 		const std::string m_DefaultTextureName;
 
 		// The default sampler
-		VkSampler m_TextureSampler{};
+		VkSampler m_TextureSampler{ VK_NULL_HANDLE };
 
 		// Check if a requested format has the stencil component
 		// Parameters:

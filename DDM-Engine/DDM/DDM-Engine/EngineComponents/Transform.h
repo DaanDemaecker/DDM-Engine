@@ -11,6 +11,9 @@
 // File includes
 #include "DDM-Engine/Includes/GLMIncludes.h"
 
+// Export include
+#include "DDM-Engine/Export.h"
+
 namespace DDM
 {
 	struct TransformPod
@@ -20,7 +23,7 @@ namespace DDM
 		glm::vec3 scale{};
 	};
 
-	class Transform final : public Component
+	class DDM_API Transform final : public Component
 	{
 	public:
 		/// <summary>

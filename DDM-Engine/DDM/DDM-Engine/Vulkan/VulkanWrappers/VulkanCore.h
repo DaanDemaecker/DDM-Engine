@@ -7,6 +7,9 @@
 // File includes
 #include "DDM-Engine/Includes/VulkanIncludes.h"
 
+// Export include
+#include "DDM-Engine/Export.h"
+
 // Standare library includes
 #include <memory>
 
@@ -19,7 +22,7 @@ namespace DDM
 
 	struct QueueObject;
 
-	class VulkanCore final
+	class DDM_API VulkanCore final
 	{
 	public:
 		/// <summary>

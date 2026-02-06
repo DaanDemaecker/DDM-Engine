@@ -4,7 +4,7 @@
 #include "MaterialSwitchManager.h"
 
 // File includes
-#include "DDM-Engine/CustomComponents/MaterialSwitcher/MaterialSwitcher.h"
+#include "MaterialSwitcher.h"
 #include "DDM-Engine/Includes/ImGuiIncludes.h"
 
 

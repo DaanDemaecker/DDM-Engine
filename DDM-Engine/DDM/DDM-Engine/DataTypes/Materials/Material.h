@@ -7,6 +7,9 @@
 // File includes
 #include "DDM-Engine/DataTypes/Structs.h"
 
+// Export include
+#include "DDM-Engine/Export.h"
+
 // Standard library includes
 #include <iostream>
 
@@ -18,7 +21,7 @@ namespace DDM
 	class PipelineWrapper;
 	class DescriptorObject;
 
-	class Material
+	class DDM_API Material
 	{
 	public:
 		/// <summary>

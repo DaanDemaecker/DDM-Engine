@@ -4,6 +4,9 @@
 // Parent include
 #include "DDM-Engine/ServiceLocator/SoundSystem/SoundSystem.h"
 
+// Export include
+#include "DDM-Engine/Export.h"
+
 // Standard library include
 #include <memory>
 
@@ -12,10 +15,12 @@ namespace DDM
 	// Impl forward declaration
 	class FmodImpl;
 
-	class FmodSoundSystem : public SoundSystem
+	class DDM_API FmodSoundSystem : public SoundSystem
 	{
 	public:
 		FmodSoundSystem();
+
+		virtual ~FmodSoundSystem();
 
 		virtual void LoadClip(const AudioClip* clip) override;
 

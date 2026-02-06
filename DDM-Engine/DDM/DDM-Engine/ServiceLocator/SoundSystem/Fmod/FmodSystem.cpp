@@ -28,13 +28,32 @@ DDM::FmodSystem::FmodSystem(int maxChannels)
 
 DDM::FmodSystem::~FmodSystem()
 {
+
+	for (auto& channel : m_Channels)
+	{
+		if (channel != nullptr)
+		{
+			channel->Stop();
+		}
+	}
+
+	m_Channels.clear();
+
 	for (auto& sound : m_Clips)
 	{
 		sound.second->release();
 		sound.second = nullptr;
 	}
+	m_Clips.clear();
 
+	FMOD::ChannelGroup* master = nullptr;
+	m_pSystem->getMasterChannelGroup(&master);
+	if (master) master->stop();
+
+	m_pSystem->mixerSuspend();
+	std::cout << "Closing system \n";
 	m_pSystem->close();
+	std::cout << "Finished closing system \n";
 	m_pSystem->release();
 	m_pSystem = nullptr;
 }

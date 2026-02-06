@@ -7,9 +7,12 @@
 // File includes
 #include "Event.h"
 
+// Export include
+#include "DDM-Engine/Export.h"
+
 namespace DDM
 {
-	class Observer
+	class DDM_API Observer
 	{
 	public:
 		/// <summary>

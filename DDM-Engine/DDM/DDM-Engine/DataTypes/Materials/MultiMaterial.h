@@ -12,6 +12,9 @@
 #include "DDM-Engine/DataTypes/DescriptorObjects/UboDescriptorObject.h"
 #include "DDM-Engine/DataTypes/DescriptorObjects/TextureDescriptorObject.h"
 
+// Export include
+#include "DDM-Engine/Export.h"
+
 // Standard library includes
 #include <vector>
 
@@ -40,7 +43,7 @@ namespace DDM
 		alignas(4) uint32_t specularEnabled { 0 };
 	};
 	
-	class MultiMaterial final : public Material
+	class DDM_API MultiMaterial final : public Material
 	{
 	public:
 		/// <summary>

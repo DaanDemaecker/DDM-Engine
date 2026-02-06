@@ -29,12 +29,12 @@ DDM::ImageManager::ImageManager(GPUObject* pGPUObject, CommandpoolManager* pComm
 
 DDM::ImageManager::~ImageManager()
 {
-	Cleanup(VulkanObject::GetInstance().GetDevice());
+
 }
 
 void DDM::ImageManager::CreateDefaultResources(GPUObject* pGPUObject, CommandpoolManager* pCommandPoolManager)
 {
-	m_pDefaultTexture = std::make_shared<Image>();
+	m_pDefaultTexture = std::make_unique<Image>();
 
 	// Create the default texture sampler
 	CreateTextureSampler(pGPUObject, m_TextureSampler, m_pDefaultTexture->GetMipLevels());
@@ -99,7 +99,7 @@ void DDM::ImageManager::CreateCubeTexture(GPUObject* pGPUObject, Image* cubeText
 	pImages.reserve(imageCount);
 
 	uint32_t smallestWidth{ UINT32_MAX };
-	uint32_t smallestHeight{UINT32_MAX};
+	uint32_t smallestHeight{ UINT32_MAX };
 
 	// Calcualte the size of the entire cubemap
 	VkDeviceSize cubeSize = 0;
@@ -346,8 +346,13 @@ void DDM::ImageManager::CreateTextureSampler(GPUObject* pGPUObject, VkSampler& s
 
 void DDM::ImageManager::Cleanup(VkDevice device)
 {
-	// Destroy the sampler
-	vkDestroySampler(device, m_TextureSampler, nullptr);
+	if (m_TextureSampler != VK_NULL_HANDLE)
+	{
+		vkDestroySampler(device, m_TextureSampler, nullptr);
+		m_TextureSampler = VK_NULL_HANDLE;
+	}
+
+	m_pDefaultTexture.reset();
 }
 
 VkImageView DDM::ImageManager::GetDefaultImageView()

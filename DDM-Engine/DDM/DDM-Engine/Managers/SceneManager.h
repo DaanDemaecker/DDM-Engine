@@ -8,6 +8,9 @@
 // File includes
 #include "DDM-Engine/Engine/Singleton.h"
 
+// Export include
+#include "DDM-Engine/Export.h"
+
 // Standard library includes
 #include <memory>
 #include <iostream>
@@ -20,7 +23,7 @@ namespace DDM
 	class Camera;
 	class LightComponent;
 
-	class SceneManager : public Singleton<SceneManager>
+	class DDM_API SceneManager : public Singleton<SceneManager>
 	{
 	public:
 		// Clears all scenes

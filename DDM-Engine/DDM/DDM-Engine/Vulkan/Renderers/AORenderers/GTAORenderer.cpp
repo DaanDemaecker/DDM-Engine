@@ -32,6 +32,30 @@
 
 DDM::GTAORenderer::GTAORenderer()
 {
+	
+}
+
+DDM::GTAORenderer::~GTAORenderer()
+{
+	auto device = VulkanObject::GetInstance().GetDevice();
+
+	vkDestroyDescriptorSetLayout(device, m_LightingDescriptorSetLayout, nullptr);
+
+	vkDestroyDescriptorPool(device, m_LightingDescriptorPool, nullptr);
+
+
+	vkDestroyDescriptorSetLayout(device, m_AoBlurDescriptorSetLayout, nullptr);
+
+	vkDestroyDescriptorPool(device, m_AoBlurDescriptorPool, nullptr);
+
+
+	vkDestroyDescriptorSetLayout(device, m_AoGenDescriptorSetLayout, nullptr);
+
+	vkDestroyDescriptorPool(device, m_AoGenDescriptorPool, nullptr);
+}
+
+void DDM::GTAORenderer::Setup()
+{
 	auto surface{ VulkanObject::GetInstance().GetSurface() };
 
 	// Get pointer to gpu object
@@ -66,26 +90,6 @@ DDM::GTAORenderer::GTAORenderer()
 
 	SetupPositionTexture();
 }
-
-DDM::GTAORenderer::~GTAORenderer()
-{
-	auto device = VulkanObject::GetInstance().GetDevice();
-
-	vkDestroyDescriptorSetLayout(device, m_LightingDescriptorSetLayout, nullptr);
-
-	vkDestroyDescriptorPool(device, m_LightingDescriptorPool, nullptr);
-
-
-	vkDestroyDescriptorSetLayout(device, m_AoBlurDescriptorSetLayout, nullptr);
-
-	vkDestroyDescriptorPool(device, m_AoBlurDescriptorPool, nullptr);
-
-
-	vkDestroyDescriptorSetLayout(device, m_AoGenDescriptorSetLayout, nullptr);
-
-	vkDestroyDescriptorPool(device, m_AoGenDescriptorPool, nullptr);
-}
-
 
 void DDM::GTAORenderer::Render()
 {

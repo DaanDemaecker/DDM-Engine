@@ -1,10 +1,13 @@
 #ifndef SingletonIncluded
 #define SingletonIncluded
 
+// Export include
+#include "DDM-Engine/Export.h"
+
 namespace DDM
 {
 	template <typename T>
-	class Singleton
+	class DDM_API Singleton
 	{
 	public:
 		static T& GetInstance()

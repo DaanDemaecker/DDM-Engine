@@ -6,7 +6,7 @@
 #include "DDM-Engine/Vulkan/Renderers/AORenderers/AoRenderPasses.h"
 
 #include "DDM-Engine/ServiceLocator/ServiceLocator.h"
-#include "DDM-Engine/CustomComponents/Audio/AudioTester.h"
+#include "CustomComponents/Audio/AudioTester.h"
 #include "DDM-Engine/EngineComponents/Audio/AudioSource.h"
 #include "DDM-Engine/EngineComponents/Audio/AudioListener.h"
 
@@ -42,13 +42,13 @@ namespace LoadAOScene
 
 		//SetupAtrium(scene.get());
 
-		//SetupRoom(scene.get());
+		SetupRoom(scene.get());
 
 		//SetupVehicle(scene.get());
 
-		SetupGear(scene.get());
+		//SetupGear(scene.get());
 
-		SetupGroundPlane(scene.get());
+		//SetupGroundPlane(scene.get());
 
 		SetupInfoComponent(scene.get());
 
@@ -290,7 +290,6 @@ namespace LoadAOScene
 	void SetupGear(DDM::Scene* scene)
 	{
 		std::shared_ptr<DDM::Material> pGearMaterial{ std::make_shared<DDM::Material>() };
-
 
 		auto pGear{ scene->CreateGameObject("Gear") };
 		pGear->SetShowImGui(true);

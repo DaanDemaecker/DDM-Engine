@@ -10,6 +10,9 @@
 // File includes
 #include "DDM-Engine/Includes/GLFWIncludes.h"
 
+// Export include
+#include "DDM-Engine/Export.h"
+
 // Standard library includes
 #include <functional>
 #include <map>
@@ -30,7 +33,7 @@ namespace DDM
 		bool FrameBufferResized = false;
 	};
 
-	class Window : public Singleton<Window>
+	class DDM_API Window : public Singleton<Window>
 	{
 	public:
 		// Constructor

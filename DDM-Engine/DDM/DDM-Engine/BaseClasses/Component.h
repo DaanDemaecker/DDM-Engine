@@ -7,6 +7,9 @@
 // File includes
 #include "GameObject.h"
 
+// Export include
+#include "DDM-Engine/Export.h"
+
 // Standard library includes
 #include <memory>
 
@@ -15,7 +18,7 @@ namespace DDM
 	// Class forward declarations
 	class Transform;
 
-	class Component
+	class DDM_API Component
 	{
 	public:
 		/// <summary>

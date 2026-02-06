@@ -24,6 +24,15 @@
 
 DDM::ForwardRenderer::ForwardRenderer()
 {
+	
+}
+
+DDM::ForwardRenderer::~ForwardRenderer()
+{
+}
+
+void DDM::ForwardRenderer::Setup()
+{
 	auto surface{ VulkanObject::GetInstance().GetSurface() };
 
 	// Get pointer to gpu object
@@ -46,10 +55,6 @@ DDM::ForwardRenderer::ForwardRenderer()
 	m_pSyncObjectManager = std::make_unique<SyncObjectManager>(pGPUObject->GetDevice(), static_cast<uint32_t>(VulkanObject::GetInstance().GetMaxFrames()));
 
 	InitImgui();
-}
-
-DDM::ForwardRenderer::~ForwardRenderer()
-{
 }
 
 void DDM::ForwardRenderer::Render()

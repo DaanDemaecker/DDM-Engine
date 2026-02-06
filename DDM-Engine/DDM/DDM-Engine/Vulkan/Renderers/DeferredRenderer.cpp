@@ -25,6 +25,20 @@
 
 DDM::DeferredRenderer::DeferredRenderer()
 {
+	
+}
+
+DDM::DeferredRenderer::~DeferredRenderer()
+{
+	auto device = VulkanObject::GetInstance().GetDevice();
+
+	vkDestroyDescriptorSetLayout(device, m_DescriptorSetLayout, nullptr);
+
+	vkDestroyDescriptorPool(device, m_DescriptorPool, nullptr);
+}
+
+void DDM::DeferredRenderer::Setup()
+{
 	auto surface{ VulkanObject::GetInstance().GetSurface() };
 
 	// Get pointer to gpu object
@@ -45,7 +59,7 @@ DDM::DeferredRenderer::DeferredRenderer()
 	SetupDescriptorObjects();
 
 	CreateDescriptorPool();
-	
+
 	CreateDescriptorSetLayout();
 
 	CreateDescriptorSets();
@@ -56,15 +70,6 @@ DDM::DeferredRenderer::DeferredRenderer()
 	m_pSyncObjectManager = std::make_unique<SyncObjectManager>(pGPUObject->GetDevice(), static_cast<uint32_t>(VulkanObject::GetInstance().GetMaxFrames()));
 
 	InitImgui();
-}
-
-DDM::DeferredRenderer::~DeferredRenderer()
-{
-	auto device = VulkanObject::GetInstance().GetDevice();
-
-	vkDestroyDescriptorSetLayout(device, m_DescriptorSetLayout, nullptr);
-
-	vkDestroyDescriptorPool(device, m_DescriptorPool, nullptr);
 }
 
 void DDM::DeferredRenderer::Render()

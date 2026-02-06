@@ -17,6 +17,12 @@ DDM::ResourceManager::ResourceManager()
 	m_pDefaultMaterial = std::make_shared<DDM::Material>();
 }
 
+void DDM::ResourceManager::EndProgram()
+{
+	m_pDefaultMaterial.reset();
+	m_pDefaultMesh.reset();
+}
+
 std::shared_ptr<DDM::Mesh> DDM::ResourceManager::LoadMesh(std::string&& filePath)
 {
 	return LoadMesh(filePath);

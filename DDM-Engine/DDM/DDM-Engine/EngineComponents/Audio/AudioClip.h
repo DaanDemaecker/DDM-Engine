@@ -4,12 +4,15 @@
 #ifndef _DDM_AUDIO_CLIP_
 #define _DDM_AUDIO_CLIP_
 
+// Export include
+#include "DDM-Engine/Export.h"
+
 // Standard library includes
 #include <string>
 
 namespace DDM
 {
-	class AudioClip
+	class DDM_API AudioClip
 	{
 	public:
 		// Delete default constructor

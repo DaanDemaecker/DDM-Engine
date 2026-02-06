@@ -67,14 +67,19 @@ DDM::CommandpoolManager* DDM::VulkanObject::GetCommandPoolManager()
 
 void DDM::VulkanObject::Setup(std::unique_ptr<Renderer> pRenderer)
 {
+	m_pImageManager = std::make_unique<ImageManager>(m_pVulkanCore->GetGpuObject(), GetCommandPoolManager());
+
 	m_pRenderer = std::move(pRenderer);
 
+	m_pRenderer->Setup();
+
 	m_pRenderer->AddDefaultPipelines();
+
+	m_Initialized = true;
 }
 
 DDM::VulkanObject::~VulkanObject()
 {
-	
 }
 
 void DDM::VulkanObject::AddGraphicsPipeline(const std::string& pipelineName, std::initializer_list<const std::string>&& filePaths, bool hasDepthStencil, bool writesToDepth, int subpass, RenderpassWrapper* renderpass)
@@ -113,7 +118,24 @@ DDM::PipelineWrapper* DDM::VulkanObject::GetPipeline(const std::string& name)
 
 void DDM::VulkanObject::Terminate()
 {
+	if (!m_Initialized)
+	{
+		return;
+	}
+
+	m_Initialized = false;
+
 	m_pRenderer.reset();
+
+	m_pImageManager->Cleanup(m_pVulkanCore->GetDevice());
+
+	m_pBufferCreator.reset();
+
+	m_pPipelineManager.reset();
+
+	m_pCommandPoolManager.reset();
+
+	m_pVulkanCore.reset();
 }
 
 void DDM::VulkanObject::Render()

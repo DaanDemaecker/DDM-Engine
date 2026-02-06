@@ -11,6 +11,9 @@
 #include "DDM-Engine/DataTypes/Materials/Material.h"
 #include "DDM-Engine/DataTypes/DescriptorObjects/UboDescriptorObject.h"
 
+// Export include
+#include "DDM-Engine/Export.h"
+
 // Standard library includes
 #include <memory>
 #include <string>
@@ -21,7 +24,7 @@ namespace DDM
 {
 	class CubeMapMaterial;
 
-	class SkyBoxComponent final : public MeshRenderComponent
+	class DDM_API SkyBoxComponent final : public MeshRenderComponent
 	{
 	public:
 		/// <summary>

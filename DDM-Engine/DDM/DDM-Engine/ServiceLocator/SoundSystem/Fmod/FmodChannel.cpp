@@ -224,6 +224,7 @@ void DDM::FmodChannel::SetInfo(const FmodSystemInfo& systemInfo, const AudioSour
 	m_Is3d = sourceInfo.Is3D;
 	m_Frequency = sourceInfo.Frequency;
 	m_Pitch = sourceInfo.Pitch;
+
 	m_Priority = sourceInfo.Priority;
 
 	SetMute();

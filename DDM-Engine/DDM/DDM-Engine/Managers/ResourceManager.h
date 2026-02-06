@@ -7,6 +7,9 @@
 #include "DDM-Engine/Engine/Singleton.h"
 #include "DDM-Engine/Vulkan/VulkanWrappers/Mesh.h"
 
+// Export include
+#include "DDM-Engine/Export.h"
+
 // Standard library includes
 #include <memory>
 #include <string>
@@ -15,7 +18,7 @@ namespace DDM
 {
 	class Material;
 
-	class ResourceManager final : public Singleton<ResourceManager>
+	class DDM_API ResourceManager final : public Singleton<ResourceManager>
 	{
 	public:
 		std::shared_ptr<DDM::Mesh> LoadMesh(std::string&& filePath);
@@ -23,6 +26,7 @@ namespace DDM
 
 		std::shared_ptr<Material> GetDefaultMaterial() const;
 
+		void EndProgram();
 	private:
 		// Default constructor
 		friend class Singleton<ResourceManager>;

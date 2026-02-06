@@ -12,6 +12,9 @@
 #include "DDM-Engine/DataTypes/Structs.h"
 #include "DDM-Engine/DataTypes/DescriptorObjects/InputAttachmentDescriptorObject.h"
 
+// Export include
+#include "DDM-Engine/Export.h"
+
 // Standard library includes
 #include <memory>
 #include <vector>
@@ -24,7 +27,7 @@ namespace DDM
 	class RenderpassWrapper;
 	class ImGuiWrapper;
 
-	class DeferredRenderer final : public Renderer
+	class DDM_API DeferredRenderer final : public Renderer
 	{
 	public:
 		DeferredRenderer();
@@ -37,6 +40,8 @@ namespace DDM
 
 		DeferredRenderer& operator=(DeferredRenderer&) = delete;
 		DeferredRenderer& operator=(DeferredRenderer&& other) = delete;
+
+		virtual void Setup() override;
 
 		virtual void Render() override;
 

@@ -12,6 +12,9 @@
 #include "DDM-Engine/Vulkan/VulkanManagers/SyncObjectManager.h"
 #include "DDM-Engine/DataTypes/Structs.h"
 
+// Export include
+#include "DDM-Engine/Export.h"
+
 // Standard library includes
 #include <memory>
 #include <vector>
@@ -24,7 +27,7 @@ namespace DDM
 	class ImGuiWrapper;
 	class SyncObjectManager;
 
-	class ForwardRenderer final : public Renderer
+	class DDM_API ForwardRenderer final : public Renderer
 	{
 	public:
 		ForwardRenderer();
@@ -37,6 +40,8 @@ namespace DDM
 
 		ForwardRenderer& operator=(ForwardRenderer&) = delete;
 		ForwardRenderer& operator=(ForwardRenderer&& other) = delete;
+
+		virtual void Setup() override;
 
 		virtual void Render() override;
 		  

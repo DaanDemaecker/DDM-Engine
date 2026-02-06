@@ -9,6 +9,9 @@
 #include "DDM-Engine/EngineComponents/Audio/AudioSourceInfo.h"
 #include "DDM-Engine/BaseClasses/GameObject.h"
 
+// Export include
+#include "DDM-Engine/Export.h"
+
 // Standard library includes
 #include <string>
 
@@ -16,7 +19,7 @@ namespace DDM
 {
 	class Observer;
 
-	class SoundSystem
+	class DDM_API SoundSystem
 	{
 	public:
 		/// <summary>

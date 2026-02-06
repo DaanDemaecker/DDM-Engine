@@ -4,13 +4,16 @@
 // File includes
 #include "DDM-Engine/Managers/SceneManager.h"
 
+// Export include
+#include "DDM-Engine/Export.h"
+
 namespace DDM
 {
 	class GameObject;
 	class Camera;
 	class LightComponent;
 
-	class Scene final
+	class DDM_API Scene final
 	{
 		friend std::shared_ptr<Scene> SceneManager::CreateScene(const std::string& name);
 	public:

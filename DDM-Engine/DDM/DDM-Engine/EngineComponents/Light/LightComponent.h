@@ -11,9 +11,12 @@
 #include "DDM-Engine/EngineComponents/Light/Light.h"
 #include "DDM-Engine/DataTypes/DescriptorObjects/UboDescriptorObject.h"
 
+// Export include
+#include "DDM-Engine/Export.h"
+
 namespace DDM
 {
-	class LightComponent final : public Component
+	class DDM_API LightComponent final : public Component
 	{
 	public:
 		/// <summary>

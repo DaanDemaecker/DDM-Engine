@@ -7,12 +7,15 @@
 // File includes
 #include "SoundSystem/SoundSystem.h"
 
+// Export include
+#include "DDM-Engine/Export.h"
+
 // File includes
 #include <memory>
 
 namespace DDM
 {
-	class ServiceLocator
+	class DDM_API ServiceLocator
 	{
 	public:
 		ServiceLocator() = default;

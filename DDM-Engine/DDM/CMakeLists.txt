@@ -1,16 +1,7 @@
 # Create the executable
-add_executable(
-	${EXECUTABLE_NAME}
+add_library(DDMEngine  SHARED
 
 "DDM-Engine/BaseClasses/GameObject.cpp"
-
-"DDM-Engine/CustomComponents/SpectatorMovement.cpp"
-"DDM-Engine/CustomComponents/Rotator.cpp"
-"DDM-Engine/CustomComponents/ModelLoader.cpp"
-"DDM-Engine/CustomComponents/MaterialSwitcher/MaterialSwitcher.cpp"
-"DDM-Engine/CustomComponents/MaterialSwitcher/MaterialSwitchManager.cpp"
-"DDM-Engine/CustomComponents/InfoComponent.cpp"
-"DDM-Engine/CustomComponents/Audio/AudioTester.cpp"
 
 "DDM-Engine/EngineComponents/Camera.cpp"
 "DDM-Engine/EngineComponents/Light/LightComponent.cpp"
@@ -32,7 +23,6 @@ add_executable(
 "DDM-Engine/DataTypes/Materials/TexturedMaterial.cpp"
 
 "DDM-Engine/Engine/DDMEngine.cpp"
-"DDM-Engine/Engine/main.cpp"
 "DDM-Engine/Engine/Scene.cpp"
 "DDM-Engine/Engine/Window.cpp"
 "DDM-Engine/Engine/DDMModelLoader.cpp"
@@ -92,30 +82,37 @@ add_executable(
 "DDM-Engine/ServiceLocator/SoundSystem/Fmod/FmodSystem.cpp"
 "DDM-Engine/ServiceLocator/SoundSystem/Fmod/FmodChannel.cpp"
 
-"DDM-Engine/Includes/STBIncludes.cpp")
+"DDM-Engine/Includes/STBIncludes.cpp" "DDM-Engine/Export.h")
+
+target_include_directories(DDMEngine 
+    PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+)
+
+target_compile_definitions(DDMEngine PRIVATE DDMENGINE_BUILD)
 
 
 # Include directories specific to this target
-target_include_directories(${EXECUTABLE_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(DDMEngine  PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
 add_custom_command(
-    TARGET ${EXECUTABLE_NAME}
+    TARGET DDMEngine 
     POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy
-        $<TARGET_RUNTIME_DLLS:${EXECUTABLE_NAME}>
-        $<TARGET_FILE_DIR:${EXECUTABLE_NAME}>
+        $<TARGET_RUNTIME_DLLS:DDMEngine>
+        $<TARGET_FILE_DIR:DDMEngine>
     COMMAND_EXPAND_LISTS
 )
 
 if (MSVC)
   # Use CMake's built-in property to set warning level cleanly
-  set_property(TARGET ${EXECUTABLE_NAME} PROPERTY MSVC_WARNING_LEVEL 4)
+  set_property(TARGET DDMEngine PROPERTY MSVC_WARNING_LEVEL 4)
 
   # Treat warnings as errors
-  target_compile_options(${EXECUTABLE_NAME} PRIVATE /WX)
+  target_compile_options(DDMEngine PRIVATE /WX)
 
   # Suppress warning C26459 just for this target
-  target_compile_options(${EXECUTABLE_NAME} PRIVATE /wd26459)
+  target_compile_options(DDMEngine PRIVATE /wd26459)
 else()
-  target_compile_options(${EXECUTABLE_NAME} PRIVATE -Wall -Wextra -Wpedantic -Werror)
+  target_compile_options(DDMEngine PRIVATE -Wall -Wextra -Wpedantic -Werror)
 endif()

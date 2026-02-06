@@ -9,13 +9,16 @@
 #include "DDM-Engine/Vulkan/VulkanObject.h"
 #include "DDM-Engine/Engine/Window.h"
 
+// Export include
+#include "DDM-Engine/Export.h"
+
 // Standard library includes
 #include <string>
 #include <functional>
 
 namespace DDM
 {
-	class DDMEngine
+	class DDM_API DDMEngine final
 	{
 	public:
 		/// <summary>
@@ -41,12 +44,16 @@ namespace DDM
 		/// <param name="load: ">Reference to the sceneloader function</param>
 		void Run(const std::function<void()>& load);
 
+		/// <summary>
+		/// Terminate the engine
+		/// </summary>
+		void Terminate();
+
 		// Rule of 5
 		DDMEngine(const DDMEngine& other) = delete;
 		DDMEngine(DDMEngine&& other) = delete;
 		DDMEngine& operator=(const DDMEngine& other) = delete;
 		DDMEngine& operator=(DDMEngine&& other) = delete;
-	
 	private:
 		// Indicates wether engine is initialized
 		bool m_Initialized = false;

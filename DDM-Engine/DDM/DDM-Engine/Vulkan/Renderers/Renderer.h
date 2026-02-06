@@ -8,13 +8,16 @@
 #include "DDM-Engine/Includes/VulkanIncludes.h"
 #include "DDM-Engine/Vulkan/VulkanWrappers/RenderpassWrapper.h"
 
+// Export include
+#include "DDM-Engine/Export.h"
+
 // Standard library includes
 #include <memory>
 #include <vector>
 
 namespace DDM
 {
-	class Renderer
+	class DDM_API Renderer
 	{
 	public:
 		Renderer() = default;
@@ -27,6 +30,8 @@ namespace DDM
 
 		Renderer& operator=(Renderer&) = delete;
 		Renderer& operator=(Renderer&& other) = delete;
+
+		virtual void Setup() = 0;
 
 		virtual void Render() = 0;
 

@@ -11,6 +11,9 @@
 #include "DDM-Engine/DataTypes/Structs.h"
 #include "DDM-Engine/DataTypes/DescriptorObjects/UboDescriptorObject.h"
 
+// Export include
+#include "DDM-Engine/Export.h"
+
 // Standard library includes
 #include <memory>
 #include <vector>
@@ -28,7 +31,7 @@ namespace DDM
 	class Mesh;
 	class PipelineWrapper;
 
-	class MeshRenderComponent : public Component
+	class DDM_API MeshRenderComponent : public Component
 	{
 	public:
 		// Default constructor

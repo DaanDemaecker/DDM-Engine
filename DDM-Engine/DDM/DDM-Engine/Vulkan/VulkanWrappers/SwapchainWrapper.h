@@ -10,6 +10,9 @@
 
 #include "DDM-Engine/Vulkan/VulkanWrappers/FrameBuffer.h"
 
+// Export include
+#include "DDM-Engine/Export.h"
+
 // Standard library includes
 #include <memory>
 #include <unordered_map>
@@ -23,7 +26,7 @@ namespace DDM
 	class RenderpassWrapper;
 	class Image;
 
-	class SwapchainWrapper final
+	class DDM_API SwapchainWrapper final
 	{
 	public:
 		// Constructor

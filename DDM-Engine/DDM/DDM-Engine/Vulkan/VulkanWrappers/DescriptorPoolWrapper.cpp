@@ -32,6 +32,7 @@ void DDM::DescriptorPoolWrapper::Cleanup(VkDevice device)
 {
 	if (m_DescriptorPool != VK_NULL_HANDLE)
 	{
+		vkDeviceWaitIdle(device);
 		// Destroy the descriptorPool
 		vkDestroyDescriptorPool(device, m_DescriptorPool, nullptr);
 		m_DescriptorPool = VK_NULL_HANDLE;

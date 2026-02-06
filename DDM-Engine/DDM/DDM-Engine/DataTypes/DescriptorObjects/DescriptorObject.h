@@ -8,12 +8,15 @@
 // File includes
 #include "DDM-Engine/Includes/VulkanIncludes.h"
 
+// Export include
+#include "DDM-Engine/Export.h"
+
 // Standard libary includes
 #include <vector>
 
 namespace DDM
 {
-	class DescriptorObject
+	class DDM_API DescriptorObject
 	{
 	public:
 		/// <summary>

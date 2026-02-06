@@ -173,6 +173,11 @@ DDM::FmodSoundSystem::FmodSoundSystem()
 	m_pImpl = std::make_unique<FmodImpl>();
 }
 
+DDM::FmodSoundSystem::~FmodSoundSystem()
+{
+
+}
+
 void DDM::FmodSoundSystem::LoadClip(const AudioClip* clip)
 {
 	m_pImpl->LoadClip(clip->GetFilePath());

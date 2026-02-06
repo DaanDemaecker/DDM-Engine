@@ -11,6 +11,9 @@
 #include "DDM-Engine/DataTypes/Structs.h"
 #include "DDMModelLoader/DDMModelLoader.h"
 
+// Export include
+#include "DDM-Engine/Export.h"
+
 // Standard library includes
 #include <memory>
 #include <vector>
@@ -20,7 +23,7 @@ namespace DDM
 {
 	class GameObject;
 
-	class DDMModelLoader final : public Singleton<DDMModelLoader>
+	class DDM_API DDMModelLoader final : public Singleton<DDMModelLoader>
 	{
 	public:
 		DDMModelLoader();

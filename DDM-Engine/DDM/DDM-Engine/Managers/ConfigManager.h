@@ -8,13 +8,16 @@
 #include "DDM-Engine/Engine/Singleton.h"
 #include "DDM-Engine/Includes/RapidJSONIncludes.h"
 
+// Export include
+#include "DDM-Engine/Export.h"
+
 // Standard library includes
 #include <string>
 
 
 namespace DDM
 {
-	class ConfigManager : public Singleton<ConfigManager>
+	class DDM_API ConfigManager : public Singleton<ConfigManager>
 	{
 	public:
 		// Get string object from json

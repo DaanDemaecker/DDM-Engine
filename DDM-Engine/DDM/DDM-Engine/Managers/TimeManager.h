@@ -7,9 +7,12 @@
 // File includes
 #include "DDM-Engine/Engine/Singleton.h"
 
+// Export include
+#include "DDM-Engine/Export.h"
+
 namespace DDM
 {
-	class TimeManager final : public Singleton<TimeManager>
+	class DDM_API TimeManager final : public Singleton<TimeManager>
 	{
 	public:
 		// Set the delta time of this frame
