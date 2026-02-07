@@ -18,7 +18,7 @@ DDM::ResourceManager::ResourceManager()
 }
 
 void DDM::ResourceManager::EndProgram()
-{
+{	
 	m_pDefaultMaterial.reset();
 	m_pDefaultMesh.reset();
 }

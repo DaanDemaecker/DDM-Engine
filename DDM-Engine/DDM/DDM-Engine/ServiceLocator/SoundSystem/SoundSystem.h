@@ -128,6 +128,8 @@ namespace DDM
 		virtual float GetMasterPitch() = 0;
 
 		virtual void SetPriority(AudioSourceInfo& sourceInfo) = 0;
+
+		virtual void ShutDown() = 0;
 	};
 
 	class DefaultSoundSystem final : public SoundSystem
@@ -192,7 +194,9 @@ namespace DDM
 
 		virtual float GetMasterPitch() override { return 1.f; }
 
-		virtual void SetPriority(AudioSourceInfo& sourceInfo) override {};
+		virtual void SetPriority(AudioSourceInfo& sourceInfo) override {}
+
+		virtual void ShutDown() override {}
 	};
 }
 

@@ -51,9 +51,9 @@ DDM::FmodSystem::~FmodSystem()
 	if (master) master->stop();
 
 	m_pSystem->mixerSuspend();
-	std::cout << "Closing system \n";
+
 	m_pSystem->close();
-	std::cout << "Finished closing system \n";
+
 	m_pSystem->release();
 	m_pSystem = nullptr;
 }

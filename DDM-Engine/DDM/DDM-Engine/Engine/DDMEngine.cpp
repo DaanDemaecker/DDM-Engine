@@ -33,6 +33,8 @@ DDM::DDMEngine::~DDMEngine()
 
 void DDM::DDMEngine::Terminate()
 {
+	ServiceLocator::GetSoundSystem().ShutDown();
+
 	ResourceManager::GetInstance().EndProgram();
 
 	SceneManager::GetInstance().EndProgram();

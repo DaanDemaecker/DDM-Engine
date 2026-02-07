@@ -79,6 +79,8 @@ namespace DDM
 		virtual void SetMasterPitch(float pitch) override;
 
 		virtual float GetMasterPitch() override;
+
+		virtual void ShutDown() override;
 	private:
 		std::unique_ptr<FmodImpl> m_pImpl;
 	};

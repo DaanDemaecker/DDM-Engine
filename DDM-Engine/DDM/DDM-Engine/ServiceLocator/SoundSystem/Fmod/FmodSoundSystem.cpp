@@ -312,3 +312,8 @@ float DDM::FmodSoundSystem::GetMasterPitch()
 {
 	return m_pImpl->GetMasterPitch();
 }
+
+void DDM::FmodSoundSystem::ShutDown()
+{
+	m_pImpl.reset();
+}
