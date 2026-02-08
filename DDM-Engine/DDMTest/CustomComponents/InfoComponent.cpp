@@ -76,6 +76,8 @@ void DDM::InfoComponent::OnGUI()
 {
 	ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_Framed;
 
+	return;
+
 	// Start tree
 	if (ImGui::TreeNodeEx("Info", flags))
 	{

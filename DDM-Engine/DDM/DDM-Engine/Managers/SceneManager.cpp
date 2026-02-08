@@ -20,7 +20,7 @@ void DDM::SceneManager::EndProgram()
         m_ActiveScene->OnSceneUnload();
     }
 
-    m_pScenes.clear();
+    m_pScenes.clear(); 
     m_ActiveScene = nullptr;
 }
 
@@ -184,7 +184,7 @@ void DDM::SceneManager::OnGui()
 {
     if (m_ActiveScene != nullptr)
     {
-        //m_ActiveScene->OngGUI();
+        m_ActiveScene->OngGUI();
     }
 }
 

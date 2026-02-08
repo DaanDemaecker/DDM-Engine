@@ -89,6 +89,8 @@ void DDM::MaterialSwitchManager::OnGUI()
 
 	ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_Framed;
 
+	return;
+
 	// Create a tree node for the material switcher
 	if (ImGui::TreeNodeEx("Material switcher", flags))
 	{

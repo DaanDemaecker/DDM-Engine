@@ -28,7 +28,6 @@ DDM::FmodSystem::FmodSystem(int maxChannels)
 
 DDM::FmodSystem::~FmodSystem()
 {
-
 	for (auto& channel : m_Channels)
 	{
 		if (channel != nullptr)

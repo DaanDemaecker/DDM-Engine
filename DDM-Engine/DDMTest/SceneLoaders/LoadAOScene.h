@@ -42,13 +42,13 @@ namespace LoadAOScene
 
 		//SetupAtrium(scene.get());
 
-		SetupRoom(scene.get());
+		//SetupRoom(scene.get());
 
 		//SetupVehicle(scene.get());
 
-		//SetupGear(scene.get());
+		SetupGear(scene.get());
 
-		//SetupGroundPlane(scene.get());
+		SetupGroundPlane(scene.get());
 
 		SetupInfoComponent(scene.get());
 

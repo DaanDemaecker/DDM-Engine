@@ -33,9 +33,13 @@ void DDM::AudioTester::OnGUI()
 
 	ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_Framed;
 
+	return;
+
 	// Start tree
 	if (ImGui::TreeNodeEx("AudioTest", flags))
 	{
+		return;
+
 		float volume = soundSystem.GetMasterVolume();
 
 		if (ImGui::SliderFloat("Volume", &volume, 0, 1))
