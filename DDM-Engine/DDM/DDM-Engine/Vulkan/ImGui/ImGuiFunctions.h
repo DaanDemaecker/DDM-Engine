@@ -1,0 +1,16 @@
+// ImGuiFunctions.h
+// This file will forward the functions of ImGui to the dll
+
+// File includes
+#include "DDM-Engine/Includes/ImGuiIncludes.h"
+#include "DDM-Engine/Export.h"
+
+// Standard library includes
+#include <string>
+
+namespace DDM::UI
+{
+    DDM_API bool TreeNode(const std::string& label, int flags);
+    DDM_API void PopTree();
+    DDM_API void Text(const std::string& text);
+}

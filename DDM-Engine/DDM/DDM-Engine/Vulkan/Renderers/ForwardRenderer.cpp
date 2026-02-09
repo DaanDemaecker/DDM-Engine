@@ -11,7 +11,7 @@
 #include "DDM-Engine/Vulkan/VulkanManagers/SyncObjectManager.h"
 #include "DDM-Engine/Vulkan/VulkanWrappers/SwapchainWrapper.h"
 #include "DDM-Engine/Vulkan/VulkanWrappers/RenderpassWrapper.h"
-#include "DDM-Engine/Vulkan/VulkanWrappers/ImGuiWrapper.h"
+#include "DDM-Engine/Vulkan/ImGui/ImGuiWrapper.h"
 #include "DDM-Engine/Vulkan/VulkanManagers/ImageManager/ImageManager.h"
 #include "DDM-Engine/Vulkan/VulkanManagers/CommandpoolManager.h"
 #include "DDM-Engine/Vulkan/VulkanManagers/PipelineManager.h"

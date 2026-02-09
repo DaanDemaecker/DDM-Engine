@@ -50,6 +50,9 @@ add_library(DDMEngine  SHARED
 "DDM-Engine/Vulkan/Renderers/AORenderers/HBAORenderer.cpp"
 "DDM-Engine/Vulkan/Renderers/AORenderers/GTAORenderer.cpp"
 
+"DDM-Engine/Vulkan/ImGui/ImGuiWrapper.cpp"
+"DDM-Engine/Vulkan/ImGui/ImGuiFunctions.cpp"
+
 "DDM-Engine/Vulkan/VulkanManagers/BufferCreator.cpp"
 "DDM-Engine/Vulkan/VulkanManagers/CommandpoolManager.cpp"
 "DDM-Engine/Vulkan/VulkanManagers/ImageManager/ImageManager.cpp"
@@ -60,7 +63,6 @@ add_library(DDMEngine  SHARED
 
 "DDM-Engine/Vulkan/VulkanWrappers/DescriptorPoolWrapper.cpp"
 "DDM-Engine/Vulkan/VulkanWrappers/GPUObject.cpp"
-"DDM-Engine/Vulkan/VulkanWrappers/ImGuiWrapper.cpp"
 "DDM-Engine/Vulkan/VulkanWrappers/InstanceWrapper.cpp"
 "DDM-Engine/Vulkan/VulkanWrappers/PipelineWrapper.cpp"
 "DDM-Engine/Vulkan/VulkanWrappers/RenderpassWrapper.cpp"

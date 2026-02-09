@@ -26,7 +26,7 @@
 #include "DDM-Engine/Vulkan/VulkanWrappers/PipelineWrapper.h"
 #include "DDM-Engine/Vulkan/VulkanWrappers/InstanceWrapper.h"
 #include "DDM-Engine/Vulkan/VulkanWrappers/GPUObject.h"
-#include "DDM-Engine/Vulkan/VulkanWrappers/ImGuiWrapper.h"
+#include "DDM-Engine/Vulkan/ImGui/ImGuiWrapper.h"
 #include "DDM-Engine/Vulkan/VulkanManagers/SyncObjectManager.h"
 
 #include "DDM-Engine/EngineComponents/MeshRenderer.h"

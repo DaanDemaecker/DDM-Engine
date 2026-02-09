@@ -8,6 +8,7 @@
 #include "DDM-Engine/Includes/DXGIIncludes.h"
 #include "DDM-Engine/Vulkan/VulkanObject.h"
 #include "DDM-Engine/Vulkan/VulkanWrappers/GPUObject.h"
+#include "DDM-Engine/Vulkan/ImGui/ImGuiFunctions.h"
 
 // Standard library includes
 #include <bitset>
@@ -76,17 +77,15 @@ void DDM::InfoComponent::OnGUI()
 {
 	ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_Framed;
 
-	return;
-
 	// Start tree
-	if (ImGui::TreeNodeEx("Info", flags))
+	if (DDM::UI::TreeNode("Info", flags))
 	{
 		// Text for delta time, vram and memory
-		ImGui::Text(m_DeltaTimeLabel.c_str());
-		ImGui::Text(m_VRamLabel.c_str());
-		ImGui::Text(m_MemoryLabel.c_str());
+		DDM::UI::Text(m_DeltaTimeLabel);
+		DDM::UI::Text(m_VRamLabel);
+		DDM::UI::Text(m_MemoryLabel);
 
-		ImGui::TreePop();
+		DDM::UI::PopTree();
 	}
 }
 

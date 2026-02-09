@@ -272,7 +272,7 @@ namespace LoadAOScene
 	void SetupGroundPlane(DDM::Scene* scene)
 	{
 		std::shared_ptr<DDM::TexturedMaterial> pFloorMaterial
-		{std::make_shared<DDM::TexturedMaterial>("DiffuseUnshaded") };
+		{std::make_shared<DDM::TexturedMaterial>("DeferredDiffuse") };
 		pFloorMaterial->AddTexture("resources/images/GroundPlane.png");
 
 
