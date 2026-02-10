@@ -2,7 +2,7 @@
 #include "AudioTester.h"
 
 // Header includes
-#include "DDM-Engine/Includes/ImGuiIncludes.h"
+#include "DDM-Engine/Vulkan/ImGui/ImGuiFunctions.h"
 #include "DDM-Engine/ServiceLocator/ServiceLocator.h"
 #include "DDM-Engine/EngineComponents/Audio/AudioSource.h"
 
@@ -33,33 +33,34 @@ void DDM::AudioTester::OnGUI()
 
 	ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_Framed;
 
-	return;
-
 	// Start tree
-	if (ImGui::TreeNodeEx("AudioTest", flags))
+	if (DDM::UI::TreeNode("AudioTest", flags))
 	{
-		return;
 
 		float volume = soundSystem.GetMasterVolume();
 
-		if (ImGui::SliderFloat("Volume", &volume, 0, 1))
+		if (DDM::UI::SliderFloat("Volume", &volume, 0, 1))
 		{
 			ServiceLocator::GetSoundSystem().SetMasterVolume(volume);
 		}
 
 		float frequency = soundSystem.GetMasterFrequency();
 
-		if (ImGui::SliderFloat("Frequency", &frequency, -3, 3))
+		if (DDM::UI::SliderFloat("Frequency", &frequency, -3, 3))
 		{
 			ServiceLocator::GetSoundSystem().SetMasterFrequency(frequency);
 		}
 
 		float pitch = soundSystem.GetMasterPitch();
 
-		if (ImGui::SliderFloat("Pitch", &pitch, 0, 2))
+		if (DDM::UI::SliderFloat("Pitch", &pitch, 0, 2))
 		{
 			ServiceLocator::GetSoundSystem().SetMasterPitch(pitch);
 		}
+		
+		DDM::UI::PopTree();
+
+		return;
 
 		bool isMuted = soundSystem.IsMuted();
 

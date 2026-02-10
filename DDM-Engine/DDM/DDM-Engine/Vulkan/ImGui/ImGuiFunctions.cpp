@@ -19,4 +19,9 @@ namespace DDM::UI
     {
         ImGui::Text("%s", text.c_str());
     }
+
+    bool SliderFloat(const std::string& label, float* value, float min, float max)
+    {
+        return ImGui::SliderFloat(label.c_str(), value, min, max);
+    }
 }
