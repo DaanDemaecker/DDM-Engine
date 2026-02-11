@@ -14,4 +14,5 @@ namespace DDM::UI
     DDM_API void PopTree();
     DDM_API void Text(const std::string& text);
 	DDM_API bool SliderFloat(const std::string& label, float* value, float min, float max);
+	DDM_API bool Toggle(const std::string& label, bool* value);
 }

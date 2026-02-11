@@ -24,4 +24,9 @@ namespace DDM::UI
     {
         return ImGui::SliderFloat(label.c_str(), value, min, max);
     }
+
+    DDM_API bool Toggle(const std::string& label, bool* value)
+    {
+		return ImGui::Checkbox(label.c_str(), value);
+    }
 }

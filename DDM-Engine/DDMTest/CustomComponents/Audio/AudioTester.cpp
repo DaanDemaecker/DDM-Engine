@@ -57,31 +57,32 @@ void DDM::AudioTester::OnGUI()
 		{
 			ServiceLocator::GetSoundSystem().SetMasterPitch(pitch);
 		}
-		
-		DDM::UI::PopTree();
-
-		return;
 
 		bool isMuted = soundSystem.IsMuted();
 
-		if (ImGui::Checkbox("Muted", &isMuted))
+		if (DDM::UI::Toggle("Muted", &isMuted))
 		{
 			soundSystem.SetMasterMute(isMuted);
 		}
 
 		bool paused = soundSystem.GetMasterPaused();
 
-		if (ImGui::Checkbox("Paused", &paused))
+		if (DDM::UI::Toggle("Paused", &paused))
 		{
 			soundSystem.SetMasterPaused(paused);
 		}
 
 		bool is3D = soundSystem.GetMaster3D();
 
-		if (ImGui::Checkbox("3D", &is3D))
+		if (DDM::UI::Toggle("3D", &is3D))
 		{
 			soundSystem.SetMaster3D(is3D);
 		}
+
+
+		DDM::UI::PopTree();
+
+		return;
 
 		if (ImGui::Button("Stop all"))
 		{
