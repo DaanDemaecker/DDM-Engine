@@ -15,4 +15,5 @@ namespace DDM::UI
     DDM_API void Text(const std::string& text);
 	DDM_API bool SliderFloat(const std::string& label, float* value, float min, float max);
 	DDM_API bool Toggle(const std::string& label, bool* value);
+	DDM_API bool Button(const std::string& label, float width = 0, float height = 0);
 }

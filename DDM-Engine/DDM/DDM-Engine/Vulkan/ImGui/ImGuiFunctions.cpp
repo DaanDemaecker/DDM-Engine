@@ -29,4 +29,9 @@ namespace DDM::UI
     {
 		return ImGui::Checkbox(label.c_str(), value);
     }
+
+    DDM_API bool Button(const std::string& label, float width, float height)
+    {
+        return ImGui::Button(label.c_str(), ImVec2(width, height));
+    }
 }

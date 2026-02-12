@@ -79,15 +79,14 @@ void DDM::AudioTester::OnGUI()
 			soundSystem.SetMaster3D(is3D);
 		}
 
+		if (DDM::UI::Button("Stop all"))
+		{
+			soundSystem.StopAll();
+		}
 
 		DDM::UI::PopTree();
 
 		return;
-
-		if (ImGui::Button("Stop all"))
-		{
-			soundSystem.StopAll();
-		}
 
 		ImGui::InputText("Path to clip to play", m_ClipPath.data(), m_TextLength);
 
