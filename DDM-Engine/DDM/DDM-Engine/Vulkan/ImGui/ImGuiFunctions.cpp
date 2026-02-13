@@ -34,4 +34,9 @@ namespace DDM::UI
     {
         return ImGui::Button(label.c_str(), ImVec2(width, height));
     }
+
+    DDM_API bool InputText(const std::string& label, char* buffer, size_t bufferSize)
+    {
+        return ImGui::InputText(label.c_str(), buffer, bufferSize);
+    }
 }

@@ -84,18 +84,14 @@ void DDM::AudioTester::OnGUI()
 			soundSystem.StopAll();
 		}
 
-		DDM::UI::PopTree();
+		DDM::UI::InputText("Path to clip to play", m_ClipPath.data(), m_TextLength);
 
-		return;
-
-		ImGui::InputText("Path to clip to play", m_ClipPath.data(), m_TextLength);
-
-		if(ImGui::Button("Set clip"))
+		if(DDM::UI::Button("Set clip"))
 		{
 			SetCLip(m_ClipPath.data(), m_TextLength);
 		}
 
-		ImGui::TreePop();
+		DDM::UI::PopTree();
 	}
 }
 
