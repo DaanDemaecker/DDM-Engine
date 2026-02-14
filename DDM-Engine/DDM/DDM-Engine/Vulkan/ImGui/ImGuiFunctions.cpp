@@ -5,22 +5,22 @@
 
 namespace DDM::UI
 {
-    bool TreeNode(const std::string& label, int flags)
+    DDM_API bool TreeNode(const std::string& label, int flags)
     {
         return ImGui::TreeNodeEx(label.c_str(), static_cast<ImGuiTreeNodeFlags>(flags));
     }
 
-    void PopTree()
+    DDM_API void PopTree()
     {
         ImGui::TreePop();
     }
 
-    void Text(const std::string& text)
+    DDM_API void Text(const std::string& text)
     {
         ImGui::Text("%s", text.c_str());
     }
 
-    bool SliderFloat(const std::string& label, float* value, float min, float max)
+    DDM_API bool SliderFloat(const std::string& label, float* value, float min, float max)
     {
         return ImGui::SliderFloat(label.c_str(), value, min, max);
     }
@@ -38,5 +38,10 @@ namespace DDM::UI
     DDM_API bool InputText(const std::string& label, char* buffer, size_t bufferSize)
     {
         return ImGui::InputText(label.c_str(), buffer, bufferSize);
+    }
+
+    DDM_API bool Listbox(const std::string& label, int* currentItem, const char* const* items, size_t itemAmount)
+    {
+        return ImGui::ListBox(label.c_str(), currentItem, items, itemAmount);
     }
 }

@@ -40,19 +40,19 @@ namespace LoadAOScene
 
 		SetupPipelines();
 
-		//SetupAtrium(scene.get());
+		SetupAtrium(scene.get());
 
 		//SetupRoom(scene.get());
 
 		//SetupVehicle(scene.get());
 
-		SetupGear(scene.get());
+		//SetupGear(scene.get());
 
-		SetupGroundPlane(scene.get());
+		//SetupGroundPlane(scene.get());
 
 		SetupInfoComponent(scene.get());
 
-		SetupTestAudioComponent(scene.get());
+		//SetupTestAudioComponent(scene.get());
 
 		SetupCamera(scene.get());
 

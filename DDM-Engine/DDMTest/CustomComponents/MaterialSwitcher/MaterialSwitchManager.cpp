@@ -5,7 +5,7 @@
 
 // File includes
 #include "MaterialSwitcher.h"
-#include "DDM-Engine/Includes/ImGuiIncludes.h"
+#include "DDM-Engine/Vulkan/ImGui/ImGuiFunctions.h"
 
 
 DDM::MaterialSwitchManager::MaterialSwitchManager()
@@ -84,24 +84,16 @@ void DDM::MaterialSwitchManager::OnGUI()
 		cStringList.emplace_back(key.c_str());
 	}
 
-	// Store previous key to check if it changed
-	int prevKey = m_CurrentKey;
-
 	ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_Framed;
 
-	return;
-
-	// Create a tree node for the material switcher
-	if (ImGui::TreeNodeEx("Material switcher", flags))
+	if(DDM::UI::TreeNode("Material switcher", flags))
 	{
-		ImGui::ListBox(m_Label.c_str(), &m_CurrentKey, cStringList.data(), static_cast<int>(cStringList.size()));
-		ImGui::TreePop();
-	}
+		if (DDM::UI::Listbox(m_Label, &m_CurrentKey, cStringList.data(), cStringList.size()))
+		{
+			SwitchMaterial(m_CurrentKey);
+		}
 
-	// If key changed, switch material
-	if (prevKey != m_CurrentKey)
-	{
-		SwitchMaterial(m_CurrentKey);
+		DDM::UI::PopTree();
 	}
 }
 

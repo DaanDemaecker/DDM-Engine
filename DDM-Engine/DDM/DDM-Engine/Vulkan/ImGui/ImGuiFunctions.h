@@ -17,4 +17,5 @@ namespace DDM::UI
 	DDM_API bool Toggle(const std::string& label, bool* value);
 	DDM_API bool Button(const std::string& label, float width = 0, float height = 0);
 	DDM_API bool InputText(const std::string& label, char* buffer, size_t bufferSize);
+	DDM_API bool Listbox(const std::string& label, int* currentItem, const char* const* items, size_t itemAmount);
 }
