@@ -38,7 +38,7 @@ A soundsytem using FMOD has been implemented that supports 2D and 3D sound.
 Future goals for my engine include:
 
 - Options for more lights and light types
-- Physics using the Havok physics engine
+- Physics using the Jolt physics engine
 
 
 ## Object Loader
