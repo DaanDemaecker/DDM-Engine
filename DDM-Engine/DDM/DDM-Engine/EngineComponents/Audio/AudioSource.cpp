@@ -5,8 +5,8 @@
 
 // File includes
 #include "DDM-Engine/ServiceLocator/ServiceLocator.h"
-#include "DDM-Engine/Includes/ImGuiIncludes.h"
 #include "AudioEvents.h"
+#include "DDM-Engine/Vulkan/ImGui/ImGuiFunctions.h"
 
 // Standard library includes
 #include <algorithm>
@@ -22,65 +22,65 @@ void DDM::AudioSource::OnGUI()
 	ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_Framed;
 
 	// Start tree
-	if (ImGui::TreeNodeEx("AudioSource", flags))
+	if (DDM::UI::TreeNode("AudioSource", flags))
 	{
-		ImGui::Text(m_pClip == nullptr ? "" : m_pClip->GetFilePath().c_str());
+		DDM::UI::Text(m_pClip == nullptr ? "" : m_pClip->GetFilePath().c_str());
 
-		if(ImGui::Button("Play"))
+		if (DDM::UI::Button("Play"))
 		{
 			Play();
 		}
 
 		std::string channelText = "Using channel: " + std::to_string(m_Info.Channel);
 
-		ImGui::Text(channelText.c_str());
+		DDM::UI::Text(channelText.c_str());
 
-		if (ImGui::SliderInt("Priority", &m_Info.Priority, 0, 10))
+		if (DDM::UI::SliderInt("Priority", &m_Info.Priority, 0, 10))
 		{
 			SetPriority(m_Info.Priority);
 		}
 
-		if (ImGui::Checkbox("Muted", &m_Info.Muted))
+		if(DDM::UI::Toggle("Muted", &m_Info.Muted))
 		{
 			SetMute(m_Info.Muted);
 		}
 
-		if (ImGui::Checkbox("3D", &m_Info.Is3D))
+		if(DDM::UI::Toggle("3D", &m_Info.Is3D))
 		{
 			Set3D(m_Info.Is3D);
 		}
 
-		if(ImGui::Checkbox("Paused", &m_Info.Paused))
+		if(DDM::UI::Toggle("Paused", &m_Info.Paused))
 		{
 			SetPaused(m_Info.Paused);
 		}
 
-		if (ImGui::Checkbox("Looping", &m_Info.Looping))
+		if(DDM::UI::Toggle("Looping", &m_Info.Looping))
 		{
 			SetLooping(m_Info.Looping);
 		}
 
-		if (ImGui::SliderFloat("Volume", &m_Info.Volume, 0, 1))
+		if(DDM::UI::SliderFloat("Volume", &m_Info.Volume, 0, 1))
 		{
 			SetVolume(m_Info.Volume);
 		}
 
-		if (ImGui::SliderFloat("Frequency", &m_Info.Frequency, -3, 3))
+		if (DDM::UI::SliderFloat("Frequency", &m_Info.Frequency, -3, 3))
 		{
 			SetFrequency(m_Info.Frequency);
 		}
 
-		if (ImGui::SliderFloat("Pitch", &m_Info.Pitch, 0, 2))
+		if (DDM::UI::SliderFloat("Pitch", &m_Info.Pitch, 0, 2))
 		{
 			SetPitch(m_Info.Pitch);
 		}
 
-		if (ImGui::Button("Stop"))
+		if(DDM::UI::Button("Stop"))
 		{
 			Stop();
 		}
 
-		ImGui::TreePop();
+		DDM::UI::PopTree();
 	}
 }
 
