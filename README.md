@@ -8,7 +8,7 @@ After some research, I decided to use the [Vulkan](https://www.vulkan.org) API t
 As I was new to Vulkan I started by creating a separate [renderer](https://github.com/DaanDemaecker/VulkanRenderer.git) that turned into a testing project, which can also be found on my GitHub.
 
 
-# Capabilities
+## Capabilities
 
 - ***Component-based system***  
       The player can create his own components and attach them to a game object to add custom functionality.
