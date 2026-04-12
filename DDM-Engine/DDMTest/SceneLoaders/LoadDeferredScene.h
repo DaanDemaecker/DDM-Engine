@@ -325,6 +325,8 @@ namespace LoadDeferredScene
 
 	void SetupSkull(DDM::Scene* scene)
 	{
+		const std::string objectName{ "Skull" };
+
 		auto switchManager = scene->GetSceneRoot()->CreateNewObject("Material switch manager");
 		switchManager->SetShowImGui(true);
 
@@ -332,9 +334,7 @@ namespace LoadDeferredScene
 		switchManagerComponent->RegisterKey("Diffuse");
 		switchManagerComponent->RegisterKey("Default");
 
-		auto pMesh = std::unique_ptr<DDMML::Mesh>(std::make_unique<DDMML::Mesh>());
-
-		DDM::DDMModelLoader::GetInstance().LoadModel("Resources/Models/Skull/Scene.gltf", pMesh);
+		auto pMesh =DDM::DDMModelLoader::GetInstance().LoadModel("Resources/Models/Skull/Scene.gltf", objectName);
 
 		auto pGameObject = scene->GetSceneRoot()->CreateNewObject(pMesh->GetName());
 		auto renderComponent = pGameObject->AddComponent<DDM::MeshRenderComponent>();

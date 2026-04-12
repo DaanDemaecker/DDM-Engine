@@ -6,6 +6,7 @@
 
 // Standard library includes
 #include <stdexcept>
+#include <iostream>
 
 DDM::ShaderModuleWrapper::ShaderModuleWrapper(VkDevice device, const std::string& filePath)
 {
@@ -139,6 +140,27 @@ bool DDM::ShaderModuleWrapper::ShouldEnableBlend(int index) const
 		}
 	}
 	return true;
+}
+
+bool DDM::ShaderModuleWrapper::HasVertexInput() const
+{
+	uint32_t inputCount = 0;
+	spvReflectEnumerateInputVariables(&m_ReflectShaderModule, &inputCount, nullptr);
+
+	std::vector<SpvReflectInterfaceVariable*> variables(inputCount);
+	spvReflectEnumerateInputVariables(&m_ReflectShaderModule, &inputCount, variables.data());
+
+	bool hasVertexInput = false;
+
+	for (auto& var : variables)
+	{
+		if (var->decoration_flags & SPV_REFLECT_DECORATION_BUILT_IN)
+			continue;
+
+		hasVertexInput = true;
+	}
+
+	return hasVertexInput;
 }
 
 void DDM::ShaderModuleWrapper::CreateShaderModule(VkDevice device)

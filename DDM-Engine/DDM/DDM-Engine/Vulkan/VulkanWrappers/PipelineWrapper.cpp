@@ -93,16 +93,21 @@ void DDM::PipelineWrapper::CreatePipeline(VkDevice device, VkRenderPass renderPa
 	// Create a vector of shader stages the size of shader module wrappers
 	std::vector<VkPipelineShaderStageCreateInfo> shaderStages(shaderModuleWrappers.size());
 
+
+	VkVertexInputBindingDescription bindingDescription = VkVertexInputBindingDescription{};
+	std::vector<VkVertexInputAttributeDescription> attributeDescription = std::vector<VkVertexInputAttributeDescription>{};
+
 	// Set the shader stages for all the shader modules
 	for (size_t i{}; i < shaderStages.size(); i++)
 	{
 		shaderStages[i] = shaderModuleWrappers[i]->GetShaderStageCreateInfo();
-	}
 
-	// Get the binding description for the vertex
-	auto bindingDescription = Vertex::getBindingDescription();
-	// Get the attribute description for the vertex
-	auto attributeDescription = Vertex::getAttributeDescription();
+		if (shaderModuleWrappers[i]->GetShaderStage() == VK_SHADER_STAGE_VERTEX_BIT && shaderModuleWrappers[i]->HasVertexInput())
+		{
+			bindingDescription = Vertex::getBindingDescription();
+			attributeDescription = Vertex::getAttributeDescription();
+		}
+	}
 
 	// Create vertex input info
 	VkPipelineVertexInputStateCreateInfo vertexInputInfo{};

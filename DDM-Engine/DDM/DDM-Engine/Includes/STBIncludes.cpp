@@ -2,6 +2,7 @@
 // This file only exists to enable the STB implementation
 
 #define STB_IMAGE_RESIZE_IMPLEMENTATION
+#define STB_IMAGE_IMPLEMENTATION
 
 // Header include
 #include "STBIncludes.h"

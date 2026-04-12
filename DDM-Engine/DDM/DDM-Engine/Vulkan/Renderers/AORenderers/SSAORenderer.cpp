@@ -1302,7 +1302,7 @@ void DDM::SSAORenderer::CreateLightingDescriptorPool()
 	std::vector<VkDescriptorPoolSize> poolSizes{};
 
 	// Loop trough all the descriptor types
-	for (int i{}; i < 3; ++i)
+	for (int i{}; i < 4; ++i)
 	{
 		VkDescriptorPoolSize descriptorPoolSize{};
 		// Set the type of the poolsize

@@ -15,6 +15,11 @@
 void DDM::BufferCreator::CreateBuffer(DDM::GPUObject* pGPUObject, VkDeviceSize size,
 	VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory)
 {
+	if (size == 0)
+	{
+		return;
+	}
+
 	// Get device
 	auto device{ pGPUObject->GetDevice() };
 

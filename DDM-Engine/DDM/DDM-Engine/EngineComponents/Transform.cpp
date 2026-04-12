@@ -388,12 +388,25 @@ glm::vec3 DDM::Transform::GetRight()
 
 bool DDM::Transform::WriteToFile(std::string& fileName)
 {
+	std::filesystem::current_path(std::filesystem::temp_directory_path());
+
 	// Get the index of the final period in the name, all characters after it indicate the extension
 	auto index = fileName.find_last_of("/");
 
 	auto directoryName = fileName.substr(0, index);
 
-	std::filesystem::create_directory(directoryName);
+	try
+	{
+		if (!std::filesystem::exists(directoryName))
+		{
+			std::filesystem::create_directory(directoryName);
+		}
+	}
+	catch (const std::exception& e)
+	{
+		std::cout << e.what() << std::endl;
+	}
+
 
 
 	// Set up POD

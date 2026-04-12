@@ -84,7 +84,7 @@ add_library(DDMEngine  SHARED
 "DDM-Engine/ServiceLocator/SoundSystem/Fmod/FmodSystem.cpp"
 "DDM-Engine/ServiceLocator/SoundSystem/Fmod/FmodChannel.cpp"
 
-"DDM-Engine/Includes/STBIncludes.cpp" "DDM-Engine/Export.h")
+"DDM-Engine/Includes/STBIncludes.cpp")
 
 target_include_directories(DDMEngine 
     PUBLIC
@@ -102,6 +102,9 @@ add_custom_command(
     POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy
         $<TARGET_RUNTIME_DLLS:DDMEngine>
+        $<TARGET_FILE_DIR:DDMEngine>
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        $<TARGET_PDB_FILE:DDMEngine>
         $<TARGET_FILE_DIR:DDMEngine>
     COMMAND_EXPAND_LISTS
 )

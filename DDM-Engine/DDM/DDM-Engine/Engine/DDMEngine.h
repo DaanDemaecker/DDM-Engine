@@ -72,7 +72,6 @@ namespace DDM
 		// Indicate that engine is initialized
 		m_Initialized = true;
 	}
-
 }
 
 #endif // !_DDM_DDM_ENGINE_

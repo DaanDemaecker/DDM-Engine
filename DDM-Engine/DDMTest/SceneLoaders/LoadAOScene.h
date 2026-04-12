@@ -33,6 +33,8 @@ namespace LoadAOScene
 
 	void SetupGear(DDM::Scene* scene);
 
+	void SetupFbxTest(DDM::Scene* scene);
+
 	void LoadScene()
 	{
 		auto scene = DDM::SceneManager::GetInstance().CreateScene("Test");
@@ -46,13 +48,15 @@ namespace LoadAOScene
 
 		//SetupVehicle(scene.get());
 
-		SetupGear(scene.get());
+		//SetupGear(scene.get());
 
-		SetupGroundPlane(scene.get());
+		//SetupGroundPlane(scene.get());
 
-		SetupInfoComponent(scene.get());
+		//SetupInfoComponent(scene.get());
 
 		//SetupTestAudioComponent(scene.get());
+
+		SetupFbxTest(scene.get());
 
 		SetupCamera(scene.get());
 
@@ -325,5 +329,21 @@ namespace LoadAOScene
 		auto pAudioGearTransform{ pAudioGear->GetTransform() };
 		pAudioGearTransform->SetShowImGui(true);
 		pAudioGearTransform->Translate(10, 0, 0);
+	}
+
+
+	void SetupFbxTest(DDM::Scene* scene)
+	{
+		auto pCar{ scene->CreateGameObject("Car") };
+		pCar->SetShowImGui(true);
+
+		auto rotator = pCar->AddComponent<DDM::RotatorComponent>();
+		rotator->SetRotSpeed(72);
+
+		auto pGearMesh{ DDM::ResourceManager::GetInstance().LoadMesh("Resources/Models/Car.fbx") };
+
+		auto pCarModel{ pCar->AddComponent<DDM::MeshRenderComponent>() };
+		pCarModel->SetShowImGui(true);
+		pCarModel->SetMesh(pGearMesh);
 	}
 }

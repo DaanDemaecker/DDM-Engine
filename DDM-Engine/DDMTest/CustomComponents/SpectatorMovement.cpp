@@ -77,13 +77,16 @@ void DDM::SpectatorMovement::Update()
 			direction += m_pTransform->GetRight();
 		}
 
-		// Normalize direction and scale with speed and deltatime
-		glm::normalize(direction);
-		direction *= m_Speed * deltaTime;
+		if (direction.x != 0 || direction.y != 0 || direction.z != 0)
+		{
+			// Normalize direction and scale with speed and deltatime
+			direction = glm::normalize(direction);
+			direction *= m_Speed * deltaTime;
 
+			// Translate the object based on the rotated movement direction
+			m_pTransform->Translate(direction);
+		}
 
-		// Translate the object based on the rotated movement direction
-		m_pTransform->Translate(direction);
 
 
 		// Retrieve scroll delta

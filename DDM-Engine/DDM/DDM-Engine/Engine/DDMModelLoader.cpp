@@ -17,9 +17,7 @@ void DDM::DDMModelLoader::LoadModel(const std::string& filename, std::vector<Ver
 {
 	std::vector<DDMML::Vertex> ddmVertices{};
 
-	auto mesh = std::make_unique<DDMML::Mesh>();
-
-	m_pModelLoader->LoadModel(filename, mesh.get());
+	auto mesh = m_pModelLoader->LoadModel(filename, "Placeholder");
 
 	auto& ddmmlVertices = mesh->GetVertices();
 	auto& ddmmlIndices = mesh->GetIndices();
@@ -33,16 +31,14 @@ void DDM::DDMModelLoader::LoadModel(const std::string& filename, std::vector<Ver
 
 DDM::GameObject* DDM::DDMModelLoader::LoadModel(const std::string& filename, GameObject* pParent)
 {
-	auto pDDMMLMesh{ std::make_unique<DDMML::Mesh>() };
-
-	m_pModelLoader->LoadModel(filename, pDDMMLMesh.get());
+	auto pDDMMLMesh = m_pModelLoader->LoadModel(filename, pParent->GetName());
 
 	return SetupModel(pDDMMLMesh.get(), pParent);
 }
 
-void DDM::DDMModelLoader::LoadModel(const std::string& fileName, std::unique_ptr<DDMML::Mesh>& mesh)
+std::unique_ptr<DDMML::Mesh> DDM::DDMModelLoader::LoadModel(const std::string& fileName, const std::string& name)
 {
-	m_pModelLoader->LoadModel(fileName, mesh.get());
+	return m_pModelLoader->LoadModel(fileName, name);
 }
 
 void DDM::DDMModelLoader::LoadTexturedScene(const std::string& path, GameObject* pParent)

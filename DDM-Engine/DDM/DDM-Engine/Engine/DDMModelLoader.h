@@ -28,11 +28,12 @@ namespace DDM
 	public:
 		DDMModelLoader();
 
-		// Uses TinyObjLoader to store a .obj file in a vertex- and indexVector
-		// Parameters:
-		//     - filename: The name of the obj file
-		//     - vertices: The vector that will be used to store the vertices
-		//     - indices: The vector that will be used to store the indices
+		/// <summary>
+		/// Load an object into a vertex- and indexVector
+		/// </summary>
+		/// <param name="filename: ">Path to the 3D file</param>
+		/// <param name="vertices: ">The vector that will be used to store the vertices</param>
+		/// <param name="indices: ">The vector that will be used to store the indices</param>
 		void LoadModel(const std::string& filename, std::vector<Vertex>& vertices, std::vector<uint32_t>& indices);
 
 		/// <summary>
@@ -47,8 +48,9 @@ namespace DDM
 		/// This function will load in a single model into a DDMML Mesh
 		/// </summary>
 		/// <param name="fileName: ">Path to the requested model file</param>
-		/// <param name="mesh: ">reference of mesh to store model in</param>
-		void LoadModel(const std::string& fileName, std::unique_ptr<DDMML::Mesh>& mesh);
+		/// <param name= "name of the mesh"></param>
+		/// <returns>unique pointer to the newly created mesh</returns>
+		std::unique_ptr<DDMML::Mesh> LoadModel(const std::string& fileName, const std::string& name);
 
 		/// <summary>
 		/// This function will load in a complete scene and set up the textures

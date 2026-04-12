@@ -60,6 +60,7 @@ namespace DDM
 
 		bool ShouldEnableBlend(int index) const;
 
+		bool HasVertexInput() const;
 	private:
 		// The binary code from the shader
 		std::vector<char> m_ShaderCode{};
