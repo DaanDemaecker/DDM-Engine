@@ -42,7 +42,7 @@ namespace LoadAOScene
 
 		SetupPipelines();
 
-		//SetupAtrium(scene.get());
+		SetupAtrium(scene.get());
 
 		//SetupRoom(scene.get());
 
@@ -56,7 +56,7 @@ namespace LoadAOScene
 
 		//SetupTestAudioComponent(scene.get());
 
-		SetupFbxTest(scene.get());
+		//SetupFbxTest(scene.get());
 
 		SetupCamera(scene.get());
 

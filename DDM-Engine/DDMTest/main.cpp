@@ -16,6 +16,7 @@
 
 #include "DDM-Engine/ServiceLocator/ServiceLocator.h"
 #include "DDM-Engine/ServiceLocator/SoundSystem/Fmod/FmodSoundSystem.h"
+#include "DDM-Engine/ServiceLocator/FileSystem/DDM/DDMFileSystem.h"
 
 enum
 {
@@ -32,6 +33,7 @@ int main()
 	srand(static_cast<uint16_t>(time(NULL)));
 
 	DDM::ServiceLocator::RegisterSoundSystem(std::make_unique<DDM::FmodSoundSystem>());
+	DDM::ServiceLocator::RegisterFileSystem(std::make_unique<DDM::DDMFileSystem>());
 
 	// Create the engine object and run it with the load function
 	DDM::DDMEngine engine{};

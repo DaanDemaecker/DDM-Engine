@@ -84,6 +84,8 @@ add_library(DDMEngine  SHARED
 "DDM-Engine/ServiceLocator/SoundSystem/Fmod/FmodSystem.cpp"
 "DDM-Engine/ServiceLocator/SoundSystem/Fmod/FmodChannel.cpp"
 
+"DDM-Engine/ServiceLocator/FileSystem/DDM/DDMFileSystem.cpp"
+
 "DDM-Engine/Includes/STBIncludes.cpp")
 
 target_include_directories(DDMEngine 

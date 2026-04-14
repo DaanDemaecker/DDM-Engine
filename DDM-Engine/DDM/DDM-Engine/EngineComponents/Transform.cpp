@@ -6,6 +6,7 @@
 // File includes
 #include "DDM-Engine/Includes/GLFWIncludes.h"
 #include "DDM-Engine/Includes/ImGuiIncludes.h"
+#include "DDM-Engine/ServiceLocator/ServiceLocator.h"
 
 // Standard library includes
 #include <math.h>
@@ -388,49 +389,22 @@ glm::vec3 DDM::Transform::GetRight()
 
 bool DDM::Transform::WriteToFile(std::string& fileName)
 {
-	std::filesystem::current_path(std::filesystem::temp_directory_path());
-
-	// Get the index of the final period in the name, all characters after it indicate the extension
-	auto index = fileName.find_last_of("/");
-
-	auto directoryName = fileName.substr(0, index);
-
-	try
-	{
-		if (!std::filesystem::exists(directoryName))
-		{
-			std::filesystem::create_directory(directoryName);
-		}
-	}
-	catch (const std::exception& e)
-	{
-		std::cout << e.what() << std::endl;
-	}
-
-
-
 	// Set up POD
 	TransformPod toWrite{};
 	toWrite.pos = GetWorldPosition();
 	toWrite.rot = GetWorldRotation();
 	toWrite.scale = GetWorldScale();
 
-	// Open the file
-	std::ofstream temp;
-	temp.open(fileName, std::ios::binary | std::ios::out);
+	auto& fileSystem = ServiceLocator::GetFileSystem();
 
-	// If file is open, read from it
-	if (temp.is_open())
-	{
-		temp.write((const char*)&toWrite, sizeof(toWrite));
-		temp.close();
+	fileSystem.OpenWrite(fileName);
 
-		// Indicate that writing was successful
-		return true;
-	}
+	bool result = fileSystem.Write(fileName, reinterpret_cast<const char*>(&toWrite), sizeof(TransformPod));
 
-	// Indicate that writing failed
-	return false;
+
+	fileSystem.CloseWrite(fileName);
+
+	return result;
 }
 
 bool DDM::Transform::WriteToFile(std::string&& fileName)
@@ -441,19 +415,14 @@ bool DDM::Transform::WriteToFile(std::string&& fileName)
 
 bool DDM::Transform::ReadFromFile(std::string& fileName)
 {
-	// Open file
-	std::ifstream input;
-	input.open(fileName, std::ios::binary);
-	
-	// If file is open, read from it
-	if (input.is_open())
+	auto& fileSystem = ServiceLocator::GetFileSystem();
+
+	if (fileSystem.OpenRead(fileName))
 	{
 		// Set up POD
 		TransformPod toRead{};
 
-		// Read and close file
-		input.read((char*)&toRead, sizeof(toRead));
-		input.close();
+		fileSystem.Read(fileName, reinterpret_cast<char*>(&toRead), sizeof(TransformPod));
 
 		// Set all values correctly
 		SetWorldPosition(toRead.pos);

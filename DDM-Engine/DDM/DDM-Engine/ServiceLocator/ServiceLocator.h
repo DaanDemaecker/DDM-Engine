@@ -6,6 +6,7 @@
 
 // File includes
 #include "SoundSystem/SoundSystem.h"
+#include "FileSystem/IFileSystem.h"
 
 // Export include
 #include "DDM-Engine/Export.h"
@@ -27,12 +28,20 @@ namespace DDM
 		ServiceLocator& operator=(ServiceLocator&) = delete;
 		ServiceLocator& operator=(ServiceLocator&&) = delete;
 
-		static SoundSystem& GetSoundSystem();
 		static void RegisterSoundSystem(std::unique_ptr<SoundSystem> soundSystem);
+		static SoundSystem& GetSoundSystem();
+
+
+		static void RegisterFileSystem(std::unique_ptr<IFileSystem> fileSystem);
+		static IFileSystem& GetFileSystem();
 
 	private:
 		static std::unique_ptr<SoundSystem> m_pSoundSystemInstance;
-		static std::unique_ptr<DefaultSoundSystem> m_DefaultSoundSystemInstance;
+		static std::unique_ptr<DefaultSoundSystem> m_pDefaultSoundSystemInstance;
+
+
+		static std::unique_ptr<IFileSystem> m_pFileSystemInstance;
+		static std::unique_ptr<DefaultFileSystem> m_pDefaultFileSystemInstance;
 	};
 }
 
